@@ -1,0 +1,1406 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+<script src="../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../site_libs/quarto-html/tabby.min.js"></script>
+<script src="../site_libs/quarto-html/popper.min.js"></script>
+<script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
+<link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../site_libs/quarto-html/light-border.css" rel="stylesheet">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-64a204ab8560d761af7679ceaba22944.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../site_libs/quarto-contrib/glightbox/glightbox.min.js"></script>
+<link href="../site_libs/quarto-contrib/glightbox/glightbox.min.css" rel="stylesheet">
+<link href="../site_libs/quarto-contrib/glightbox/lightbox.css" rel="stylesheet"><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.10.18">
+<title>What If? - Lecture Notes – Chapter 7: Confounding</title>
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, minimal-ui">
+<link rel="stylesheet" href="../site_libs/revealjs/dist/reset.css">
+<link rel="stylesheet" href="../site_libs/revealjs/dist/reveal.css">
+<style>
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: 1.5em;}
+    div.column{flex: auto;}
+    @media screen {
+    div.columns{gap: min(4vw, 1.5em);}
+    div.column{overflow-x: auto;}
+    }
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    ul.task-list{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+      vertical-align: middle;
+    }
+    /* CSS for citations */
+    div.csl-bib-body { }
+    div.csl-entry {
+      clear: both;
+    }
+    .hanging-indent div.csl-entry {
+      margin-left:2em;
+      text-indent:-2em;
+    }
+    div.csl-left-margin {
+      min-width:2em;
+      float:left;
+    }
+    div.csl-right-inline {
+      margin-left:2em;
+      padding-left:1em;
+    }
+    div.csl-indent {
+      margin-left: 2em;
+    }  </style>
+<link rel="stylesheet" href="../site_libs/revealjs/dist/theme/quarto-0427d8d92a431aa6a6430e53ec02a470.css">
+<link href="../site_libs/revealjs/plugin/quarto-line-highlight/line-highlight.css" rel="stylesheet">
+<link href="../site_libs/revealjs/plugin/reveal-menu/menu.css" rel="stylesheet">
+<link href="../site_libs/revealjs/plugin/reveal-menu/quarto-menu.css" rel="stylesheet">
+<link href="../site_libs/revealjs/plugin/reveal-chalkboard/font-awesome/css/all.css" rel="stylesheet">
+<link href="../site_libs/revealjs/plugin/reveal-chalkboard/style.css" rel="stylesheet">
+<link href="../site_libs/revealjs/plugin/quarto-support/footer.css" rel="stylesheet">
+<style type="text/css">
+    .reveal div.sourceCode {
+      margin: 0;
+      overflow: auto;
+    }
+    .reveal div.hanging-indent {
+      margin-left: 1em;
+      text-indent: -1em;
+    }
+    .reveal .slide:not(.center) {
+      height: 100%;
+      overflow-y: auto;
+    }
+    .reveal .slide.scrollable {
+      overflow-y: auto;
+    }
+    .reveal .footnotes {
+      height: 100%;
+      overflow-y: auto;
+    }
+    .reveal .slide .absolute {
+      position: absolute;
+      display: block;
+    }
+    .reveal .footnotes ol {
+      counter-reset: ol;
+      list-style-type: none; 
+      margin-left: 0;
+    }
+    .reveal .footnotes ol li:before {
+      counter-increment: ol;
+      content: counter(ol) ". "; 
+    }
+    .reveal .footnotes ol li > p:first-child {
+      display: inline-block;
+    }
+    .reveal .slide ul,
+    .reveal .slide ol {
+      margin-bottom: 0.5em;
+    }
+    .reveal .slide ul li,
+    .reveal .slide ol li {
+      margin-top: 0.4em;
+      margin-bottom: 0.2em;
+    }
+    .reveal .slide ul[role="tablist"] li {
+      margin-bottom: 0;
+    }
+    .reveal .slide ul li > *:first-child,
+    .reveal .slide ol li > *:first-child {
+      margin-block-start: 0;
+    }
+    .reveal .slide ul li > *:last-child,
+    .reveal .slide ol li > *:last-child {
+      margin-block-end: 0;
+    }
+    .reveal .slide .columns:nth-child(3) {
+      margin-block-start: 0.8em;
+    }
+    .reveal blockquote {
+      box-shadow: none;
+    }
+    .reveal .tippy-content>* {
+      margin-top: 0.2em;
+      margin-bottom: 0.7em;
+    }
+    .reveal .tippy-content>*:last-child {
+      margin-bottom: 0.2em;
+    }
+    .reveal .slide > img.stretch.quarto-figure-center,
+    .reveal .slide > img.r-stretch.quarto-figure-center {
+      display: block;
+      margin-left: auto;
+      margin-right: auto; 
+    }
+    .reveal .slide > img.stretch.quarto-figure-left,
+    .reveal .slide > img.r-stretch.quarto-figure-left  {
+      display: block;
+      margin-left: 0;
+      margin-right: auto; 
+    }
+    .reveal .slide > img.stretch.quarto-figure-right,
+    .reveal .slide > img.r-stretch.quarto-figure-right  {
+      display: block;
+      margin-left: auto;
+      margin-right: 0; 
+    }
+  </style>
+<link href="../site_libs/pagedtable-1.1/css/pagedtable.css" rel="stylesheet">
+<script src="../site_libs/pagedtable-1.1/js/pagedtable.js"></script>
+</head>
+<body class="quarto-light">
+  <div class="reveal">
+    <div class="slides">
+
+<section id="title-slide" class="quarto-title-block center"><h1 class="title">Chapter 7: Confounding</h1>
+
+<div class="quarto-title-authors">
+</div>
+
+</section><section class="slide level2"><!-- https://www.overleaf.com/learn/latex/Using_colors_in_LaTeX#Named_colors_provided_by_the_xcolor_package --><!-- \def\or{\theta}  --><!-- doesn't work for some reason --><p>In Chapter 6 we described causal diagrams and showed how to read independence relations from them using d-separation. We also identified three structural sources of bias—confounding, selection bias, and measurement bias—and introduced the backdoor criterion as the graphical condition for eliminating confounding. This chapter examines confounding in greater depth. We show that confounding is equivalent to the absence of marginal exchangeability, characterize it through the structure of the causal diagram, and relate the structural (graphical) definition to the traditional epidemiological criteria for identifying confounders. We close with an introduction to Single-World Intervention Graphs (SWIGs), which embed counterfactual variables directly in a causal diagram.</p>
+<aside class="notes"><p>This chapter is based on <span class="citation" data-cites="hernan2020causal">Hernán and Robins (<a href="#/references" role="doc-biblioref" onclick="">2020, chap. 7</a>, pp.&nbsp;77–92)</span>.</p>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside></section><section><section id="the-structure-of-confounding-pp.-7780" class="title-slide slide level1 center" data-number="1"><h1>
+<span class="header-section-number">1</span> 7.1 The Structure of Confounding (pp.&nbsp;77–80)</h1>
+
+</section><section class="slide level2"><p>In a marginally randomized experiment (Chapter 2), the treated and untreated groups have the same distribution of potential outcomes because treatment was assigned independently of any pre-existing characteristics. As a result, the crude association between treatment <span class="math inline">\(A\)</span> and outcome <span class="math inline">\(Y\)</span> equals the average causal effect:</p>
+<p><span class="math display">\[\Pr[Y = 1 \mid A = 1] - \Pr[Y = 1 \mid A = 0] = \Pr[Y^{a=1} = 1] - \Pr[Y^{a=0} = 1]\]</span></p>
+<p>In an observational study, however, the distribution of pre-existing characteristics typically differs between the treated and untreated. If some of those characteristics affect the outcome, the crude association will not equal the causal effect. This discrepancy is <strong>confounding</strong>.</p>
+</section><section id="a-hypothetical-example" class="slide level2"><h2>A Hypothetical Example</h2>
+<p>Consider a hypothetical observational study of the causal effect of a cholesterol-lowering drug (<span class="math inline">\(A\)</span>: 1 = treated, 0 = untreated) on 5-year mortality (<span class="math inline">\(Y\)</span>: 1 = died, 0 = survived), where sex (<span class="math inline">\(L\)</span>: 1 = male, 0 = female) affects both treatment assignment and mortality. The hypothetical data for 20 individuals are shown below.</p>
+<div class="cell">
+<div id="tbl-ch7-data" class="cell quarto-float quarto-figure quarto-figure-center">
+<figure class="quarto-float quarto-float-tbl"><figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-ch7-data-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Table&nbsp;1: Table 7.1. Hypothetical data from 20 individuals. A: treatment; L: sex (1=male); Y: mortality (1=died).
+</figcaption><div aria-describedby="tbl-ch7-data-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<div class="cell-output-display">
+<table class="cell caption-top">
+<thead><tr class="header">
+<th style="text-align: left;">L</th>
+<th style="text-align: left;">A</th>
+<th style="text-align: right;">n</th>
+<th style="text-align: right;">Deaths (Y=1)</th>
+<th style="text-align: right;">Pr[Y=1 | A, L]</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">0 (female)</td>
+<td style="text-align: left;">0 (untreated)</td>
+<td style="text-align: right;">8</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0.0</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">1 (male)</td>
+<td style="text-align: left;">0 (untreated)</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">0.5</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">0 (female)</td>
+<td style="text-align: left;">1 (treated)</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0.0</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">1 (male)</td>
+<td style="text-align: left;">1 (treated)</td>
+<td style="text-align: right;">8</td>
+<td style="text-align: right;">4</td>
+<td style="text-align: right;">0.5</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</figure>
+</div>
+</div>
+<p>Within each sex stratum, the mortality rate is the same for treated and untreated individuals:</p>
+<p><span class="math display">\[\Pr[Y = 1 \mid A = 1, L = 1] = \Pr[Y = 1 \mid A = 0, L = 1] = 0.50\]</span> <span class="math display">\[\Pr[Y = 1 \mid A = 1, L = 0] = \Pr[Y = 1 \mid A = 0, L = 0] = 0.00\]</span></p>
+<p>Within strata of <span class="math inline">\(L\)</span>, the association equals the causal effect (null). But the crude (marginal) association is non-null:</p>
+<p><span class="math display">\[\Pr[Y = 1 \mid A = 1] = \tfrac{4}{10} = 0.40 \neq \Pr[Y = 1 \mid A = 0] = \tfrac{1}{10} = 0.10\]</span></p>
+<p>The crude risk difference of <span class="math inline">\(0.30\)</span> is entirely due to confounding: males are more frequently treated (<span class="math inline">\(8/10\)</span>) and have higher baseline mortality (<span class="math inline">\(0.50\)</span>) than females.</p>
+<aside class="notes"><p><strong>Why confounding arises here:</strong></p>
+<p>Males (<span class="math inline">\(L = 1\)</span>) are more likely to receive treatment (80%) and have higher mortality (50%), while females (<span class="math inline">\(L = 0\)</span>) are less likely to receive treatment (20%) and have lower mortality (0%). Within each sex, treatment has no effect. But marginally, treated individuals have higher mortality than untreated individuals—not because of any causal effect of treatment, but because the treated group is disproportionately male.</p>
+<p>The crude risk difference of 0.30 is entirely confounding bias; the true average causal effect is zero.</p>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside></section><section id="the-structural-definition" class="slide level2"><h2>The Structural Definition</h2>
+<p>In the causal diagram framework, confounding arises when there is an open backdoor path from <span class="math inline">\(A\)</span> to <span class="math inline">\(Y\)</span>. In the example above, sex <span class="math inline">\(L\)</span> is a common cause of treatment <span class="math inline">\(A\)</span> and mortality <span class="math inline">\(Y\)</span>:</p>
+<div class="cell">
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure><figcaption>Figure 7.1. Causal diagram for the cholesterol-lowering drug example. Sex (L) is a common cause of treatment (A) and outcome (Y), creating a backdoor path A ← L → Y.</figcaption><p><a href="07-confounding_files/figure-html/unnamed-chunk-1-1.png" class="lightbox" data-gallery="quarto-lightbox-gallery-1" title="Figure 7.1. Causal diagram for the cholesterol-lowering drug example. Sex (L) is a common cause of treatment (A) and outcome (Y), creating a backdoor path A ← L → Y."><img data-src="07-confounding_files/figure-html/unnamed-chunk-1-1.png" width="384" alt="Figure 7.1. Causal diagram for the cholesterol-lowering drug example. Sex (L) is a common cause of treatment (A) and outcome (Y), creating a backdoor path A ← L → Y."></a></p>
+</figure>
+</div>
+</div>
+</div>
+<p>The path <span class="math inline">\(A \leftarrow L \rightarrow Y\)</span> is a backdoor path from <span class="math inline">\(A\)</span> to <span class="math inline">\(Y\)</span>. Because <span class="math inline">\(L\)</span> is a non-collider on this path and has not been conditioned on, the path is open. Confounding bias exists whenever at least one backdoor path from <span class="math inline">\(A\)</span> to <span class="math inline">\(Y\)</span> is open.</p>
+<div id="def-confounding" class="theorem definition">
+<p><span class="theorem-title"><strong>Definition 1 (Confounding (Structural Definition))</strong></span> <strong>Confounding</strong> of the effect of <span class="math inline">\(A\)</span> on <span class="math inline">\(Y\)</span> is present when the observed (crude) association between <span class="math inline">\(A\)</span> and <span class="math inline">\(Y\)</span> differs from the causal effect of <span class="math inline">\(A\)</span> on <span class="math inline">\(Y\)</span>:</p>
+<p><span class="math display">\[\Pr[Y = 1 \mid A = 1] - \Pr[Y = 1 \mid A = 0] \neq \Pr[Y^{a=1} = 1] - \Pr[Y^{a=0} = 1]\]</span></p>
+<p>In structural terms, confounding exists when there is at least one open backdoor path from <span class="math inline">\(A\)</span> to <span class="math inline">\(Y\)</span> in the causal diagram.</p>
+</div>
+<aside class="notes"><p><strong>Confounding can operate in any direction:</strong></p>
+<ul>
+<li>
+<strong>Positive confounding</strong>: the crude estimate overstates the causal effect (or makes a harmful treatment look beneficial, or a beneficial treatment look even more beneficial)</li>
+<li>
+<strong>Negative confounding</strong>: the crude estimate understates the causal effect (or makes a beneficial treatment look harmful)</li>
+<li>The direction depends on the signs of the associations <span class="math inline">\(L \to A\)</span> and <span class="math inline">\(L \to Y\)</span>
+</li>
+</ul>
+<p>In the drug example above, sicker patients (males) were more likely to receive treatment and had worse outcomes, so the drug appears harmful even though it has no effect. This is <strong>confounding by indication</strong> or <strong>channeling bias</strong>—the indication for treatment (higher disease severity) is itself a risk factor for the outcome.</p>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside></section></section><section><section id="confounding-and-exchangeability-pp.-8082" class="title-slide slide level1 center" data-number="2"><h1>
+<span class="header-section-number">2</span> 7.2 Confounding and Exchangeability (pp.&nbsp;80–82)</h1>
+
+</section><section class="slide level2"><p>Confounding is mathematically equivalent to the failure of <strong>marginal exchangeability</strong>. Recall from Chapter 2 that marginal exchangeability holds when:</p>
+<p><span class="math display">\[Y^a \perp\!\!\!\perp A \quad \text{for all } a\]</span></p>
+<p>This means the treated and untreated groups have the same distribution of potential outcomes: <span class="math inline">\(\Pr[Y^a = 1 \mid A = 1] = \Pr[Y^a = 1 \mid A = 0] = \Pr[Y^a = 1]\)</span>.</p>
+<p>When marginal exchangeability holds, association equals causation:</p>
+<p><span class="math display">\[\Pr[Y = 1 \mid A = 1] - \Pr[Y = 1 \mid A = 0] = \Pr[Y^{a=1} = 1] - \Pr[Y^{a=0} = 1]\]</span></p>
+<p><strong>No confounding is equivalent to marginal exchangeability.</strong> When confounding is present, marginal exchangeability fails: <span class="math inline">\(Y^a \not\perp\!\!\!\perp A\)</span>, and the treated and untreated differ in their potential outcomes.</p>
+</section><section id="eliminating-confounding-via-conditioning" class="slide level2"><h2>Eliminating Confounding via Conditioning</h2>
+<p>Even when marginal exchangeability fails, we can often achieve <strong>conditional exchangeability</strong> by adjusting for the measured confounders <span class="math inline">\(L\)</span>:</p>
+<p><span class="math display">\[Y^a \perp\!\!\!\perp A \mid L \quad \text{for all } a\]</span></p>
+<p>This means that within each stratum of <span class="math inline">\(L\)</span>, the treated and untreated are exchangeable. In the drug example:</p>
+<ul>
+<li>Within males (<span class="math inline">\(L = 1\)</span>): <span class="math inline">\(\Pr[Y^{a} = 1 \mid A = 1, L = 1] = \Pr[Y^{a} = 1 \mid A = 0, L = 1]\)</span> ✓</li>
+<li>Within females (<span class="math inline">\(L = 0\)</span>): <span class="math inline">\(\Pr[Y^{a} = 1 \mid A = 1, L = 0] = \Pr[Y^{a} = 1 \mid A = 0, L = 0]\)</span> ✓</li>
+</ul>
+<p>Under conditional exchangeability and positivity, the standardization (g-formula) identifies the causal effect:</p>
+<p><span class="math display">\[\Pr[Y^{a} = 1] = \sum_l \Pr[Y = 1 \mid A = a, L = l] \, \Pr[L = l]\]</span></p>
+<p>Applying standardization to the data in Table 7.1:</p>
+<p><span class="math display">\[\Pr[Y^{a=1} = 1] = 0.50 \times 0.50 + 0.00 \times 0.50 = 0.25\]</span> <span class="math display">\[\Pr[Y^{a=0} = 1] = 0.50 \times 0.50 + 0.00 \times 0.50 = 0.25\]</span></p>
+<p>The standardized risk difference is zero, correctly recovering the null causal effect.</p>
+<aside class="notes"><p><strong>Marginal vs.&nbsp;conditional exchangeability:</strong></p>
+<ul>
+<li>
+<strong>Marginal exchangeability</strong> (<span class="math inline">\(Y^a \perp\!\!\!\perp A\)</span>): holds in marginally randomized experiments; association equals causation without any adjustment.</li>
+<li>
+<strong>Conditional exchangeability</strong> (<span class="math inline">\(Y^a \perp\!\!\!\perp A \mid L\)</span>): holds in conditionally randomized experiments and (by assumption) in observational studies after adjusting for all confounders <span class="math inline">\(L\)</span>.</li>
+</ul>
+<p>In practice, we can never verify from data alone that conditional exchangeability holds. We must rely on subject-matter knowledge to argue that the measured <span class="math inline">\(L\)</span> captures all common causes of <span class="math inline">\(A\)</span> and <span class="math inline">\(Y\)</span>.</p>
+<p><strong>The no-unmeasured-confounding assumption:</strong></p>
+<p>Conditional exchangeability given <span class="math inline">\(L\)</span> is sometimes called the <strong>no-unmeasured-confounding assumption</strong> or <strong>ignorability</strong>. It is the key assumption required for identification of causal effects in observational studies.</p>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside></section></section><section><section id="confounding-and-the-backdoor-criterion-pp.-8285" class="title-slide slide level1 center" data-number="3"><h1>
+<span class="header-section-number">3</span> 7.3 Confounding and the Backdoor Criterion (pp.&nbsp;82–85)</h1>
+
+</section><section class="slide level2 scrollable"><p>The <strong>backdoor criterion</strong> (Chapter 6) provides a graphical condition for identifying sets of variables <span class="math inline">\(L\)</span> that suffice to eliminate confounding by adjustment.</p>
+<div id="def-backdoor-criterion-ch7" class="theorem definition">
+<p><span class="theorem-title"><strong>Definition 2 (Backdoor Criterion)</strong></span> A set of variables <span class="math inline">\(L\)</span> satisfies the <strong>backdoor criterion</strong> for the effect of <span class="math inline">\(A\)</span> on <span class="math inline">\(Y\)</span> in a causal diagram if:</p>
+<ol type="1">
+<li>No variable in <span class="math inline">\(L\)</span> is a descendant of <span class="math inline">\(A\)</span>
+</li>
+<li>
+<span class="math inline">\(L\)</span> blocks every backdoor path from <span class="math inline">\(A\)</span> to <span class="math inline">\(Y\)</span>
+</li>
+</ol>
+<p>When <span class="math inline">\(L\)</span> satisfies the backdoor criterion, adjusting for <span class="math inline">\(L\)</span> (via standardization, IP weighting, or regression) eliminates confounding and identifies the average causal effect.</p>
+</div>
+</section><section id="multiple-dag-structures" class="slide level2"><h2>Multiple DAG Structures</h2>
+<p>Different causal structures imply different sets of variables that satisfy the backdoor criterion.</p>
+<div class="cell">
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure><figcaption>Figure 7.2. Three causal structures. Left: L is the only confounder; adjust for L. Middle: U is unmeasured but all backdoor paths pass through L (U causes Y only via L and directly); adjusting for L blocks both paths. Right: U has a direct arrow into A bypassing L; adjusting for L alone leaves residual confounding through U.</figcaption><p><a href="07-confounding_files/figure-html/unnamed-chunk-2-1.png" class="lightbox" data-gallery="quarto-lightbox-gallery-2" title="Figure 7.2. Three causal structures. Left: L is the only confounder; adjust for L. Middle: U is unmeasured but all backdoor paths pass through L (U causes Y only via L and directly); adjusting for L blocks both paths. Right: U has a direct arrow into A bypassing L; adjusting for L alone leaves residual confounding through U."><img data-src="07-confounding_files/figure-html/unnamed-chunk-2-1.png" width="1152" alt="Figure 7.2. Three causal structures. Left: L is the only confounder; adjust for L. Middle: U is unmeasured but all backdoor paths pass through L (U causes Y only via L and directly); adjusting for L blocks both paths. Right: U has a direct arrow into A bypassing L; adjusting for L alone leaves residual confounding through U."></a></p>
+</figure>
+</div>
+</div>
+</div>
+<p><strong>Structure I</strong> (<span class="math inline">\(L \to A\)</span>, <span class="math inline">\(L \to Y\)</span>, <span class="math inline">\(A \to Y\)</span>):</p>
+<ul>
+<li>Backdoor path: <span class="math inline">\(A \leftarrow L \to Y\)</span>
+</li>
+<li>
+<span class="math inline">\(\{L\}\)</span> satisfies the backdoor criterion: <span class="math inline">\(L\)</span> is not a descendant of <span class="math inline">\(A\)</span> and blocks the only backdoor path.</li>
+<li>Adjustment for <span class="math inline">\(L\)</span> suffices.</li>
+</ul>
+<p><strong>Structure II</strong> (<span class="math inline">\(U \to L \to A\)</span>, <span class="math inline">\(U \to Y\)</span>, <span class="math inline">\(L \to Y\)</span>, <span class="math inline">\(A \to Y\)</span>, <span class="math inline">\(U\)</span> unmeasured):</p>
+<ul>
+<li>Backdoor paths: <span class="math inline">\(A \leftarrow L \to Y\)</span> and <span class="math inline">\(A \leftarrow L \leftarrow U \to Y\)</span>
+</li>
+<li>
+<span class="math inline">\(L\)</span> is a non-collider on both paths; conditioning on <span class="math inline">\(L\)</span> blocks them both.</li>
+<li>
+<span class="math inline">\(\{L\}\)</span> satisfies the backdoor criterion: adjustment for <span class="math inline">\(L\)</span> suffices even though <span class="math inline">\(U\)</span> is unmeasured.</li>
+</ul>
+<p><strong>Structure III</strong> (<span class="math inline">\(U \to A\)</span>, <span class="math inline">\(U \to Y\)</span>, <span class="math inline">\(L \to A\)</span>, <span class="math inline">\(L \to Y\)</span>, <span class="math inline">\(A \to Y\)</span>, <span class="math inline">\(U\)</span> unmeasured):</p>
+<ul>
+<li>Backdoor paths: <span class="math inline">\(A \leftarrow L \to Y\)</span> <strong>and</strong> <span class="math inline">\(A \leftarrow U \to Y\)</span>
+</li>
+<li>Conditioning on <span class="math inline">\(L\)</span> blocks <span class="math inline">\(A \leftarrow L \to Y\)</span>, but the path <span class="math inline">\(A \leftarrow U \to Y\)</span> does <strong>not</strong> pass through <span class="math inline">\(L\)</span>—conditioning on <span class="math inline">\(L\)</span> leaves it open.</li>
+<li>
+<span class="math inline">\(\{L\}\)</span> does <strong>not</strong> satisfy the backdoor criterion because not all backdoor paths are blocked.</li>
+<li>Since <span class="math inline">\(U\)</span> is unmeasured, no measured adjustment set can block <span class="math inline">\(A \leftarrow U \to Y\)</span>. The causal effect is not identified by adjustment alone.</li>
+</ul>
+<aside class="notes"><p><strong>Sufficient adjustment sets:</strong></p>
+<p>In Structure II, adjusting for <span class="math inline">\(L\)</span> alone suffices even though <span class="math inline">\(U\)</span> is unmeasured, because every backdoor path from <span class="math inline">\(A\)</span> to <span class="math inline">\(Y\)</span> passes through <span class="math inline">\(L\)</span>. This illustrates an important point: we do not need to measure all common causes; we only need to measure variables sufficient to block all backdoor paths.</p>
+<p>In Structure III, the unmeasured <span class="math inline">\(U\)</span> bypasses <span class="math inline">\(L\)</span> entirely (direct arrow <span class="math inline">\(U \to A\)</span>), so there is no measured set that can block the path <span class="math inline">\(A \leftarrow U \to Y\)</span>. This is <strong>unmeasured confounding</strong> that cannot be handled by standard adjustment methods.</p>
+<p><strong>Minimal sufficient adjustment sets:</strong></p>
+<p>Multiple different sets of variables may satisfy the backdoor criterion. A <strong>minimal sufficient adjustment set</strong> is one from which no variable can be removed while still blocking all backdoor paths. The R package <code>dagitty</code> can enumerate all minimal sufficient adjustment sets automatically.</p>
+<p><strong>Necessary conditions for a valid adjustment set:</strong></p>
+<p>The backdoor criterion is a sufficient condition but not always necessary. Other identification strategies (instrumental variables, front-door criterion, etc.) can sometimes identify causal effects when no set satisfies the backdoor criterion.</p>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside></section><section id="when-no-sufficient-adjustment-set-exists" class="slide level2 scrollable"><h2>When No Sufficient Adjustment Set Exists</h2>
+<div class="cell">
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure><figcaption>Figure 7.3. Unmeasured confounding: U is an unmeasured common cause of A and Y with no measured common cause on the backdoor path. No measured set satisfies the backdoor criterion.</figcaption><p><a href="07-confounding_files/figure-html/unnamed-chunk-3-1.png" class="lightbox" data-gallery="quarto-lightbox-gallery-3" title="Figure 7.3. Unmeasured confounding: U is an unmeasured common cause of A and Y with no measured common cause on the backdoor path. No measured set satisfies the backdoor criterion."><img data-src="07-confounding_files/figure-html/unnamed-chunk-3-1.png" width="480" alt="Figure 7.3. Unmeasured confounding: U is an unmeasured common cause of A and Y with no measured common cause on the backdoor path. No measured set satisfies the backdoor criterion."></a></p>
+</figure>
+</div>
+</div>
+</div>
+<p>When the only common cause of <span class="math inline">\(A\)</span> and <span class="math inline">\(Y\)</span> is an unmeasured variable <span class="math inline">\(U\)</span> (shown in gray), there is no measured set that satisfies the backdoor criterion. Standard adjustment methods cannot identify the causal effect without additional assumptions (e.g., instrumental variables, Chapter 16).</p>
+<aside class="notes"><p><strong>Unmeasured confounding:</strong></p>
+<p>Unmeasured confounding is the central challenge in observational causal inference. The assumption of “no unmeasured confounders” (conditional exchangeability given measured <span class="math inline">\(L\)</span>) is untestable from observed data alone.</p>
+<p>Strategies to address unmeasured confounding include:</p>
+<ul>
+<li>
+<strong>Sensitivity analysis</strong>: quantify how much an unmeasured confounder would need to change conclusions</li>
+<li>
+<strong>Negative controls</strong>: use outcome or exposure controls to detect unmeasured confounders</li>
+<li>
+<strong>Instrumental variable methods</strong> (Chapter 16): exploit exogenous variation in treatment assignment</li>
+<li>
+<strong>Difference-in-differences and fixed effects</strong> (Chapter 21): exploit longitudinal data structure</li>
+</ul><style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside><div title="Fine Point 7.1: Do Not Adjust for Descendants of Treatment">
+<div class="callout callout-note callout-titled callout-style-default">
+<div class="callout-body">
+<div class="callout-title">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<p><strong>Fine Point 7.1: Do Not Adjust for Descendants of Treatment</strong></p>
+</div>
+<div class="callout-content">
+<p>A fundamental rule for constructing valid adjustment sets is: <strong>never include a descendant of treatment <span class="math inline">\(A\)</span> in the adjustment set</strong>.</p>
+<p><strong>Why not?</strong> There are two distinct ways that adjusting for a post-treatment variable <span class="math inline">\(C\)</span> (a descendant of <span class="math inline">\(A\)</span>) can introduce bias:</p>
+<ol type="1">
+<li><p><strong>Blocking part of the causal effect</strong>: If <span class="math inline">\(A \to C \to Y\)</span> (so <span class="math inline">\(C\)</span> is a mediator), conditioning on <span class="math inline">\(C\)</span> removes part of the causal effect we are trying to estimate. We would estimate only the direct effect <span class="math inline">\(A \to Y\)</span>, not the total effect through <span class="math inline">\(C\)</span>.</p></li>
+<li><p><strong>Collider stratification bias</strong>: If <span class="math inline">\(A \to C \leftarrow U\)</span> and <span class="math inline">\(U \to Y\)</span> (so <span class="math inline">\(C\)</span> is a collider on the path <span class="math inline">\(A \to C \leftarrow U \to Y\)</span>), conditioning on <span class="math inline">\(C\)</span> <strong>opens</strong> this previously blocked path and introduces a spurious association between <span class="math inline">\(A\)</span> and <span class="math inline">\(Y\)</span> via <span class="math inline">\(U\)</span>, even if <span class="math inline">\(U\)</span> is unmeasured.</p></li>
+</ol>
+<p>The second scenario is particularly insidious because the bias may not be obvious without drawing the causal diagram. The practical implication: when selecting variables to include in the adjustment set, first verify using the causal diagram that no candidate variable is a descendant of <span class="math inline">\(A\)</span>.</p>
+</div>
+</div>
+</div>
+</div>
+</section></section><section><section id="confounding-and-confounders-pp.-8587" class="title-slide slide level1 center" data-number="4"><h1>
+<span class="header-section-number">4</span> 7.4 Confounding and Confounders (pp.&nbsp;85–87)</h1>
+
+</section><section class="slide level2"><p>The term <strong>confounder</strong> is commonly used in epidemiology to refer to a variable that should be adjusted for to eliminate confounding. However, the traditional criteria used to identify confounders differ from the structural (DAG-based) definition—and the two do not always agree.</p>
+</section><section id="the-traditional-epidemiological-criteria" class="slide level2 scrollable"><h2>The Traditional Epidemiological Criteria</h2>
+<p>In the traditional approach, a variable <span class="math inline">\(C\)</span> is labeled a confounder of the <span class="math inline">\(A\)</span>–<span class="math inline">\(Y\)</span> association if it satisfies three criteria:</p>
+<ol type="1">
+<li>
+<span class="math inline">\(C\)</span> is associated with treatment <span class="math inline">\(A\)</span>
+</li>
+<li>
+<span class="math inline">\(C\)</span> is a risk factor for outcome <span class="math inline">\(Y\)</span> among the unexposed (<span class="math inline">\(A = 0\)</span>)</li>
+<li>
+<span class="math inline">\(C\)</span> is not on the causal pathway from <span class="math inline">\(A\)</span> to <span class="math inline">\(Y\)</span> (i.e., <span class="math inline">\(C\)</span> is not a mediator)</li>
+</ol>
+<p>These criteria are assessed from the data (criteria 1 and 2) and from prior knowledge (criterion 3).</p>
+</section><section id="limitations-of-the-traditional-criteria" class="slide level2 scrollable"><h2>Limitations of the Traditional Criteria</h2>
+<p>The traditional criteria have two important limitations:</p>
+<p><strong>Problem 1: A variable can satisfy all three criteria without being a structural confounder.</strong></p>
+<p>If <span class="math inline">\(C\)</span> is a <strong>collider</strong> on a non-causal path between <span class="math inline">\(A\)</span> and <span class="math inline">\(Y\)</span> (e.g., <span class="math inline">\(A \to C \leftarrow Y\)</span>), then <span class="math inline">\(C\)</span> may be associated with both <span class="math inline">\(A\)</span> and <span class="math inline">\(Y\)</span> in some data sets yet is not on any backdoor path. Including <span class="math inline">\(C\)</span> in the adjustment set could introduce <strong>collider stratification bias</strong> rather than removing confounding.</p>
+<p><strong>Problem 2: A structural confounder may fail one of the traditional criteria.</strong></p>
+<p>A variable <span class="math inline">\(L\)</span> that opens a backdoor path from <span class="math inline">\(A\)</span> to <span class="math inline">\(Y\)</span> might fail criterion 1 (not associated with <span class="math inline">\(A\)</span> in the data) if its effects on <span class="math inline">\(A\)</span> and <span class="math inline">\(Y\)</span> cancel in a specific population. In that population, adjusting for <span class="math inline">\(L\)</span> is still required to eliminate structural confounding, but the traditional criteria would not flag it as a confounder.</p>
+<div class="cell">
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure><figcaption>Figure 7.4. Left: C is a collider (A → C ← Y); it satisfies traditional criteria 1 and 2 but adjusting for C introduces bias. Right: L is a structural confounder (opens backdoor path) but may not satisfy traditional criteria if its effects on A and Y cancel.</figcaption><p><a href="07-confounding_files/figure-html/unnamed-chunk-4-1.png" class="lightbox" data-gallery="quarto-lightbox-gallery-4" title="Figure 7.4. Left: C is a collider (A → C ← Y); it satisfies traditional criteria 1 and 2 but adjusting for C introduces bias. Right: L is a structural confounder (opens backdoor path) but may not satisfy traditional criteria if its effects on A and Y cancel."><img data-src="07-confounding_files/figure-html/unnamed-chunk-4-1.png" width="768" alt="Figure 7.4. Left: C is a collider (A → C ← Y); it satisfies traditional criteria 1 and 2 but adjusting for C introduces bias. Right: L is a structural confounder (opens backdoor path) but may not satisfy traditional criteria if its effects on A and Y cancel."></a></p>
+</figure>
+</div>
+</div>
+</div>
+<div id="def-structural-confounder" class="theorem definition">
+<p><span class="theorem-title"><strong>Definition 3 (Structural Confounder vs.&nbsp;Traditional Confounder)</strong></span> A variable <span class="math inline">\(L\)</span> is a <strong>structural confounder</strong> of the effect of <span class="math inline">\(A\)</span> on <span class="math inline">\(Y\)</span> if it opens at least one backdoor path from <span class="math inline">\(A\)</span> to <span class="math inline">\(Y\)</span> in the causal diagram. The structural definition depends on the causal structure, not on observed associations.</p>
+<p>The traditional epidemiological definition of confounder depends on observed associations (criteria 1 and 2) and may disagree with the structural definition in specific populations.</p>
+<p><strong>Best practice</strong>: Use the causal diagram (DAG) to identify the structural confounders and the appropriate adjustment set via the backdoor criterion.</p>
+</div>
+<aside class="notes"><p><strong>Why the discrepancy matters:</strong></p>
+<p>The traditional approach of testing whether <span class="math inline">\(C\)</span> is associated with <span class="math inline">\(A\)</span> and <span class="math inline">\(Y\)</span> and then deciding whether to adjust can lead to:</p>
+<ol type="1">
+<li>
+<strong>Over-adjustment</strong>: Adjusting for colliders or mediators because they are associated with both <span class="math inline">\(A\)</span> and <span class="math inline">\(Y\)</span>
+</li>
+<li>
+<strong>Under-adjustment</strong>: Failing to adjust for structural confounders whose effects happen to cancel in the observed data</li>
+<li>
+<strong>Selection bias through collider adjustment</strong>: Stratifying on <span class="math inline">\(C = c\)</span> when <span class="math inline">\(C\)</span> is a collider opens the backdoor path and introduces bias</li>
+</ol>
+<p>The DAG-based approach avoids these pitfalls by relying on causal structure rather than associations.</p>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside><div title="Fine Point 7.2: Limitations of Association-Based Confounder Criteria">
+<div class="callout callout-note callout-titled callout-style-default">
+<div class="callout-body">
+<div class="callout-title">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<p><strong>Fine Point 7.2: Limitations of Association-Based Confounder Criteria</strong></p>
+</div>
+<div class="callout-content">
+<p>The traditional association-based criteria for confounding are <strong>population-dependent</strong>: a variable <span class="math inline">\(L\)</span> may satisfy criteria 1 and 2 in one population but not in another, even though the causal structure is identical. This means the decision about whether <span class="math inline">\(L\)</span> is a “confounder” depends on the study population, not on the underlying causal mechanism.</p>
+<p>In contrast, the structural (DAG-based) definition is <strong>population-independent</strong>: if <span class="math inline">\(L\)</span> opens a backdoor path in the causal diagram, it is a structural confounder regardless of the population distribution.</p>
+<p>This distinction has practical implications. When planning a study, one should identify the structural confounders using subject-matter knowledge and causal diagrams—not by testing associations in the current dataset. Adjusting for structural confounders is necessary to eliminate confounding bias across all populations satisfying the assumed causal structure.</p>
+</div>
+</div>
+</div>
+</div>
+</section></section><section><section id="single-world-intervention-graphs-pp.-8789" class="title-slide slide level1 center" data-number="5"><h1>
+<span class="header-section-number">5</span> 7.5 Single-World Intervention Graphs (pp.&nbsp;87–89)</h1>
+
+</section><section class="slide level2"><p>The causal diagrams introduced in Chapter 6 represent relationships among <strong>observed</strong> variables (<span class="math inline">\(A\)</span>, <span class="math inline">\(L\)</span>, <span class="math inline">\(Y\)</span>, etc.). They do not directly represent counterfactual variables (<span class="math inline">\(Y^a\)</span>, <span class="math inline">\(L^a\)</span>, etc.). <strong>Single-World Intervention Graphs (SWIGs)</strong>, developed by Richardson and Robins (2014), extend causal diagrams to include counterfactual variables explicitly.</p>
+</section><section id="constructing-a-swig" class="slide level2"><h2>Constructing a SWIG</h2>
+<p>A SWIG for the intervention <span class="math inline">\(A = a\)</span> is obtained from the original causal diagram by the following operation:</p>
+<ul>
+<li>
+<strong>Split each treatment node <span class="math inline">\(A\)</span></strong> into two parts:
+<ul>
+<li>The <strong>fixed intervention value</strong> <span class="math inline">\(a\)</span> (the value to which <span class="math inline">\(A\)</span> is set by the intervention)</li>
+<li>The <strong>natural value</strong> <span class="math inline">\(A\)</span> (the random variable representing what treatment the individual would have received in the absence of intervention)</li>
+</ul>
+</li>
+<li>All arrows into <span class="math inline">\(A\)</span> now point to the natural value <span class="math inline">\(A\)</span>; all arrows out of <span class="math inline">\(A\)</span> now originate from the fixed value <span class="math inline">\(a\)</span>.</li>
+<li>Each child of <span class="math inline">\(A\)</span> in the original DAG becomes a counterfactual variable (e.g., <span class="math inline">\(Y\)</span> becomes <span class="math inline">\(Y^a\)</span>).</li>
+</ul>
+<p>The key result is that in the SWIG, <strong>counterfactual independence can be read off using d-separation</strong>, just as ordinary independence is read from a standard DAG.</p>
+<div id="exm-swig" class="theorem example">
+<p><span class="theorem-title"><strong>Example 1 (SWIG for the Standard Confounding Structure)</strong></span> Consider the original DAG: <span class="math inline">\(L \to A \to Y\)</span>, <span class="math inline">\(L \to Y\)</span>.</p>
+<p>The SWIG for the intervention <span class="math inline">\(do(A = a)\)</span> has nodes <span class="math inline">\(\{L,\; a \mid A,\; Y^a\}\)</span>:</p>
+<ul>
+<li>
+<span class="math inline">\(L \to A\)</span> (the natural value of <span class="math inline">\(A\)</span> is caused by <span class="math inline">\(L\)</span>; incoming arrows stay on the natural-value half)</li>
+<li>
+<span class="math inline">\(a \to Y^a\)</span> (the fixed intervention value <span class="math inline">\(a\)</span> causes the counterfactual outcome <span class="math inline">\(Y^a\)</span>; outgoing arrows leave from the fixed-value half)</li>
+<li>
+<span class="math inline">\(L \to Y^a\)</span> (the confounder <span class="math inline">\(L\)</span> also directly causes <span class="math inline">\(Y^a\)</span>)</li>
+</ul>
+<p>In the SWIG, the counterfactual <span class="math inline">\(Y^a\)</span> is <strong>d-separated</strong> from the natural value <span class="math inline">\(A\)</span> given <span class="math inline">\(L\)</span>, because the only path from <span class="math inline">\(A\)</span> to <span class="math inline">\(Y^a\)</span> would go through <span class="math inline">\(a\)</span>, but <span class="math inline">\(A\)</span> and <span class="math inline">\(a\)</span> are split. This d-separation corresponds directly to the conditional exchangeability condition:</p>
+<p><span class="math display">\[Y^a \perp\!\!\!\perp A \mid L\]</span></p>
+<p>SWIGs thus provide a graphical proof of conditional exchangeability whenever <span class="math inline">\(L\)</span> satisfies the backdoor criterion.</p>
+</div>
+</section><section id="what-swigs-add" class="slide level2"><h2>What SWIGs Add</h2>
+<p>Standard DAGs allow us to determine which variables to adjust for (via the backdoor criterion) but cannot directly show that <span class="math inline">\(Y^a \perp\!\!\!\perp A \mid L\)</span>, because <span class="math inline">\(Y^a\)</span> is not a node in the DAG. SWIGs resolve this by making counterfactual variables explicit:</p>
+<ul>
+<li>The d-separation statement <span class="math inline">\(Y^a \perp\!\!\!\perp A \mid L\)</span> in the SWIG directly implies conditional exchangeability</li>
+<li>This equivalence provides a graphical justification for identification by standardization</li>
+</ul>
+<aside class="notes"><p><strong>Historical note:</strong></p>
+<p>SWIGs were introduced by Richardson and Robins (2014) as a formal framework for representing counterfactuals in causal diagrams. They unify the potential outcomes framework (Chapters 1–5) with the causal diagrams framework (Chapter 6) by constructing a single graph in which both observed and counterfactual variables appear.</p>
+<p><strong>Notation:</strong></p>
+<p>In SWIG notation, each treatment node <span class="math inline">\(A\)</span> is written as <span class="math inline">\(a \mid A\)</span> (read: “intervention value <span class="math inline">\(a\)</span> given natural value <span class="math inline">\(A\)</span>”). The counterfactual <span class="math inline">\(Y^a\)</span> is written simply as <span class="math inline">\(Y^a\)</span> or sometimes <span class="math inline">\(Y(a)\)</span>.</p>
+<p><strong>Beyond exchangeability:</strong></p>
+<p>SWIGs also provide a graphical representation of more complex counterfactual independence conditions, including those arising in time-varying treatment settings (Part III of the textbook). For example, in longitudinal settings, SWIGs can be used to represent the sequential exchangeability conditions needed to identify dynamic treatment regimes.</p>
+<p>For most purposes in this textbook, standard DAGs combined with the backdoor criterion are sufficient. SWIGs provide an additional layer of rigor for readers interested in the formal connections between the potential outcomes framework and the graphical framework.</p>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside></section></section><section><section id="summary" class="title-slide slide level1 center" data-number="6"><h1>
+<span class="header-section-number">6</span> Summary</h1>
+
+</section><section class="slide level2 scrollable"><p>This chapter examined <strong>confounding</strong> in depth, providing both an intuitive numerical example and a formal structural definition.</p>
+<p><strong>Key concepts:</strong></p>
+<ol type="1">
+<li><p><strong>Confounding</strong> is present when the crude (marginal) association between <span class="math inline">\(A\)</span> and <span class="math inline">\(Y\)</span> differs from the average causal effect. Structurally, confounding exists when at least one backdoor path from <span class="math inline">\(A\)</span> to <span class="math inline">\(Y\)</span> is open.</p></li>
+<li><p><strong>Confounding = lack of marginal exchangeability</strong>: <span class="math inline">\(Y^a \not\perp\!\!\!\perp A\)</span>. The treated and untreated groups have different distributions of potential outcomes.</p></li>
+<li><p><strong>Conditional exchangeability</strong> (<span class="math inline">\(Y^a \perp\!\!\!\perp A \mid L\)</span>) can restore identifiability when <span class="math inline">\(L\)</span> satisfies the backdoor criterion. Under conditional exchangeability and positivity, the causal effect is identified by standardization.</p></li>
+<li><p><strong>The backdoor criterion</strong> provides a graphical sufficient condition for valid adjustment. A set <span class="math inline">\(L\)</span> satisfies the criterion if it (i) contains no descendants of <span class="math inline">\(A\)</span> and (ii) blocks all backdoor paths from <span class="math inline">\(A\)</span> to <span class="math inline">\(Y\)</span>.</p></li>
+<li><p><strong>Structural vs.&nbsp;traditional confounders</strong>: The traditional association-based criteria for confounders can disagree with the structural (DAG-based) definition—either flagging colliders as confounders (causing harm from adjustment) or missing structural confounders. The DAG approach is preferred.</p></li>
+<li><p><strong>SWIGs</strong> embed counterfactual variables in a causal diagram and provide a graphical proof of conditional exchangeability whenever the backdoor criterion is satisfied.</p></li>
+</ol>
+<aside class="notes"><p><strong>Looking ahead:</strong></p>
+<ul>
+<li>
+<strong>Chapter 8</strong> examines selection bias—another structural source of bias arising from conditioning on colliders (or their descendants)</li>
+<li>
+<strong>Chapter 9</strong> examines measurement bias—bias arising from imperfect measurement of <span class="math inline">\(A\)</span>, <span class="math inline">\(Y\)</span>, or <span class="math inline">\(L\)</span>
+</li>
+<li>
+<strong>Chapters 12–15</strong> present methods for adjusting for confounding: IP weighting, standardization, g-estimation, and outcome regression</li>
+</ul>
+<p>Confounding bias is the central challenge in observational causal inference. This chapter has provided the structural tools needed to identify which variables to adjust for (the backdoor criterion) and the formal justification for why that adjustment works (conditional exchangeability, proved graphically via SWIGs).</p>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside></section></section><section><section id="references" class="title-slide slide level1 center" data-number="7"><h1>
+<span class="header-section-number">7</span> References</h1>
+
+</section><section class="slide level2 smaller scrollable" id="references"><div id="refs" class="references csl-bib-body hanging-indent" role="list">
+<div id="ref-hernan2020causal" class="csl-entry" role="listitem">
+Hernán, Miguel A, and James M Robins. 2020. <em>Causal Inference: What If</em>. Chapman &amp; Hall/CRC. <a href="https://miguelhernan.org/whatifbook">https://miguelhernan.org/whatifbook</a>.
+</div>
+</div>
+
+
+<script>
+(function () {
+  "use strict";
+
+  /**
+   * CSS selector matching all Quarto theorem and proof div environments.
+   *
+   * Quarto adds the `.theorem` class to all theorem-type divs
+   * (theorem, lemma, corollary, proposition, conjecture, definition,
+   * example, exercise, algorithm), so `.theorem[id]` covers all of them.
+   * Proof-type environments (.proof, .remark, .solution) are listed
+   * separately because they do not carry the `.theorem` class.
+   */
+  var THEOREM_SELECTOR = [
+    ".theorem[id]",
+    ".proof[id]",
+    ".remark[id]",
+    ".solution[id]",
+  ].join(", ");
+
+  function getQuartoHeadingAnchorIcon() {
+    var afterBodyScript = document.getElementById("quarto-html-after-body");
+    if (!afterBodyScript) {
+      return null;
+    }
+
+    var match = afterBodyScript.textContent.match(/const icon = ["']([^"']+)["']/);
+    return match ? match[1] : null;
+  }
+
+  // Quarto chain-link glyph from Bootstrap Icons.
+  var chainLinkIconFallback = "\ue9cb";
+  var headingAnchorIcon = getQuartoHeadingAnchorIcon();
+  var defaultAnchorIconFallback =
+    headingAnchorIcon && headingAnchorIcon !== "#" ? headingAnchorIcon : chainLinkIconFallback;
+
+  function getDefaultAnchorTemplate() {
+    var defaultAnchor =
+      document.querySelector(".anchored > a.anchorjs-link") ||
+      document.querySelector("a.anchorjs-link[data-anchorjs-icon]");
+    if (!defaultAnchor) {
+      return null;
+    }
+
+    return {
+      icon: defaultAnchor.getAttribute("data-anchorjs-icon") || defaultAnchor.textContent.trim(),
+      hasDataIcon: defaultAnchor.hasAttribute("data-anchorjs-icon"),
+      style: defaultAnchor.getAttribute("style")
+    };
+  }
+
+  function normalizeAnchorIcon(icon) {
+    if (!icon || icon === "#") {
+      return defaultAnchorIconFallback;
+    }
+
+    return icon;
+  }
+
+  function createChainLinkSvgIcon() {
+    var svgNs = "http://www.w3.org/2000/svg";
+    var svg = document.createElementNS(svgNs, "svg");
+    svg.setAttribute("viewBox", "0 0 16 16");
+    svg.setAttribute("fill", "currentColor");
+    svg.setAttribute("aria-hidden", "true");
+    svg.setAttribute("focusable", "false");
+    svg.setAttribute("class", "div-anchor-icon");
+
+    // Bootstrap Icons chain-link icon (bi-link-45deg), paths for the two
+    // chain links and the connecting segment.
+    [
+      "M6.354 5.5H4a3 3 0 0 0 0 6h3a3 3 0 0 0 2.83-2H11a4 4 0 0 1-4 3H4a4 4 0 0 1 0-8h2.354z",
+      "M9.646 10.5H12a3 3 0 1 0 0-6H9a3 3 0 0 0-2.83 2H5a4 4 0 0 1 4-3h3a4 4 0 0 1 0 8H9.646z",
+      "M5.5 8a.5.5 0 0 1 .5-.5h4a.5.5 0 0 1 0 1H6a.5.5 0 0 1-.5-.5"
+    ].forEach(function (pathData) {
+      var path = document.createElementNS(svgNs, "path");
+      path.setAttribute("d", pathData);
+      svg.appendChild(path);
+    });
+
+    return svg;
+  }
+
+  function alignDivAnchorWithDefault(anchor, template) {
+    if (!anchor) {
+      return;
+    }
+
+    anchor.classList.remove("external");
+    anchor.classList.add("no-external");
+
+    var normalizedIcon = normalizeAnchorIcon(template && template.icon);
+    if (normalizedIcon === chainLinkIconFallback) {
+      anchor.removeAttribute("data-anchorjs-icon");
+      anchor.textContent = "";
+      anchor.appendChild(createChainLinkSvgIcon());
+    } else if (template && template.hasDataIcon) {
+      anchor.setAttribute("data-anchorjs-icon", normalizedIcon);
+      anchor.textContent = normalizedIcon;
+    } else {
+      anchor.removeAttribute("data-anchorjs-icon");
+      anchor.textContent = normalizedIcon;
+    }
+
+    if (template && template.style) {
+      anchor.setAttribute("style", template.style);
+    } else {
+      anchor.removeAttribute("style");
+    }
+  }
+
+  function alignDivAnchorsWithDefault() {
+    var template = getDefaultAnchorTemplate();
+    document.querySelectorAll("a.div-anchor").forEach(function (anchor) {
+      alignDivAnchorWithDefault(anchor, template);
+    });
+  }
+
+  function ensureDivAnchorStyles() {
+    if (document.getElementById("div-anchor-styles")) {
+      return;
+    }
+
+    var style = document.createElement("style");
+    style.id = "div-anchor-styles";
+    style.textContent = [
+      ".div-anchor {",
+      "  opacity: 0;",
+      "  font-size: 0.875em;",
+      "  font-weight: 400;",
+      "  margin-left: 0.375em;",
+      "  text-decoration: none;",
+      "  color: inherit;",
+      "  vertical-align: middle;",
+      "  transition: opacity 0.2s ease;",
+      "}",
+      ".div-anchor:hover,",
+      ".div-anchor:focus {",
+      "  opacity: 1;",
+      "  text-decoration: none;",
+      "}",
+      ".div-anchor-icon {",
+      "  width: 0.875em;",
+      "  height: 0.875em;",
+      "  vertical-align: -0.125em;",
+      "}",
+      ":is(.theorem, .proof, .remark, .solution):hover .div-anchor,",
+      ":is(.theorem, .proof, .remark, .solution):focus-within .div-anchor {",
+      "  opacity: 1;",
+      "}"
+    ].join("\n");
+    document.head.appendChild(style);
+  }
+
+  /**
+   * Add anchor links to all theorem/proof divs with ids on the page.
+   */
+  function addDivAnchors() {
+    ensureDivAnchorStyles();
+
+    var divs = document.querySelectorAll(THEOREM_SELECTOR);
+    divs.forEach(function (div) {
+      var id = div.id;
+      if (!id) {
+        return;
+      }
+
+      // Skip if already processed.
+      if (div.querySelector(".div-anchor")) {
+        return;
+      }
+
+      var anchor = document.createElement("a");
+      anchor.className = "div-anchor anchorjs-link";
+      anchor.href = "#" + id;
+      anchor.setAttribute("aria-label", "Permalink to this block");
+      anchor.classList.add("no-external");
+
+      // Find the theorem-title or proof-title span
+      var titleSpan = div.querySelector(".theorem-title, .proof-title");
+
+      if (titleSpan) {
+        // Insert anchor immediately after the title span
+        titleSpan.insertAdjacentElement("afterend", anchor);
+      } else {
+        // Fallback: prepend to the first paragraph
+        var firstPara = div.querySelector("p");
+        if (firstPara) {
+          firstPara.insertAdjacentElement("afterbegin", anchor);
+        }
+      }
+    });
+
+    alignDivAnchorsWithDefault();
+  }
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", addDivAnchors);
+  } else {
+    addDivAnchors();
+  }
+
+  window.addEventListener("load", alignDivAnchorsWithDefault);
+})();
+</script><script>
+function getQuartoHeadingAnchorIcon() {
+  const afterBodyScript = document.getElementById("quarto-html-after-body");
+  if (!afterBodyScript) {
+    return null;
+  }
+
+  const match = afterBodyScript.textContent.match(/const icon = ["']([^"']+)["']/);
+  return match ? match[1] : null;
+}
+
+// Quarto chain-link glyph from Bootstrap Icons.
+const chainLinkIconFallback = "\ue9cb";
+const headingAnchorIcon = getQuartoHeadingAnchorIcon();
+const defaultAnchorIconFallback =
+  headingAnchorIcon && headingAnchorIcon !== "#" ? headingAnchorIcon : chainLinkIconFallback;
+
+function getDefaultAnchorTemplate() {
+  // Prefer Quarto heading anchors first so the visible chain-link icon is reused.
+  const defaultAnchor =
+    document.querySelector(".anchored > a.anchorjs-link") ||
+    document.querySelector("a.anchorjs-link[data-anchorjs-icon]");
+  if (!defaultAnchor) {
+    return null;
+  }
+
+  return {
+    // Detect icon value from the template anchor's attribute or text.
+    icon: defaultAnchor.getAttribute("data-anchorjs-icon") || defaultAnchor.textContent.trim(),
+    hasDataIcon: defaultAnchor.hasAttribute("data-anchorjs-icon"),
+    style: defaultAnchor.getAttribute("style")
+  };
+}
+
+function normalizeAnchorIcon(icon) {
+  if (!icon || icon === "#") {
+    return defaultAnchorIconFallback;
+  }
+
+  return icon;
+}
+
+function createChainLinkSvgIcon() {
+  const svgNs = "http://www.w3.org/2000/svg";
+  const svg = document.createElementNS(svgNs, "svg");
+  svg.setAttribute("viewBox", "0 0 16 16");
+  svg.setAttribute("fill", "currentColor");
+  svg.setAttribute("aria-hidden", "true");
+  svg.setAttribute("focusable", "false");
+  svg.setAttribute("class", "equation-anchor-icon");
+
+  [
+    "M6.354 5.5H4a3 3 0 0 0 0 6h3a3 3 0 0 0 2.83-2H11a4 4 0 0 1-4 3H4a4 4 0 0 1 0-8h2.354z",
+    "M9.646 10.5H12a3 3 0 1 0 0-6H9a3 3 0 0 0-2.83 2H5a4 4 0 0 1 4-3h3a4 4 0 0 1 0 8H9.646z",
+    "M5.5 8a.5.5 0 0 1 .5-.5h4a.5.5 0 0 1 0 1H6a.5.5 0 0 1-.5-.5"
+  ].forEach(function (pathData) {
+    const path = document.createElementNS(svgNs, "path");
+    path.setAttribute("d", pathData);
+    svg.appendChild(path);
+  });
+
+  return svg;
+}
+
+function alignEquationAnchorWithDefault(anchor, template) {
+  if (!anchor) {
+    return;
+  }
+
+  anchor.classList.remove("external");
+  anchor.classList.add("no-external");
+
+  const normalizedIcon = normalizeAnchorIcon(template && template.icon);
+  if (normalizedIcon === chainLinkIconFallback) {
+    anchor.removeAttribute("data-anchorjs-icon");
+    anchor.textContent = "";
+    anchor.appendChild(createChainLinkSvgIcon());
+  } else if (template && template.hasDataIcon) {
+    anchor.setAttribute("data-anchorjs-icon", normalizedIcon);
+    anchor.textContent = normalizedIcon;
+  } else {
+    anchor.removeAttribute("data-anchorjs-icon");
+    anchor.textContent = normalizedIcon;
+  }
+
+  if (template && template.style) {
+    anchor.setAttribute("style", template.style);
+  } else {
+    anchor.removeAttribute("style");
+  }
+}
+
+function alignEquationAnchorsWithDefault() {
+  const template = getDefaultAnchorTemplate();
+  document.querySelectorAll("a.equation-anchor").forEach(function (anchor) {
+    alignEquationAnchorWithDefault(anchor, template);
+  });
+}
+
+function ensureEquationAnchorStyles() {
+  if (document.getElementById("equation-anchor-styles")) {
+    return;
+  }
+
+  const style = document.createElement("style");
+  style.id = "equation-anchor-styles";
+  style.textContent = `
+    .equation-anchor-target {
+      --equation-anchor-offset: 1.2rem;
+      position: relative;
+      display: block;
+    }
+    .equation-anchor {
+      position: absolute;
+      left: calc(-1 * var(--equation-anchor-offset));
+      top: 50%;
+      transform: translateY(-50%);
+      text-decoration: none;
+      opacity: 0.7;
+      font-size: 0.9em;
+    }
+    .equation-anchor:hover {
+      opacity: 1;
+    }
+    .equation-anchor-icon {
+      width: 0.9em;
+      height: 0.9em;
+      vertical-align: -0.125em;
+    }
+  `;
+  document.head.appendChild(style);
+}
+
+document.addEventListener("DOMContentLoaded", function () {
+  ensureEquationAnchorStyles();
+
+  let counter = 0;
+
+  document.querySelectorAll(".math.display").forEach(function (mathEl) {
+    // For labeled equations, Quarto wraps the math display span in an eq-* span.
+    // For unlabeled equations, use the parent element (typically a <p>).
+    const labeledContainer = mathEl.closest("[id^='eq-']");
+    const target = labeledContainer || mathEl.parentElement;
+
+    if (!target) {
+      return;
+    }
+
+    // Skip if already processed.
+    if (target.querySelector(".equation-anchor")) {
+      return;
+    }
+
+    // Use the labeled container's id, or assign an auto-generated id.
+    let id = labeledContainer ? labeledContainer.id : target.id;
+    if (!id) {
+      counter++;
+      id = "eq-anchor-" + counter;
+      target.id = id;
+    }
+
+    target.classList.add("equation-anchor-target");
+
+    const anchor = document.createElement("a");
+    anchor.className = "equation-anchor anchorjs-link";
+    anchor.href = "#" + id;
+    anchor.setAttribute("aria-label", "Permalink to this equation");
+    target.appendChild(anchor);
+  });
+
+  alignEquationAnchorsWithDefault();
+});
+
+window.addEventListener("load", alignEquationAnchorsWithDefault);
+</script></section></section>
+</div>
+  <div class="quarto-auto-generated-content" style="display: none;">
+<div class="footer footer-default">
+
+</div>
+</div></div>
+
+  <script>window.backupDefine = window.define; window.define = undefined;</script><script src="../site_libs/revealjs/dist/reveal.js"></script><!-- reveal.js plugins --><script src="../site_libs/revealjs/plugin/quarto-line-highlight/line-highlight.js"></script><script src="../site_libs/revealjs/plugin/pdf-export/pdfexport.js"></script><script src="../site_libs/revealjs/plugin/reveal-menu/menu.js"></script><script src="../site_libs/revealjs/plugin/reveal-menu/quarto-menu.js"></script><script src="../site_libs/revealjs/plugin/reveal-chalkboard/plugin.js"></script><script src="../site_libs/revealjs/plugin/quarto-support/support.js"></script><script src="../site_libs/revealjs/plugin/notes/notes.js"></script><script src="../site_libs/revealjs/plugin/search/search.js"></script><script src="../site_libs/revealjs/plugin/zoom/zoom.js"></script><script src="../site_libs/revealjs/plugin/math/math.js"></script><script>window.define = window.backupDefine; window.backupDefine = undefined;</script><script>
+
+      // Full list of configuration options available at:
+      // https://revealjs.com/config/
+      Reveal.initialize({
+'controlsAuto': false,
+'previewLinksAuto': true,
+'pdfSeparateFragments': false,
+'autoAnimateEasing': "ease",
+'autoAnimateDuration': 1,
+'autoAnimateUnmatched': true,
+'jumpToSlide': true,
+'menu': {"side":"left","useTextContentForMissingTitles":true,"markers":false,"loadIcons":false,"custom":[{"title":"Tools","icon":"<i class=\"fas fa-gear\"></i>","content":"<ul class=\"slide-menu-items\">\n<li class=\"slide-tool-item active\" data-item=\"0\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.fullscreen(event)\"><kbd>f</kbd> Fullscreen</a></li>\n<li class=\"slide-tool-item\" data-item=\"1\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.speakerMode(event)\"><kbd>s</kbd> Speaker View</a></li>\n<li class=\"slide-tool-item\" data-item=\"2\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.overview(event)\"><kbd>o</kbd> Slide Overview</a></li>\n<li class=\"slide-tool-item\" data-item=\"3\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.togglePdfExport(event)\"><kbd>e</kbd> PDF Export Mode</a></li>\n<li class=\"slide-tool-item\" data-item=\"4\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.toggleScrollView(event)\"><kbd>r</kbd> Scroll View Mode</a></li>\n<li class=\"slide-tool-item\" data-item=\"5\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.toggleChalkboard(event)\"><kbd>b</kbd> Toggle Chalkboard</a></li>\n<li class=\"slide-tool-item\" data-item=\"6\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.toggleNotesCanvas(event)\"><kbd>c</kbd> Toggle Notes Canvas</a></li>\n<li class=\"slide-tool-item\" data-item=\"7\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.downloadDrawings(event)\"><kbd>d</kbd> Download Drawings</a></li>\n<li class=\"slide-tool-item\" data-item=\"8\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.keyboardHelp(event)\"><kbd>?</kbd> Keyboard Help</a></li>\n</ul>"}],"openButton":true},
+'chalkboard': {"buttons":true},
+'smaller': true,
+ 
+        // Display controls in the bottom right corner
+        controls: true,
+
+        // Help the user learn the controls by providing hints, for example by
+        // bouncing the down arrow when they first encounter a vertical slide
+        controlsTutorial: false,
+
+        // Determines where controls appear, "edges" or "bottom-right"
+        controlsLayout: 'edges',
+
+        // Visibility rule for backwards navigation arrows; "faded", "hidden"
+        // or "visible"
+        controlsBackArrows: 'faded',
+
+        // Display a presentation progress bar
+        progress: true,
+
+        // Display the page number of the current slide
+        slideNumber: 'c/t',
+
+        // 'all', 'print', or 'speaker'
+        showSlideNumber: 'all',
+
+        // Add the current slide number to the URL hash so that reloading the
+        // page/copying the URL will return you to the same slide
+        hash: true,
+
+        // Start with 1 for the hash rather than 0
+        hashOneBasedIndex: false,
+
+        // Flags if we should monitor the hash and change slides accordingly
+        respondToHashChanges: true,
+
+        // Push each slide change to the browser history
+        history: true,
+
+        // Enable keyboard shortcuts for navigation
+        keyboard: true,
+
+        // Enable the slide overview mode
+        overview: true,
+
+        // Disables the default reveal.js slide layout (scaling and centering)
+        // so that you can use custom CSS layout
+        disableLayout: false,
+
+        // Vertical centering of slides
+        center: false,
+
+        // Enables touch navigation on devices with touch input
+        touch: true,
+
+        // Loop the presentation
+        loop: false,
+
+        // Change the presentation direction to be RTL
+        rtl: false,
+
+        // see https://revealjs.com/vertical-slides/#navigation-mode
+        navigationMode: 'linear',
+
+        // Randomizes the order of slides each time the presentation loads
+        shuffle: false,
+
+        // Turns fragments on and off globally
+        fragments: true,
+
+        // Flags whether to include the current fragment in the URL,
+        // so that reloading brings you to the same fragment position
+        fragmentInURL: false,
+
+        // Flags if the presentation is running in an embedded mode,
+        // i.e. contained within a limited portion of the screen
+        embedded: false,
+
+        // Flags if we should show a help overlay when the questionmark
+        // key is pressed
+        help: true,
+
+        // Flags if it should be possible to pause the presentation (blackout)
+        pause: true,
+
+        // Flags if speaker notes should be visible to all viewers
+        showNotes: false,
+
+        // Global override for autoplaying embedded media (null/true/false)
+        autoPlayMedia: null,
+
+        // Global override for preloading lazy-loaded iframes (null/true/false)
+        preloadIframes: null,
+
+        // Number of milliseconds between automatically proceeding to the
+        // next slide, disabled when set to 0, this value can be overwritten
+        // by using a data-autoslide attribute on your slides
+        autoSlide: 0,
+
+        // Stop auto-sliding after user input
+        autoSlideStoppable: true,
+
+        // Use this method for navigation when auto-sliding
+        autoSlideMethod: null,
+
+        // Specify the average time in seconds that you think you will spend
+        // presenting each slide. This is used to show a pacing timer in the
+        // speaker view
+        defaultTiming: null,
+
+        // Enable slide navigation via mouse wheel
+        mouseWheel: false,
+
+        // The display mode that will be used to show slides
+        display: 'block',
+
+        // Hide cursor if inactive
+        hideInactiveCursor: true,
+
+        // Time before the cursor is hidden (in ms)
+        hideCursorTime: 5000,
+
+        // Opens links in an iframe preview overlay
+        previewLinks: false,
+
+        // Transition style (none/fade/slide/convex/concave/zoom)
+        transition: 'slide',
+
+        // Transition speed (default/fast/slow)
+        transitionSpeed: 'default',
+
+        // Transition style for full page slide backgrounds
+        // (none/fade/slide/convex/concave/zoom)
+        backgroundTransition: 'fade',
+
+        // Number of slides away from the current that are visible
+        viewDistance: 3,
+
+        // Number of slides away from the current that are visible on mobile
+        // devices. It is advisable to set this to a lower number than
+        // viewDistance in order to save resources.
+        mobileViewDistance: 2,
+
+        // The "normal" size of the presentation, aspect ratio will be preserved
+        // when the presentation is scaled to fit different resolutions. Can be
+        // specified using percentage units.
+        width: 1050,
+
+        height: 700,
+
+        // Factor of the display size that should remain empty around the content
+        margin: 0,
+
+        math: {
+          mathjax: 'https://cdn.jsdelivr.net/npm/mathjax@4/tex-chtml.js',
+          config: 'TeX-AMS_HTML-full',
+          tex2jax: {
+            inlineMath: [['\\(','\\)']],
+            displayMath: [['\\[','\\]']],
+            balanceBraces: true,
+            processEscapes: false,
+            processRefs: true,
+            processEnvironments: true,
+            preview: 'TeX',
+            skipTags: ['script','noscript','style','textarea','pre','code'],
+            ignoreClass: 'tex2jax_ignore',
+            processClass: 'tex2jax_process'
+          },
+        },
+
+        // reveal.js plugins
+        plugins: [QuartoLineHighlight, PdfExport, RevealMenu, RevealChalkboard, QuartoSupport,
+
+          RevealMath,
+          RevealNotes,
+          RevealSearch,
+          RevealZoom
+        ]
+      });
+    </script><script id="quarto-html-after-body" type="application/javascript">
+      window.document.addEventListener("DOMContentLoaded", function (event) {
+        const tabsets =  window.document.querySelectorAll(".panel-tabset-tabby")
+        tabsets.forEach(function(tabset) {
+          const tabby = new Tabby('#' + tabset.id);
+        });
+        const isCodeAnnotation = (el) => {
+          for (const clz of el.classList) {
+            if (clz.startsWith('code-annotation-')) {                     
+              return true;
+            }
+          }
+          return false;
+        }
+        const onCopySuccess = function(e) {
+          // button target
+          const button = e.trigger;
+          // don't keep focus
+          button.blur();
+          // flash "checked"
+          button.classList.add('code-copy-button-checked');
+          var currentTitle = button.getAttribute("title");
+          button.setAttribute("title", "Copied!");
+          let tooltip;
+          if (window.bootstrap) {
+            button.setAttribute("data-bs-toggle", "tooltip");
+            button.setAttribute("data-bs-placement", "left");
+            button.setAttribute("data-bs-title", "Copied!");
+            tooltip = new bootstrap.Tooltip(button, 
+              { trigger: "manual", 
+                customClass: "code-copy-button-tooltip",
+                offset: [0, -8]});
+            tooltip.show();    
+          }
+          setTimeout(function() {
+            if (tooltip) {
+              tooltip.hide();
+              button.removeAttribute("data-bs-title");
+              button.removeAttribute("data-bs-toggle");
+              button.removeAttribute("data-bs-placement");
+            }
+            button.setAttribute("title", currentTitle);
+            button.classList.remove('code-copy-button-checked');
+          }, 1000);
+          // clear code selection
+          e.clearSelection();
+        }
+        const getTextToCopy = function(trigger) {
+          const outerScaffold = trigger.parentElement.cloneNode(true);
+          const codeEl = outerScaffold.querySelector('code');
+          for (const childEl of codeEl.children) {
+            if (isCodeAnnotation(childEl)) {
+              childEl.remove();
+            }
+          }
+          return codeEl.innerText;
+        }
+        const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+          text: getTextToCopy
+        });
+        clipboard.on('success', onCopySuccess);
+        if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+          const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+            text: getTextToCopy,
+            container: window.document.getElementById('quarto-embedded-source-code-modal')
+          });
+          clipboardModal.on('success', onCopySuccess);
+        }
+          var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+          var mailtoRegex = new RegExp(/^mailto:/);
+            var filterRegex = new RegExp("https:\/\/ucdavis\.github\.io\/win\/");
+          var isInternal = (href) => {
+              return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+          }
+          // Inspect non-navigation links and adorn them if external
+         var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+          for (var i=0; i<links.length; i++) {
+            const link = links[i];
+            if (!isInternal(link.href)) {
+              // undo the damage that might have been done by quarto-nav.js in the case of
+              // links that we want to consider external
+              if (link.dataset.originalHref !== undefined) {
+                link.href = link.dataset.originalHref;
+              }
+            }
+          }
+        function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+          const config = {
+            allowHTML: true,
+            maxWidth: 500,
+            delay: 100,
+            arrow: false,
+            appendTo: function(el) {
+                return el.closest('section.slide') || el.parentElement;
+            },
+            interactive: true,
+            interactiveBorder: 10,
+            theme: 'light-border',
+            placement: 'bottom-start',
+          };
+          if (contentFn) {
+            config.content = contentFn;
+          }
+          if (onTriggerFn) {
+            config.onTrigger = onTriggerFn;
+          }
+          if (onUntriggerFn) {
+            config.onUntrigger = onUntriggerFn;
+          }
+            config['offset'] = [0,0];
+            config['maxWidth'] = 700;
+          window.tippy(el, config); 
+        }
+        const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+        for (var i=0; i<noterefs.length; i++) {
+          const ref = noterefs[i];
+          tippyHover(ref, function() {
+            // use id or data attribute instead here
+            let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+            try { href = new URL(href).hash; } catch {}
+            const id = href.replace(/^#\/?/, "");
+            const note = window.document.getElementById(id);
+            if (note) {
+              return note.innerHTML;
+            } else {
+              return "";
+            }
+          });
+        }
+        const findCites = (el) => {
+          const parentEl = el.parentElement;
+          if (parentEl) {
+            const cites = parentEl.dataset.cites;
+            if (cites) {
+              return {
+                el,
+                cites: cites.split(' ')
+              };
+            } else {
+              return findCites(el.parentElement)
+            }
+          } else {
+            return undefined;
+          }
+        };
+        var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+        for (var i=0; i<bibliorefs.length; i++) {
+          const ref = bibliorefs[i];
+          const citeInfo = findCites(ref);
+          if (citeInfo) {
+            tippyHover(citeInfo.el, function() {
+              var popup = window.document.createElement('div');
+              citeInfo.cites.forEach(function(cite) {
+                var citeDiv = window.document.createElement('div');
+                citeDiv.classList.add('hanging-indent');
+                citeDiv.classList.add('csl-entry');
+                var biblioDiv = window.document.getElementById('ref-' + cite);
+                if (biblioDiv) {
+                  citeDiv.innerHTML = biblioDiv.innerHTML;
+                }
+                popup.appendChild(citeDiv);
+              });
+              return popup.innerHTML;
+            });
+          }
+        }
+      });
+      </script><script>var lightboxQuarto = GLightbox({"closeEffect":"zoom","descPosition":"bottom","loop":false,"openEffect":"zoom","selector":".lightbox"});
+    (function() {
+      let previousOnload = window.onload;
+      window.onload = () => {
+        if (previousOnload) {
+          previousOnload();
+        }
+        lightboxQuarto.on('slide_before_load', (data) => {
+          const { slideIndex, slideNode, slideConfig, player, trigger } = data;
+          const href = trigger.getAttribute('href');
+          if (href !== null) {
+            const imgEl = window.document.querySelector(`a[href="${href}"] img`);
+            if (imgEl !== null) {
+              const srcAttr = imgEl.getAttribute("src");
+              if (srcAttr && srcAttr.startsWith("data:")) {
+                slideConfig.href = srcAttr;
+              }
+            }
+          } 
+        });
+      
+        lightboxQuarto.on('slide_after_load', (data) => {
+          const { slideIndex, slideNode, slideConfig, player, trigger } = data;
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(slideNode);
+          }
+        });
+      
+      };
+      
+    })();
+              </script>
+
+
+</body></html>

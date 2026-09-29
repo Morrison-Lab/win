@@ -1,0 +1,1423 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+<script src="../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../site_libs/quarto-html/tabby.min.js"></script>
+<script src="../site_libs/quarto-html/popper.min.js"></script>
+<script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
+<link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../site_libs/quarto-html/light-border.css" rel="stylesheet">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-64a204ab8560d761af7679ceaba22944.css" rel="stylesheet" id="quarto-text-highlighting-styles"><meta charset="utf-8">
+  <meta name="generator" content="quarto-1.10.18">
+
+  <title>What If? - Lecture Notes – Chapter 17: Causal Survival Analysis</title>
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, minimal-ui">
+  <link rel="stylesheet" href="../site_libs/revealjs/dist/reset.css">
+  <link rel="stylesheet" href="../site_libs/revealjs/dist/reveal.css">
+  <style>
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: 1.5em;}
+    div.column{flex: auto;}
+    @media screen {
+    div.columns{gap: min(4vw, 1.5em);}
+    div.column{overflow-x: auto;}
+    }
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    ul.task-list{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+      vertical-align: middle;
+    }
+    /* CSS for citations */
+    div.csl-bib-body { }
+    div.csl-entry {
+      clear: both;
+    }
+    .hanging-indent div.csl-entry {
+      margin-left:2em;
+      text-indent:-2em;
+    }
+    div.csl-left-margin {
+      min-width:2em;
+      float:left;
+    }
+    div.csl-right-inline {
+      margin-left:2em;
+      padding-left:1em;
+    }
+    div.csl-indent {
+      margin-left: 2em;
+    }  </style>
+  <link rel="stylesheet" href="../site_libs/revealjs/dist/theme/quarto-0427d8d92a431aa6a6430e53ec02a470.css">
+  <link href="../site_libs/revealjs/plugin/quarto-line-highlight/line-highlight.css" rel="stylesheet">
+  <link href="../site_libs/revealjs/plugin/reveal-menu/menu.css" rel="stylesheet">
+  <link href="../site_libs/revealjs/plugin/reveal-menu/quarto-menu.css" rel="stylesheet">
+  <link href="../site_libs/revealjs/plugin/reveal-chalkboard/font-awesome/css/all.css" rel="stylesheet">
+  <link href="../site_libs/revealjs/plugin/reveal-chalkboard/style.css" rel="stylesheet">
+  <link href="../site_libs/revealjs/plugin/quarto-support/footer.css" rel="stylesheet">
+  <style type="text/css">
+    .reveal div.sourceCode {
+      margin: 0;
+      overflow: auto;
+    }
+    .reveal div.hanging-indent {
+      margin-left: 1em;
+      text-indent: -1em;
+    }
+    .reveal .slide:not(.center) {
+      height: 100%;
+      overflow-y: auto;
+    }
+    .reveal .slide.scrollable {
+      overflow-y: auto;
+    }
+    .reveal .footnotes {
+      height: 100%;
+      overflow-y: auto;
+    }
+    .reveal .slide .absolute {
+      position: absolute;
+      display: block;
+    }
+    .reveal .footnotes ol {
+      counter-reset: ol;
+      list-style-type: none; 
+      margin-left: 0;
+    }
+    .reveal .footnotes ol li:before {
+      counter-increment: ol;
+      content: counter(ol) ". "; 
+    }
+    .reveal .footnotes ol li > p:first-child {
+      display: inline-block;
+    }
+    .reveal .slide ul,
+    .reveal .slide ol {
+      margin-bottom: 0.5em;
+    }
+    .reveal .slide ul li,
+    .reveal .slide ol li {
+      margin-top: 0.4em;
+      margin-bottom: 0.2em;
+    }
+    .reveal .slide ul[role="tablist"] li {
+      margin-bottom: 0;
+    }
+    .reveal .slide ul li > *:first-child,
+    .reveal .slide ol li > *:first-child {
+      margin-block-start: 0;
+    }
+    .reveal .slide ul li > *:last-child,
+    .reveal .slide ol li > *:last-child {
+      margin-block-end: 0;
+    }
+    .reveal .slide .columns:nth-child(3) {
+      margin-block-start: 0.8em;
+    }
+    .reveal blockquote {
+      box-shadow: none;
+    }
+    .reveal .tippy-content>* {
+      margin-top: 0.2em;
+      margin-bottom: 0.7em;
+    }
+    .reveal .tippy-content>*:last-child {
+      margin-bottom: 0.2em;
+    }
+    .reveal .slide > img.stretch.quarto-figure-center,
+    .reveal .slide > img.r-stretch.quarto-figure-center {
+      display: block;
+      margin-left: auto;
+      margin-right: auto; 
+    }
+    .reveal .slide > img.stretch.quarto-figure-left,
+    .reveal .slide > img.r-stretch.quarto-figure-left  {
+      display: block;
+      margin-left: 0;
+      margin-right: auto; 
+    }
+    .reveal .slide > img.stretch.quarto-figure-right,
+    .reveal .slide > img.r-stretch.quarto-figure-right  {
+      display: block;
+      margin-left: auto;
+      margin-right: 0; 
+    }
+  </style>
+</head>
+<body class="quarto-light">
+  <div class="reveal">
+    <div class="slides">
+
+<section id="title-slide" class="quarto-title-block center">
+  <h1 class="title">Chapter 17: Causal Survival Analysis</h1>
+
+<div class="quarto-title-authors">
+</div>
+
+</section>
+<section class="slide level2">
+
+<!-- https://www.overleaf.com/learn/latex/Using_colors_in_LaTeX#Named_colors_provided_by_the_xcolor_package -->
+<!-- \def\or{\theta}  -->
+<!-- doesn't work for some reason -->
+<p>In previous chapters we have been concerned with causal questions about treatment effects on outcomes occurring at a particular time point. For example, we estimated the effect of smoking cessation on weight gain measured in the year 1982. Many causal questions, however, are concerned with treatment effects on the <strong>time until</strong> the occurrence of an event of interest. For example, we may want to estimate the causal effect of smoking cessation on the time until death, whenever death occurs. This is an example of a <strong>survival analysis</strong>.</p>
+<p>The use of the word “survival” does not imply that the event of interest must be death. The term “survival analysis”, or the equivalent term “failure time analysis”, is applied to any analyses about time to an event, where the event may be death, marriage, incarceration, cancer, flu infection, etc. Survival analyses require some special considerations and techniques because the failure time of many individuals may occur after the study has ended and is therefore unknown. This chapter outlines basic techniques for survival analysis in the simplified setting of time-fixed treatments.</p>
+<aside class="notes">
+<p>This chapter is based on <span class="citation" data-cites="hernan2020causal">Hernán and Robins (<a href="#/references" role="doc-biblioref" onclick="">2020, chap. 17</a>)</span>.</p>
+<p><strong>Key challenge</strong>: Survival outcomes involve time, and individuals may be censored before experiencing the event. The estimation of hazards is often a useful intermediate step for the estimation of survivals and risks. This chapter shows how IP weighting and the parametric g-formula extend naturally to survival outcomes.</p>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside>
+</section>
+<section>
+<section id="hazards-and-risks" class="title-slide slide level1 center" data-number="1">
+<h1><span class="header-section-number">1</span> 17.1 Hazards and Risks</h1>
+
+</section>
+<section class="slide level2">
+
+<p>Suppose we want to estimate the average causal effect of smoking cessation <span class="math inline">\(A\)</span> (1: yes, 0: no) on the time to death <span class="math inline">\(T\)</span> with time measured from the start of follow-up. This is an example of a survival analysis: the outcome is time to an event of interest that can occur at any time after the start of follow-up.</p>
+<p>In most follow-up studies, the event of interest is not observed to happen for all, or even the majority of, individuals in the study. This is so because most follow-up studies have a date after which there is no information on any individuals: the <strong>administrative end of follow-up</strong>. Individuals who do not develop the event of interest before the administrative end of follow-up have their survival time <strong>administratively censored</strong>.</p>
+<p>We conduct the above survival analysis among the 1629 cigarette smokers from the NHEFS who were aged 25–74 years at baseline and who were alive through 1982. For all individuals, the start of follow-up is January 1, 1983 and the administrative end of follow-up is December 31, 1992. The administrative censoring time is the same—120 months—for all individuals. Of the 1629 individuals, only 318 died before the end of 1992, so the survival time of the remaining 1311 individuals is administratively censored.</p>
+<aside class="notes">
+<p>Administrative censoring is a problem intrinsic to survival analyses. In a study with staggered entry (i.e., with a variable start of follow-up date) different individuals will have different administrative censoring times, even when the administrative end of follow-up date is common to all.</p>
+<p>In addition to administrative censoring, survival analyses may also need to handle non-administrative types of censoring, such as loss to follow-up and competing events (see Fine Point 17.1). In previous chapters we discussed how to adjust for the selection bias introduced by non-administrative censoring via standardization or IP weighting. The same approaches can be applied to survival analyses. In this chapter, we focus on administrative censoring and defer non-administrative censoring to Part III.</p>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside>
+</section>
+<section id="survival-risk-and-hazard" class="slide level2">
+<h2>Survival, Risk, and Hazard</h2>
+<p>The <strong>survival probability</strong> <span class="math inline">\(\Pr[T &gt; k]\)</span>, or simply the survival at month <span class="math inline">\(k\)</span>, is the proportion of individuals who survived through time <span class="math inline">\(k\)</span>. If we calculate the survivals at each month until the administrative end of follow-up <span class="math inline">\(k_\text{end} = 120\)</span> and plot them along a horizontal time axis, we obtain the <strong>survival curve</strong>. The survival curve starts at <span class="math inline">\(\Pr[T &gt; 0] = 1\)</span> for <span class="math inline">\(k = 0\)</span> and then decreases monotonically with subsequent values of <span class="math inline">\(k = 1, 2, \ldots, k_\text{end}\)</span>.</p>
+<p>Alternatively, we can define the <strong>risk</strong>, or <strong>cumulative incidence</strong>, at time <span class="math inline">\(k\)</span> as one minus the survival:</p>
+<p><span class="math display">\[\Pr[T \leq k] = 1 - \Pr[T &gt; k]\]</span></p>
+<p>The cumulative incidence curve starts at <span class="math inline">\(\Pr[T \leq 0] = 0\)</span> and increases monotonically during the follow-up.</p>
+<p>At any time <span class="math inline">\(k\)</span>, we can also calculate the proportion of individuals who develop the event among those who had not developed it before <span class="math inline">\(k\)</span>. This is the <strong>hazard</strong>:</p>
+<p><span class="math display">\[\Pr[T = k \mid T &gt; k - 1]\]</span></p>
+<p>Technically, this is the discrete-time hazard, i.e., the hazard in a study in which time is measured in discrete intervals, as opposed to measured continuously. Because in real-world studies time is indeed measured in discrete intervals (years, months, weeks, days…) rather than in a truly continuous fashion, we will refer to the discrete-time hazard as, simply, the hazard.</p>
+<aside class="notes">
+<p>In our example, if we assume (provisionally—until Section 17.4—that quitters (<span class="math inline">\(A = 1\)</span>) and non-quitters (<span class="math inline">\(A = 0\)</span>) are marginally exchangeable, the unadjusted survival curves at 120 months were 76.2% among quitters and 82.0% among non-quitters. Equivalently, the 120-month risk was 23.8% among quitters and 18.0% among non-quitters. These figures are unadjusted for confounding and thus do not have a causal interpretation; see Section 17.4 for the adjusted estimates.</p>
+<p>The hazard at 120 months was 0% among quitters (because the last death happened at 113 months in this group) and 1/986 = 0.10% among non-quitters, and the hazard curves between 0 and 120 months had roughly the shape of a letter M.</p>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside>
+</section>
+<section id="risk-vs.-hazard" class="slide level2">
+<h2>Risk vs.&nbsp;Hazard</h2>
+<p>The <strong>risk</strong> and the <strong>hazard</strong> are different measures:</p>
+<ul>
+<li>The denominator of the <strong>risk</strong>—the number of individuals at baseline—is constant across times <span class="math inline">\(k\)</span> and its numerator—all events between baseline and <span class="math inline">\(k\)</span>—is cumulative. The risk will stay flat or increase as <span class="math inline">\(k\)</span> increases.</li>
+<li>The denominator of the <strong>hazard</strong>—the number of individuals alive at <span class="math inline">\(k\)</span>—varies over time and its numerator includes only recent events. The hazard may increase or decrease over time.</li>
+</ul>
+<p>A frequent approach to quantify the treatment effect in survival analyses is to estimate the ratio of the hazards in the treated and the untreated, known as the hazard ratio. However, the hazard ratio is problematic for the reasons described in Fine Point 17.2. Therefore, the survival analyses in this book privilege survival/risk over hazard. However, that does not mean that we should completely ignore hazards. The estimation of hazards is often a useful intermediate step for the estimation of survivals and risks.</p>
+<div title="Fine Point 17.1: Competing Events">
+<div class="callout callout-note callout-titled callout-style-default">
+<div class="callout-body">
+<div class="callout-title">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<p><strong>Fine Point 17.1: Competing Events</strong></p>
+</div>
+<div class="callout-content">
+<p>As described in Section 8.5, a <strong>competing event</strong> is an event (typically, death) that prevents the event of interest (e.g., stroke) from happening: individuals who die from other causes (say, cancer) cannot ever develop stroke. In survival analyses, the key decision is whether to consider competing events a form of non-administrative censoring.</p>
+<ul>
+<li><p>If the competing event is considered a censoring event, then the analysis is effectively an attempt to simulate a population in which death from other causes is somehow either abolished or rendered independent of the risk factors for stroke. The resulting effect estimate is hard to interpret and may not correspond to a meaningful estimand. In addition, the censoring may introduce selection bias under the null, which would require adjustment using data on the measured risk factors for the event of interest.</p></li>
+<li><p>If the competing event is not considered a censoring event, then the analysis effectively sets the time to event to be infinite. That is, dead individuals are considered to have probability zero of developing stroke between their death and the administrative end of follow-up. The estimate of the effect of treatment on stroke is hard to interpret because a non-null estimate may arise from a direct effect of treatment on death, which would prevent the occurrence of stroke.</p></li>
+</ul>
+<p>An alternative is to create a composite event that includes both the competing event and the event of interest (e.g., death and stroke) and conduct a survival analysis for the composite event. This approach effectively eliminates the competing events, but fundamentally changes the causal question.</p>
+<p>None of the above strategies provides a satisfactory solution to the problem of competing events. For a detailed description of approaches to handle competing events and their challenges, see Young et al.&nbsp;(2019).</p>
+</div>
+</div>
+</div>
+</div>
+</section></section>
+<section>
+<section id="from-hazards-to-risks" class="title-slide slide level1 center" data-number="2">
+<h1><span class="header-section-number">2</span> 17.2 From Hazards to Risks</h1>
+
+</section>
+<section class="slide level2">
+
+<p>In survival analyses, there are two main ways to arrange the analytic dataset.</p>
+<p>In the first data arrangement each row of the database corresponds to one person. This data format—often referred to as the “wide” format when there are time-varying treatments and confounders—is the one we have used so far in this book. In the analyses of the previous section, the dataset had 1629 rows, one per individual.</p>
+<p>In the second data arrangement each row of the database corresponds to a <strong>person-time</strong>. That is, the first row contains the information for person 1 at <span class="math inline">\(k = 0\)</span>, the second row the information for person 1 at <span class="math inline">\(k = 1\)</span>, and so on until the follow-up of person 1 ends. This person-time (or “long”) data format is the one we will use in most survival analyses in this chapter and in all analyses with time-varying treatments in Part III. In our smoking cessation example, the person-time dataset has 176,764 rows, one per person-month.</p>
+</section>
+<section id="the-event-indicator-d_k" class="slide level2">
+<h2>The Event Indicator <span class="math inline">\(D_k\)</span></h2>
+<p>To encode survival information through <span class="math inline">\(k\)</span> in the person-time data format, it is helpful to define a <strong>time-varying indicator of event</strong> <span class="math inline">\(D_k\)</span>. For each person at each month <span class="math inline">\(k\)</span>, the indicator <span class="math inline">\(D_k\)</span> takes value 1 if <span class="math inline">\(T \leq k\)</span> and value 0 if <span class="math inline">\(T &gt; k\)</span>.</p>
+<p>Using the time-varying outcome variable <span class="math inline">\(D_k\)</span>, we can define:</p>
+<div id="def-survival-risk-hazard" class="theorem definition">
+<p><span class="theorem-title"><strong>Definition 1 (Survival, Risk, and Hazard)</strong></span> &nbsp;</p>
+<ul>
+<li><strong>Survival</strong> at <span class="math inline">\(k\)</span>: <span class="math inline">\(\Pr[D_k = 0] = \Pr[T &gt; k]\)</span></li>
+<li><strong>Risk</strong> at <span class="math inline">\(k\)</span>: <span class="math inline">\(\Pr[D_k = 1] = \Pr[T \leq k]\)</span></li>
+<li><strong>Hazard</strong> at <span class="math inline">\(k\)</span>: <span class="math inline">\(\Pr[D_k = 1 \mid D_{k-1} = 0]\)</span></li>
+</ul>
+<p>For <span class="math inline">\(k = 1\)</span> the hazard is equal to the risk because everybody is, by definition, alive at <span class="math inline">\(k = 0\)</span>.</p>
+</div>
+</section>
+<section id="from-hazards-to-survival" class="slide level2">
+<h2>From Hazards to Survival</h2>
+<p>The survival probability at <span class="math inline">\(k\)</span> is the product of the conditional probabilities of having survived each interval between 0 and <span class="math inline">\(k\)</span>. More generally, the survival at <span class="math inline">\(k\)</span> is:</p>
+<p><span class="math display">\[\Pr[D_k = 0] = \prod_{m=1}^k \Pr[D_m = 0 \mid D_{m-1} = 0]\]</span></p>
+<p>That is, the survival at <span class="math inline">\(k\)</span> equals the product of one minus the hazard at all previous times. If we know the hazards through <span class="math inline">\(k\)</span> we can easily compute the survival at <span class="math inline">\(k\)</span> (or the risk at <span class="math inline">\(k\)</span>, which is just one minus the survival).</p>
+<aside class="notes">
+<p><strong>Example</strong>: The survival at <span class="math inline">\(k = 2\)</span>, <span class="math inline">\(\Pr[D_2 = 0]\)</span>, is equal to the survival probability at <span class="math inline">\(k = 1\)</span>, <span class="math inline">\(\Pr[D_1 = 0]\)</span>, times the survival probability at <span class="math inline">\(k = 2\)</span> conditional on having survived through <span class="math inline">\(k = 1\)</span>, <span class="math inline">\(\Pr[D_2 = 0 \mid D_1 = 0]\)</span>.</p>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside>
+</section>
+<section id="nonparametric-and-parametric-estimation" class="slide level2">
+<h2>Nonparametric and Parametric Estimation</h2>
+<p>The hazard at <span class="math inline">\(k\)</span>, <span class="math inline">\(\Pr[D_k = 1 \mid D_{k-1} = 0]\)</span>, can be estimated <strong>nonparametrically</strong> by dividing the number of cases during the interval <span class="math inline">\(k\)</span> by the number of individuals alive at the end of interval <span class="math inline">\(k - 1\)</span>. The resulting nonparametric estimate of the survival <span class="math inline">\(\Pr[D_k = 0]\)</span> at <span class="math inline">\(k\)</span> is referred to as the <strong>Kaplan-Meier</strong>, or <strong>product-limit</strong>, estimator.</p>
+<p>An easy way to parametrically estimate the hazards is to fit a <strong>logistic regression model</strong> for <span class="math inline">\(\Pr[D_{k+1} = 1 \mid D_k = 0]\)</span> restricted to individuals who survived through <span class="math inline">\(k\)</span>. In our example, we can estimate the hazards in the treated and untreated by fitting:</p>
+<p><span class="math display">\[\text{logit}\,\Pr[D_{k+1} = 1 \mid D_k = 0, A] = \theta_{0,k} + \theta_1 A + \theta_2 (A \times k) + \theta_3 (A \times k^2)\]</span></p>
+<p>where <span class="math inline">\(\theta_{0,k} = \theta_0 + \theta_4 k + \theta_5 k^2\)</span> is a flexible time-varying intercept. The product terms between treatment <span class="math inline">\(A\)</span> and time allow the hazard ratio to vary over time (see Technical Point 17.1 for details on how a logistic model approximates a hazards model).</p>
+<p>We then compute estimates of the survival <span class="math inline">\(\Pr[D_{k+1} = 0 \mid A = a]\)</span> by multiplying the estimates of one minus the hazard from the logistic model, separately for the treated and the untreated.</p>
+<div title="Fine Point 17.2: The Hazards of Hazard Ratios">
+<div class="callout callout-note callout-titled callout-style-default">
+<div class="callout-body">
+<div class="callout-title">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<p><strong>Fine Point 17.2: The Hazards of Hazard Ratios</strong></p>
+</div>
+<div class="callout-content">
+<p>When using the hazard ratio as a measure of causal effect, two important properties of the hazard ratio need to be taken into account.</p>
+<p><strong>First</strong>, because the hazards vary over time, the hazard ratio generally does too. That is, the ratio at time <span class="math inline">\(k\)</span> may differ from that at time <span class="math inline">\(k + 1\)</span>. However, many published survival analyses report a single hazard ratio, which is usually the consequence of fitting a Cox proportional hazards model that assumes a constant hazard ratio by ignoring interactions with time. The reported hazard ratio is a weighted average of the <span class="math inline">\(k\)</span>-specific hazard ratios, which makes it hard to interpret. Because it is a weighted average, the reported hazard ratio may be 1 even if the survival curves are not identical. In contrast to “the” hazard ratio, ratios and differences of survival probabilities and risks are defined with respect to a fixed time period, e.g., the 5-year survival difference, the 120-month risk ratio.</p>
+<p><strong>Second</strong>, even if we presented the time-specific hazard ratios, their causal interpretation is not straightforward. Suppose treatment kills all high-risk individuals by time <span class="math inline">\(k\)</span> and has no effects on others. Then the hazard ratio at time <span class="math inline">\(k + 1\)</span> compares the treated and the untreated individuals who survived through <span class="math inline">\(k\)</span>. In the treated group, the survivors are all low-risk individuals (because the high-risk ones have already been killed by treatment); in the untreated group, the survivors are a mixture of high-risk and low-risk individuals (because treatment did not weed out the former). As a result the hazard ratio at <span class="math inline">\(k + 1\)</span> will be less than 1 even though treatment is not beneficial for any individual.</p>
+<p>This apparent paradox is an example of selection bias due to conditioning on a post-treatment variable (i.e., being alive at <span class="math inline">\(k\)</span>) which is affected by treatment. The hazard ratio at time 2 is <span class="math inline">\(\Pr[D_2 = 1 \mid D_1 = 0, A]\)</span>. Conditioning on the collider <span class="math inline">\(D_1\)</span> will generally open the path <span class="math inline">\(A \to D_1 \leftarrow U \to D_2\)</span> and therefore induce an association between treatment <span class="math inline">\(A\)</span> and event <span class="math inline">\(D_2\)</span> among those with <span class="math inline">\(D_1 = 0\)</span>. This built-in selection bias of hazard ratios does not happen if the survival curves are the same in the treated and the untreated.</p>
+</div>
+</div>
+</div>
+</div>
+<div title="Fine Point 17.3: Models for Survival Analysis">
+<div class="callout callout-note callout-titled callout-style-default">
+<div class="callout-body">
+<div class="callout-title">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<p><strong>Fine Point 17.3: Models for Survival Analysis</strong></p>
+</div>
+<div class="callout-content">
+<p>Methods for survival analysis need to accommodate the expected censoring of failure times due to administrative end of follow-up.</p>
+<p><strong>Nonparametric</strong> approaches to survival analysis, like constructing Kaplan-Meier curves, make no assumptions about the distribution of the unobserved failure times due to administrative censoring.</p>
+<p><strong>Parametric</strong> models for survival analysis assume a particular statistical distribution (e.g., exponential, Weibull) for the failure times or hazards. The logistic model described in the main text to estimate hazards is an example of a parametric model.</p>
+<p>Other models for survival analysis, like the <strong>Cox proportional hazards model</strong> and the <strong>accelerated failure time (AFT) model</strong>, do not assume a particular distribution for the failure times or hazards. In particular, these models are agnostic about the shape of the hazard when all covariates in the model have value zero—often referred to as the baseline hazard. These models, however, impose a priori restrictions on the relation between the baseline hazard and the hazard under other combinations of covariate values. As a result, these methods are referred to as <strong>semiparametric</strong> methods.</p>
+</div>
+</div>
+</div>
+</div>
+<div title="Technical Point 17.1: Approximating the Hazard Ratio via a Logistic Model">
+<div class="callout callout-note callout-titled callout-style-default">
+<div class="callout-body">
+<div class="callout-title">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<p><strong>Technical Point 17.1: Approximating the Hazard Ratio via a Logistic Model</strong></p>
+</div>
+<div class="callout-content">
+<p>The discrete-time hazard ratio <span class="math inline">\(\frac{\Pr[D_{k+1}=1 \mid D_k=0,A=1]}{\Pr[D_{k+1}=1 \mid D_k=0,A=0]}\)</span> equals <span class="math inline">\(\text{exp}{\left\{(\right\}}\alpha_1)\)</span> at all times <span class="math inline">\(k+1\)</span> in the hazards model <span class="math inline">\(\Pr[D_{k+1} = 1 \mid D_k = 0, A] = \Pr[D_{k+1} = 1 \mid D_k = 0, A = 0] \times \text{exp}{\left\{(\right\}}\alpha_1 A)\)</span>.</p>
+<p>Suppose the hazard at <span class="math inline">\(k + 1\)</span> is small, i.e., <span class="math inline">\(\Pr[D_{k+1} = 1 \mid D_k = 0, A] \approx 0\)</span>. Then the hazard is approximately equal to the odds, and we have:</p>
+<p><span class="math display">\[\text{logit}\,\Pr[D_{k+1} = 1 \mid D_k = 0, A] \approx \alpha_{0,k} + \alpha_1 A\]</span></p>
+<p>That is, if the hazard is close to zero at <span class="math inline">\(k + 1\)</span>, we can approximate the log hazard ratio <span class="math inline">\(\alpha_1\)</span> by <span class="math inline">\(\theta_1\)</span> in the logistic model. As a rule of thumb, the approximation is often considered accurate enough when <span class="math inline">\(\Pr[D_{k+1} = 1 \mid D_k = 0, A] &lt; 0.1\)</span> for all <span class="math inline">\(k\)</span>.</p>
+<p>This rare event condition can almost always be guaranteed to hold: we just need to define a time unit <span class="math inline">\(k\)</span> that is short enough. For example, if <span class="math inline">\(D_k\)</span> stands for lung cancer, <span class="math inline">\(k\)</span> may be measured in years; if <span class="math inline">\(D_k\)</span> stands for infection with the common cold virus, <span class="math inline">\(k\)</span> may be measured in days.</p>
+</div>
+</div>
+</div>
+</div>
+</section></section>
+<section>
+<section id="why-censoring-matters" class="title-slide slide level1 center" data-number="3">
+<h1><span class="header-section-number">3</span> 17.3 Why Censoring Matters</h1>
+
+</section>
+<section class="slide level2">
+
+<p>The only source of censoring in our study is a common administrative censoring time <span class="math inline">\(k_\text{end} = 120\)</span> that is identical for all individuals. In this simple setting the procedure described in the previous section to estimate the survival is straightforward.</p>
+<p>Now suppose that individuals start the follow-up at different dates—there is <strong>staggered entry</strong> into the study—but the administrative end of follow-up date is common to all. Because the administrative censoring time is the difference between the administrative end of follow-up and the time of start of follow-up, different individuals will have different administrative censoring times.</p>
+</section>
+<section id="the-censoring-indicator" class="slide level2">
+<h2>The Censoring Indicator</h2>
+<p>In this setting it is helpful to define a time-varying <strong>indicator for censoring</strong> <span class="math inline">\(C_k\)</span>. For each person at each month <span class="math inline">\(k\)</span>, the indicator <span class="math inline">\(C_k\)</span> takes value 0 if the administrative end of follow-up is greater than <span class="math inline">\(k\)</span> and 1 otherwise.</p>
+<p>Our goal is to estimate the survival curve that would have been observed if nobody had been censored before <span class="math inline">\(k_\text{end}\)</span>. That is, our goal is to estimate the survival <span class="math inline">\(\Pr[D_k = 0 \mid A = a]\)</span> that would have been observed if the value of the time-varying indicators <span class="math inline">\(D_k\)</span> were known even after censoring. We can also refer to this quantity as <span class="math inline">\(\Pr[D^{c=0}_k = 0 \mid A = a]\)</span>, where the superscript <span class="math inline">\(c = 0\)</span> makes explicit that we want the survival under no censoring.</p>
+</section>
+<section id="why-naive-estimation-fails" class="slide level2">
+<h2>Why Naive Estimation Fails</h2>
+<p>We <strong>cannot</strong> validly estimate <span class="math inline">\(\Pr[D_k = 0 \mid A = a]\)</span> at time <span class="math inline">\(k\)</span> by simply computing the fraction of individuals who received treatment level <span class="math inline">\(a\)</span> and survived and were not censored through <span class="math inline">\(k\)</span>. This fraction is a valid estimator of the joint probability <span class="math inline">\(\Pr[C_{k+1} = 0, D_{k+1} = 0 \mid A = a]\)</span>, which is not what we want.</p>
+<p>To see why, consider a study with <span class="math inline">\(k_\text{end} = 2\)</span> in which:</p>
+<ul>
+<li><span class="math inline">\(\Pr[C_1 = 0] = 1\)</span>: nobody is censored by <span class="math inline">\(k = 1\)</span></li>
+<li><span class="math inline">\(\Pr[D_1 = 0 \mid C_0 = 0] = 0.9\)</span>: 90% of individuals survive through <span class="math inline">\(k = 1\)</span></li>
+<li><span class="math inline">\(\Pr[C_2 = 0 \mid D_1 = 0, C_1 = 0] = 0.5\)</span>: a random half of survivors is censored by <span class="math inline">\(k = 2\)</span></li>
+<li><span class="math inline">\(\Pr[D_2 = 0 \mid C_2 = 0, D_1 = 0, C_1 = 0] = 0.9\)</span>: 90% of the remaining individuals survive through <span class="math inline">\(k = 2\)</span></li>
+</ul>
+<p>The fraction of uncensored survivors at <span class="math inline">\(k = 2\)</span> is <span class="math inline">\(1 \times 0.9 \times 0.5 \times 0.9 = 0.405\)</span>. However, if nobody had been censored, the survival would have been <span class="math inline">\(1 \times 0.9 \times 1 \times 0.9 = 0.81\)</span>.</p>
+</section>
+<section id="correct-estimation-under-as-if-randomly-assigned-censoring" class="slide level2">
+<h2>Correct Estimation Under As-If Randomly Assigned Censoring</h2>
+<p>Under (as-if) randomly assigned censoring, the survival <span class="math inline">\(\Pr[D_k = 0 \mid A = a]\)</span> at <span class="math inline">\(k\)</span> is:</p>
+<p><span class="math display">\[\Pr[D_k = 0 \mid A = a] = \prod_{m=1}^k \Pr[D_m = 0 \mid D_{m-1} = 0, C_m = 0, A = a] \quad \text{for } k &lt; k_\text{end}\]</span></p>
+<p>The estimation procedure is the same as described above except that we estimate the <strong>cause-specific hazard</strong> <span class="math inline">\(\Pr[D_{k+1} = 1 \mid D_k = 0, C_{k+1} = 0, A = a]\)</span>.</p>
+<p>Often we are not ready to assume that censoring is as if randomly assigned. When there is staggered entry, the calendar time at study entry may be associated with the outcome. Therefore, the above procedure will need to be adjusted for baseline confounders, which can be achieved through g-methods as described in the next sections.</p>
+</section></section>
+<section>
+<section id="ip-weighting-of-marginal-structural-models" class="title-slide slide level1 center" data-number="4">
+<h1><span class="header-section-number">4</span> 17.4 IP Weighting of Marginal Structural Models</h1>
+
+</section>
+<section class="slide level2">
+
+<p>When the treated and the untreated are not exchangeable, a direct contrast of their survival curves cannot be endowed with a causal interpretation. In our smoking cessation example, we estimated that the 120-month survival was lower in quitters than in non-quitters (76.2% versus 82.0%), but that does not necessarily imply that smoking cessation increases mortality. Older people are more likely to quit smoking and also more likely to die. This confounding by age makes smoking cessation look bad because the proportion of older people is greater among quitters than among non-quitters.</p>
+</section>
+<section id="counterfactual-survivals" class="slide level2">
+<h2>Counterfactual Survivals</h2>
+<p>Let us define <span class="math inline">\(D^a_k\)</span> as a counterfactual time-varying indicator for death at <span class="math inline">\(k\)</span> under treatment level <span class="math inline">\(a\)</span> and no censoring. Suppose we want to compare the counterfactual survivals <span class="math inline">\(\Pr[D^{a=1}_{k+1} = 0]\)</span> and <span class="math inline">\(\Pr[D^{a=0}_{k+1} = 0]\)</span> that would have been observed if everybody had received treatment (<span class="math inline">\(a = 1\)</span>) and no treatment (<span class="math inline">\(a = 0\)</span>), respectively. The causal contrast of interest is:</p>
+<p><span class="math display">\[\Pr[D^{a=1}_{k+1} = 0] \text{ vs. } \Pr[D^{a=0}_{k+1} = 0] \quad \text{for } k = 0, 1, \ldots, k_\text{end} - 1\]</span></p>
+<p>Because of confounding, this contrast may not be validly estimated by the contrast of the survivals <span class="math inline">\(\Pr[D_{k+1} = 0 \mid A = 1]\)</span> and <span class="math inline">\(\Pr[D_{k+1} = 0 \mid A = 0]\)</span>.</p>
+</section>
+<section id="estimation-via-ip-weighting" class="slide level2">
+<h2>Estimation via IP Weighting</h2>
+<p>Let us assume that the treated (<span class="math inline">\(A = 1\)</span>) and the untreated (<span class="math inline">\(A = 0\)</span>) are exchangeable within levels of the <span class="math inline">\(L\)</span> variables. Like in Chapters 12 to 15, <span class="math inline">\(L\)</span> includes the variables sex, age, race, education, intensity and duration of smoking, physical activity in daily life, recreational exercise, and weight. We also assume positivity and consistency. The estimation of IP weighted survival curves has two steps.</p>
+<p><strong>Step 1</strong>: We estimate the stabilized IP weight <span class="math inline">\(SW^A\)</span> for each individual in the study population, using exactly the same procedure as described in Chapter 12. The estimated weight <span class="math inline">\(SW^A\)</span> has mean 1 (as expected); in our example the weights ranged from 0.33 to 4.21.</p>
+<p><strong>Step 2</strong>: Using the person-time data format, we fit a weighted hazards model:</p>
+<p><span class="math display">\[\text{logit}\,\Pr[D^a_{k+1} = 1 \mid D^a_k = 0] = \beta_{0,k} + \beta_1 a + \beta_2 (a \times k) + \beta_3 (a \times k^2)\]</span></p>
+<p>where individuals are weighted by their estimated <span class="math inline">\(SW^A\)</span>. This IP weighted model estimates the parameters of the <strong>marginal structural logistic model</strong>, i.e., the time-varying hazards that would have been observed if all individuals in the study population had been treated (<span class="math inline">\(a = 1\)</span>) and if they had been untreated (<span class="math inline">\(a = 0\)</span>).</p>
+<p>The estimates of <span class="math inline">\(\Pr[D^a_{k+1} = 1 \mid D^a_k = 0]\)</span> (the counterfactual hazards) from the IP weighted hazards model can then be converted to estimates of the survival <span class="math inline">\(\Pr[D^a_{k+1} = 0] = \prod_{m=0}^k (1 - \Pr[D^a_{m+1} = 1 \mid D^a_m = 0])\)</span> under treatment <span class="math inline">\(a = 1\)</span> and under no treatment <span class="math inline">\(a = 0\)</span>.</p>
+<aside class="notes">
+<p>In our example, the 120-month survival estimates were 80.7% under smoking cessation and 80.5% under no smoking cessation; difference 0.2% (95% confidence interval from −4.1% to 3.7% based on 500 bootstrap samples). Though the survival curve under treatment was lower than the curve under no treatment for most of the follow-up, the maximum difference never exceeded −1.4% with a 95% confidence interval from −3.4% to 0.7%. That is, after adjustment for the covariates <span class="math inline">\(L\)</span> via IP weighting, we found little evidence of an effect of smoking cessation on mortality at any time during the follow-up.</p>
+<p>The validity of this procedure requires correct specification of both the treatment model and the marginal hazards model.</p>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside>
+</section></section>
+<section>
+<section id="the-parametric-g-formula" class="title-slide slide level1 center" data-number="5">
+<h1><span class="header-section-number">5</span> 17.5 The Parametric G-Formula</h1>
+
+</section>
+<section class="slide level2">
+
+<p>In the previous section we estimated the survival curve under treatment and under no treatment via IP weighting. Another method to estimate the marginal survival curves under exchangeability, positivity, and consistency is standardization based on parametric models, i.e., the <strong>parametric g-formula</strong>.</p>
+</section>
+<section id="identification-via-standardization" class="slide level2">
+<h2>Identification via Standardization</h2>
+<p>The survival <span class="math inline">\(\Pr[D^a_{k+1} = 0]\)</span> at <span class="math inline">\(k + 1\)</span> under treatment level <span class="math inline">\(a\)</span> is the weighted average of the survival conditional probabilities at <span class="math inline">\(k + 1\)</span> within levels of the covariates <span class="math inline">\(L\)</span> and treatment level <span class="math inline">\(A = a\)</span>, with the proportion of individuals in each level <span class="math inline">\(l\)</span> of <span class="math inline">\(L\)</span> as the weights. That is, under exchangeability, positivity, and consistency, <span class="math inline">\(\Pr[D^a_{k+1} = 0]\)</span> equals the standardized survival:</p>
+<p><span class="math display">\[\sum_l \Pr[D_{k+1} = 0 \mid L = l, A = a]\, \Pr[L = l]\]</span></p>
+</section>
+<section id="estimation" class="slide level2">
+<h2>Estimation</h2>
+<p>The estimation of the parametric g-formula has two steps.</p>
+<p><strong>Step 1</strong>: Fit a parametric hazards model including the variables in <span class="math inline">\(L\)</span> as covariates:</p>
+<p><span class="math display">\[\text{logit}\,\Pr[D_{k+1} = 1 \mid D_k = 0, L, A] = \theta_{0,k} + \theta_1 A + \theta_2 A \times k + \theta_3 A \times k^2 + \boldsymbol{\theta}_L^\top L\]</span></p>
+<p>If the model is correctly specified, it validly estimates the time-varying hazards <span class="math inline">\(\Pr[D_{k+1} = 1 \mid D_k = 0, L, A]\)</span> within levels of treatment <span class="math inline">\(A\)</span> and covariates <span class="math inline">\(L\)</span>. The product of one minus the conditional hazards:</p>
+<p><span class="math display">\[\prod_{m=0}^k \Pr[D_{m+1} = 0 \mid D_m = 0, L = l, A = a]\]</span></p>
+<p>is equal to the conditional survival <span class="math inline">\(\Pr[D_{k+1} = 0 \mid L = l, A = a]\)</span>.</p>
+<p><strong>Step 2</strong>: Compute the weighted average of the conditional survival across all values <span class="math inline">\(l\)</span> of the covariates <span class="math inline">\(L\)</span>—that is, standardize the survival to the confounder distribution—using the method described in Section 13.3.</p>
+<aside class="notes">
+<p>In our example, the survival curve under treatment was lower than the curve under no treatment during the entire follow-up, but the maximum difference never exceeded −2.0% (95% confidence interval from −5.6% to 1.8%). The 120-month survival estimates were 80.4% under smoking cessation and 80.6% under no smoking cessation; difference 0.2% (95% confidence interval from −4.6% to 4.1%). That is, after adjustment for the covariates <span class="math inline">\(L\)</span> via standardization, we found little evidence of an effect of smoking cessation on mortality at any time during the follow-up.</p>
+<p>Note that the survival curves estimated via IP weighting (previous section) and the parametric g-formula (this section) are similar but not identical because they rely on different parametric assumptions: the IP weighted estimates require no misspecification of a model for treatment and a model for the unconditional hazards; the parametric g-formula estimates require no misspecification of a model for the conditional hazards.</p>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside>
+</section></section>
+<section>
+<section id="g-estimation-of-structural-nested-models" class="title-slide slide level1 center" data-number="6">
+<h1><span class="header-section-number">6</span> 17.6 G-Estimation of Structural Nested Models</h1>
+
+</section>
+<section class="slide level2">
+
+<p>The previous sections describe causal contrasts that compare survivals, or risks, under different levels of treatment <span class="math inline">\(A\)</span>. The survival was computed from hazards estimated by logistic regression models. This approach is feasible when the analytic method is IP weighting of marginal structural models or the parametric g-formula, but not when the method is g-estimation of structural nested models.</p>
+<p>As explained in Chapter 14, structural nested models are models for <strong>conditional causal contrasts</strong> (e.g., the difference or ratio of covariate-specific means under different treatment levels), not for the components of those contrasts. Therefore we cannot estimate survivals or hazards using a structural nested model.</p>
+</section>
+<section id="structural-nested-aft-models" class="slide level2">
+<h2>Structural Nested AFT Models</h2>
+<p>We can, however, model the ratio of survival times under different treatment levels. Let <span class="math inline">\(T^a_i\)</span> be the counterfactual time of survival for individual <span class="math inline">\(i\)</span> under treatment level <span class="math inline">\(a\)</span>. Suppose the effect of treatment is the same for every individual. We can then consider the <strong>structural nested accelerated failure time (AFT) model</strong>:</p>
+<p><span class="math display">\[T^a_i / T^{a=0}_i = \text{exp}{\left\{(\right\}}-\psi_1 a)\]</span></p>
+<p>where <span class="math inline">\(\psi_1\)</span> measures the expansion (or contraction) of each individual’s survival time attributable to treatment:</p>
+<ul>
+<li><span class="math inline">\(\psi_1 &lt; 0\)</span>: treatment increases survival time</li>
+<li><span class="math inline">\(\psi_1 &gt; 0\)</span>: treatment decreases survival time</li>
+<li><span class="math inline">\(\psi_1 = 0\)</span>: treatment does not affect survival time</li>
+</ul>
+<p>More generally, the effect of treatment may depend on covariates <span class="math inline">\(L\)</span> so a more general structural AFT would be <span class="math inline">\(T^a_i / T^{a=0}_i = \text{exp}{\left\{(\right\}}-\psi_1 a - \psi_2 a L_i)\)</span>. Rearranging, the model can be written as:</p>
+<p><span class="math display">\[T^{a=0}_i = T^a_i \text{exp}{\left\{(\right\}}\psi_1 a + \psi_2 a L_i) \quad \text{for all individuals } i\]</span></p>
+</section>
+<section id="selection-bias-from-administrative-censoring" class="slide level2">
+<h2>Selection Bias from Administrative Censoring</h2>
+<p>Consider a 60-month randomized experiment. <a href="#/tbl-aft-example" class="quarto-xref">Table&nbsp;1</a> shows the survival time under treatment and under no treatment for three types of individuals:</p>
+<div id="tbl-aft-example" class="quarto-float quarto-figure quarto-figure-center">
+<figure class="quarto-float quarto-float-tbl">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-aft-example-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Table&nbsp;1: Survival times under treatment and no treatment for each individual type in a 60-month experiment.
+</figcaption>
+<div aria-describedby="tbl-aft-example-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<table class="caption-top">
+<thead>
+<tr class="header">
+<th>Type</th>
+<th><span class="math inline">\(T^{a=0}\)</span></th>
+<th><span class="math inline">\(T^{a=1}\)</span></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>1</td>
+<td>36</td>
+<td>24</td>
+</tr>
+<tr class="even">
+<td>2</td>
+<td>72</td>
+<td>48</td>
+</tr>
+<tr class="odd">
+<td>3</td>
+<td>108</td>
+<td>72</td>
+</tr>
+</tbody>
+</table>
+</div>
+</figure>
+</div>
+<p>Because the administrative end of follow-up is <span class="math inline">\(K = 60\)</span> months, the death of type 1 individuals will be observed whether they are randomly assigned to <span class="math inline">\(A = 1\)</span> or <span class="math inline">\(A = 0\)</span> (both survival times are less than 60), and the death of type 3 individuals will be administratively censored whether they are randomly assigned to <span class="math inline">\(A = 1\)</span> or <span class="math inline">\(A = 0\)</span> (both survival times are greater than 60). The death of type 2 individuals, however, will only be observed if they are assigned to <span class="math inline">\(A = 1\)</span> (see <a href="#/tbl-aft-example" class="quarto-xref">Table&nbsp;1</a>).</p>
+<p>Hence an analysis that is restricted to individuals with non-administratively censored death times will have an imbalance of individual types between the treated and the untreated. Exchangeability will be broken because the <span class="math inline">\(A = 1\)</span> group will include type 1 and type 2 individuals, whereas the <span class="math inline">\(A = 0\)</span> group will include type 1 individuals only. Individuals in the <span class="math inline">\(A = 0\)</span> group will have, on average, a worse prognosis than those in the <span class="math inline">\(A = 1\)</span> group, which will make treatment look better than it really is. This selection bias arises when treatment has a non-null effect on survival time.</p>
+<aside class="notes">
+<p>The g-estimation procedure for the AFT model must account for administrative censoring to avoid this selection bias. The structural AFT model as written is both deterministic and rank-preserving. It is <strong>deterministic</strong> because it assumes that for each individual, the counterfactual survival time under no treatment <span class="math inline">\(T^{a=0}\)</span> can be computed without error. It is <strong>rank-preserving</strong> because if individual <span class="math inline">\(i\)</span> would die before individual <span class="math inline">\(j\)</span> had they both been untreated, then individual <span class="math inline">\(i\)</span> would also die before individual <span class="math inline">\(j\)</span> had they both been treated. Because of the implausibility of rank preservation, one should not generally use methods for causal inference that rely on it.</p>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside>
+<div title="Technical Point 17.3: G-Estimation of Structural Nested AFT Models">
+<div class="callout callout-note callout-titled callout-style-default">
+<div class="callout-body">
+<div class="callout-title">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<p><strong>Technical Point 17.3: G-Estimation of Structural Nested AFT Models</strong></p>
+</div>
+<div class="callout-content">
+<p>The key challenge in g-estimation of structural nested AFT models is that administrative censoring creates selection bias when treatment affects the censoring indicator (see the main text above). The solution is to create “artificially censored” versions of the observed survival times.</p>
+<p>For a given candidate value <span class="math inline">\(\psi\)</span>, define the <strong>blipped-down</strong> survival time for treated individuals (<span class="math inline">\(A_i = 1\)</span>) as:</p>
+<p><span class="math display">\[U_i(\psi) = T_i \text{exp}{\left\{(\right\}}\psi A_i)\]</span></p>
+<p>This quantity equals <span class="math inline">\(T^{a=0}_i\)</span> if <span class="math inline">\(\psi\)</span> equals the true <span class="math inline">\(\psi_1\)</span>. Under no unmeasured confounding, <span class="math inline">\(U_i(\psi_1)\)</span> is independent of <span class="math inline">\(A_i\)</span> within levels of <span class="math inline">\(L_i\)</span>.</p>
+<p>To account for administrative censoring at time <span class="math inline">\(K\)</span>, we define an <strong>artificially censored</strong> version of <span class="math inline">\(U_i(\psi)\)</span>:</p>
+<p><span class="math display">\[U^*_i(\psi) = \min\!\bigl(U_i(\psi),\; K \text{exp}{\left\{(\right\}}-\psi A_i)\bigr)\]</span></p>
+<p>with corresponding artificial censoring indicator <span class="math inline">\(\Delta^*_i(\psi) = \mathbf{1}[U_i(\psi) \leq K \text{exp}{\left\{(\right\}}-\psi A_i)]\)</span>.</p>
+<p>The g-estimator solves the estimating equation</p>
+<p><span class="math display">\[\sum_i \bigl(A_i - \hat{\text{E}}{\left[A_i \mid L_i\right]}\bigr) \cdot h\!\bigl(U^*_i(\psi), \Delta^*_i(\psi)\bigr) = 0\]</span></p>
+<p>where <span class="math inline">\(h(\cdot)\)</span> is a score function (e.g., from a rank-based or weighted log-rank statistic) and <span class="math inline">\(\hat{\text{E}}{\left[A_i \mid L_i\right]}\)</span> is the estimated propensity score. By searching over <span class="math inline">\(\psi\)</span>, we find the value that makes treated and untreated individuals comparable in terms of their blipped-down survival times.</p>
+</div>
+</div>
+</div>
+</div>
+</section></section>
+<section>
+<section id="summary" class="title-slide slide level1 center" data-number="7">
+<h1><span class="header-section-number">7</span> Summary</h1>
+
+</section>
+<section class="slide level2 scrollable">
+
+<p><strong>Key concepts from this chapter</strong>:</p>
+<ol type="1">
+<li><strong>Survival analysis</strong>: Methods for time-to-event outcomes that accommodate administrative censoring</li>
+<li><strong>Survival, risk, and hazard</strong>: Related but distinct measures; <span class="math inline">\(\Pr[D_k = 0] = \prod_{m=1}^k \Pr[D_m = 0 \mid D_{m-1} = 0]\)</span></li>
+<li><strong>Person-time data format</strong>: Enables parametric modeling of time-varying hazards via logistic regression</li>
+<li><strong>Why censoring matters</strong>: Staggered entry creates individual-specific censoring times; naive estimation is biased</li>
+<li><strong>Counterfactual survivals</strong>: The target is <span class="math inline">\(\Pr[D^a_{k+1} = 0]\)</span> under treatment <span class="math inline">\(a\)</span> and no censoring</li>
+<li><strong>IP weighting of marginal structural models</strong>: Estimates causal survival curves by weighting by <span class="math inline">\(SW^A\)</span></li>
+<li><strong>Parametric g-formula</strong>: Standardizes conditional survivals to the covariate distribution</li>
+<li><strong>G-estimation of structural nested AFT models</strong>: Models the ratio of survival times; requires artificial censoring to handle administrative censoring</li>
+</ol>
+<p><strong>Causal estimands for survival outcomes</strong>:</p>
+<ul>
+<li><strong>Causal survival difference</strong>: <span class="math inline">\(\Pr[D^{a=1}_{k} = 0] - \Pr[D^{a=0}_{k} = 0]\)</span></li>
+<li><strong>Causal risk difference</strong>: <span class="math inline">\(\Pr[D^{a=1}_{k} = 1] - \Pr[D^{a=0}_{k} = 1]\)</span></li>
+</ul>
+<p><strong>NHEFS smoking cessation example</strong> (120-month results):</p>
+<ul>
+<li>Unadjusted: 76.2% survival among quitters vs.&nbsp;82.0% among non-quitters (confounded)</li>
+<li>IP weighting: 80.7% under cessation vs.&nbsp;80.5% under continued smoking; difference 0.2%</li>
+<li>Parametric g-formula: 80.4% under cessation vs.&nbsp;80.6% under continued smoking; difference −0.2%</li>
+</ul>
+<p>Both adjusted methods found little evidence of an effect of smoking cessation on mortality.</p>
+<p><strong>Why not just use hazard ratios?</strong> (Fine Point 17.2):</p>
+<ul>
+<li>Hazard ratios vary over time; a “single” hazard ratio from Cox regression is a weighted average</li>
+<li>Even time-specific hazard ratios have built-in selection bias (conditioning on survival is conditioning on a collider)</li>
+<li>Risk and survival differences/ratios are better-defined causal estimands</li>
+</ul>
+<aside class="notes">
+<p><strong>Common mistakes in survival analysis</strong>:</p>
+<ol type="1">
+<li>Reporting only a single (time-averaged) hazard ratio from a Cox model and interpreting it causally</li>
+<li>Treating competing events as independent censoring (see Fine Point 17.1)</li>
+<li>Ignoring time-varying confounding (addressed in Part III)</li>
+<li>Restricting the analysis to uncensored individuals when estimating AFT models, which introduces selection bias</li>
+</ol>
+<p><strong>Looking ahead</strong>: Part III extends these ideas to time-varying treatments, where survival analysis becomes even more complex. The g-formula and IP weighting remain powerful tools, but they must account for the time-varying nature of both treatment and confounders.</p>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside>
+</section></section>
+<section>
+<section id="references" class="title-slide slide level1 center" data-number="8">
+<h1><span class="header-section-number">8</span> References</h1>
+
+</section>
+<section class="slide level2 smaller scrollable" id="references">
+
+<div id="refs" class="references csl-bib-body hanging-indent" role="list">
+<div id="ref-hernan2020causal" class="csl-entry" role="listitem">
+Hernán, Miguel A, and James M Robins. 2020. <em>Causal Inference: What If</em>. Chapman &amp; Hall/CRC. <a href="https://miguelhernan.org/whatifbook">https://miguelhernan.org/whatifbook</a>.
+</div>
+</div>
+
+
+<script>
+(function () {
+  "use strict";
+
+  /**
+   * CSS selector matching all Quarto theorem and proof div environments.
+   *
+   * Quarto adds the `.theorem` class to all theorem-type divs
+   * (theorem, lemma, corollary, proposition, conjecture, definition,
+   * example, exercise, algorithm), so `.theorem[id]` covers all of them.
+   * Proof-type environments (.proof, .remark, .solution) are listed
+   * separately because they do not carry the `.theorem` class.
+   */
+  var THEOREM_SELECTOR = [
+    ".theorem[id]",
+    ".proof[id]",
+    ".remark[id]",
+    ".solution[id]",
+  ].join(", ");
+
+  function getQuartoHeadingAnchorIcon() {
+    var afterBodyScript = document.getElementById("quarto-html-after-body");
+    if (!afterBodyScript) {
+      return null;
+    }
+
+    var match = afterBodyScript.textContent.match(/const icon = ["']([^"']+)["']/);
+    return match ? match[1] : null;
+  }
+
+  // Quarto chain-link glyph from Bootstrap Icons.
+  var chainLinkIconFallback = "\ue9cb";
+  var headingAnchorIcon = getQuartoHeadingAnchorIcon();
+  var defaultAnchorIconFallback =
+    headingAnchorIcon && headingAnchorIcon !== "#" ? headingAnchorIcon : chainLinkIconFallback;
+
+  function getDefaultAnchorTemplate() {
+    var defaultAnchor =
+      document.querySelector(".anchored > a.anchorjs-link") ||
+      document.querySelector("a.anchorjs-link[data-anchorjs-icon]");
+    if (!defaultAnchor) {
+      return null;
+    }
+
+    return {
+      icon: defaultAnchor.getAttribute("data-anchorjs-icon") || defaultAnchor.textContent.trim(),
+      hasDataIcon: defaultAnchor.hasAttribute("data-anchorjs-icon"),
+      style: defaultAnchor.getAttribute("style")
+    };
+  }
+
+  function normalizeAnchorIcon(icon) {
+    if (!icon || icon === "#") {
+      return defaultAnchorIconFallback;
+    }
+
+    return icon;
+  }
+
+  function createChainLinkSvgIcon() {
+    var svgNs = "http://www.w3.org/2000/svg";
+    var svg = document.createElementNS(svgNs, "svg");
+    svg.setAttribute("viewBox", "0 0 16 16");
+    svg.setAttribute("fill", "currentColor");
+    svg.setAttribute("aria-hidden", "true");
+    svg.setAttribute("focusable", "false");
+    svg.setAttribute("class", "div-anchor-icon");
+
+    // Bootstrap Icons chain-link icon (bi-link-45deg), paths for the two
+    // chain links and the connecting segment.
+    [
+      "M6.354 5.5H4a3 3 0 0 0 0 6h3a3 3 0 0 0 2.83-2H11a4 4 0 0 1-4 3H4a4 4 0 0 1 0-8h2.354z",
+      "M9.646 10.5H12a3 3 0 1 0 0-6H9a3 3 0 0 0-2.83 2H5a4 4 0 0 1 4-3h3a4 4 0 0 1 0 8H9.646z",
+      "M5.5 8a.5.5 0 0 1 .5-.5h4a.5.5 0 0 1 0 1H6a.5.5 0 0 1-.5-.5"
+    ].forEach(function (pathData) {
+      var path = document.createElementNS(svgNs, "path");
+      path.setAttribute("d", pathData);
+      svg.appendChild(path);
+    });
+
+    return svg;
+  }
+
+  function alignDivAnchorWithDefault(anchor, template) {
+    if (!anchor) {
+      return;
+    }
+
+    anchor.classList.remove("external");
+    anchor.classList.add("no-external");
+
+    var normalizedIcon = normalizeAnchorIcon(template && template.icon);
+    if (normalizedIcon === chainLinkIconFallback) {
+      anchor.removeAttribute("data-anchorjs-icon");
+      anchor.textContent = "";
+      anchor.appendChild(createChainLinkSvgIcon());
+    } else if (template && template.hasDataIcon) {
+      anchor.setAttribute("data-anchorjs-icon", normalizedIcon);
+      anchor.textContent = normalizedIcon;
+    } else {
+      anchor.removeAttribute("data-anchorjs-icon");
+      anchor.textContent = normalizedIcon;
+    }
+
+    if (template && template.style) {
+      anchor.setAttribute("style", template.style);
+    } else {
+      anchor.removeAttribute("style");
+    }
+  }
+
+  function alignDivAnchorsWithDefault() {
+    var template = getDefaultAnchorTemplate();
+    document.querySelectorAll("a.div-anchor").forEach(function (anchor) {
+      alignDivAnchorWithDefault(anchor, template);
+    });
+  }
+
+  function ensureDivAnchorStyles() {
+    if (document.getElementById("div-anchor-styles")) {
+      return;
+    }
+
+    var style = document.createElement("style");
+    style.id = "div-anchor-styles";
+    style.textContent = [
+      ".div-anchor {",
+      "  opacity: 0;",
+      "  font-size: 0.875em;",
+      "  font-weight: 400;",
+      "  margin-left: 0.375em;",
+      "  text-decoration: none;",
+      "  color: inherit;",
+      "  vertical-align: middle;",
+      "  transition: opacity 0.2s ease;",
+      "}",
+      ".div-anchor:hover,",
+      ".div-anchor:focus {",
+      "  opacity: 1;",
+      "  text-decoration: none;",
+      "}",
+      ".div-anchor-icon {",
+      "  width: 0.875em;",
+      "  height: 0.875em;",
+      "  vertical-align: -0.125em;",
+      "}",
+      ":is(.theorem, .proof, .remark, .solution):hover .div-anchor,",
+      ":is(.theorem, .proof, .remark, .solution):focus-within .div-anchor {",
+      "  opacity: 1;",
+      "}"
+    ].join("\n");
+    document.head.appendChild(style);
+  }
+
+  /**
+   * Add anchor links to all theorem/proof divs with ids on the page.
+   */
+  function addDivAnchors() {
+    ensureDivAnchorStyles();
+
+    var divs = document.querySelectorAll(THEOREM_SELECTOR);
+    divs.forEach(function (div) {
+      var id = div.id;
+      if (!id) {
+        return;
+      }
+
+      // Skip if already processed.
+      if (div.querySelector(".div-anchor")) {
+        return;
+      }
+
+      var anchor = document.createElement("a");
+      anchor.className = "div-anchor anchorjs-link";
+      anchor.href = "#" + id;
+      anchor.setAttribute("aria-label", "Permalink to this block");
+      anchor.classList.add("no-external");
+
+      // Find the theorem-title or proof-title span
+      var titleSpan = div.querySelector(".theorem-title, .proof-title");
+
+      if (titleSpan) {
+        // Insert anchor immediately after the title span
+        titleSpan.insertAdjacentElement("afterend", anchor);
+      } else {
+        // Fallback: prepend to the first paragraph
+        var firstPara = div.querySelector("p");
+        if (firstPara) {
+          firstPara.insertAdjacentElement("afterbegin", anchor);
+        }
+      }
+    });
+
+    alignDivAnchorsWithDefault();
+  }
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", addDivAnchors);
+  } else {
+    addDivAnchors();
+  }
+
+  window.addEventListener("load", alignDivAnchorsWithDefault);
+})();
+</script>
+
+<script>
+function getQuartoHeadingAnchorIcon() {
+  const afterBodyScript = document.getElementById("quarto-html-after-body");
+  if (!afterBodyScript) {
+    return null;
+  }
+
+  const match = afterBodyScript.textContent.match(/const icon = ["']([^"']+)["']/);
+  return match ? match[1] : null;
+}
+
+// Quarto chain-link glyph from Bootstrap Icons.
+const chainLinkIconFallback = "\ue9cb";
+const headingAnchorIcon = getQuartoHeadingAnchorIcon();
+const defaultAnchorIconFallback =
+  headingAnchorIcon && headingAnchorIcon !== "#" ? headingAnchorIcon : chainLinkIconFallback;
+
+function getDefaultAnchorTemplate() {
+  // Prefer Quarto heading anchors first so the visible chain-link icon is reused.
+  const defaultAnchor =
+    document.querySelector(".anchored > a.anchorjs-link") ||
+    document.querySelector("a.anchorjs-link[data-anchorjs-icon]");
+  if (!defaultAnchor) {
+    return null;
+  }
+
+  return {
+    // Detect icon value from the template anchor's attribute or text.
+    icon: defaultAnchor.getAttribute("data-anchorjs-icon") || defaultAnchor.textContent.trim(),
+    hasDataIcon: defaultAnchor.hasAttribute("data-anchorjs-icon"),
+    style: defaultAnchor.getAttribute("style")
+  };
+}
+
+function normalizeAnchorIcon(icon) {
+  if (!icon || icon === "#") {
+    return defaultAnchorIconFallback;
+  }
+
+  return icon;
+}
+
+function createChainLinkSvgIcon() {
+  const svgNs = "http://www.w3.org/2000/svg";
+  const svg = document.createElementNS(svgNs, "svg");
+  svg.setAttribute("viewBox", "0 0 16 16");
+  svg.setAttribute("fill", "currentColor");
+  svg.setAttribute("aria-hidden", "true");
+  svg.setAttribute("focusable", "false");
+  svg.setAttribute("class", "equation-anchor-icon");
+
+  [
+    "M6.354 5.5H4a3 3 0 0 0 0 6h3a3 3 0 0 0 2.83-2H11a4 4 0 0 1-4 3H4a4 4 0 0 1 0-8h2.354z",
+    "M9.646 10.5H12a3 3 0 1 0 0-6H9a3 3 0 0 0-2.83 2H5a4 4 0 0 1 4-3h3a4 4 0 0 1 0 8H9.646z",
+    "M5.5 8a.5.5 0 0 1 .5-.5h4a.5.5 0 0 1 0 1H6a.5.5 0 0 1-.5-.5"
+  ].forEach(function (pathData) {
+    const path = document.createElementNS(svgNs, "path");
+    path.setAttribute("d", pathData);
+    svg.appendChild(path);
+  });
+
+  return svg;
+}
+
+function alignEquationAnchorWithDefault(anchor, template) {
+  if (!anchor) {
+    return;
+  }
+
+  anchor.classList.remove("external");
+  anchor.classList.add("no-external");
+
+  const normalizedIcon = normalizeAnchorIcon(template && template.icon);
+  if (normalizedIcon === chainLinkIconFallback) {
+    anchor.removeAttribute("data-anchorjs-icon");
+    anchor.textContent = "";
+    anchor.appendChild(createChainLinkSvgIcon());
+  } else if (template && template.hasDataIcon) {
+    anchor.setAttribute("data-anchorjs-icon", normalizedIcon);
+    anchor.textContent = normalizedIcon;
+  } else {
+    anchor.removeAttribute("data-anchorjs-icon");
+    anchor.textContent = normalizedIcon;
+  }
+
+  if (template && template.style) {
+    anchor.setAttribute("style", template.style);
+  } else {
+    anchor.removeAttribute("style");
+  }
+}
+
+function alignEquationAnchorsWithDefault() {
+  const template = getDefaultAnchorTemplate();
+  document.querySelectorAll("a.equation-anchor").forEach(function (anchor) {
+    alignEquationAnchorWithDefault(anchor, template);
+  });
+}
+
+function ensureEquationAnchorStyles() {
+  if (document.getElementById("equation-anchor-styles")) {
+    return;
+  }
+
+  const style = document.createElement("style");
+  style.id = "equation-anchor-styles";
+  style.textContent = `
+    .equation-anchor-target {
+      --equation-anchor-offset: 1.2rem;
+      position: relative;
+      display: block;
+    }
+    .equation-anchor {
+      position: absolute;
+      left: calc(-1 * var(--equation-anchor-offset));
+      top: 50%;
+      transform: translateY(-50%);
+      text-decoration: none;
+      opacity: 0.7;
+      font-size: 0.9em;
+    }
+    .equation-anchor:hover {
+      opacity: 1;
+    }
+    .equation-anchor-icon {
+      width: 0.9em;
+      height: 0.9em;
+      vertical-align: -0.125em;
+    }
+  `;
+  document.head.appendChild(style);
+}
+
+document.addEventListener("DOMContentLoaded", function () {
+  ensureEquationAnchorStyles();
+
+  let counter = 0;
+
+  document.querySelectorAll(".math.display").forEach(function (mathEl) {
+    // For labeled equations, Quarto wraps the math display span in an eq-* span.
+    // For unlabeled equations, use the parent element (typically a <p>).
+    const labeledContainer = mathEl.closest("[id^='eq-']");
+    const target = labeledContainer || mathEl.parentElement;
+
+    if (!target) {
+      return;
+    }
+
+    // Skip if already processed.
+    if (target.querySelector(".equation-anchor")) {
+      return;
+    }
+
+    // Use the labeled container's id, or assign an auto-generated id.
+    let id = labeledContainer ? labeledContainer.id : target.id;
+    if (!id) {
+      counter++;
+      id = "eq-anchor-" + counter;
+      target.id = id;
+    }
+
+    target.classList.add("equation-anchor-target");
+
+    const anchor = document.createElement("a");
+    anchor.className = "equation-anchor anchorjs-link";
+    anchor.href = "#" + id;
+    anchor.setAttribute("aria-label", "Permalink to this equation");
+    target.appendChild(anchor);
+  });
+
+  alignEquationAnchorsWithDefault();
+});
+
+window.addEventListener("load", alignEquationAnchorsWithDefault);
+</script>
+
+</section></section>
+    </div>
+  <div class="quarto-auto-generated-content" style="display: none;">
+<div class="footer footer-default">
+
+</div>
+</div></div>
+
+  <script>window.backupDefine = window.define; window.define = undefined;</script>
+  <script src="../site_libs/revealjs/dist/reveal.js"></script>
+  <!-- reveal.js plugins -->
+  <script src="../site_libs/revealjs/plugin/quarto-line-highlight/line-highlight.js"></script>
+  <script src="../site_libs/revealjs/plugin/pdf-export/pdfexport.js"></script>
+  <script src="../site_libs/revealjs/plugin/reveal-menu/menu.js"></script>
+  <script src="../site_libs/revealjs/plugin/reveal-menu/quarto-menu.js"></script>
+  <script src="../site_libs/revealjs/plugin/reveal-chalkboard/plugin.js"></script>
+  <script src="../site_libs/revealjs/plugin/quarto-support/support.js"></script>
+  
+
+  <script src="../site_libs/revealjs/plugin/notes/notes.js"></script>
+  <script src="../site_libs/revealjs/plugin/search/search.js"></script>
+  <script src="../site_libs/revealjs/plugin/zoom/zoom.js"></script>
+  <script src="../site_libs/revealjs/plugin/math/math.js"></script>
+  <script>window.define = window.backupDefine; window.backupDefine = undefined;</script>
+
+  <script>
+
+      // Full list of configuration options available at:
+      // https://revealjs.com/config/
+      Reveal.initialize({
+'controlsAuto': false,
+'previewLinksAuto': true,
+'pdfSeparateFragments': false,
+'autoAnimateEasing': "ease",
+'autoAnimateDuration': 1,
+'autoAnimateUnmatched': true,
+'jumpToSlide': true,
+'menu': {"side":"left","useTextContentForMissingTitles":true,"markers":false,"loadIcons":false,"custom":[{"title":"Tools","icon":"<i class=\"fas fa-gear\"></i>","content":"<ul class=\"slide-menu-items\">\n<li class=\"slide-tool-item active\" data-item=\"0\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.fullscreen(event)\"><kbd>f</kbd> Fullscreen</a></li>\n<li class=\"slide-tool-item\" data-item=\"1\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.speakerMode(event)\"><kbd>s</kbd> Speaker View</a></li>\n<li class=\"slide-tool-item\" data-item=\"2\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.overview(event)\"><kbd>o</kbd> Slide Overview</a></li>\n<li class=\"slide-tool-item\" data-item=\"3\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.togglePdfExport(event)\"><kbd>e</kbd> PDF Export Mode</a></li>\n<li class=\"slide-tool-item\" data-item=\"4\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.toggleScrollView(event)\"><kbd>r</kbd> Scroll View Mode</a></li>\n<li class=\"slide-tool-item\" data-item=\"5\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.toggleChalkboard(event)\"><kbd>b</kbd> Toggle Chalkboard</a></li>\n<li class=\"slide-tool-item\" data-item=\"6\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.toggleNotesCanvas(event)\"><kbd>c</kbd> Toggle Notes Canvas</a></li>\n<li class=\"slide-tool-item\" data-item=\"7\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.downloadDrawings(event)\"><kbd>d</kbd> Download Drawings</a></li>\n<li class=\"slide-tool-item\" data-item=\"8\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.keyboardHelp(event)\"><kbd>?</kbd> Keyboard Help</a></li>\n</ul>"}],"openButton":true},
+'chalkboard': {"buttons":true},
+'smaller': true,
+ 
+        // Display controls in the bottom right corner
+        controls: true,
+
+        // Help the user learn the controls by providing hints, for example by
+        // bouncing the down arrow when they first encounter a vertical slide
+        controlsTutorial: false,
+
+        // Determines where controls appear, "edges" or "bottom-right"
+        controlsLayout: 'edges',
+
+        // Visibility rule for backwards navigation arrows; "faded", "hidden"
+        // or "visible"
+        controlsBackArrows: 'faded',
+
+        // Display a presentation progress bar
+        progress: true,
+
+        // Display the page number of the current slide
+        slideNumber: 'c/t',
+
+        // 'all', 'print', or 'speaker'
+        showSlideNumber: 'all',
+
+        // Add the current slide number to the URL hash so that reloading the
+        // page/copying the URL will return you to the same slide
+        hash: true,
+
+        // Start with 1 for the hash rather than 0
+        hashOneBasedIndex: false,
+
+        // Flags if we should monitor the hash and change slides accordingly
+        respondToHashChanges: true,
+
+        // Push each slide change to the browser history
+        history: true,
+
+        // Enable keyboard shortcuts for navigation
+        keyboard: true,
+
+        // Enable the slide overview mode
+        overview: true,
+
+        // Disables the default reveal.js slide layout (scaling and centering)
+        // so that you can use custom CSS layout
+        disableLayout: false,
+
+        // Vertical centering of slides
+        center: false,
+
+        // Enables touch navigation on devices with touch input
+        touch: true,
+
+        // Loop the presentation
+        loop: false,
+
+        // Change the presentation direction to be RTL
+        rtl: false,
+
+        // see https://revealjs.com/vertical-slides/#navigation-mode
+        navigationMode: 'linear',
+
+        // Randomizes the order of slides each time the presentation loads
+        shuffle: false,
+
+        // Turns fragments on and off globally
+        fragments: true,
+
+        // Flags whether to include the current fragment in the URL,
+        // so that reloading brings you to the same fragment position
+        fragmentInURL: false,
+
+        // Flags if the presentation is running in an embedded mode,
+        // i.e. contained within a limited portion of the screen
+        embedded: false,
+
+        // Flags if we should show a help overlay when the questionmark
+        // key is pressed
+        help: true,
+
+        // Flags if it should be possible to pause the presentation (blackout)
+        pause: true,
+
+        // Flags if speaker notes should be visible to all viewers
+        showNotes: false,
+
+        // Global override for autoplaying embedded media (null/true/false)
+        autoPlayMedia: null,
+
+        // Global override for preloading lazy-loaded iframes (null/true/false)
+        preloadIframes: null,
+
+        // Number of milliseconds between automatically proceeding to the
+        // next slide, disabled when set to 0, this value can be overwritten
+        // by using a data-autoslide attribute on your slides
+        autoSlide: 0,
+
+        // Stop auto-sliding after user input
+        autoSlideStoppable: true,
+
+        // Use this method for navigation when auto-sliding
+        autoSlideMethod: null,
+
+        // Specify the average time in seconds that you think you will spend
+        // presenting each slide. This is used to show a pacing timer in the
+        // speaker view
+        defaultTiming: null,
+
+        // Enable slide navigation via mouse wheel
+        mouseWheel: false,
+
+        // The display mode that will be used to show slides
+        display: 'block',
+
+        // Hide cursor if inactive
+        hideInactiveCursor: true,
+
+        // Time before the cursor is hidden (in ms)
+        hideCursorTime: 5000,
+
+        // Opens links in an iframe preview overlay
+        previewLinks: false,
+
+        // Transition style (none/fade/slide/convex/concave/zoom)
+        transition: 'slide',
+
+        // Transition speed (default/fast/slow)
+        transitionSpeed: 'default',
+
+        // Transition style for full page slide backgrounds
+        // (none/fade/slide/convex/concave/zoom)
+        backgroundTransition: 'fade',
+
+        // Number of slides away from the current that are visible
+        viewDistance: 3,
+
+        // Number of slides away from the current that are visible on mobile
+        // devices. It is advisable to set this to a lower number than
+        // viewDistance in order to save resources.
+        mobileViewDistance: 2,
+
+        // The "normal" size of the presentation, aspect ratio will be preserved
+        // when the presentation is scaled to fit different resolutions. Can be
+        // specified using percentage units.
+        width: 1050,
+
+        height: 700,
+
+        // Factor of the display size that should remain empty around the content
+        margin: 0,
+
+        math: {
+          mathjax: 'https://cdn.jsdelivr.net/npm/mathjax@4/tex-chtml.js',
+          config: 'TeX-AMS_HTML-full',
+          tex2jax: {
+            inlineMath: [['\\(','\\)']],
+            displayMath: [['\\[','\\]']],
+            balanceBraces: true,
+            processEscapes: false,
+            processRefs: true,
+            processEnvironments: true,
+            preview: 'TeX',
+            skipTags: ['script','noscript','style','textarea','pre','code'],
+            ignoreClass: 'tex2jax_ignore',
+            processClass: 'tex2jax_process'
+          },
+        },
+
+        // reveal.js plugins
+        plugins: [QuartoLineHighlight, PdfExport, RevealMenu, RevealChalkboard, QuartoSupport,
+
+          RevealMath,
+          RevealNotes,
+          RevealSearch,
+          RevealZoom
+        ]
+      });
+    </script>
+    <script id="quarto-html-after-body" type="application/javascript">
+      window.document.addEventListener("DOMContentLoaded", function (event) {
+        const tabsets =  window.document.querySelectorAll(".panel-tabset-tabby")
+        tabsets.forEach(function(tabset) {
+          const tabby = new Tabby('#' + tabset.id);
+        });
+        const isCodeAnnotation = (el) => {
+          for (const clz of el.classList) {
+            if (clz.startsWith('code-annotation-')) {                     
+              return true;
+            }
+          }
+          return false;
+        }
+        const onCopySuccess = function(e) {
+          // button target
+          const button = e.trigger;
+          // don't keep focus
+          button.blur();
+          // flash "checked"
+          button.classList.add('code-copy-button-checked');
+          var currentTitle = button.getAttribute("title");
+          button.setAttribute("title", "Copied!");
+          let tooltip;
+          if (window.bootstrap) {
+            button.setAttribute("data-bs-toggle", "tooltip");
+            button.setAttribute("data-bs-placement", "left");
+            button.setAttribute("data-bs-title", "Copied!");
+            tooltip = new bootstrap.Tooltip(button, 
+              { trigger: "manual", 
+                customClass: "code-copy-button-tooltip",
+                offset: [0, -8]});
+            tooltip.show();    
+          }
+          setTimeout(function() {
+            if (tooltip) {
+              tooltip.hide();
+              button.removeAttribute("data-bs-title");
+              button.removeAttribute("data-bs-toggle");
+              button.removeAttribute("data-bs-placement");
+            }
+            button.setAttribute("title", currentTitle);
+            button.classList.remove('code-copy-button-checked');
+          }, 1000);
+          // clear code selection
+          e.clearSelection();
+        }
+        const getTextToCopy = function(trigger) {
+          const outerScaffold = trigger.parentElement.cloneNode(true);
+          const codeEl = outerScaffold.querySelector('code');
+          for (const childEl of codeEl.children) {
+            if (isCodeAnnotation(childEl)) {
+              childEl.remove();
+            }
+          }
+          return codeEl.innerText;
+        }
+        const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+          text: getTextToCopy
+        });
+        clipboard.on('success', onCopySuccess);
+        if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+          const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+            text: getTextToCopy,
+            container: window.document.getElementById('quarto-embedded-source-code-modal')
+          });
+          clipboardModal.on('success', onCopySuccess);
+        }
+          var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+          var mailtoRegex = new RegExp(/^mailto:/);
+            var filterRegex = new RegExp("https:\/\/ucdavis\.github\.io\/win\/");
+          var isInternal = (href) => {
+              return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+          }
+          // Inspect non-navigation links and adorn them if external
+         var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+          for (var i=0; i<links.length; i++) {
+            const link = links[i];
+            if (!isInternal(link.href)) {
+              // undo the damage that might have been done by quarto-nav.js in the case of
+              // links that we want to consider external
+              if (link.dataset.originalHref !== undefined) {
+                link.href = link.dataset.originalHref;
+              }
+            }
+          }
+        function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+          const config = {
+            allowHTML: true,
+            maxWidth: 500,
+            delay: 100,
+            arrow: false,
+            appendTo: function(el) {
+                return el.closest('section.slide') || el.parentElement;
+            },
+            interactive: true,
+            interactiveBorder: 10,
+            theme: 'light-border',
+            placement: 'bottom-start',
+          };
+          if (contentFn) {
+            config.content = contentFn;
+          }
+          if (onTriggerFn) {
+            config.onTrigger = onTriggerFn;
+          }
+          if (onUntriggerFn) {
+            config.onUntrigger = onUntriggerFn;
+          }
+            config['offset'] = [0,0];
+            config['maxWidth'] = 700;
+          window.tippy(el, config); 
+        }
+        const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+        for (var i=0; i<noterefs.length; i++) {
+          const ref = noterefs[i];
+          tippyHover(ref, function() {
+            // use id or data attribute instead here
+            let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+            try { href = new URL(href).hash; } catch {}
+            const id = href.replace(/^#\/?/, "");
+            const note = window.document.getElementById(id);
+            if (note) {
+              return note.innerHTML;
+            } else {
+              return "";
+            }
+          });
+        }
+        const findCites = (el) => {
+          const parentEl = el.parentElement;
+          if (parentEl) {
+            const cites = parentEl.dataset.cites;
+            if (cites) {
+              return {
+                el,
+                cites: cites.split(' ')
+              };
+            } else {
+              return findCites(el.parentElement)
+            }
+          } else {
+            return undefined;
+          }
+        };
+        var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+        for (var i=0; i<bibliorefs.length; i++) {
+          const ref = bibliorefs[i];
+          const citeInfo = findCites(ref);
+          if (citeInfo) {
+            tippyHover(citeInfo.el, function() {
+              var popup = window.document.createElement('div');
+              citeInfo.cites.forEach(function(cite) {
+                var citeDiv = window.document.createElement('div');
+                citeDiv.classList.add('hanging-indent');
+                citeDiv.classList.add('csl-entry');
+                var biblioDiv = window.document.getElementById('ref-' + cite);
+                if (biblioDiv) {
+                  citeDiv.innerHTML = biblioDiv.innerHTML;
+                }
+                popup.appendChild(citeDiv);
+              });
+              return popup.innerHTML;
+            });
+          }
+        }
+      });
+      </script>
+    
+
+</body></html>
