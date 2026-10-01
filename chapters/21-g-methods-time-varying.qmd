@@ -16,7 +16,7 @@ Chapter 20 showed that, with treatment-confounder feedback,
 traditional adjustment methods give a non-null estimate
 even when a time-varying treatment has no effect at all.
 This chapter shows that the **g-methods** --
-the g-formula, IP weighting, g-estimation, and their doubly robust generalizations --
+the g-formula, IP weighting, g-estimation, and doubly robust versions that combine them --
 recover the correct (null) answer in the same dataset.
 Throughout, we compare **static** strategies under the identifiability conditions of Chapter 19:
 sequential exchangeability, positivity, and consistency.
@@ -24,10 +24,11 @@ sequential exchangeability, positivity, and consistency.
 ::: {.notes}
 This chapter is based on @hernan2020causal [Chapter 21, pp. 277-303].
 
-**Roadmap**: the time-fixed versions of these methods appeared earlier in the book:
-the g-formula in Chapter 13,
-IP weighting of marginal structural models in Chapter 12,
-and g-estimation of structural nested models in Chapters 14 and 15.
+**Roadmap**: each method was introduced earlier for a time-fixed treatment:
+IP weighting of marginal structural models (Chapter 12),
+the g-formula (Chapter 13),
+and g-estimation of structural nested models (Chapter 14)
+(the book's introduction to Chapter 21 says Chapter 15 [@hernan2020causal, p. 277], but g-estimation is the subject of Chapter 14).
 All three g-methods rest on the same identifying assumptions
 but model different parts of the data distribution:
 the g-formula models the outcome and covariates,
@@ -85,7 +86,7 @@ positivity, and consistency, the g-formula equals $\E{Y^{\bar{a}}}$.
 :::
 
 ::: {.notes}
-The g-formula for time-varying treatments was first described by Robins (1986, 1987),
+Robins (1986, 1987) introduced the g-formula for time-varying treatments,
 as cited in @hernan2020causal [p. 278].
 Every factor is conditional on prior treatment and covariate history;
 this conditioning is unnecessary in the time-fixed case,
@@ -337,10 +338,15 @@ In practice one may use other summaries of treatment history and flexible functi
 
 **Effect modification**: for a dichotomous *baseline* variable $V$ in $L_0$,
 the model $\E{Y^{\bar{a}} \mid V} = \beta_0 + \beta_1 \mathrm{cum}(\bar{a}) + \beta_2 V + \beta_3 \mathrm{cum}(\bar{a}) V$
-can be fit with $W^{\bar{A}}$ or, better,
-$SW^{\bar{A}}(V) = \prod_{k=0}^{K} f(A_k \mid \bar{A}_{k-1}, V) / f(A_k \mid \bar{A}_{k-1}, \bar{L}_k)$.
+is estimated by fitting the associational model
+$\E{Y \mid \bar{A}, V} = \theta_0 + \theta_1 \mathrm{cum}(\bar{A}) + \theta_2 V + \theta_3 \mathrm{cum}(\bar{A}) V$
+by weighted least squares with $W^{\bar{A}}$ or, better,
+$SW^{\bar{A}}(V) = \prod_{k=0}^{K} f(A_k \mid \bar{A}_{k-1}, V) / f(A_k \mid \bar{A}_{k-1}, \bar{L}_k)$,
+so that $\theta_1$ and $\theta_3$ estimate the causal $\beta_1$ and $\beta_3$.
 With treatment-confounder feedback, $V$ may include only baseline variables;
-including any $L_k$ with $k > 0$ could make $\theta_1$ and $\theta_3$ non-null under the null.
+if $V$ included any $L_k$ with $k > 0$,
+the weighted estimates of $\theta_1$ and $\theta_3$ could be non-null even though $\beta_1 = \beta_3 = 0$ under the null
+[@hernan2020causal, p. 285].
 
 **Technical Point 21.2 (dynamic strategies)**: for a deterministic dynamic strategy $g$,
 the g-formula equals the mean of $Y$ among pseudo-population members who follow $g$
@@ -445,15 +451,27 @@ Technical Point 21.5 shows that including the terms $A_0 A_1/(\hat{\pi}_0 \hat{\
 as covariates in the sequential logistic outcome models makes both correction terms average to exactly 0,
 so the plug-in estimate stays in $[0, 1]$; the estimator in the main text is an instance of this construction.
 
-*Fact-check note*: the first display of $\hat{U}_{TR}$ on p. 288 reads $-\{A_0 A_1/(\hat{\pi}_0 \hat{\pi}_1) - 1\}\hat{b}_1$,
-which does not match the rearranged form the same Technical Point gives;
-the rearranged form shown here is the one consistent with all three robustness arguments.
+*Fact-check note*: the book's first display of $\hat{U}_{TR}$ [@hernan2020causal, p. 288] writes the $\hat{b}_1$ term as
+$-\{A_0 A_1/(\hat{\pi}_0 \hat{\pi}_1) - 1\}\hat{b}_1$,
+which disagrees with the rearranged form the same Technical Point gives (the one shown here).
+Expanding the rearranged form term by term gives
+
+$$\hat{b}_0 + \frac{A_0 A_1}{\hat{\pi}_0 \hat{\pi}_1}\left(Y - \hat{b}_1\right) + \frac{A_0}{\hat{\pi}_0}\left(\hat{b}_1 - \hat{b}_0\right)
+= \frac{A_0 A_1 Y}{\hat{\pi}_0 \hat{\pi}_1}
+- \left\{\frac{A_0 A_1}{\hat{\pi}_0 \hat{\pi}_1} - \frac{A_0}{\hat{\pi}_0}\right\}\hat{b}_1
+- \left\{\frac{A_0}{\hat{\pi}_0} - 1\right\}\hat{b}_0,$$
+
+so the "$-1$" inside the braces on $\hat{b}_1$ should be $-A_0/\hat{\pi}_0$.
+The two versions differ by $(1 - A_0/\hat{\pi}_0)\,\hat{b}_1$,
+which does not average to 0 in general,
+so only the corrected form supports the three robustness arguments.
+The book's third rearrangement (used for the Molina et al. argument) agrees with the corrected form.
 
 **Fine Point 21.2 (representations of the g-formula)**: the same g-formula can be written as
 standardization (the *joint density modeling* estimator of Section 21.1),
 as iterated conditional expectations (the ICE estimator, the basis of this section),
 or as an IP weighted mean (Section 21.2).
-These are nonparametrically equivalent but lead to different estimators in practice
+Without parametric restrictions the three coincide, but in practice each suggests a different estimator
 [@hernan2020causal, p. 291].
 
 **Technical Point 21.6** gives a multiply robust plug-in estimator of $\E{Y^g}$
@@ -676,9 +694,13 @@ fit a model for $f(l_k \mid \bar{a}_{k-1}, \bar{l}_{k-1})$;
 simulate covariate histories under $g$;
 and add to $\hat{\mathrm{E}}[Y^{\bar{0}}]$ the average over simulations of
 $\sum_{j=0}^{K} a_{v,j} \gamma_j(\bar{a}_{v,j-1}, \bar{l}_{v,j}, \hat{\beta})$.
-Under the null, $\gamma_j(\cdot, \hat{\beta})$ converges to 0
-even when the covariate model is wrong,
-so this procedure **preserves the null**, unlike the parametric g-formula
+The result is consistent for $\E{Y^g}$ if the covariate model and the SNMM are correct
+and either the treatment model or the outcome model $\E{Y^{\bar{A}_{k-1}, \underline{0}_k} \mid \bar{L}_k, \bar{A}_{k-1}}$ is correct.
+Under the null, $\gamma_j(\cdot, \hat{\beta})$ converges to 0 whenever $\hat{\beta}$ is consistent for $\beta = 0$,
+even when the covariate model is wrong.
+So, under the identifiability conditions, this procedure **preserves the null**, unlike the parametric g-formula,
+provided $\Pr[A_k = 1 \mid \bar{L}_k, \bar{A}_{k-1}]$ is known (as in a sequentially randomized experiment)
+or either the treatment model or the outcome model is correct at each $k$
 [@hernan2020causal, p. 297].
 
 **Technical Point 21.13** generalizes SNMMs to blips followed by an arbitrary strategy $g$ rather than "never treat"
@@ -739,7 +761,12 @@ Numerator and denominator are estimated with separate logistic models.
   (the same proportion censored at each $k$),
   but make censoring occur at random with respect to $\bar{L}_k$:
   selection, but no selection bias.
-- Either way, the pseudo-population has no arrows from $L_k$ and $A_k$ into later $C_m$,
+- With nonstabilized weights the pseudo-population has no arrows from $L_k$ or $A_k$ into later $C_m$ ($m > k$).
+  With stabilized weights it has no arrows from $L_k$ into later $C_m$,
+  but censoring may still depend on past treatment,
+  because the numerator conditions on $\bar{A}_{k-1}$
+  (as for $SW^C$ in Chapter 12).
+  Either way, censoring no longer depends on the measured covariate history,
   so IP weighting can estimate the joint effect of $(\bar{A}, \bar{C})$
   even when $\bar{L}$ is affected by prior treatment.
 
@@ -749,6 +776,12 @@ a pseudo-population in which nobody is censored, then g-estimate in it.
 ::: {.notes}
 The estimated $SW^{\bar{C}}$ have mean 1 when the censoring model is correctly specified
 [@hernan2020causal, p. 298].
+
+*Fact-check note*: the book states that "regardless of the type of IP weights used",
+the pseudo-population has no arrows from $L_k$ and $A_k$ into future $C_m$ [@hernan2020causal, p. 299].
+For stabilized weights this holds for $L_k$ only:
+their numerator $\Pr[C_k = 0 \mid C_{k-1} = 0, \bar{A}_{k-1}]$ keeps the dependence of censoring on past treatment,
+which is harmless because the analysis conditions on $\bar{A}$.
 
 **Technical Point 21.10 (failure-time outcomes)**: to estimate the risk $\Pr[D_{k+1}^{\bar{a}, \bar{c} = \bar{0}} = 1]$,
 either use the g-formula with models for the discrete-time hazards
@@ -782,11 +815,11 @@ If positivity held, it would identify $\E{Y^g}$ under any strategy $g$
 [@hernan2020causal, p. 300].
 :::
 
-The big g-formula depends only on the distribution of the **factuals** $(A, L, Y, U)$,
+The big g-formula is a function of the distribution of the **factuals** $(A, L, Y, U)$ alone,
 but it includes unmeasured $U$, so it cannot be computed directly.
 
 ::: {.notes}
-*Factuals* are variables that exist in the actual world, as opposed to counterfactuals;
+*Factuals* are variables of the actual world, in contrast to counterfactuals;
 some factuals, like $U$, are unavailable for analysis because they were not measured
 [@hernan2020causal, p. 300].
 :::

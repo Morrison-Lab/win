@@ -30,7 +30,7 @@ NHEFS stands for the National Health and Nutrition Examination Survey Data I Epi
 
 ---
 
-Part II is organized around one question: what is the average causal effect of smoking cessation on body weight gain?
+Part II is organized around one question: on average, how much does quitting smoking change body weight?
 
 ### Research Question
 
@@ -225,10 +225,10 @@ The confidence interval must account for the weighting. Three options [@hernan20
 2. **Nonparametric bootstrap**; requires computing resources (or patience) for large data sets.
 3. **Robust ("sandwich") variance estimator**, as used for GEE models with an independent working correlation; a standard option in most software.
 
-The robust-variance intervals are valid but **conservative**: they cover the super-population parameter more than 95% of the time. All confidence intervals for IP weighted estimates in this chapter are of this conservative kind.
+The robust-variance intervals are valid but **conservative**: their actual coverage of the super-population parameter exceeds the nominal 95%. All confidence intervals for IP weighted estimates in this chapter are of this conservative kind.
 
 ::: {.notes}
-If the model for $\Pr[A = 1 \mid L]$ is misspecified, the estimates of $\theta_0$ and $\theta_1$ will be biased and, as in Chapter 11, the confidence intervals may cover the true values less than 95% of the time [@hernan2020causal, Chapter 12, p. 167].
+If the model for $\Pr[A = 1 \mid L]$ is misspecified, the estimates of $\theta_0$ and $\theta_1$ will be biased and, as in Chapter 11, the intervals may fall short of their nominal 95% coverage [@hernan2020causal, Chapter 12, p. 167].
 :::
 
 ---
@@ -262,7 +262,7 @@ $$
 $$
 so the ratio equals the IP weighted mean $\E{\indicp{A = a} Y / f(A \mid L)}$, which equals $\E{Y^a}$ under exchangeability and positivity (Technical Point 3.1).
 
-**Why the Hajek estimator is preferred in practice**: unlike the Horvitz-Thompson estimator, it is guaranteed to lie between 0 and 1 for a dichotomous $Y$, even when $f(A \mid L)$ is replaced by predictions from a misspecified model.
+**Why the Hajek estimator is preferred in practice**: for a dichotomous $Y$ it always stays within $[0, 1]$, which the Horvitz-Thompson estimator does not, even when $f(A \mid L)$ is replaced by predictions from a misspecified model.
 
 **Without positivity**: let $Q(a) = \{l : \Pr(A = a \mid L = l) > 0\}$. The Hajek ratio then equals $\sum_l \E{Y \mid A = a, L = l, L \in Q(a)} \Pr[L = l \mid L \in Q(a)]$, which under exchangeability is $\E{Y^a \mid L \in Q(a)}$. Its denominator converges to $\Pr[Q(a)]$ rather than 1, so the ratio of the Horvitz-Thompson limit to the Hajek limit is $\Pr[Q(a)]$, and the difference of Hajek estimators for $a = 1$ versus $a = 0$ has no causal interpretation.
 :::
@@ -356,7 +356,7 @@ In the NHEFS, there are 4 white women aged 66, and none of them quit smoking: po
 ::: {.notes}
 The two kinds of violation have different consequences [@hernan2020causal, Fine Point 12.2, p. 169]:
 
-- Under **structural** violations, neither IP weighting nor standardization supports inference about the entire population; inference must be restricted to strata in which structural positivity holds (see Technical Point 12.1).
+- Under **structural** violations, neither IP weighting nor standardization supports inference about the entire population; inference has to be limited to the strata where structural positivity holds (see Technical Point 12.1).
 - Under **random** violations, the parametric model smooths over the zeros: the logistic model of Section 12.2 estimated the probability of quitting for white women aged 66 by interpolating from everyone else.
 
 Whenever we use parametric IP weights in the presence of zero cells, as in the estimate $\hat\theta_1 = 3.4$, we are effectively assuming that the nonpositivity is random.
@@ -407,14 +407,14 @@ fit <- lm(weight_change ~ quit_smoking,
 ::: {.notes}
 The model $\E{Y^a} = \beta_0 + \beta_1 a$ is **saturated** because $A$ is dichotomous: two unknowns on each side ($\E{Y^{a=1}}$ and $\E{Y^{a=0}}$ on the left, $\beta_0$ and $\beta_1$ on the right). That is why sample averages in the pseudo-population sufficed [@hernan2020causal, Chapter 12, p. 170].
 
-**Null preservation** (Chapter 9): when the null hypothesis of no average causal effect is true, a marginal structural model is never misspecified. For example, $\E{Y^a} = \beta_0 + \beta_1 a + \beta_2 a^2$ is then correctly specified with $\beta_1 = \beta_2 = 0$ and $\beta_0 = \E{Y^a}$ for every $a$.
+**Null preservation** (Chapter 9): if treatment has no average causal effect, no marginal structural model can be misspecified. For example, $\E{Y^a} = \beta_0 + \beta_1 a + \beta_2 a^2$ is then correctly specified with $\beta_1 = \beta_2 = 0$ and $\beta_0 = \E{Y^a}$ for every $a$.
 :::
 
 ---
 
 ### Continuous Treatment: Change in Smoking Intensity
 
-New treatment: $A$ = cigarettes per day in 1982 minus cigarettes per day at baseline (e.g., $-25$ or $+40$), among the 1162 individuals who smoked 25 or fewer cigarettes per day at baseline.
+New treatment: $A$ = cigarettes per day in 1982 minus cigarettes per day at baseline (e.g., $-25$ or $+40$), restricted to the 1162 individuals whose baseline smoking was at most 25 cigarettes per day.
 
 Goal: $\E{Y^a} - \E{Y^{a'}}$ for any $a, a'$. A saturated model is impractical with dozens of treatment values, so we posit a **nonsaturated** marginal structural model (a parabolic dose-response curve):
 
@@ -453,7 +453,7 @@ In the NHEFS analysis:
 - estimated $\hat{SW}^A$ ranged from 0.19 to 5.10, with mean 1.00.
 
 ::: {.notes}
-IP weighting for continuous treatments is often dangerous: the estimates may be exquisitely sensitive to the model or algorithm used to estimate the conditional density $f(A \mid L)$. The constant-variance assumption seemed reasonable after inspecting a residuals plot, and other choices (e.g., a truncated normal with heteroscedasticity) gave similar estimates. More stable estimation of IP weights is an active research area [@hernan2020causal, Chapter 12, pp. 170-171].
+IP weighting for continuous treatments is often dangerous: the estimates can change a great deal with the choice of model or algorithm for the conditional density $f(A \mid L)$. The constant-variance assumption seemed reasonable after inspecting a residuals plot, and other choices (e.g., a truncated normal with heteroscedasticity) gave similar estimates. Finding more stable ways to estimate these weights is ongoing research [@hernan2020causal, Chapter 12, pp. 170-171].
 :::
 
 ---
@@ -491,7 +491,7 @@ For the effect of quitting smoking $A$ on death $D$ by 1992 (1: yes, 0: no):
 
 $$\logit \Pr[D^a = 1] = \alpha_0 + \alpha_1 a$$
 
-- $\exp(\alpha_1)$ is the causal odds ratio of death for quitting versus not quitting.
+- $\exp(\alpha_1)$ is the causal odds ratio of death comparing quitting with not quitting.
 - Estimate it by fitting $\logit \Pr[D = 1 \mid A] = \theta_0 + \theta_1 A$ to the IP weighted pseudo-population.
 - NHEFS estimate: $\exp(\hat\theta_1) = 1.0$ (95% CI: 0.8, 1.4).
 
@@ -514,8 +514,12 @@ Additive effect modification by $V$ is present if $\beta_2 \neq 0$. The causal e
 $$
 \begin{aligned}
 \E{Y^{a=1} \mid V = v} - \E{Y^{a=0} \mid V = v}
-&= (\beta_0 + \beta_1 + \beta_2 v + \beta_3 v) - (\beta_0 + \beta_3 v)\\
-&= \beta_1 + \beta_2 v.
+&= (\beta_0 + \beta_1 \cdot 1 + \beta_2 v \cdot 1 + \beta_3 v) - (\beta_0 + \beta_1 \cdot 0 + \beta_2 v \cdot 0 + \beta_3 v)
+&& \text{(model evaluated at } a = 1 \text{ and } a = 0 \text{, with } V = v\text{)}\\
+&= (\beta_0 + \beta_1 + \beta_2 v + \beta_3 v) - (\beta_0 + \beta_3 v)
+&& \text{(multiply out the factors 1 and 0)}\\
+&= \beta_1 + \beta_2 v
+&& \text{(cancel } \beta_0 \text{ and } \beta_3 v\text{)}.
 \end{aligned}
 $$
 :::
@@ -613,7 +617,7 @@ using the factorization $f(A, C = 0 \mid L) = f(A \mid L) \times \Pr[C = 0 \mid 
 ::: {.notes}
 If some components of $L$ are affected by treatment $A$ (as in Figure 8.4), the conditional independence $Y^{a,c=0} \ind (A, C) \mid L$ will not generally hold; Part III presents alternative exchangeability conditions under which IP weighting still works [@hernan2020causal, Chapter 12, p. 173].
 
-Some variables in $L$ may have zero coefficients in the model for $f(A \mid L)$ but not in the model for $\Pr[C = 0 \mid L, A]$, or vice versa. Still, in large samples it is always more efficient to keep all variables $L$ that independently predict the outcome in both models.
+Some variables in $L$ may have zero coefficients in the model for $f(A \mid L)$ but not in the model for $\Pr[C = 0 \mid L, A]$, or vice versa. Even so, in large samples, efficiency is always gained by including in both models every variable in $L$ that independently predicts the outcome.
 :::
 
 ---
@@ -641,7 +645,7 @@ The estimated $SW^C$ have mean 1 when the model for $\Pr[C = 0 \mid A]$ is corre
 - $\hat{SW}^{A,C} = \hat{SW}^A \times \hat{SW}^C$ ranged from 0.35 to 4.09, with mean 1.00.
 - $\hat\theta_1 = 3.5$ kg (95% CI: 2.5, 4.5).
 
-This is almost the same as the estimate with $SW^A$ alone (3.4 kg), which suggests that either there is no selection bias due to censoring or the measured covariates cannot eliminate it.
+This is almost the same as the estimate with $SW^A$ alone (3.4 kg), so either censoring introduces no selection bias here, or the measured covariates are not enough to remove it.
 :::
 
 ::: {.notes}
@@ -668,7 +672,7 @@ $$
 $$
 so the ratio of the two equals $g(a)\E{Y^a}/g(a) = \E{Y^a}$ (assuming $g(a) \neq 0$).
 
-The Hajek mean is the solution $u$ of $\E{\frac{g[A]}{f[A \mid L]} (Y - u)} = 0$. Similarly, for $\E{Y^a} = \beta_0 + \beta_1 a$, the weighted least squares estimators with weights $g[A]/f[A \mid L]$ solve
+The Hajek mean is the solution $u$ of $\E{\frac{g[A] \indicp{A = a}}{f[A \mid L]} (Y - u)} = 0$, since solving for $u$ gives the ratio of the two expectations. (The book prints this equation without the indicator $\indicp{A = a}$ [@hernan2020causal, Technical Point 12.2, p. 174]; without it, the solution would average $Y$ over all treatment levels rather than estimate $\E{Y^a}$.) Similarly, for $\E{Y^a} = \beta_0 + \beta_1 a$, the weighted least squares estimators with weights $g[A]/f[A \mid L]$ solve
 $$\hE{\frac{g[A]}{f[A \mid L]} \sb{Y - (\beta_0 + \beta_1 A)} \begin{pmatrix} 1 \\ A \end{pmatrix}} = 0,$$
 and $\hat\beta_0$ and $\hat\beta_0 + \hat\beta_1$ are exactly the Hajek estimators of $\E{Y^{a=0}}$ and $\E{Y^{a=1}}$. In the pseudo-population created by $g[A]/f[A \mid L]$, the mean of $Y$ given $A = a$ still equals $\E{Y^a}$.
 :::
