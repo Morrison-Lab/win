@@ -23,9 +23,8 @@ It remains in the repository's history.
 downloads the revision named in `VERSION`,
 checks its sha256,
 and extracts the text to `inst/book/whatif.txt`.
-The recorded sha256 was taken from a copy of the 19 August 2026 revision,
-not from a download of the recorded URL,
-so if the first run reports a mismatch,
+The recorded sha256 matched a download of the recorded URL on 2026-10-01.
+If a later run reports a mismatch,
 compare the download it keeps as `<name>.pdf.unverified`
 with a known-good copy before concluding the book changed.
 To move to a newer revision,
