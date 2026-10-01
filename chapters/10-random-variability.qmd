@@ -12,385 +12,642 @@ format:
 
 {{< include ../latex-macros/macros.qmd >}}
 
-Part I focused on causal inference in settings where we conceptualized study populations as effectively infinite, allowing us to ignore random variability and focus solely on systematic bias from confounding, selection, and measurement. Part II now introduces **random variability** and the use of **statistical models** for causal inference. This chapter bridges identification (Part I) and estimation (Part II), explaining why we need models and how to quantify uncertainty.
+So far we have treated study populations as if they were effectively infinite,
+so that the only obstacles to causal inference were the systematic biases of the previous chapters:
+confounding, selection bias, and measurement bias.
+Real studies are finite, and random variability is a second, qualitatively different reason why causal inferences may be wrong.
+This chapter, the last of Part I, introduces random variability and the problems it raises for causal inference.
 
 ::: {.notes}
-This chapter is based on @hernan2020causal [Chapter 10, pp. 131-142]. It marks the transition from Part I (Causal inference without models) to Part II (Causal inference with models).
+This chapter is based on @hernan2020causal [Chapter 10, pp. 137-150].
+It closes Part I (Causal inference without models) and motivates Part II (Causal inference with models).
+
+The book opens with a toy randomized experiment ("does my looking up make other pedestrians look up?") with only 4 pedestrians, 2 per arm.
+By chance, 1 of the 2 pedestrians in the "looking up" arm, and neither in the "looking straight" arm, was blind,
+so half of the treated group could not respond to treatment and the estimated effect was diluted.
+Nothing about this study is systematically biased: no confounding (randomized), no selection bias (all responses recorded), no measurement bias.
+The problem is purely the small size of the study population.
 :::
 
-## 10.1 Identification Versus Estimation (pp. 131-134)
+## 10.1 Identification Versus Estimation (pp. 137-139)
 
 ---
 
-Up to now, we have focused on **identification**: determining whether causal effects can be computed from observed data under certain assumptions. Now we turn to **estimation**: using finite data to approximate those causal effects.
+**Identification problems** are problems in which we can act as if the study population were effectively infinite.
+Part I reduced causal inference to an identification problem:
+under exchangeability, positivity, and consistency, can the average causal effect be computed from the data?
 
-### Key Concepts in Statistical Estimation
-
-**Estimand**: The population parameter of interest (e.g., $\Pr[Y = 1|A = a]$ in the super-population).
-
-**Estimator**: A rule for computing the estimand from sample data.
-
-**Estimate**: The numerical value obtained by applying the estimator to a particular sample (a point estimate).
-
-::: {#exm-estimator}
-## Sample Proportion as an Estimator
-
-**Estimand**: Super-population risk $\Pr[Y = 1|A = 1]$
-
-**Estimator**: Sample proportion $\widehat{Pr}[Y = 1|A = 1]$
-
-**Estimate**: From our 20-person study, $\widehat{Pr}[Y = 1|A = 1] = 7/13 \approx 0.54$
-:::
+**Estimation** asks how to learn about that effect from a *finite* sample, in the presence of random variability.
 
 ::: {.notes}
-**Identification vs. Estimation**:
+In Chapter 2 the twenty-person heart transplant study was treated as if each individual stood for 1 billion identical individuals.
+That device let us ignore random fluctuations and concentrate on systematic biases,
+but it is unrealistic: real study populations are not effectively infinite.
 
-- **Identification** (Part I): Can we express the causal effect in terms of observable quantities?
-  - Requires: Exchangeability, positivity, consistency
-  - Answer: "Yes, the causal risk difference equals the associational risk difference under these conditions"
+Identifiability was introduced in Section 3.1 and revisited in Sections 7.2 and 8.4 [@hernan2020causal, Chapter 10, p. 137].
+For background on statistics, the book points to @wasserman2004all and @casella2002statistical.
+:::
 
-- **Estimation** (Part II): How do we estimate the causal effect from finite data?
-  - Requires: Statistical methods to handle random variability
-  - Answer: "Use sample statistics with appropriate confidence intervals"
+### Estimands, Estimators, and Estimates
+
+Suppose the 20 study individuals are a random sample from a **super-population** so large that we can regard it as infinite,
+and we want to make inferences about that super-population.
+
+::: {#def-estimand-estimator}
+## Estimand, estimator, estimate
+
+- **Estimand**: the parameter of interest in the super-population, e.g. $\Pr[Y = 1 \mid A = a]$.
+- **Estimator**: a rule that takes the data from any sample and produces a numerical value for the estimand.
+- **Estimate**: the value the estimator produces in a particular sample (a **point estimate**).
+:::
+
+::: {#exm-estimator}
+## Sample proportion as an estimator
+
+- Estimand: $\Pr[Y = 1 \mid A = 1]$ in the super-population.
+- Estimator: the sample proportion $\widehat{\Pr}[Y = 1 \mid A = 1]$.
+- Estimate: in the heart transplant study, 7 of the 13 treated individuals died, so $\widehat{\Pr}[Y = 1 \mid A = 1] = 7/13 \approx 0.54$.
+
+A different random sample of 20 individuals would give a different estimate.
 :::
 
 ### Consistency of Estimators
 
-An estimator is **consistent** if estimates get arbitrarily close to the true parameter as sample size increases.
+An estimator is **consistent** for an estimand if its estimates get arbitrarily close to the estimand as the sample size $n$ grows.
+For example, the sample proportion $\widehat{\Pr}[Y = 1 \mid A = a]$ is consistent for $\Pr[Y = 1 \mid A = a]$:
+the larger $n$, the smaller we expect $\left|\Pr[Y = 1 \mid A = a] - \widehat{\Pr}[Y = 1 \mid A = a]\right|$ to be.
 
-$$Pr\left[|\hat{\theta}_n - \theta| > \epsilon\right] \rightarrow 0 \text{ as } n \rightarrow \infty, \text{ for all } \epsilon > 0$$
+Even a consistent estimator can produce a point estimate far from the super-population value, especially in small samples.
+So we should have more confidence in estimates from larger studies, and we quantify that confidence with **confidence intervals**.
 
-The sample proportion $\widehat{Pr}[Y = 1|A = a]$ is a consistent estimator of $\Pr[Y = 1|A = a]$.
+### Wald Confidence Intervals
 
-### Confidence Intervals
+A 95% **Wald confidence interval** for a parameter $\theta$ based on an estimator $\hat\theta$ is
 
-A **95% confidence interval** quantifies uncertainty due to random sampling.
+$$
+\hat\theta \pm 1.96 \times \widehat{\text{se}}(\hat\theta),
+$$
 
-**Construction (Wald interval)**:
+where $\widehat{\text{se}}(\hat\theta)$ estimates the (exact or large-sample) standard error of $\hat\theta$,
+and 1.96 is the upper 97.5% quantile of the standard normal distribution.
 
-1. Compute point estimate $\hat{p}$
-2. Estimate standard error: $\widehat{SE} = \sqrt{\frac{\hat{p}(1-\hat{p})}{n}}$
-3. Compute interval: $\hat{p} \pm 1.96 \times \widehat{SE}$
+::: {#exm-wald-binomial}
+## Wald interval for the risk among the treated
 
-**Example**: For $\hat{p} = 7/13 \approx 0.54$ with $n = 13$:
+Let $p = \Pr[Y = 1 \mid A = 1]$ and $\hat p = \widehat{\Pr}[Y = 1 \mid A = 1] = 7/13$, with $n = 13$.
+The standard error of a binomial proportion is $\sqrt{p(1-p)/n}$, so
 
-- $\widehat{SE} = \sqrt{(7/13)(6/13)/13} = 0.138$
-- 95% CI: $0.54 \pm 1.96(0.138) = (0.27, 0.81)$
+$$
+\begin{aligned}
+\widehat{\text{se}}(\hat p)
+&= \sqrt{\frac{\hat p (1 - \hat p)}{n}}
+= \sqrt{\frac{(7/13)(6/13)}{13}} \\
+&= \sqrt{\frac{42/169}{13}}
+= \sqrt{\frac{42}{2197}}
+\approx \sqrt{0.0191} \approx 0.138.
+\end{aligned}
+$$
 
-::: {.notes}
-**Interpretation of 95% Confidence Intervals**:
+The 95% Wald interval is
 
-**Correct interpretation** (frequentist): 
-In repeated sampling, 95% of such intervals will contain the true parameter.
-
-**Incorrect interpretation**: 
-"There is a 95% probability that the true parameter is in this interval."
-
-The parameter is fixed (though unknown). The interval either contains it (probability 1) or doesn't (probability 0).
-
-**Calibrated vs. valid intervals**:
-
-- **Calibrated**: Contains the true parameter in exactly 95% of samples
-- **Conservative**: Contains the true parameter in >95% of samples  
-- **Valid**: Calibrated or conservative (at least 95% coverage)
-
-Most commonly used intervals (like Wald intervals) are **large-sample valid**: guaranteed to be valid only in large samples.
+$$
+\begin{aligned}
+\hat p \pm 1.96 \times 0.138
+&= 0.538 \pm 0.271 \\
+&= (0.27, 0.81).
+\end{aligned}
+$$
 :::
 
-## 10.2 Estimation of Causal Effects (pp. 134-136)
+### Calibrated, Conservative, and Valid Intervals
+
+::: {#def-valid-ci}
+## Calibration and validity of a 95% confidence interval
+
+A 95% confidence interval is
+
+- **calibrated** if it contains the estimand in 95% of random samples;
+- **conservative** if it contains the estimand in more than 95% of samples;
+- **anticonservative** otherwise.
+
+It is **valid** if, for every value of the true parameter, it is calibrated or conservative (coverage of at least 95%).
+Among valid intervals, we prefer the narrowest.
+:::
+
+- **Small-sample valid**: valid at every sample size for which it is defined
+  (small-sample calibrated intervals are sometimes called **exact**).
+- **Large-sample (asymptotically) valid**: valid only in large samples.
+
+The Wald interval for $p$ in @exm-wald-binomial is large-sample calibrated but not small-sample valid.
+In the book, "95% confidence interval" means a large-sample valid interval, such as a Wald interval, unless stated otherwise.
+
+::: {.notes}
+The Wald interval centered at $\hat p$ is only guaranteed to be valid in large samples, and it can be badly anticonservative in small samples [@brown2001interval].
+The book assumes, for simplicity, that the sample is large enough for the Wald interval in the example to be valid.
+Small-sample valid intervals for $p$ exist but are not often used in practice.
+:::
+
+### Interpreting a Confidence Interval
+
+Validity is a statement about coverage over repeated samples from the super-population.
+If we and our colleagues construct valid 95% intervals in every study we ever conduct,
+then the parameters of interest will be covered in at least 95% of those studies,
+though we cannot tell which (up to) 5% of the intervals missed.
+
+A single 95% interval does **not** mean there is a 95% probability that the estimand lies in it.
+The estimand is fixed, so the probability that it lies in $(0.27, 0.81)$ is either 0 or 1.
+
+::: {.notes}
+A frequentist confidence level refers to how often the interval traps the unknown super-population quantity across a collection of studies, or across hypothetical repetitions of one study.
+
+In contrast, a Bayesian 95% **credible interval** can be interpreted as "there is a 95% probability that the estimand is in the interval",
+because for a Bayesian, probability is a degree of belief rather than a frequency.
+The book adopts the frequency definition of probability (see its Fine Point 11.2 for Bayesian intervals).
+:::
+
+::: {.callout-note title="Fine Point 10.1: Honest Confidence Intervals"}
+For a large-sample valid interval, the smallest sample size at which coverage reaches 95% may depend on the unknown true parameter.
+A large-sample valid interval is **uniform** or **honest** if there is a sample size $n$ at which it covers the true parameter at least 95% of the time *whatever* the true parameter is.
+Without uniformity, at any finite $n$ some data-generating distributions may have coverage well below 95%.
+Even for honest intervals, the smallest such $n$ is generally unknown and hard to determine, even by simulation [@robins1997toward].
+
+From here on, the book uses "valid confidence interval" to mean a large-sample *honest* interval.
+Any small-sample valid interval is automatically honest for all $n$ at which it is defined.
+:::
+
+### Bias Means Failing to Center a Valid Wald Interval
+
+Not every consistent estimator can center a valid Wald interval, even in large samples.
+Most users of statistics call an estimator **unbiased** if it can center a valid Wald interval and **biased** if it cannot,
+and the book adopts that definition for now.
+
+Confidence intervals quantify only random error, so they can overstate our confidence when systematic biases may be present (Fine Point 10.2).
+
+::: {.callout-note title="Technical Point 10.1: Bias and Consistency in Statistical Inference"}
+Suppose we observe $n$ i.i.d. copies of a random vector whose distribution $P$ lies in a model $\mathcal{M}$.
+
+- $\hat\theta_n$ is **consistent** for $\theta = \theta(P)$ in $\mathcal{M}$ if, for every $P \in \mathcal{M}$ and every $\varepsilon > 0$,
+  $$\Pr_P\left[\left|\hat\theta_n - \theta(P)\right| > \varepsilon\right] \to 0 \text{ as } n \to \infty.$$
+- $\hat\theta_n$ is **exactly unbiased** in $\mathcal{M}$ if $E_P[\hat\theta_n] = \theta(P)$ for every $P \in \mathcal{M}$;
+  the exact bias under $P$ is $E_P[\hat\theta_n] - \theta(P)$.
+  For many parameters, such as the risk ratio $\Pr[Y=1 \mid A=1]/\Pr[Y=1 \mid A=0]$, no exactly unbiased estimator exists.
+- A **systematically biased** estimator is neither consistent nor exactly unbiased.
+
+@robins1987foundations argue that applied researchers call an estimator unbiased only if it can center a valid Wald interval,
+and show that this holds only for estimators that are **uniformly asymptotically normal and unbiased (UANU)**:
+there exist sequences $\sigma_n(P)$ such that
+
+$$
+\sup_{P \in \mathcal{M}} \left| \Pr_P\left[ n^{1/2} \left(\hat\theta_n - \theta(P)\right) / \sigma_n(P) < t \right] - \Phi(t) \right| \to 0 \text{ as } n \to \infty
+$$
+
+for every $t \in \mathbb{R}$, where $\Phi$ is the standard normal cumulative distribution function [@robins1997toward].
+All inconsistent estimators, and some consistent ones (examples in Chapter 18), are biased under this definition.
+In the book, "unbiased" without qualification means UANU.
+:::
+
+## 10.2 Estimation of Causal Effects (pp. 140-141)
 
 ---
 
-In randomized experiments with random sampling, standard statistical methods can be used to estimate causal effects and compute confidence intervals.
+Suppose the heart transplant study were a marginally randomized experiment in which
 
-### Setting
+- the 20 individuals are a random sample from a near-infinite super-population,
+- *everyone in the super-population* was randomly assigned to $A = 1$ or $A = 0$, and
+- everyone adhered to their assigned treatment.
 
-Suppose:
+Then exchangeability holds in the super-population, $\Pr[Y^a = 1] = \Pr[Y = 1 \mid A = a]$, so
 
-1. Study population is a random sample from a super-population
-2. Treatment is randomly assigned in the super-population (or in the sample)
-3. All individuals adhere to assigned treatment
-4. Exchangeability holds: $\Pr[Y^a = 1] = \Pr[Y = 1|A = a]$
-
-### Causal Inference
-
-Because of exchangeability, the causal risk difference equals the associational risk difference in the super-population:
-
-$$\Pr[Y^{a=1} = 1] - \Pr[Y^{a=0} = 1] = \Pr[Y = 1|A = 1] - \Pr[Y = 1|A = 0]$$
-
-**Estimators**:
-
-- Causal risk difference: $\widehat{Pr}[Y = 1|A = 1] - \widehat{Pr}[Y = 1|A = 0]$
-- Causal risk ratio: $\widehat{Pr}[Y = 1|A = 1] / \widehat{Pr}[Y = 1|A = 0]$
-
-Standard statistical methods provide confidence intervals for these causal effects.
+$$
+\Pr[Y^{a=1} = 1] - \Pr[Y^{a=0} = 1] = \Pr[Y = 1 \mid A = 1] - \Pr[Y = 1 \mid A = 0].
+$$
 
 ::: {.notes}
-**Two perspectives on randomization**:
-
-1. **Super-population randomization**: Entire super-population is randomized, then we sample
-   - Exchangeability holds in super-population
-   - Sample estimates have random sampling variability
-
-2. **Sample randomization**: We sample first, then randomize only the sample
-   - Exchangeability holds on average across randomizations
-   - Can lead to imbalance in small samples
-
-**Mathematically equivalent**: Both approaches lead to the same statistical inference procedures.
-
-**Practical implication**: We typically assume a super-population exists and use standard statistical methods.
+Because the study population is a random sample, $\widehat{\Pr}[Y = 1 \mid A = a]$ is an unbiased estimator of $\Pr[Y = 1 \mid A = a]$,
+and, by exchangeability in the super-population, also of $\Pr[Y^a = 1]$.
 :::
 
-### Observational Studies
+### Testing and Estimation in the Randomized Experiment
 
-In observational studies, similar methods apply after adjusting for confounding:
+Testing the causal null hypothesis $\Pr[Y^{a=1} = 1] = \Pr[Y^{a=0} = 1]$ reduces to comparing the sample proportions
+$\widehat{\Pr}[Y = 1 \mid A = 1] = 7/13$ and $\widehat{\Pr}[Y = 1 \mid A = 0] = 3/7$.
 
-- Compute standardized or IP weighted estimates
-- Calculate confidence intervals using appropriate standard errors
-- Account for adjustment when computing standard errors
+Standard methods give confidence intervals for the causal effects in the super-population, estimated by
+
+- causal risk difference: $7/13 - 3/7$;
+- causal risk ratio: $(7/13)/(3/7)$.
+
+In observational studies, slightly more involved but standard procedures give confidence intervals for standardized, IP weighted, or stratified association measures.
+
+### Randomizing the Sample Instead of the Super-Population
+
+Now suppose only the 20 study individuals, not the whole super-population, were randomized.
+Because of sampling variability, exchangeability need not hold exactly *in the sample*.
+
+::: {#exm-chance-imbalance}
+## Chance imbalance in prognosis
+
+Classify each individual as good or bad prognosis at randomization,
+and call the arms exchangeable if they contain the same proportion with bad prognosis.
+By chance, 2 of the 13 individuals assigned to $A = 1$ ($\approx 15\%$) and 3 of the 7 assigned to $A = 0$ ($\approx 43\%$) might have bad prognosis.
+In a larger sample, the relative imbalance between arms would very probably shrink.
+:::
+
+There are then two possible targets of inference:
+
+1. **The randomized sample itself** (agnostic about any super-population): **randomization-based inference** [@robins1988confidence], whose technicalities are beyond the book's scope.
+2. **The super-population from which the sample was drawn**: mathematically equivalent to the first conceptualization in this section.
+   Randomization followed by random sampling is equivalent to random sampling followed by randomization.
 
 ::: {.notes}
-**Key difference from randomized experiments**:
-
-- **Randomized**: Association = Causation (under assumptions)
-- **Observational**: Need to adjust for confounding first, then association = causation (under additional assumptions)
-
-Both require handling random variability through confidence intervals.
+We are often not interested in the first target.
+In a trial comparing two first-line cancer treatments, learning which is better comes too late to help the trial participants;
+the study is meant to guide treatment for a larger group of individuals similar to those studied.
+So far we have assumed that this larger group is a super-population from which participants were randomly sampled.
+Section 10.3 examines that assumption.
 :::
 
-## 10.3 The Myth of the Super-Population (pp. 136-139)
+::: {.callout-note title="Fine Point 10.2: Uncertainty from Systematic Biases"}
+The width of a Wald-type interval depends on the estimator's standard error, so it reflects only random error.
+Systematic biases (confounding, selection, measurement) are another source of uncertainty and do not shrink as the sample grows.
+Hence the larger the study, the more a usual Wald interval understates the total uncertainty.
+
+Some authors therefore call these intervals **compatibility intervals**:
+they show which effect sizes are highly compatible with the data *under our adjustment assumptions and methods* [@amrhein2019scientists; @greenland2019some],
+without claiming confidence that adjustment removed all systematic bias.
+
+Discussion sections usually treat systematic bias informally.
+**Quantitative bias analysis** instead produces intervals that combine random and systematic uncertainty [@lash2009applying];
+Bayesian alternatives also exist.
+:::
+
+## 10.3 The Myth of the Super-Population (pp. 142-143)
 
 ---
 
-The concept of a "super-population" is a useful fiction that allows us to apply statistical methods, but it raises important questions about the sources of randomness.
+Chapter 1 named two sources of randomness: **sampling variability** and **nondeterministic counterfactuals**.
 
-### Two Sources of Randomness
+Nearly every investigator would report the binomial interval
+$\hat p \pm 1.96 \sqrt{\hat p (1 - \hat p)/n}$
+for $p$ from $\hat p = 7/13$.
+But this interval is justified only if $\hat p$ has a binomial sampling distribution.
+When does that happen?
 
-1. **Sampling variability**: Random selection of individuals from a super-population
-2. **Nondeterministic counterfactuals**: Intrinsic randomness in outcomes even with fixed treatment and covariates
+### Two Scenarios That Give a Binomial Distribution
 
-### When Are Binomial Confidence Intervals Valid?
+**Scenario 1 (super-population).**
+The study population is a random sample from an essentially infinite super-population (sometimes called the source or target population),
+and the estimand is $p = \Pr[Y = 1 \mid A = 1]$ in that super-population.
+Then, across repeated random samples of 13 treated individuals, the number who develop the outcome is binomial with success probability $p$,
+and the Wald interval from @exm-wald-binomial is asymptotically calibrated for $p$.
 
-The standard binomial confidence interval for $p = \Pr[Y = 1|A = a]$ is valid in two scenarios:
-
-**Scenario 1: Random sampling from a super-population**
-
-- Study participants are randomly sampled from a large super-population
-- Each individual $i$ has a fixed but unknown $Y_i^a$ (deterministic counterfactuals)
-- Randomness comes solely from which individuals are sampled
-
-**Scenario 2: Nondeterministic counterfactuals**
-
-- Study participants are the entire population of interest (no sampling)
-- Each individual has a probability $p_i$ of outcome, not a fixed $Y_i^a$
-- Randomness comes from the probabilistic nature of outcomes
+**Scenario 2 (stochastic counterfactuals, no super-population).**
+Each of the 13 treated individuals $i$ has a nondeterministic counterfactual probability $p_i^{a=1}$,
+the observed outcome $Y_i = Y_i^{a=1}$ occurs with probability $p_i^{a=1}$,
+and $p_i^{a=1}$ equals the *same* value $p$ for all 13.
+Then the number of treated with the outcome is binomial with success probability $p$,
+and the interval is again asymptotically calibrated for $p$.
 
 ::: {.notes}
-**The super-population is often a fiction**:
-
-In many studies, we don't actually randomly sample from a larger population:
-
-- Clinical trials: Enroll volunteers who meet criteria (not random sampling)
-- Observational studies: Use convenient samples (hospitals, registries)
-- Rare diseases: Study all available patients (no super-population)
-
-**Why use super-population framework anyway?**
-
-Even without actual random sampling, the super-population framework provides a convenient way to:
-
-1. Quantify uncertainty via confidence intervals
-2. Use standard statistical methods
-3. Think about generalizability
-
-**Alternative: Randomization-based inference**
-
-Some authors prefer inference based solely on the randomization of treatment within the observed sample, without invoking a super-population. This approach has different technical requirements.
+"i.i.d." in Technical Point 10.1 means that the data were a random sample of size $n$ from a super-population, i.e., Scenario 1.
+The book credits @robins1988confidence with a more detailed discussion of the two scenarios.
 :::
 
-### Practical Implications
+### Scenario 2 Is Untenable
 
-Most applied researchers use confidence intervals computed under the super-population framework, even when:
+The risks $p_i^{a=1}$ almost certainly vary between individuals (for example, with genetic make-up).
+If they are not constant, the natural estimand for the study population is their average, say $p$,
+but the number of treated with the outcome is then **not** binomial with success probability $p$,
+and the binomial interval is not calibrated but **conservative**.
 
-- No random sampling was performed
-- The super-population is not well-defined
-- Generalization to a specific population is unclear
+So anyone who reports a binomial interval for $\Pr[Y = 1 \mid A = a]$ while acknowledging between-individual variation in risk
+is implicitly assuming Scenario 1.
+Under Scenario 1 the count is binomial whether the counterfactuals are deterministic or stochastic.
 
-This practice is justified by the convenience and familiarity of standard methods, though it requires careful interpretation.
+::: {.notes}
+Why the interval is conservative rather than anticonservative: if the outcomes are independent Bernoulli($p_i$) with unequal $p_i$ (a Poisson-binomial count),
+their sum has variance $\sum_i p_i(1-p_i)$, which is smaller than the binomial variance $n \bar p (1 - \bar p)$ at the same mean $\bar p$.
+To see this, write
 
-## 10.4 The Conditionality Principle (pp. 139-140)
+$$
+\begin{aligned}
+\sum_i p_i(1-p_i)
+&= \sum_i p_i - \sum_i p_i^2 \\
+&= n\bar p - \left( n \bar p^2 + \sum_i (p_i - \bar p)^2 \right) \\
+&= n \bar p (1 - \bar p) - \sum_i (p_i - \bar p)^2,
+\end{aligned}
+$$
+
+using $\sum_i p_i^2 = n\bar p^2 + \sum_i (p_i - \bar p)^2$.
+The binomial formula therefore overstates the variance, so the interval is too wide.
+(This derivation is ours, added to explain the book's statement.)
+:::
+
+### Why Does the Myth Endure?
+
+Advantage of the super-population: nothing hinges on whether the world is deterministic.
+Yet it is usually a fiction; individuals are rarely sampled at random from any near-infinite population.
+It endures because
+
+1. it leads to simple statistical methods, and
+2. it gives a simple route to **generalization** from the study population (e.g., our 20 individuals) to a large target population (e.g., all immortals in the Greek pantheon).
+
+Because the random sampling is fictional, a 95% interval computed under Scenario 1 should be read as a **what-if statement**:
+it covers the super-population parameter *had* the study individuals been randomly sampled from a near-infinite super-population.
+
+::: {.notes}
+An investigator might reject Scenario 1 if the pool of potential treatment recipients is not much larger than the study population,
+or if the target population is believed to differ from the study population in ways that sampling variability cannot explain.
+The rest of the chapter accepts that individuals were randomly sampled from a super-population, and studies the consequences of random variability for causal inference, starting with a simple randomized experiment.
+:::
+
+## 10.4 The Conditionality "Principle" (pp. 144-147)
 
 ---
 
-When should we condition on variables when computing causal effects and their standard errors?
+::: {#exm-trial-unadjusted}
+## A randomized trial, unadjusted (Table 10.1)
 
-### The Principle
+A trial of treatment $A$ on 1-year death $Y$ randomized 240 individuals, 120 per arm.
 
-**Conditionality principle**: If a variable $L$ is independent of treatment $A$ and outcome $Y$ under the intervention, we may condition on $L$ when computing estimates and standard errors without affecting validity.
+|         | $Y=1$ | $Y=0$ |
+|---------|------:|------:|
+| $A = 1$ | 24    | 96    |
+| $A = 0$ | 42    | 78    |
 
-### Applications
+Unadjusted risk difference:
 
-**Example 1: Stratified randomization**
+$$
+\frac{24}{120} - \frac{42}{120} = 0.20 - 0.35 = -0.15.
+$$
 
-If treatment is randomized within strata of sex $L$:
+Estimated variance:
 
-- Can estimate effects unconditional on $L$ (marginal effects)
-- Can estimate effects conditional on $L$ (stratum-specific effects)
-- Both are valid; choice depends on scientific question
+$$
+\begin{aligned}
+\frac{(24/120)(96/120)}{120} + \frac{(42/120)(78/120)}{120}
+&= \frac{0.20 \times 0.80 + 0.35 \times 0.65}{120} \\
+&= \frac{0.16 + 0.2275}{120} = \frac{0.3875}{120} = \frac{31}{9600}.
+\end{aligned}
+$$
 
-**Example 2: Baseline covariates in randomized trials**
+95% Wald interval:
 
-Even when baseline covariates $L$ are balanced across treatment groups:
+$$
+-0.15 \pm 1.96 \sqrt{31/9600} = -0.15 \pm 1.96 \times 0.0568 = -0.15 \pm 0.111 = (-0.26, -0.04).
+$$
 
-- Conditioning on $L$ may improve precision (narrower confidence intervals)
-- Does not introduce bias if $L$ is a pre-treatment variable
-- Called "covariate adjustment" or "regression adjustment"
-
-::: {.notes}
-**Why condition on baseline variables?**
-
-**Precision gain**: 
-
-- If $L$ predicts outcome $Y$, adjusting for $L$ reduces unexplained variability
-- Leads to smaller standard errors and narrower confidence intervals
-- Can increase statistical power
-
-**No bias introduced**:
-
-- If $L$ is measured before treatment assignment
-- And randomization ensures $L \perp A$
-- Then adjusting for $L$ doesn't create confounding
-
-**Practical recommendation**:
-
-In randomized trials, pre-specify baseline covariates to adjust for. This improves efficiency without cherry-picking.
+The investigators publish: treatment reduced the risk of death by 15 percentage points.
 :::
 
-## 10.5 The Curse of Dimensionality (pp. 140-142)
+::: {.notes}
+In a near-infinite super-population, randomization would make the arms exchangeable, $Y^a \ind A$,
+and the associational risk difference would equal the causal risk difference $\Pr[Y^{a=1} = 1] - \Pr[Y^{a=0} = 1]$.
+With only 240 individuals, randomization guarantees only that departures from exchangeability are due to chance, not that they are absent.
+Our ignorance of chance correlations between unmeasured baseline risk factors and $A$ in the sample contributes to the length (0.22) of the interval.
+:::
+
+### A Chance Imbalance on Smoking
+
+::: {#exm-trial-stratified}
+## The same trial stratified by smoking $L$ (Table 10.2)
+
+| $L = 1$ (smokers) | $Y=1$ | $Y=0$ |
+|---------|------:|------:|
+| $A = 1$ | 4     | 76    |
+| $A = 0$ | 2     | 38    |
+
+| $L = 0$ (nonsmokers) | $Y=1$ | $Y=0$ |
+|---------|------:|------:|
+| $A = 1$ | 20    | 20    |
+| $A = 0$ | 40    | 40    |
+
+- Proportion treated: $80/120$ among smokers, twice the $40/120$ among nonsmokers.
+- Smokers: $4/80 - 2/40 = 0.05 - 0.05 = 0$.
+- Nonsmokers: $20/40 - 40/80 = 0.50 - 0.50 = 0$.
+
+The adjusted (stratified) analysis finds no effect in either stratum, although the marginal estimate suggested a benefit.
+The Wald interval centered at the adjusted estimate is $(-0.076, 0.076)$ (see Technical Point 10.5 for the variance).
+:::
+
+Malfeasance is ruled out, so the imbalance is "very very bad luck".
+Should the article be retracted?
+
+- Investigator 1: no. Imbalances on unmeasured factors $U$ may cancel the imbalance on $L$, so the unadjusted estimate may still be closer to the truth.
+- Investigator 2: yes. The strong $L$-$A$ association confounds the estimate; within levels of $L$ we have mini randomized trials, whose intervals reflect possible $U$-$A$ associations given $L$.
+
+### Settling the Debate
+
+Assume a constant causal risk difference across strata of $L$, and imagine running the trial trillions of times.
+**Condition on** the runs in which $L$ and $A$ are as strongly positively associated as observed.
+Within each level of $L$, any pre-treatment risk factor $U$ is positively associated with $A$ in essentially as many of these runs as it is negatively associated
+(even if $U$ and $L$ are highly correlated). Therefore:
+
+- **Conditionally** (over those runs): the adjusted estimate is unbiased; the unadjusted estimate is greatly biased.
+- **Unconditionally** (over all runs): both are unbiased, but the adjusted estimate has smaller variance.
+
+Either way, the Wald interval centered on the adjusted estimator is the better analysis.
+**Investigator 2 is right; the article should be retracted.**
+
+::: {.notes}
+The adjusted estimator is unconditionally more efficient because it is the maximum likelihood estimator (MLE) of the risk difference when data on $L$ are available.
+:::
+
+### The Conditionality Principle
+
+The observed $L$-$A$ association is an **ancillary statistic** for the causal risk difference.
+
+::: {#def-conditionality-principle}
+## Conditionality principle
+
+Inference on a parameter should be performed conditional on ancillary statistics.
+:::
+
+Investigators who intuitively follow this principle call an estimator unbiased only if it can center a valid Wald interval *conditional on* ancillary statistics,
+a stricter definition than in Section 10.1.
+To the frequentist objection that the unadjusted estimate is unbiased over all runs, they reply:
+why should $L$-$A$ associations in hypothetical other studies matter, when in *my* study $L$ is a confounder?
+
+That reply is convincing in randomized and observational studies **as long as the number of measured confounders is not large**.
+With many confounders, strictly following the conditionality principle stops being wise (Section 10.5).
+The quotation marks around "principle" in the section title anticipate this point.
+
+::: {.callout-note title="Technical Point 10.2: A Formal Statement of the Conditionality Principle"}
+Take one dichotomous $L$, exchangeability $Y^a \ind A \mid L$, and a stratum-specific risk difference
+$\text{sRD} = \Pr(Y = 1 \mid L = l, A = 1) - \Pr(Y = 1 \mid L = l, A = 0)$ known to be constant across strata and of interest.
+The likelihood factors as
+
+$$
+\prod_{i=1}^n f(Y_i \mid L_i, A_i; \text{sRD}, p_0) \times f(A_i \mid L_i; \alpha) \times f(L_i; \rho),
+$$
+
+where $p_{0l} = \Pr(Y = 1 \mid L = l, A = 0)$, and $p_0$, $\alpha$, $\rho$ are nuisance parameters.
+
+The data on $(A, L)$ are **S-ancillary** for sRD: the conditional distribution of the data given $(A, L)$ depends on sRD,
+but the joint density of $(A, L)$ shares no parameters with $f(Y \mid L, A; \text{sRD}, p_0)$.
+The conditionality principle says to condition on S-ancillary statistics, here $\{A_i, L_i; i = 1, \ldots, n\}$.
+The same holds if the risk ratio, rather than the risk difference, is known to be constant.
+An **exact ancillary** is an S-ancillary statistic with known marginal distribution (here, $\alpha$ and $\rho$ known).
+:::
+
+::: {.callout-note title="Technical Point 10.3: Approximate Ancillarity"}
+If the stratum-specific risk differences $\text{sRD}_l$ vary over $L$, the population causal risk difference is the standardized risk difference
+
+$$
+\text{RD}_{std} = \sum_l \left[ \Pr(Y = 1 \mid L = l, A = 1; \upsilon) - \Pr(Y = 1 \mid L = l, A = 0; \upsilon) \right] f(l; \rho),
+$$
+
+with $\upsilon = \{\text{sRD}_l, p_{0,l}; l = 0, 1\}$.
+In an unconditionally randomized experiment $A \ind L$, so $\text{RD}_{std}$ equals the associational risk difference.
+Because $\text{RD}_{std}$ depends on $\rho$, $\{A_i, L_i\}$ is no longer exactly ancillary, and no exact ancillary exists.
+
+Let $\widetilde S = \widehat{\text{OR}}_{AL} - \text{OR}_{AL}$, the sample minus the super-population $A$-$L$ odds ratio,
+and $\widehat S = \widetilde S / \widehat{\text{se}}(\widetilde S)$, which is approximately standard normal in large samples.
+When $\text{OR}_{AL}$ is known (e.g., $\text{OR}_{AL} = 1$ in a randomized experiment), $\widehat S$ is an **approximate (large-sample) ancillary**:
+it can be computed from the data, has approximately known distribution, is governed by the $f(A \mid L; \alpha)$ factor of the likelihood only,
+and conditional on it the adjusted estimate of $\text{RD}_{std}$ is unbiased while the unadjusted one is biased.
+
+Under a **continuity principle** [@buehler1982some], inferences should not change discontinuously after an arbitrarily small known change in the data-generating distribution.
+Accepting both conditionality and continuity implies conditioning on approximate ancillaries too:
+the **extended conditionality principle**.
+:::
+
+::: {.callout-note title="Technical Point 10.4: Adjusted Versus Unadjusted Estimators"}
+The adjusted estimator $\widehat{\text{RD}}_{MLE}$ replaces the population proportions in $\text{RD}_{std}$ by sample proportions;
+the unadjusted estimator is $\widehat{\text{RD}}_{UN} = \widehat{\Pr}(Y = 1 \mid A = 1) - \widehat{\Pr}(Y = 1 \mid A = 0)$.
+Unconditionally, both are asymptotically normal and unbiased for $\text{RD}_{std}$.
+
+@robins1987foundations show that
+
+- $\widehat{\text{RD}}_{MLE}$ has the same asymptotic distribution conditionally on $\widehat S$ as unconditionally;
+- $\text{aVar}(\widehat{\text{RD}}_{MLE}) = \text{aVar}(\widehat{\text{RD}}_{UN}) - \left[\text{aCov}(\widehat S, \widehat{\text{RD}}_{UN})\right]^2$;
+- the conditional asymptotic bias of $\widehat{\text{RD}}_{UN}$ given $\widehat S$ is $\text{aCov}(\widehat S, \widehat{\text{RD}}_{UN}) \, \widehat S$.
+
+So $\widehat{\text{RD}}_{UN}$ is unconditionally inefficient **if and only if** it is conditionally biased (both iff $\text{aCov} \neq 0$).
+Moreover, $\text{aCov}(\widehat S, \widehat{\text{RD}}_{UN}) = 0$ iff $L \ind Y \mid A$,
+so when a measured risk factor for $Y$ is available, $\widehat{\text{RD}}_{MLE}$ is preferred.
+The corrected estimator $\widehat{\text{RD}}_{UN} - \text{aCov}(\widehat S, \widehat{\text{RD}}_{UN})\widehat S$ has the same asymptotic distribution as $\widehat{\text{RD}}_{MLE}$ given $\widehat S$.
+:::
+
+::: {.callout-note title="Technical Point 10.5: Most Researchers Follow the Extended Conditionality Principle"}
+With a constant sRD over a dichotomous $L$, the estimated variance of the MLE of sRD is $\widehat V_0 \widehat V_1 / (\widehat V_0 + \widehat V_1)$,
+where $\widehat V_l$ is the estimated variance of the stratum-specific estimate $\widehat{\text{RD}}_l$.
+
+Two choices for $\widehat V_1$ (smokers, Table 10.2) differ only in the denominators:
+
+$$
+\begin{aligned}
+\widehat V_1^{obs} &= \frac{(4/80)(76/80)}{80} + \frac{(2/40)(38/40)}{40} = \frac{0.0475}{80} + \frac{0.0475}{40} \approx 1.78 \times 10^{-3}, \\
+\widehat V_1^{exp} &= \frac{(4/80)(76/80)}{60} + \frac{(2/40)(38/40)}{60} = \frac{0.0475}{60} + \frac{0.0475}{60} \approx 1.58 \times 10^{-3}.
+\end{aligned}
+$$
+
+$\widehat V_1^{obs}$ uses the observed numbers per arm (80 and 40; **observed information**),
+$\widehat V_1^{exp}$ the expected number (60 per arm under $A \ind L$; **expected information**).
+Nearly all researchers would choose $\widehat V_1^{obs}$.
+Results of @efron1978assessing and @robins1987foundations imply that this choice amounts to conditioning on the approximate ancillary $\widehat S$,
+i.e., following the extended conditionality principle.
+(The conditional and unconditional variances of the MLE differ by order $n^{-3/2}$;
+the observed-information estimator is closer than that to the conditional variance,
+the expected-information estimator closer than that to the unconditional variance.)
+:::
+
+::: {.notes}
+**Checking the adjusted interval $(-0.076, 0.076)$** (our arithmetic, using $\widehat V^{obs}$ in both strata):
+
+$$
+\begin{aligned}
+\widehat V_0^{obs} &= \frac{(20/40)(20/40)}{40} + \frac{(40/80)(40/80)}{80} = \frac{0.25}{40} + \frac{0.25}{80} = 0.009375, \\
+\widehat V_1^{obs} &= 0.00178125, \\
+\widehat{\text{Var}}(\widehat{\text{sRD}})
+&= \frac{\widehat V_0 \widehat V_1}{\widehat V_0 + \widehat V_1}
+= \frac{0.009375 \times 0.00178125}{0.009375 + 0.00178125}
+= \frac{1.670 \times 10^{-5}}{0.01116} \approx 0.001497, \\
+1.96 \sqrt{0.001497} &= 1.96 \times 0.0387 \approx 0.076.
+\end{aligned}
+$$
+
+With point estimate 0, the interval is $(-0.076, 0.076)$, matching the book.
+:::
+
+## 10.5 The Curse of Dimensionality (pp. 148-150)
 
 ---
 
-As the number of confounders or effect modifiers increases, nonparametric estimation becomes increasingly difficult. This is the **curse of dimensionality**.
+The arguments of Section 10.4 rely on asymptotic theory in which the number of strata of $L$ is small relative to the sample size.
+Now suppose the investigators had measured 100 binary pre-treatment variables, $L = (L_1, \ldots, L_{100})$, with $2^{100}$ strata: **high-dimensional** data.
 
-### The Problem
+For simplicity, assume no additive effect modification by $L$: the super-population risk difference
+$\Pr[Y = 1 \mid A = 1, L = l] - \Pr[Y = 1 \mid A = 0, L = l]$ is constant, and equal to 0, across all $2^{100}$ strata.
 
-Suppose we need to adjust for 10 binary confounders:
+### The Adjusted Interval Becomes Uninformative
 
-- Number of possible covariate patterns: $2^{10} = 1024$
-- Need enough observations in each pattern to estimate effects
-- With limited data, many cells will be sparse or empty
+- The investigators now accept the conditionality principle, so they consider the unadjusted $-0.15$ conditionally biased.
+- But with $2^{100}$ strata, far more than the 240 individuals, at most a few strata contain both a treated and an untreated individual.
 
-**Consequences**:
+::: {#exm-curse}
+## One informative stratum
 
-1. **Positivity violations**: Some covariate patterns have no treated or untreated individuals
-2. **Unstable estimates**: Small cell counts lead to large standard errors
-3. **Impractical stratification**: Cannot stratify on so many variables simultaneously
-
-### The Solution: Parametric Models
-
-**Parametric models** make assumptions about the functional form relating variables:
-
-- Logistic regression: $\text{logit} \Pr[Y = 1|A, L] = \beta_0 + \beta_1 A + \beta_2 L$
-- Linear regression: $\E{Y|A, L} = \beta_0 + \beta_1 A + \beta_2 L$
-
-**Advantages**:
-
-- Can "borrow strength" across covariate patterns
-- Requires fewer parameters than nonparametric estimation
-- Provides smooth estimates even with sparse data
-
-**Disadvantages**:
-
-- **Model misspecification**: If functional form is wrong, estimates are biased
-- Trade-off between bias (from model assumptions) and variance (from limited data)
-
-::: {.notes}
-**Why models are necessary**:
-
-With finite data and many covariates, we must make modeling assumptions. The question is not whether to use models, but which models to use and how to assess their adequacy.
-
-**Nonparametric vs. parametric**:
-
-- **Nonparametric**: No assumptions about functional form, but requires large data relative to dimension of covariates
-- **Semiparametric**: Weaker assumptions than parametric, stronger than nonparametric (e.g., requires only correct propensity score model)
-- **Parametric**: Strong assumptions about functional form, works with smaller data
-
-**Modern approach**: 
-
-- Use flexible, data-adaptive methods (machine learning)
-- Cross-validation to assess model fit
-- Doubly robust methods that combine multiple models
-- Sensitivity analyses to assess robustness to model assumptions
-
-**The curse applies to all adjustment methods**:
-
-- Stratification: Need cells for all covariate combinations
-- Standardization: Need to estimate $\E{Y|A, L}$ for all $L$ values  
-- IP weighting: Need to estimate $\Pr[A|L]$ for all $L$ values
-- Matching: Need to find matches for all covariate patterns
+Suppose exactly one stratum contains one treated and one untreated individual, and no other stratum contains both.
+The empirical risk difference in that stratum can only be $-1$, $0$, or $1$,
+so the adjusted 95% interval for the common risk difference is $(-1, 1)$: completely uninformative.
+The unadjusted interval is still $(-0.26, -0.04)$, since its width does not depend on how many covariates were measured.
 :::
 
-### Why This Matters for Part II
+This is the reverse of the one-covariate case.
+The adjusted estimator is guaranteed to be more efficient only when the ratio of individuals to unknown parameters is large
+(a common rule of thumb is at least 10, though the minimum depends on the data).
 
-The remainder of Part II describes methods that use parametric and semiparametric models to:
+### Conditionality Should Not Be a Principle
 
-1. Adjust for many confounders efficiently
-2. Handle high-dimensional covariate spaces
-3. Estimate causal effects with adequate precision
+The **curse of dimensionality**: conditional on all 100 covariates, the marginal estimator is still biased, but the conditional estimator is now uninformative.
+Conditionality is compelling in simple examples, but it cannot be carried through in high-dimensional models, so it should not be raised to a principle [@robins1997toward].
+The same applies to observational studies.
 
-Understanding the curse of dimensionality motivates the need for these modeling approaches.
+Solving the curse of dimensionality is hard and an active research area; Chapter 18 reviews it.
+Chapters 11 through 17 supply the background on models for causal inference.
+
+::: {.callout-note title="Technical Point 10.6: Can the Curse of Dimensionality Be Reversed?"}
+With many strata of $L$, informative inference *conditional* on the exact ancillary $\{A_i, L_i\}$ is impossible whatever the estimator.
+Unconditional inference in a marginally randomized experiment is different:
+$\widehat{\text{RD}}_{UN}$ stays unbiased, with Wald interval width proportional to $1/n^{1/2}$, regardless of the dimension of $L$.
+It uses prior information the MLE does not: it is unbiased for the common risk difference only if $A \ind L$ is known to hold in the super-population.
+Even unconditionally, the MLE's intervals remain uninformative.
+Can data on $L$ give an unconditionally unbiased estimator more efficient than $\widehat{\text{RD}}_{UN}$?
+Chapter 18 shows that this is sometimes possible.
+:::
+
+::: {.callout-note title="Technical Point 10.7: Random Variability and Causal Discovery"}
+Fine Point 6.3 showed that, under faithfulness and with infinite data, the causal structure can sometimes be learned.
+Suppose variables $Z$, $A$, $Y$ occur in that order, the empirical $Z$-$Y$ odds ratio is 1 at every level of $A$, and all other odds ratios are far from 1.
+If $Z \ind Y \mid A$ held in the super-population, faithfulness would leave only $Z \to A \to Y$ (possibly with a common cause of $Z$ and $A$),
+so $E[Y \mid A = 1] - E[Y \mid A = 0]$ would be the average causal effect.
+
+But @robins2003uniform showed that faithfulness-based inferences are **non-uniform**:
+for any $n$, there are faithful distributions in which the true conditional $Z$-$Y$ odds ratios are so close to 1 that empirical values of 1 are unsurprising,
+yet the average causal effect of $A$ on $Y$ is zero.
+So no honest 95% frequentist interval for that effect can exclude 0, even if the empirical risk difference is large (say 0.2) and many (say 30) times its standard error.
+
+A Bayesian who believes in faithfulness may obtain a narrow credible interval that excludes 0,
+but such inferences are very sensitive to the prior; the authors argue that the prior probability of any observational-study diagram without a common cause of $A$ and $Y$ should be essentially zero.
+In finite samples, data alone cannot distinguish $Z \ind Y \mid A$ from near-independence,
+so causal discovery from observational data relies heavily on subject-matter knowledge.
+:::
 
 ## Summary
 
 ---
 
-This chapter introduced **random variability** and bridged Part I (identification) and Part II (estimation).
-
-**Key concepts**:
-
-1. **Identification vs. estimation**:
-   - Identification: Can we express causal effects in terms of observables?
-   - Estimation: How do we estimate from finite data?
-
-2. **Statistical concepts**:
-   - Estimands, estimators, estimates
-   - Consistency: Estimates approach truth as $n \to \infty$
-   - Confidence intervals: Quantify random sampling uncertainty
-
-3. **The super-population**:
-   - Convenient fiction for statistical inference
-   - Two sources of randomness: sampling and nondeterministic counterfactuals
-   - Justifies use of standard confidence intervals
-
-4. **The conditionality principle**:
-   - Can condition on variables independent of treatment/outcome
-   - Conditioning on baseline variables can improve precision
-
-5. **The curse of dimensionality**:
-   - High-dimensional covariates require parametric/semiparametric models
-   - Trade-off between bias (model misspecification) and variance (limited data)
-   - Motivates modeling approaches in Part II
+- **Identification** (Part I) assumes effectively infinite data; **estimation** deals with random variability in finite samples.
+- Estimands, estimators, and estimates; consistency; Wald confidence intervals and their calibration, validity, and (frequentist) interpretation.
+- In the book, an estimator is **unbiased** if it can center a valid Wald interval (formally, UANU); confidence intervals ignore systematic bias.
+- Standard binomial intervals implicitly assume random sampling from a **super-population**, usually a fiction, so they are what-if statements.
+- In a trial with a chance imbalance on a measured prognostic factor $L$, the adjusted estimator is conditionally unbiased and unconditionally more efficient: the **conditionality principle** favors adjustment.
+- With high-dimensional $L$, conditioning makes estimates uninformative while the unadjusted estimator stays conditionally biased: the **curse of dimensionality**, which motivates the models of Part II.
 
 ::: {.notes}
-**Transition to Part II**:
-
-Part I established **what** we want to estimate (causal effects) and **when** they can be identified (under exchangeability, positivity, consistency).
-
-Part II addresses **how** to estimate causal effects from finite data using statistical models.
-
-**Looking ahead**:
-
-- **Chapter 11**: Standardization and IP weighting with parametric models
-- **Chapter 12**: The parametric g-formula
-- **Chapter 13**: Propensity scores and marginal structural models
-- **Chapter 14**: Instrumental variable estimation
-- **Chapter 15**: Outcome regression and g-estimation
-- **Chapter 16**: Structural nested models
-
-All of these methods address the curse of dimensionality by making modeling assumptions, with different trade-offs between flexibility and robustness.
-
-**Key message**: 
-
-In practice, we almost always need models. The question is not whether to make assumptions, but which assumptions to make and how to assess their plausibility.
+Part I established when causal effects are identified (under exchangeability, positivity, and consistency).
+Part II (Chapters 11 through 18) turns to estimation with models: why models are needed (Chapter 11), IP weighting and marginal structural models (Chapter 12), standardization and the parametric g-formula (Chapter 13), g-estimation of structural nested models (Chapter 14), outcome regression and propensity scores (Chapter 15), instrumental variable estimation (Chapter 16), causal survival analysis (Chapter 17), and variable selection and high-dimensional data (Chapter 18).
 :::
 
 ## References
