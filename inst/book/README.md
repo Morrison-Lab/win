@@ -10,7 +10,7 @@ The book's copyright page reads "All rights reserved",
 and the authors distribute the PDF free of charge from the link above.
 Everything in this directory except this README and `VERSION` is gitignored,
 so new downloads and the extracted text are not committed.
-The 21 November 2025 PDF is already tracked here
+The older 21 November 2025 PDF is already tracked here
 (added in commit 8ffa8bd);
 ignore rules do not untrack a file,
 so removing it is a separate decision (`git rm --cached`).
@@ -24,7 +24,7 @@ so removing it is a separate decision (`git rm --cached`).
 downloads the revision named in `VERSION`,
 checks its sha256,
 and extracts the text to `inst/book/whatif.txt`.
-The recorded sha256 was taken from a local copy of the 21 November 2025 revision,
+The recorded sha256 was taken from a copy of the 19 August 2026 revision,
 not from a download of the recorded URL,
 so if the first run reports a mismatch,
 compare the download it keeps as `<name>.pdf.unverified`
