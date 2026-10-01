@@ -24,9 +24,8 @@ library(patchwork)
 
 # Draw a causal DAG; nodes named in `unmeasured` are shown in gray.
 draw_dag <- function(dag, unmeasured = character(), title = NULL) {
-  ggdag(dag, stylized = TRUE) +
+  ggdag(dag, node = FALSE, text = FALSE, stylized = TRUE) +
     theme_dag() +
-    geom_dag_edges() +
     geom_dag_point(aes(color = name %in% unmeasured), size = 14) +
     scale_color_manual(
       values = c("FALSE" = "steelblue", "TRUE" = "gray60"),
@@ -50,13 +49,13 @@ introduces single-world intervention graphs (SWIGs),
 and reviews methods to adjust for confounding.
 
 ::: {.notes}
-This chapter is based on @hernan2020causal [Chapter 7, pp. 91–107].
+This chapter is based on @hernan2020causal [Chapter 7, pp. 91-107].
 
 The book describes confounding as "just a form of lack of exchangeability between the treated and the untreated" [@hernan2020causal, p. 91].
 In the presence of confounding, "association is not causation" holds no matter how large the study population is.
 :::
 
-## 7.1 The Structure of Confounding (pp. 91–93)
+## 7.1 The Structure of Confounding (pp. 91-93)
 
 ---
 
@@ -150,7 +149,7 @@ Throughout the chapter it assumes positivity and consistency, perfectly measured
 (Chapters 8, 9, and 10 relax these assumptions).
 :::
 
-## 7.2 Confounding and Exchangeability (pp. 93–95)
+## 7.2 Confounding and Exchangeability (pp. 93-95)
 
 ---
 
@@ -240,7 +239,7 @@ Checking every subset of measured non-descendants of $A$ therefore tells us whet
 
 ::: {.callout-note title="Technical Point 7.1: Does Conditional Exchangeability Imply the Backdoor Criterion?"}
 That $L$ satisfies the backdoor criterion always implies conditional exchangeability given $L$, even without faithfulness.
-The converse (given faithfulness) holds under an FFRCISTG model (Technical Point 6.2).
+The converse (given faithfulness) holds under an FFRCISTG model (Technical Point 6.3).
 Under an NPSEM-IE model, conditional exchangeability can hold without the backdoor criterion,
 for example in the DAG with nodes $A, L, Y$ and arrows $A \rightarrow L$, $A \rightarrow Y$.
 
@@ -281,11 +280,11 @@ Unmeasured confounding is not "all or nothing", so investigators should consider
 The book refers to Greenland and Robins (1986, 2009) for a detailed discussion of the relations between confounding and exchangeability.
 :::
 
-## 7.3 Confounding and the Backdoor Criterion (pp. 95–98)
+## 7.3 Confounding and the Backdoor Criterion (pp. 95-98)
 
 ---
 
-Applying the backdoor criterion to Figures 7.1–7.3:
+Applying the backdoor criterion to Figures 7.1-7.3:
 
 - **Figure 7.1**: the backdoor path $A \leftarrow L \rightarrow Y$ is blocked by conditioning on $L$.
 - **Figure 7.2**: the backdoor path $A \leftarrow L \leftarrow U \rightarrow Y$ could be blocked by $U$, which is unmeasured, but it is also blocked by $L$.
@@ -302,7 +301,7 @@ In all three there is confounding, but **no unmeasured confounding given $L$**.
 #| echo: false
 #| fig-width: 8
 #| fig-height: 3
-#| fig-cap: "Left: Figure 7.4, in which L is a collider on the path A ← U2 → L ← U1 → Y. Right: Figure 7.5, which adds the arrow L → A."
+#| fig-cap: "Left: Figure 7.4, in which L is a collider on the path A <- U2 -> L <- U1 -> Y. Right: Figure 7.5, which adds the arrow L -> A."
 dag_7_4 <- dagitty('dag {
   U2 [pos="0,2"]; U1 [pos="2,2"]; L [pos="1,1"]; A [pos="0,0"]; Y [pos="2,0"]
   U2 -> A; U2 -> L; U1 -> L; U1 -> Y; A -> Y
@@ -380,7 +379,7 @@ consistent with the unadjusted 0.6 lying below the adjusted 0.7.
 This simple rule may fail in more complex diagrams or with non-dichotomous variables (VanderWeele, Hernán, and Robins 2008).
 
 **Magnitude.**
-A large confounding bias requires a strong confounder–treatment association and a strong confounder–outcome association (conditional on treatment);
+A large confounding bias requires a strong confounder-treatment association and a strong confounder-outcome association (conditional on treatment);
 for discrete confounders it also depends on the confounder's prevalence.
 For unknown confounders, sensitivity analyses can organize educated guesses about the size of the bias [@hernan2020causal, p. 96].
 :::
@@ -389,7 +388,7 @@ For unknown confounders, sensitivity analyses can organize educated guesses abou
 
 ---
 
-Suppose data on $L$, $A$, and $Y$ suffice to identify the causal effect, as in Figures 7.1–7.4.
+Suppose data on $L$, $A$, and $Y$ suffice to identify the causal effect, as in Figures 7.1-7.4.
 
 ::: {#def-confounder-ch7}
 ## Confounder (Given Data on L, A, Y)
@@ -399,7 +398,7 @@ that is, if there is conditional exchangeability given $L$ but not unconditional
 $L$ is a **non-confounder** if data on $A$ and $Y$ alone suffice, that is, if there is unconditional exchangeability [@hernan2020causal, p. 96].
 :::
 
-- In Figures 7.1–7.3, $L$ is a confounder:
+- In Figures 7.1-7.3, $L$ is a confounder:
   $\Pr[Y^a = 1]$ is identified by the standardized risk $\sum_l \Pr[Y = 1 \mid A = a, L = l] \Pr[L = l]$.
   In Figures 7.2 and 7.3, $L$ is not a common cause of $A$ and $Y$, yet it is a confounder because it is needed to block the backdoor path through $U$.
 - In Figure 7.4, $L$ is a non-confounder, and $\Pr[Y^a = 1] = \Pr[Y = 1 \mid A = a]$.
@@ -451,7 +450,7 @@ Which effects can be identified depends on which variables are measured. In Figu
 - Measuring $L$, $L_1$, and $L_2$: additionally, effects within joint strata of all three [@hernan2020causal, p. 98].
 :::
 
-## 7.4 Confounding and Confounders (pp. 98–101)
+## 7.4 Confounding and Confounders (pp. 98-101)
 
 ---
 
@@ -474,7 +473,7 @@ A variable is a **confounder** under the traditional approach if it
 
 ---
 
-- **Figures 7.1–7.3**: $L$ meets all three conditions, matching the backdoor criterion.
+- **Figures 7.1-7.3**: $L$ meets all three conditions, matching the backdoor criterion.
 - **Figure 7.4**: $L$ meets all three conditions
   (it shares $U_2$ with $A$ and $U_1$ with $Y$, and is not on the causal pathway),
   so the traditional approach says to adjust for it,
@@ -558,7 +557,7 @@ If both conditions hold, $U$ is a **non-confounder given data on $L$**.
 These conditions were proposed by Robins (1997, Theorem 4.3) and discussed by Greenland, Pearl, and Robins (1999), who used them to show there is no confounding in Figure 7.4 [@hernan2020causal, p. 101].
 :::
 
-## 7.5 Single-World Intervention Graphs (pp. 101–102)
+## 7.5 Single-World Intervention Graphs (pp. 101-102)
 
 ---
 
@@ -610,7 +609,7 @@ in the single-intervention world $a$ is a constant and cannot affect other varia
 SWIGs nonetheless draw arrows from $a$ to keep track of the variables directly affected by $A$ in the original DAG.
 :::
 
-## 7.6 Confounding Adjustment (pp. 102–107)
+## 7.6 Confounding Adjustment (pp. 102-107)
 
 ---
 
@@ -627,7 +626,7 @@ Under that assumption, methods that adjust for $L$ fall into two categories:
 
 ::: {.notes}
 **"Deleting" versus conditioning.**
-Standardization and IP weighting simulate the $A$–$Y$ association in the population if the backdoor paths through $L$ did not exist;
+Standardization and IP weighting simulate the $A$-$Y$ association in the population if the backdoor paths through $L$ did not exist;
 IP weighting, for example, creates a pseudo-population in which $A$ is independent of $L$, "deleting" the arrow $L \rightarrow A$.
 Stratification does not delete that arrow but computes the effect in a subset, represented by a selection box.
 Part III explains why deleting the arrow is advantageous with time-varying treatments,
@@ -676,7 +675,7 @@ Conditional exchangeability may be unrealistic, but expert knowledge about the c
 A critic who says only "your observational study may be confounded" makes a logical, not a scientific, statement:
 it is true of every observational study.
 A scientific criticism names a source, such as "confounding due to cigarette smoking, a common cause through which a backdoor path may remain open".
-That gives a testable challenge: adjust for smoking or, if smoking was not measured, conduct a sensitivity analysis [@hernan2020causal, pp. 104–105].
+That gives a testable challenge: adjust for smoking or, if smoking was not measured, conduct a sensitivity analysis [@hernan2020causal, pp. 104-105].
 
 ::: {.notes}
 Hernán et al. (2002) give a practical example of using expert knowledge of the causal structure to evaluate confounding.
@@ -759,7 +758,7 @@ $$\Pr[Y^a = 1] = \sum_m \Pr[M = m \mid A = a] \sum_{a'} \Pr[Y = 1 \mid M = m, A 
    (i) $Y^a = Y^m$ when $M^a = m$ ($A$ affects $Y$ only through $M$), and
    (ii) $Y^m \ind M^a$ by d-separation on the SWIG for the joint intervention setting $M$ to $m$ and $A$ to $a$.
 4. $\Pr[Y^m = 1] = \sum_{a'} \Pr[Y = 1 \mid M = m, A = a'] \Pr[A = a']$, by conditional exchangeability $Y^m \ind M \mid A$ on the SWIG intervening on $M$ alone (standardization over $A$).
-5. Substituting steps 2–4 into step 1 gives the front door formula.
+5. Substituting steps 2-4 into step 1 gives the front door formula.
 
 This proof requires well-defined counterfactuals $Y^m$; Technical Points 21.11 and 21.12 give proofs without that condition [@hernan2020causal, p. 107].
 :::
@@ -781,7 +780,7 @@ This proof requires well-defined counterfactuals $Y^m$; Technical Points 21.11 a
 
 - **Chapter 8**: selection bias, the other structural source of lack of exchangeability through open paths.
 - **Chapter 9**: measurement bias.
-- **Chapters 12–15**: IP weighting, standardization, g-estimation, and outcome regression in practice.
+- **Chapters 12-15**: IP weighting, standardization, g-estimation, and outcome regression in practice.
 :::
 
 ## References

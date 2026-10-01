@@ -18,9 +18,11 @@ format:
 #| message: false
 #| warning: false
 draw_dag <- function(spec) {
-  ggdag::ggdag(dagitty::dagitty(spec), stylized = TRUE) +
+  ggdag::ggdag(
+    dagitty::dagitty(spec),
+    node = FALSE, text = FALSE, stylized = TRUE
+  ) +
     ggdag::theme_dag() +
-    ggdag::geom_dag_edges() +
     ggdag::geom_dag_point(color = "steelblue", size = 14) +
     ggdag::geom_dag_text(color = "white", size = 4)
 }
@@ -749,7 +751,8 @@ the book develops such diagrams in Chapter 8.
 
 Consider drug $Z$, systolic blood pressure $A$ (a state, not directly manipulable), and stroke $Y$.
 If (i) $Z$ is associated with $A$ and $Y$, (ii) $A$ and $Y$ are associated, and (iii) $Z \ind Y \mid A$,
-then under faithfulness the only causal DAG has $A \to Y$, no $Z \to Y$, and no unmeasured common cause of $A$ and $Y$ or of $Z$ and $Y$.
+then under faithfulness the only causal DAG has $A \to Y$, no $Z \to Y$, and no unmeasured common cause of $A$ and $Y$ or of $Z$ and $Y$
+(the discovery argument of Fine Point 6.3).
 
 - If $Y^a$ is well defined, $Y^a \ind A$ holds and $\E{Y \mid A=1} - \E{Y \mid A=0}$ is the average causal effect.
 - An investigator who doubted that $Y^a$ was well defined might take (i)-(iii) as empirical evidence that it is.
