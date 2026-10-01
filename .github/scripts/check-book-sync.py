@@ -15,8 +15,9 @@ and reports, per chapter:
 - headings whose title differs from the book's (renamed),
 - headings whose cited start page differs from the book's (page),
 - headings whose end page precedes their start page or falls after the
-  next section's start (end page),
-- headings that cite no page (no page),
+  next section's start or the book's last page (end page),
+- headings that cite no page (no page), or a page citation this script
+  cannot read (bad page),
 - section numbers that appear twice in one file (duplicate).
 
 Headings inside fenced code blocks and HTML comments are ignored; a fence
@@ -27,8 +28,9 @@ reported. Titles are compared case-insensitively, ignoring punctuation.
 
 Exits 0 when everything matches and 1 when any mismatch is found. Exits 2
 when an input is unusable: the book text is missing or unreadable or holds
-a table of contents that does not parse completely and plausibly, VERSION
-has no page count, a chapter file is unreadable, no chapter
+a table of contents that does not parse completely and plausibly (every
+contents title must also match the body's own heading for that section),
+VERSION is missing or has no page count, a chapter file is unreadable, no chapter
 files exist, or a named chapter has no file. A run that examined nothing
 therefore never reads as a clean one.
 
@@ -41,6 +43,7 @@ import argparse
 import re
 import sys
 from pathlib import Path
+from typing import NamedTuple
 
 REPO = Path(__file__).resolve().parents[2]
 DEFAULT_TEXT = REPO / "inst" / "book" / "whatif.txt"
@@ -51,8 +54,6 @@ NOTE_HEADING = re.compile(
     r"(?:\((?:pp?\.)\s*(\d+)(?:\s*[-\u2013]+\s*(\d+))?\s*\))?"
     r"\s*(?:\{[^}]*\})?\s*$"
 )
-# A contents line ending in a page number, after dot leaders or spaces.
-ENDS_IN_PAGE = re.compile(r"\S.*?(?:\s*\.)*\s+\d+\s*$")
 TOC_END_MARKER = "INTRODUCTION: TOWARDS"
 
 
@@ -70,6 +71,11 @@ PAGE_HEADER = re.compile(
     r"^\f?\s*(?:[ivx]+\s+(?:CONTENTS\s+)?Causal Inference|CONTENTS\s+[ivx]+)\s*$"
 )
 FENCE = re.compile(r"^[ ]{0,3}(`{3,}|~{3,})")
+BODY_HEADING = re.compile(r"^\f?\s*(\d+)\.(\d+)\s+(\S.*?)\s*$")
+TRAILING_PAGE = re.compile(r"\s+\d+$")
+# A page citation the heading regex could not read, such as "(pp. 5--9)" or
+# "(p. 5, Fig. 2)".
+UNPARSED_PAGES = re.compile(r"\s*\((?:pp?\.)[^)]*\)\s*(?:\{[^}]*\})?\s*$")
 MAX_CONTINUATION = 3
 
 
@@ -97,27 +103,11 @@ def read_toc(
     starts = 0
     pending = ""
     continued = 0
-    closed = None
-    start_indent = 0
     for line in lines[:end]:
         if SECTION_START.match(line):
             starts += 1
-            pending, continued, closed = line.strip(), 0, None
-            start_indent = len(line) - len(line.lstrip())
+            pending, continued = line.strip(), 0
         elif not pending:
-            # The line after a section entry closed should start another
-            # entry. One indented past the section number and ending in a
-            # page number is the rest of a title that closed early on a
-            # number of its own; back matter ("References") is indented less.
-            if closed and line.strip() and not PAGE_HEADER.match(line):
-                deeper = len(line) - len(line.lstrip()) > start_indent
-                orphan = deeper and not ENTRY_START.match(line)
-                if orphan and ENDS_IN_PAGE.match(line.strip()):
-                    raise ValueError(
-                        f"section {closed} closed early: {line.strip()!r}"
-                        " looks like the rest of its title"
-                    )
-                closed = None
             continue
         elif not line.strip() or PAGE_HEADER.match(line):
             continue
@@ -131,7 +121,7 @@ def read_toc(
         if match:
             chapter, section, title, page = match.groups()
             toc[(int(chapter), int(section))] = (title.strip(" ."), int(page))
-            pending, closed = "", f"{chapter}.{section}"
+            pending = ""
     if not toc:
         raise ValueError("no numbered sections parsed from the table of contents")
     if len(toc) != starts:
@@ -139,9 +129,8 @@ def read_toc(
             f"{starts} numbered section lines in the contents but {len(toc)} parsed"
         )
     # A wrapped title whose first line ends in a number closes early with
-    # that number as its page. The orphan check above catches it when the
-    # rest of the title follows; page order catches a stray number that
-    # falls outside its neighbours' pages.
+    # that number as its page. Page order catches a stray number outside its
+    # neighbours' pages; the body check below catches the truncated title.
     previous = 0
     for key, (title, page) in toc.items():
         if page < previous or (max_page is not None and page > max_page):
@@ -151,12 +140,54 @@ def read_toc(
                 + (f"; book has {max_page} pages)" if max_page is not None else ")")
             )
         previous = page
+    check_body_headings(toc, lines[end:])
     return toc
 
 
-def read_notes(
-    path: Path, problems: list[str]
-) -> dict[tuple[int, int], tuple[str, int | None, int | None]]:
+def check_body_headings(toc, body: list[str]) -> None:
+    """Require each contents title to match the body's own section heading.
+
+    The body sets each heading on one line ("12.3 Stabilized IP weights"),
+    so a contents title that closed early, or picked up a stray line, no
+    longer matches it. This does not depend on the contents' layout.
+    """
+    headings: dict[tuple[int, int], list[str]] = {}
+    for line in body:
+        match = BODY_HEADING.match(line)
+        if match:
+            chapter, section, title = match.groups()
+            title = TRAILING_PAGE.sub("", title)
+            headings.setdefault((int(chapter), int(section)), []).append(
+                normalize(title)
+            )
+    for (chapter, section), (title, _) in toc.items():
+        if normalize(title) not in headings.get((chapter, section), []):
+            raise ValueError(
+                f"contents title {chapter}.{section} {title!r} matches no"
+                f" '{chapter}.{section}' heading in the book's body"
+            )
+
+
+class Note(NamedTuple):
+    title: str
+    page: int | None
+    last: int | None
+    unparsed: bool
+
+
+def ends_in_comment(line: str, comment: bool) -> bool:
+    """Whether an HTML comment is open at the end of line."""
+    position = 0
+    while True:
+        marker = "-->" if comment else "<!--"
+        found = line.find(marker, position)
+        if found < 0:
+            return comment
+        comment = not comment
+        position = found + len(marker)
+
+
+def read_notes(path: Path, problems: list[str]) -> dict[tuple[int, int], Note]:
     notes = {}
     fence = None
     comment = False
@@ -176,22 +207,29 @@ def read_notes(
         if fence is not None:
             continue
         # Headings inside an HTML comment are not rendered, so skip them.
-        if comment:
-            comment = "-->" not in line
+        started_in_comment = comment
+        comment = ends_in_comment(line, comment)
+        if started_in_comment:
             continue
-        opened = line.rfind("<!--")
-        if opened >= 0 and "-->" not in line[opened:]:
-            comment = True
         match = NOTE_HEADING.match(line)
         if match:
             chapter, section, title, page, last = match.groups()
             key = (int(chapter), int(section))
+            label = f"{chapter}.{section}"
             if key in notes:
-                problems.append(f"duplicate {chapter}.{section} {title.strip()}")
-            notes[key] = (
+                problems.append(f"duplicate {label} {title.strip()}")
+            unparsed = UNPARSED_PAGES.search(title) if page is None else None
+            if unparsed:
+                problems.append(
+                    f"bad page {label} cannot read {unparsed.group().strip()!r};"
+                    " write (p. N) or (pp. N-M)"
+                )
+                title = title[: unparsed.start()]
+            notes[key] = Note(
                 title.strip(),
                 int(page) if page else None,
                 int(last) if last else None,
+                bool(unparsed),
             )
     if fence is not None:
         problems.append(f"unclosed {fence} code fence; headings after it were not read")
@@ -200,10 +238,12 @@ def read_notes(
     return notes
 
 
-def compare(chapter: int, toc, notes) -> list[str]:
+def compare(chapter: int, toc, notes, max_page: int) -> list[str]:
     problems = []
     book = {key: value for key, value in toc.items() if key[0] == chapter}
     order = list(toc)
+    # A section may end on the page where the next one starts, including the
+    # first section of the next chapter; the last ends by the book's last page.
     next_start = {key: toc[order[i + 1]][1] for i, key in enumerate(order[:-1])}
     for key in sorted(book.keys() | notes.keys()):
         label = f"{key[0]}.{key[1]}"
@@ -213,11 +253,13 @@ def compare(chapter: int, toc, notes) -> list[str]:
             problems.append(f"extra    {label} {notes[key][0]}")
         else:
             book_title, book_page = book[key]
-            note_title, note_page, note_last = notes[key]
+            note_title, note_page, note_last, unparsed = notes[key]
             if normalize(book_title) != normalize(note_title):
                 problems.append(
                     f"renamed  {label} notes: {note_title!r} / book: {book_title!r}"
                 )
+            if unparsed:
+                continue  # already reported as a bad page
             if note_page is None:
                 problems.append(
                     f"no page  {label} heading cites no page (book: p. {book_page})"
@@ -226,12 +268,21 @@ def compare(chapter: int, toc, notes) -> list[str]:
                 problems.append(
                     f"page     {label} notes: p. {note_page} / book: p. {book_page}"
                 )
-            elif note_last is not None and not (
-                note_page <= note_last <= next_start.get(key, note_last)
-            ):
+            elif note_last is not None and note_last < note_page:
                 problems.append(
                     f"end page {label} notes: pp. {note_page}-{note_last}"
-                    f" / next section starts p. {next_start.get(key)}"
+                    " ends before it starts"
+                )
+            elif note_last is not None and key in next_start:
+                if note_last > next_start[key]:
+                    problems.append(
+                        f"end page {label} notes: pp. {note_page}-{note_last}"
+                        f" / next section starts p. {next_start[key]}"
+                    )
+            elif note_last is not None and note_last > max_page:
+                problems.append(
+                    f"end page {label} notes: pp. {note_page}-{note_last}"
+                    f" / book has {max_page} pages"
                 )
     return problems
 
@@ -258,7 +309,15 @@ def main() -> int:
         )
         return 2
     try:
-        toc = read_toc(args.book_text.read_text(encoding="utf-8"), book_pages())
+        max_page = book_pages()
+    except (OSError, ValueError, UnicodeDecodeError) as error:
+        print(
+            f"cannot read the page count from inst/book/VERSION: {error}",
+            file=sys.stderr,
+        )
+        return 2
+    try:
+        toc = read_toc(args.book_text.read_text(encoding="utf-8"), max_page)
     except (OSError, ValueError, UnicodeDecodeError) as error:
         print(
             f"cannot read the book's contents from {args.book_text}: {error}",
@@ -298,7 +357,7 @@ def main() -> int:
         except (OSError, UnicodeDecodeError) as error:
             print(f"cannot read {path}: {error}", file=sys.stderr)
             return 2
-        problems += compare(chapter, toc, notes)
+        problems += compare(chapter, toc, notes, max_page)
         total += len(problems)
         if problems:
             status = f"{len(problems)} mismatch(es)"

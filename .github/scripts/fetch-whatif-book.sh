@@ -58,13 +58,16 @@ if [[ -z $url ]]; then
   exit 2
 fi
 
-pdf="$book_dir/$(basename "${url%%\?*}")"
+pdf="$book_dir/$(basename "${url%%[?#]*}")"
 # Only a PDF name can be saved here; anything else could overwrite VERSION,
 # README.md or whatif.txt.
-if [[ $pdf != *.pdf ]]; then
-  echo "URL does not name a .pdf file: $url" >&2
-  exit 2
-fi
+case $pdf in
+  *.[pP][dD][fF]) ;;
+  *)
+    echo "URL does not name a .pdf file: $url" >&2
+    exit 2
+    ;;
+esac
 tmp=$(mktemp)
 tmp_txt=$(mktemp)
 trap 'rm -f "$tmp" "$tmp_txt"' EXIT
