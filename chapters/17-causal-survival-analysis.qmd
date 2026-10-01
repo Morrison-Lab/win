@@ -322,8 +322,8 @@ for more formal treatments see Kalbfleisch and Prentice (2002) and Fleming and H
 :::
 
 ::: {.callout-note title="Technical Point 17.1: Approximating the Hazard Ratio via a Logistic Model"}
-The discrete-time hazard ratio $\frac{\Pr[D_{k+1}=1 \mid D_k=0,A=1]}{\Pr[D_{k+1}=1 \mid D_k=0,A=0]}$ equals $\exp(\alpha_1)$ at all times $k+1$
-in the hazards model $\Pr[D_{k+1} = 1 \mid D_k = 0, A] = \Pr[D_{k+1} = 1 \mid D_k = 0, A = 0] \times \exp(\alpha_1 A)$.
+The discrete-time hazard ratio $\frac{\Pr[D_{k+1}=1 \mid D_k=0,A=1]}{\Pr[D_{k+1}=1 \mid D_k=0,A=0]}$ equals $\expt(\alpha_1)$ at all times $k+1$
+in the hazards model $\Pr[D_{k+1} = 1 \mid D_k = 0, A] = \Pr[D_{k+1} = 1 \mid D_k = 0, A = 0] \times \expt(\alpha_1 A)$.
 
 Taking logs on both sides of the hazards model gives
 
@@ -608,17 +608,17 @@ What a structural nested model can do is model ratios:
 With a treatment fixed at baseline, a (non-nested) structural **CFT** model relates the counterfactual risk under treatment $a$
 to that under treatment 0, given $A$ and $L$:
 
-$$\frac{\Pr[D^a_k = 1 \mid L, A]}{\Pr[D^{a=0}_k = 1 \mid L, A]} = \exp[\gamma_k(L, A; \psi)]$$
+$$\frac{\Pr[D^a_k = 1 \mid L, A]}{\Pr[D^{a=0}_k = 1 \mid L, A]} = \expt[\gamma_k(L, A; \psi)]$$
 
 with $\gamma_k(L, A; \psi)$ a function of treatment and covariates indexed by a parameter $\psi$, possibly a vector.
-$\exp[\gamma_k(L, A; \psi)]$ has to equal 1 when $A = 0$, since both sides then refer to the same treatment,
+$\expt[\gamma_k(L, A; \psi)]$ has to equal 1 when $A = 0$, since both sides then refer to the same treatment,
 and when treatment does not affect the outcome at $k$.
 For instance, with $\gamma_k(L, A; \psi) = \psi A$,
 $\psi = 0$ means no effect, $\psi < 0$ benefit, and $\psi > 0$ harm.
 
 A structural **CST** model is the same with survivals in place of risks:
 
-$$\frac{\Pr[D^a_k = 0 \mid L, A]}{\Pr[D^{a=0}_k = 0 \mid L, A]} = \exp[\gamma_k(L, A; \psi)]$$
+$$\frac{\Pr[D^a_k = 0 \mid L, A]}{\Pr[D^{a=0}_k = 0 \mid L, A]} = \expt[\gamma_k(L, A; \psi)]$$
 
 The two differ only in whether risk or survival is modeled multiplicatively,
 yet $\gamma_k$ has a different meaning in each,
@@ -642,9 +642,9 @@ equal to 1, no effect.
 Assume for now that the effect is identical for everyone.
 This gives the **structural nested AFT model**
 
-$$T^a_i / T^{a=0}_i = \exp(-\psi_1 a)$$
+$$T^a_i / T^{a=0}_i = \expt(-\psi_1 a)$$
 
-in which $\exp(-\psi_1)$ is the factor by which treatment stretches or shrinks each person's survival time:
+in which $\expt(-\psi_1)$ is the factor by which treatment stretches or shrinks each person's survival time:
 
 - $\psi_1 < 0$: treatment increases survival time
 - $\psi_1 > 0$: treatment decreases survival time
@@ -656,15 +656,15 @@ The "nested" part of the name only matters for time-varying treatments (Chapter 
 :::
 
 If the effect varies with covariates $L$, a more general structural AFT model is
-$T^a_i / T^{a=0}_i = \exp(-\psi_1 a - \psi_2 a L_i)$,
+$T^a_i / T^{a=0}_i = \expt(-\psi_1 a - \psi_2 a L_i)$,
 with $\psi_1$ and the vector $\psi_2$ common to all individuals.
-Multiplying both sides by $T^{a=0}_i \exp(\psi_1 a + \psi_2 a L_i)$ gives the equivalent form
+Multiplying both sides by $T^{a=0}_i \expt(\psi_1 a + \psi_2 a L_i)$ gives the equivalent form
 
-$$T^{a=0}_i = T^a_i \exp(\psi_1 a + \psi_2 a L_i) \quad \text{for all individuals } i$$
+$$T^{a=0}_i = T^a_i \expt(\psi_1 a + \psi_2 a L_i) \quad \text{for all individuals } i$$
 
 By consistency, $T^{A_i}_i = T_i$, so setting $a = A_i$ gives a model in terms of the observed survival time:
 
-$$T^{a=0}_i = T_i \exp(\psi_1 A_i + \psi_2 A_i L_i)$$
+$$T^{a=0}_i = T_i \expt(\psi_1 A_i + \psi_2 A_i L_i)$$
 
 Its parameters can be estimated by g-estimation, modified to allow for administrative censoring.
 
@@ -682,11 +682,11 @@ Robins (1997b) describes structural nested AFT models that are neither determini
 
 ### G-Estimation Without Censoring
 
-Take the simpler rank-preserving model $T^{a=0}_i = T_i \exp(\psi A_i)$.
+Take the simpler rank-preserving model $T^{a=0}_i = T_i \expt(\psi A_i)$.
 If no one were administratively censored, so that $T$ were known for all,
 g-estimation would follow Section 14.5:
 
-1. For many candidate values $\psi^\dagger$, compute $H_i(\psi^\dagger) = T_i \exp(\psi^\dagger A_i)$.
+1. For many candidate values $\psi^\dagger$, compute $H_i(\psi^\dagger) = T_i \expt(\psi^\dagger A_i)$.
 2. The g-estimate of $\psi$ is the $\psi^\dagger$ at which $H_i(\psi^\dagger)$ is unrelated to $A$
    in a logistic model for $\Pr[A = 1]$ that includes $H_i(\psi^\dagger)$ and the confounders $L$.
 
@@ -715,7 +715,7 @@ Randomization makes the expected share of each type the same in both arms.
 ::: {.notes}
 In this example treatment shortens survival time by the same factor for every type:
 $24/36 = 48/72 = 72/108 = 2/3$.
-In terms of the AFT model $T^{a=1}/T^{a=0} = \exp(-\psi_1)$, this means $\exp(-\psi_1) = 2/3$,
+In terms of the AFT model $T^{a=1}/T^{a=0} = \expt(-\psi_1)$, this means $\expt(-\psi_1) = 2/3$,
 so $\psi_1 = \log(3/2) \approx 0.41 > 0$, a harmful effect.
 :::
 
@@ -746,11 +746,11 @@ g-estimation then uses $\Delta(\psi^\dagger)$ in place of $H(\psi^\dagger)$ (Tec
 
 ::: {.callout-note title="Technical Point 17.3: Artificial Censoring"}
 Define $K(\psi)$ as the smallest untreated survival time compatible with a person who actually died at time $K$.
-For a dichotomous treatment, $K(\psi) = \inf\{K \exp(\psi A)\}$, the infimum taken over the treatment values $A \in \{0, 1\}$.
-Evaluating the two candidates $K\exp(\psi \times 0) = K$ and $K \exp(\psi \times 1) = K\exp(\psi)$:
+For a dichotomous treatment, $K(\psi) = \inf\{K \expt(\psi A)\}$, the infimum taken over the treatment values $A \in \{0, 1\}$.
+Evaluating the two candidates $K\expt(\psi \times 0) = K$ and $K \expt(\psi \times 1) = K\expt(\psi)$:
 
-- if treatment contracts survival time ($\psi > 0$), $K\exp(\psi) > K$, so $K(\psi) = K$;
-- if treatment expands survival time ($\psi < 0$), $K\exp(\psi) < K$, so $K(\psi) = K \exp(\psi)$;
+- if treatment contracts survival time ($\psi > 0$), $K\expt(\psi) > K$, so $K(\psi) = K$;
+- if treatment expands survival time ($\psi < 0$), $K\expt(\psi) < K$, so $K(\psi) = K \expt(\psi)$;
 - if treatment has no effect ($\psi = 0$), both candidates equal $K$, so $K(\psi) = K$.
 
 Every administratively censored person ($T > K$) gets $\Delta(\psi) = 0$,
@@ -767,9 +767,9 @@ Hernán et al. (2005, Appendix) give practical details.
 
 ### NHEFS Results and Practical Obstacles
 
-Applied to the NHEFS with the rank-preserving model $T^{a=0}_i = T_i \exp(\psi A_i)$,
+Applied to the NHEFS with the rank-preserving model $T^{a=0}_i = T_i \expt(\psi A_i)$,
 g-estimation gave $\hat{\psi} = -0.047$ (95% confidence interval: $-0.223$ to $0.333$).
-The quantity $\exp(-\hat{\psi}) = \exp(0.047) \approx 1.05$ is the ratio of the median survival time
+The quantity $\expt(-\hat{\psi}) = \expt(0.047) \approx 1.05$ is the ratio of the median survival time
 had everyone received $a = 1$ to the median survival time had everyone received $a = 0$,
 so quitting appears to have little effect on time to death.
 
@@ -821,7 +821,7 @@ particularly when the AFT model is neither deterministic nor rank-preserving.
 - Parametric g-formula: 80.4% under cessation vs. 80.6% under continued smoking;
   difference $-0.2\%$ (reported in the book as 0.2%)
 - G-estimation of a structural AFT model: $\hat{\psi} = -0.047$ (95% CI $-0.223$ to $0.333$);
-  survival time ratio $\exp(-\hat{\psi}) \approx 1.05$
+  survival time ratio $\expt(-\hat{\psi}) \approx 1.05$
 
 None of the three adjusted analyses found much evidence that quitting smoking affects mortality.
 
