@@ -61,7 +61,7 @@ TOC_END_MARKER = "INTRODUCTION: TOWARDS"
 
 
 def normalize(title: str) -> str:
-    title = title.lower().replace("versus", "vs")
+    title = re.sub(r"\bversus\b", "vs", title.lower())
     return re.sub(r"[^a-z0-9]+", " ", title).strip()
 
 
