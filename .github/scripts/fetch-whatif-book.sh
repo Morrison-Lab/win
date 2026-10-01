@@ -12,6 +12,10 @@
 #   .github/scripts/fetch-whatif-book.sh            # revision named in VERSION
 #   BOOK_URL=<pdf url> .github/scripts/fetch-whatif-book.sh
 #
+# Fetches over HTTPS only, redirects included. With BOOK_URL set, a download
+# whose name matches a different existing PDF is saved as
+# <name>-<first 12 hex digits of its sha256>.pdf instead of replacing it.
+#
 # Requires curl, pdftotext (poppler-utils), and sha256sum or shasum.
 
 set -euo pipefail
