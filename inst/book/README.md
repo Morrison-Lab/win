@@ -10,10 +10,9 @@ The book's copyright page reads "All rights reserved",
 and the authors distribute the PDF free of charge from the link above.
 Everything in this directory except this README and `VERSION` is gitignored,
 so new downloads and the extracted text are not committed.
-The older 21 November 2025 PDF is already tracked here
-(added in commit 8ffa8bd);
-ignore rules do not untrack a file,
-so removing it is a separate decision (`git rm --cached`).
+An older 21 November 2025 PDF was tracked here from commit 8ffa8bd
+until this directory stopped tracking book files.
+It remains in the repository's history.
 
 ## Getting a local copy
 
