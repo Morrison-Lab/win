@@ -41,8 +41,8 @@ The best explanation for an association in an observational study is not necessa
 
 An observational study can be conceptualized as a conditionally randomized experiment if:
 
-1. the values of treatment under comparison correspond to **well-defined interventions** (consistency, Chapter 1);
-2. the conditional probability of receiving each treatment value depends only on the measured covariates $L$ (**exchangeability**, Chapter 2);
+1. each individual's observed outcome is her counterfactual outcome under the treatment she actually received (**consistency**, Chapter 1);
+2. given only the known, measured covariates $L$, the counterfactual outcomes are independent of the treatment actually received (**exchangeability**, Chapter 2);
 3. the probability of receiving each treatment value conditional on $L$ is greater than zero (**positivity**, Technical Point 2.3).
 
 These are the **identifiability conditions** (or identifiability assumptions).
@@ -232,7 +232,7 @@ for every treatment value $a$ involved in the causal contrast.
 :::
 
 ::: {.notes}
-Positivity is sometimes called the **experimental treatment assumption**. It is taken for granted in experiments: in marginally randomized experiments $\Pr[A = 1]$ and $\Pr[A = 0]$ are positive by design, and in conditionally randomized experiments so are $\Pr[A = a \mid L = l]$ for all eligible $l$. In Table 3.1, $\Pr[A = 1 \mid L = 1] = 0.75$ and $\Pr[A = 1 \mid L = 0] = 0.50$; neither is 0 or 1, so positivity holds.
+Positivity is sometimes called the **experimental treatment assumption**. It is taken for granted in experiments: in marginally randomized experiments $\Pr[A = 1]$ and $\Pr[A = 0]$ are positive by design, and in both marginally and conditionally randomized experiments $\Pr[A = a \mid L = l]$ is positive by design for every level $l$ of $L$. In Table 3.1, $\Pr[A = 1 \mid L = 1] = 0.75$ and $\Pr[A = 1 \mid L = 0] = 0.50$; neither is 0 or 1, so positivity holds.
 :::
 
 ### Two refinements
@@ -297,7 +297,10 @@ Consistency can look trivially true: if you take aspirin and die, your counterfa
 
 ---
 
-If $Y^a$ is well-defined for $a = 1$ and $a = 0$ for everyone, the causal effect $\Pr[Y^{a=1} = 1] - \Pr[Y^{a=0} = 1]$ is well-defined. A natural sufficient condition: if $a$ corresponds to a **well-defined intervention**, then $Y^a$ is the outcome had that intervention been performed.
+An individual's causal effect $Y^{a=1} - Y^{a=0}$ can be well-defined only if her $Y^a$ is well-defined for both $a = 1$ and $a = 0$.
+In turn, the average causal effect $\Pr[Y^{a=1} = 1] - \Pr[Y^{a=0} = 1]$ in a given population can be well-defined only if every member of that population has a well-defined individual causal effect.
+
+How do we know the counterfactuals are well-defined? A natural sufficient condition: if $a$ corresponds to a **well-defined intervention**, then $Y^a$ is the outcome had that intervention been performed.
 
 ::: {#exm-two-transplant-trials}
 ## Two heart transplant trials
@@ -321,14 +324,13 @@ The same treatment name is used with different meanings. Which effect is prefera
 ---
 
 Even Trial 1 did not specify the surgeon's training. Because surgical experience affects post-transplant mortality, $\Pr[Y^{a=1} = 1]$ depends on the (unknown) mix of surgeons.
+Had the protocol specified training, some other detail would still have been left unspecified or open to interpretation.
 
-- The average causal effect can therefore differ across populations that follow the same protocol, and even between two trials in the same population with the same protocol (Fine Point 3.3).
+- The average causal effect can therefore differ across populations that follow the same protocol: a community whose surgeons differ in experience from the trial's will typically see a different effect.
 - The more precisely we define the interventions, the easier it generally is to transport the result.
 - Components with no effect on the outcome (the color of the surgeons' scrubs) cannot affect transportability.
 
 ::: {.notes}
-**Fine Point 3.3: protocols open to interpretation.** Two trials with identical populations and protocols can have different $\Pr[Y^{a=1} = 1]$. Suppose the protocol does not say how to match patients with surgeons. In one trial, high-risk patients are sent to experienced surgeons and almost no one dies; in the other, patients are assigned to surgeons without regard to risk, and many high-risk patients are operated on by inexperienced surgeons. The difference cannot be due to lack of exchangeability (both trials are randomized); it is due to different **versions of treatment** permitted by the protocol.
-
 The phrase "no causation without manipulation" (Holland 1986) captures the idea that causal inference requires sufficiently well-defined interventions. Such interventions need not be feasible at the time: the effect of genetic variants on disease was considered well-defined before gene-editing technology existed.
 :::
 
@@ -343,7 +345,7 @@ In experiments, the protocol makes the interventions explicit. In observational 
 How do we know no meaningful vagueness remains? We don't. It is a matter of agreement among experts, based on the substantive knowledge available at a particular time, and may be overturned by new knowledge.
 
 ::: {.notes}
-**Fine Point 3.4: possible worlds.** Philosophers (Stalnaker 1968, Lewis 1973) defined $Y^a$ as the value of $Y$ in the closest possible world in which the individual received $a$. Since the closest world to the actual world is itself, $Y^a = Y$ when $A = a$, so consistency always holds under this definition. When $A \neq a$, the closest possible world is vague. Robins and Greenland (2000) argued that well-defined interventions should replace closest possible worlds, because in observational studies counterfactuals are vague to the degree that the hypothetical interventions are not made precise.
+**Fine Point 3.3: possible worlds.** Philosophers (Stalnaker 1968, Lewis 1973) defined $Y^a$ as the value of $Y$ in the closest possible world in which the individual received $a$. Since the closest world to the actual world is itself, $Y^a = Y$ when $A = a$, so consistency always holds under this definition. When $A \neq a$, the closest possible world is vague. Robins and Greenland (2000) argued that well-defined interventions should replace closest possible worlds, because in observational studies counterfactuals are vague to the degree that the hypothetical interventions are not made precise.
 :::
 
 ### Non-intervention variables
@@ -356,23 +358,43 @@ Biological states (blood pressure, LDL cholesterol, body weight) and social fact
 - Yet experts agree that "blood pressure causes stroke", by synthesizing physics, in vitro studies, animal experiments, autopsies, and intervention studies.
 
 ::: {.notes}
-Whether an effect is ill-defined also depends on the outcome. For obesity and job discrimination (whether an employer invites an applicant to interview after reviewing the application and photograph), the treatment is "obesity as perceived by the employer", and how the applicant became obese may be irrelevant. The book also cites Hernán and Taubman (2008) on the difficulties of "the effect of obesity" [@hernan2020causal, pp. 37-38].
+Whether an effect is ill-defined also depends on the outcome. For obesity and job discrimination (whether an employer invites an applicant to interview after reviewing the application and photograph), the treatment is really whether the employer perceives the applicant as obese, and how the applicant became obese may be irrelevant. A margin note points to Hernán and Taubman (2008), who recount the troubles of two world leaders (a despotic king and a clueless president) when they consider "the effect of obesity" [@hernan2020causal, p. 37].
 :::
 
 ---
 
-::: {#def-dnde}
-## Deterministic no-direct-effect (DNDE) intervention
+::: {#def-ende}
+## Effective no-direct-effect (ENDE) intervention
 
-One way to read "blood pressure $A$ causes stroke $Y$" is as a belief that there exists some intervention $X$ (possibly yet undiscovered) that can set $A$ to $a$ for every individual in the population of interest and has no (direct) effect on $Y$ except through $A$. Equivalently, the counterfactuals $Y^a$ and the joint counterfactuals $Y^{x,a}$ are both well-defined and equal. Such an $X$ is a **deterministic no-direct-effect (DNDE) intervention**.
+One way to read the claim that blood pressure $A$ affects this particular individual's stroke outcome $Y$ is as a belief that some intervention $X$ exists (possibly not yet discovered) that can change this individual's value of $A$ to $a$ and that affects her outcome $Y$ only through $A$, with no (direct) effect of its own. Such an $X$ is an **effective no-direct-effect intervention for $a$**, written **ENDE($a$)**. Its existence is logically equivalent to the statement that the counterfactuals $Y^a$ and the joint counterfactuals $Y^{x,a}$ are both well-defined and equal.
 :::
 
 ::: {.notes}
-Antihypertensive drugs, exercise, and diet all change blood pressure. Some antihypertensive drugs might serve as DNDE interventions $X$; diet and exercise cannot, because they affect stroke risk through pathways other than blood pressure. "$X$ has no direct effect on $Y$ except through $A$" means the same as "the effect of $X$ on $Y$ is completely mediated by $A$" (Chapter 23).
+Antihypertensive drugs, exercise, and diet all change blood pressure. Some antihypertensive drugs might serve as ENDE interventions $X$; diet and exercise cannot, because they affect stroke risk through pathways other than blood pressure. "$X$ has no direct effect on $Y$ except through $A$" means the same as "the effect of $X$ on $Y$ is completely mediated by $A$" (Chapter 23).
 
-Belief in DNDE interventions is easier for variables whose mechanisms are well understood (blood pressure and stroke) than for others (socioeconomic status and myocardial infarction). Where experts disagree, a study might support or refute complete mediation by $A$ (Fine Point 6.4).
+Belief in ENDE interventions is easier for variables whose mechanisms are well understood (blood pressure and stroke) than for others (socioeconomic status and myocardial infarction). Where experts disagree, a study design might support the claim that the effect of $X$ on $Y$ is completely mediated by $A$ (Fine Point 6.4).
 
-Blood pressure is really a vector $(A_{sys}, A_{dia})$. Accounting for this, the DNDE statement asserts that $Y^{a_{sys}, a_{dia}}$ and $Y^{x, a_{sys}, a_{dia}}$ are well-defined and equal.
+Blood pressure is really a vector $(A_{sys}, A_{dia})$. Accounting for this, the claim that $X$ has no direct effect on $Y$ except through $A$ asserts that $Y^{a_{sys}, a_{dia}}$ and $Y^{x, a_{sys}, a_{dia}}$ are well-defined and equal.
+:::
+
+### Average effects of non-interventions
+
+---
+
+Because an average causal effect requires a well-defined individual effect for every member of the population, the average effect of a non-intervention $A$, comparing $a$ with $a'$, is well-defined if every individual in the population has both an ENDE($a$) and an ENDE($a'$) intervention.
+
+- If, for some individuals, no ENDE intervention can move $A$ to $a$ and to $a'$, the population effect is not defined.
+- A well-defined population effect therefore requires restricting attention to those individuals who have ENDE interventions available.
+
+Considering **small changes** in $A$ makes ENDE interventions more credible. For a change in blood pressure of $\Delta$ mm Hg with $\Delta$ near 0:
+
+- it is more plausible that (essentially) every individual has an effective intervention;
+- direct effects may appear only with large changes (an antihypertensive drug without direct effects at low doses may be toxic at high doses).
+
+So $Y^{\Delta}$ and $\E{Y^{\Delta} - Y^{\Delta = 0}}$ are (essentially) well-defined for all individuals, where $Y^{\Delta}$ is $Y^a$ evaluated at $a = A - \Delta$ and $A$ is the individual's blood pressure before the intervention begins.
+
+::: {.notes}
+**Fine Point 3.4: an interventionist approach.** The book's framework, sometimes called "interventionist", rests on well-defined counterfactual outcomes, which are in turn defined through well-defined interventions. It supplies the formal language for precise discussion of causal inference about interventions and for interpreting the numbers that data analyses produce. Much of the scientific literature, however, attaches causal interpretations to numerical quantities for questions that involve no recognizable intervention. The book therefore extends the interventionist approach to non-interventions by spelling out when quantitative causal inference about them is meaningful. The authors do not claim that this is the only valid philosophy of causality, but they know of no alternative framework that produces practically interpretable estimates of causal effects [@hernan2020causal, Fine Point 3.4, p. 39].
 :::
 
 ## 3.5 Consistency: Second, Link Counterfactuals to the Observed Data (pp. 38-40)
@@ -436,7 +458,7 @@ Of the 8 observed cases, only $0.1 \times 20 = 2$ would have occurred had everyo
 The excess fraction generally differs from the **etiologic fraction**, the proportion of cases mechanically caused by exposure. In the book's example, suppose the untreated would have had 7 cases had they been treated, none of them the 1 case that actually occurred among them (treatment would produce 7 cases and prevent 1), and the treated would have had only 1 case had they been untreated, different from their 7 actual cases. Then the excess fraction differs from the etiologic fraction and is a lower bound on it. Because the etiologic fraction does not rest on excess cases, it can be computed only in randomized experiments under strong assumptions (Greenland and Robins 1988; Robins and Greenland 1989). Fine Point 5.4 revisits the excess fraction in the sufficient-component-cause framework.
 :::
 
-## 3.6 The Target Trial (pp. 40-46)
+## 3.6 The Target Trial (pp. 41-46)
 
 ---
 
@@ -475,7 +497,7 @@ Eligibility criteria must be chosen so that every eligible individual could in p
 
 - **Experiments**: in a fully adherent trial of low-dose aspirin $A$ and stroke $Y$, $A$ is the investigators' action, so $Y^a$ is well-defined; the target trial is the trial actually conducted.
 - **Observational studies of interventions**: if $A$ indicates prescription of aspirin, in a population without absolute indications or contraindications, most experts would accept "prescribed" and "not prescribed" as sufficiently well-defined; a target trial *could* have been conducted, and specifying its protocol characterizes the causal effect.
-- **Non-interventions**: the target trial randomizes a DNDE intervention $X$ rather than $A$, if experts believe one exists.
+- **Non-interventions**: the target trial randomizes an ENDE intervention $X$ rather than $A$, if experts believe one exists.
 
 ::: {.notes}
 Whether a variable corresponds to an intervention is often debatable: assignment in a randomized trial uncontroversially is one, socioeconomic status uncontroversially is not, and there is a gradient in between.
@@ -485,20 +507,24 @@ Whether a variable corresponds to an intervention is often debatable: assignment
 
 ---
 
-1. **Genotype.** $Y^a$ is well-defined if DNDE interventions $X$ could change everyone's genotype to $a$. The interventions need not be known: decades ago most experts considered the effect of genotype well-defined, and gene editing was eventually developed.
-2. **Systolic blood pressure.** Many experts believe some drugs act as DNDE interventions in some populations, perhaps only over a limited range, so the effect of *modest* changes can be defined through a target trial that randomizes $X$ (Technical Point 3.3).
+1. **Genotype.** $Y^a$ is well-defined if ENDE interventions $X$ could set each target-population member's genotype to $a$ at conception, so that $Y^a$ and $Y^{x,a}$ are equal for each of them. The interventions need not be known: decades ago most experts considered the effect of genotype well-defined, and gene editing was eventually developed.
+2. **Systolic blood pressure.** $Y^a$ is well-defined for everyone in the population if ENDE interventions $X$ could bring each individual's blood pressure to $a$. Many experts believe some drugs act as ENDE interventions in some populations, perhaps only over a limited range, so the effect of *modest* changes can be defined through a target trial that randomizes $X$ (the small-change argument of Section 3.4).
 3. **Socioeconomic status.** Most experts doubt that interventions could place people at a given status without affecting $Y$ through other means (they may even disagree on what the term means), so no target trial can be specified and the effect is not well-defined.
 
 ::: {#rem-target-trial-non-intervention}
 ## Summary of the target trial for interventions and non-interventions
 
-If $A$ is an intervention, the target trial randomizes eligible individuals to values $a$. If $A$ is a non-intervention and we believe DNDE interventions $X$ exist, the target trial randomizes eligible individuals to an $X$ that sets $A$ to $a$, and the effect of $A$ is equated with the effect of $X$. Without that belief, $Y^a$ and the effect of $A$ are not well-defined.
+If $A$ is an intervention, the target trial randomizes eligible individuals to values $a$. If $A$ is a non-intervention and we believe ENDE interventions $X$ exist, the target trial randomizes eligible individuals to an $X$ that sets $A$ to $a$, and the effect of $A$ is equated with the effect of $X$. Without that belief, $Y^a$ and the effect of $A$ are not well-defined.
 :::
 
 ::: {.notes}
-**Fine Point 3.6: when causal inference for non-interventions goes unquestioned.** In a trial with assignment $Z$ and received treatment $A$, the intention-to-treat effect of $Z$ is well-defined because $Z$ is an intervention. With perfect adherence and no direct effect of $Z$, $Z = A$ and $Z$ is a DNDE intervention for $A$. Without perfect adherence, $Z$ is not deterministic, so the effect of $A$ is well-defined only if some DNDE intervention exists (e.g., adding aspirin to food without the participants' knowledge). Most experts find this so self-evident that "the effect of received treatment" is discussed without mentioning $X$. If $Z$ has direct effects on $Y$ not through $A$, the effect of $Z$ differs from that of $X$ even under full adherence.
+**Fine Point 3.6: causal claims about non-interventions that nobody questions.** In a trial with assignment $Z$ and received treatment $A$, the intention-to-treat effect of $Z$ is well-defined because $Z$ is an intervention. With perfect adherence and no direct effect of $Z$, $Z = A$ and $Z$ is an ENDE intervention for $A$. Without perfect adherence, $Z$ is not an ENDE intervention for everyone, because it does not succeed in setting $A$ to 1 or 0 for every individual (even if $Z$ has no direct effect on $Y$). The effect of $A$ in the whole population is then well-defined only if some ENDE intervention $X$ on $A$ exists (e.g., adding aspirin to food without the participants' knowledge). Most experts find this so self-evident that "the effect of received treatment" is discussed without mentioning $X$.
 
-Other authors regard "the causal effect of $A$ on $Y$" as well-defined in settings where many experts would not recognize DNDE interventions (Pearl 2009; Schwartz et al. 2016; Glymour and Spiegelman 2016).
+Whether or not such an $X$ exists, $Z$ is effective for one subset: individuals who would have $A = 1$ under $Z = 1$ and $A = 0$ under $Z = 0$. For them, $Z$ is an ENDE intervention, so the effect of $A$ in that subset is well-defined and equals the effect of $Z$. Chapter 16 calls this subset the **compliers**; its members cannot be identified individually, but the effect of $A$ among them can be identified under additional assumptions.
+
+If $Z$ has direct effects on $Y$ not through $A$, the effect of $Z$ differs from that of $X$ even under full adherence.
+
+Other authors regard "the causal effect of $A$ on $Y$" as well-defined in settings where many experts would not recognize ENDE interventions (Pearl 2009; Schwartz et al. 2016; Glymour and Spiegelman 2016).
 :::
 
 ### What a valid emulation needs
@@ -506,7 +532,7 @@ Other authors regard "the causal effect of $A$ on $Y$" as well-defined in settin
 ---
 
 - enough information to map the protocol to the data: identify eligible individuals, classify them by intervention, and ascertain outcomes;
-- when using IP weighting or standardization, enough adjustment variables $L$ for conditional exchangeability. For "the effect of blood pressure on stroke", investigators who believe in a DNDE intervention would adjust for variables, such as diet and exercise, that they believe affect both blood pressure and stroke.
+- when using IP weighting or standardization, enough adjustment variables $L$ for conditional exchangeability. For "the effect of blood pressure on stroke", investigators who believe in an ENDE intervention would adjust for variables, such as diet and exercise, that they believe affect both blood pressure and stroke.
 
 Chapter 16 considers alternative identifying conditions for emulating a target trial.
 
@@ -517,11 +543,11 @@ Chapter 16 considers alternative identifying conditions for emulating a target t
 ::: {#exm-bmi-target-trial}
 ## Body mass index and death
 
-Comparing the risk of death between people with body mass index (BMI) 25 versus 30 at the start of follow-up implies a target trial of an instantaneous, possibly very large, weight change, for which no DNDE intervention is known. A modified analysis could emulate a more reasonable target trial, e.g., one in which some individuals are assigned to lose 5% of BMI every year, starting at age 40, for as long as their BMI stays over 25 (a sustained strategy of the kind studied in Part III).
+Comparing the risk of death between people with body mass index (BMI) 25 versus 30 at the start of follow-up implies a target trial of an instantaneous, possibly very large, weight change, for which no ENDE intervention is known. A modified analysis could emulate a more reasonable target trial, e.g., one assigning some individuals to a 5% reduction in BMI every year, starting at age 40, for as long as their BMI stays over 25 (a sustained strategy of the kind studied in Part III).
 :::
 
 ::: {.notes}
-Experts may still disagree that DNDE interventions exist for gradual weight change, but such interventions are more plausible than instantaneous weight loss. One course of action is to proceed as if they existed, adjusting for prognostic factors $L$, while accepting that the results may not be causally interpretable or adequate for decisions. Such an analysis may still inform the effect of DNDE interventions if they existed, or inspire technologies to create them. Danaei et al. (2016) considered unknown interventions producing progressive weight loss over several years in a study of weight loss and heart disease.
+Experts may still disagree that ENDE interventions exist for gradual weight change, but such interventions are more plausible than instantaneous weight loss. One course of action is to proceed as if they existed, adjusting for prognostic factors $L$, while accepting that the results lack a causal interpretation and may be inadequate for decisions. Such an analysis may still tell us something about what ENDE interventions would do were they to exist, or inspire technologies to create them. Danaei et al. (2016) considered unknown interventions producing progressive weight loss over several years in a study of weight loss and heart disease.
 
 At the very least, specifying a target trial aligns causal questions with interventions that are feasible or not totally unrealistic, and helps decision makers recognize analyses that imply extreme or impossible interventions.
 :::
@@ -537,12 +563,10 @@ At the very least, specifying a target trial aligns causal questions with interv
 Interpretation (ii), an average of $n$ interventions, is the one relevant to a physician and patient deciding on transplant, and the one the book uses implicitly. Interpretation (i) is not well-defined: it does not say how the health system would be redesigned to supply the hearts and the capacity. If that redesign were specified, current observational data would be inadequate, because they were generated under the old system (e.g., a system that transplants everyone might accept lower-quality organs). This issue is related to interference (Fine Point 1.1), although the interference literature usually assumes interpretation (i) is well-defined. Observational data may be insufficient to characterize the effect of scaling up an intervention.
 :::
 
-### Technical Points 3.2 and 3.3
+### Technical Point 3.2
 
 ::: {.notes}
 **Technical Point 3.2: recursive substitution.** For chronologically ordered variables $L, A, M, Y$ with well-defined interventions on $L, A, M$, the **one-step-ahead counterfactuals** are $L, A^l, M^{l,a}, Y^{l,a,m}$. All other factuals and well-defined counterfactuals are functions of them via recursive substitution, e.g., $A = A^L$, $M^a = M^{L,a}$, $Y^a = Y^{L, a, M^a}$, and $Y = Y^{L, A, M}$. Applied to the two transplant trials, recursive substitution shows why Trial 2's outcome distribution is harder to transport: it changes whenever the distribution of the natural values $A_1^{a_0=1}, A_2^{a_0=1}, A_3^{a_0=1}$ differs between populations. The argument applies equally to observational and randomized studies.
-
-**Technical Point 3.3: when not all counterfactuals are well-defined for everybody.** Suppose antihypertensive drugs are the only candidate DNDE interventions, and each drug type has an unknown individual-specific maximum dose above which it may have a direct effect on $Y$ (e.g., cardiotoxicity). Then $Y^a$ is well-defined for an individual only if $a$ exceeds the lowest blood pressure reachable within those doses. The conditional effect among individuals for whom both $a$ and $a'$ are reachable is well-defined but not identifiable, and the population average effect is generally not well-defined. The problem disappears for the effect of a change of $\Delta$ mm Hg with $\Delta$ near 0: $\E{Y^{\Delta} - Y^{\Delta = 0}}$ is well-defined for essentially everyone.
 :::
 
 ## Summary
@@ -555,7 +579,7 @@ The identifiability conditions under which an observational study can be analyze
 2. **Positivity**: $\Pr[A = a \mid L = l] > 0$ for all $a$ in the contrast and all $l$ with $\Pr[L = l] \neq 0$ (sometimes checkable)
 3. **Consistency**: $Y = Y^A$, which requires (i) sufficiently well-defined interventions and (ii) a link between those interventions and the observed data
 
-Specifying the **target trial** makes the causal question, and what the data must supply to emulate it, explicit. For non-intervention variables, the target trial randomizes a DNDE intervention $X$.
+Specifying the **target trial** makes the causal question, and what the data must supply to emulate it, explicit. For non-intervention variables, the target trial randomizes an ENDE intervention $X$.
 
 ::: {.notes}
 **Looking ahead**:
