@@ -26,6 +26,8 @@ This chapter is based on @hernan2020causal [Chapter 8, pp. 109-123].
 
 "Selection bias" covers various biases that arise from how individuals are selected into the analysis. The chapter focuses on bias that would arise even if treatment had no effect on the outcome, i.e., **selection bias under the null** (Section 6.5). Causal diagrams make its structure explicit.
 
+---
+
 ### Figure 8.1: Folic Acid and Cardiac Malformations
 
 Figure 8.1 depicts a study of folic acid supplements $A$, given to pregnant women shortly after conception, and the fetus's risk of a cardiac malformation $Y$ (1: yes, 0: no) during the first two months of pregnancy. The variable $C$ is death before birth:
@@ -47,6 +49,8 @@ The association induced through the second path is **selection bias due to condi
 The book credits Pearl (1995) and Spirtes et al. (2000) with first using causal diagrams to describe bias from the selection of individuals [@hernan2020causal, p. 109].
 :::
 
+---
+
 ### Figure 8.2: Conditioning on a Descendant of the Collider
 
 Figure 8.2 adds a node $S$, parental grief (1: yes, 0: no), which is affected by vital status at birth ($C \rightarrow S$). If only nongrieving parents ($S = 0$) agreed to participate, the analysis conditions on $S = 0$. As shown in Chapter 6, conditioning on a variable affected by the collider $C$ also opens the path $A \rightarrow C \leftarrow Y$.
@@ -56,6 +60,8 @@ In both Figures 8.1 and 8.2 the bias comes from conditioning on a common effect 
 ::: {.notes}
 A structure that produces bias under the null also produces bias when the treatment has a non-null effect. Confounding (common causes of treatment and outcome) and selection bias (conditioning on common effects of treatment and outcome) are both biases under the null. Figures 8.3-8.6 show that selection bias under the null can be defined more generally than conditioning on a common effect of treatment and outcome.
 :::
+
+---
 
 ### Figures 8.3-8.6: Differential Loss to Follow-Up
 
@@ -155,6 +161,8 @@ This structural classification is clear-cut, though it does not always match the
 For the same reason, social scientists often call unmeasured confounding "selection on unobservables." Conditional exchangeability is also called "weak ignorability" or "ignorable treatment assignment" in statistics, "selection on observables" in the social sciences, and "no omitted variable bias" or "exogeneity" in econometrics [@hernan2020causal, pp. 111-113].
 :::
 
+---
+
 ### The Firefighter Example
 
 A study restricted to firefighters estimates the effect of physical activity $A$ on heart disease $Y$ (Figure 8.7). Assume, unknown to the investigators, that $A$ does not cause $Y$.
@@ -179,6 +187,8 @@ Advantages of the structural classification anyway:
 ::: {.notes}
 The book's margin uses Simpson's paradox as an example of a paradox that results from ignoring the difference between common causes and common effects; Blyth (1972) misread Simpson's (1951) example as an extreme case of confounding (see Hernán, Clayton, and Keiding 2011).
 :::
+
+---
 
 ### Healthy Worker Bias Revisited
 
@@ -225,6 +235,8 @@ The 0.89 among the uncensored differs from the causal risk ratio of 1: there is 
 Figure 8.3 describes the wasabi trial, with $U$ now atherosclerosis, an unmeasured cause of both heart disease $L$ and death $Y$. There is no common cause of $A$ and $Y$, as expected under marginal randomization, so no adjustment for confounding is needed for the effect of $A$. But $C$ and $Y$ share a common cause, so the backdoor path $C \leftarrow L \leftarrow U \rightarrow Y$ is open: if we wanted the (null) effect of censoring $C$ on $Y$, we would need to adjust for confounding by $U$. By the backdoor criterion, the measured $L$ suffices to block that path.
 :::
 
+---
+
 ### Counterfactual Outcomes Under No Censoring
 
 Why discuss confounding for the effect of $C$, when the contrast $\Pr[Y^{a=1} = 1]$ versus $\Pr[Y^{a=0} = 1]$ does not involve $C$? Because in the presence of censoring (or any selection) the causal contrast of interest should be redefined. Selection bias would not exist if nobody were censored, so we target what would have happened without censoring.
@@ -254,6 +266,8 @@ Under these conditions, and with no measurement error or confounding for $A$, th
 
 Design can sometimes avoid selection bias (e.g., Fine Point 8.1), but loss to follow-up, self-selection, and missing data can happen however careful the investigator is. Then the bias must be corrected in the analysis.
 
+---
+
 ### Inverse Probability Weighting for Selection Bias
 
 IP weighting (or standardization) can do this. Each selected individual ($C = 0$) gets a weight $W^C$ so that she represents herself and the unselected individuals ($C = 1$) with her values of $L$ and $A$:
@@ -263,6 +277,8 @@ $$W^C = \frac{1}{\Pr[C = 0 \mid L, A]}.$$
 ::: {.notes}
 IP weights for confounding are $W^A = 1/f(A \mid L)$; IP weights for selection bias are $W^C = 1/\Pr[C = 0 \mid A, L]$. When both biases exist, the product $W^A W^C$ adjusts for both simultaneously, under assumptions described in Chapter 12 and Part III.
 :::
+
+---
 
 ### The Wasabi Trial: IP Weighting in Practice
 
@@ -298,6 +314,8 @@ The book leaves this derivation of the branch weights to the reader. The tree in
 
 In the $L = 1, A = 1$ branch, the 16 censored individuals get weight 0 (they do not contribute) and each of the 4 uncensored individuals gets weight $1/0.2 = 5$: IP weighting replaces the 20 original individuals by 5 copies of each of the 4 uncensored ones. Repeating this for every branch (Figure 8.11) creates a pseudo-population of the original size in which nobody is lost to follow-up. In that pseudo-population the associational risk ratio is 1, equal to $\Pr[Y^{a=1,c=0} = 1] / \Pr[Y^{a=0,c=0} = 1]$, the risk ratio had nobody been censored.
 
+---
+
 ### Identifiability Conditions for IP Weighting
 
 The association in the pseudo-population equals the effect in the original population if three conditions hold:
@@ -309,6 +327,8 @@ The association in the pseudo-population equals the effect in the original popul
 ::: {.notes}
 A competing event is an event that prevents the outcome of interest from happening, typically death. In a study of a treatment's effect on Alzheimer's disease, treating death from other causes (cancer, heart disease, and so on) as censoring would target a pseudo-population in which all other causes of death have been removed. It is unclear what intervention could produce such a population, and no feasible intervention could remove one cause of death without affecting others.
 :::
+
+---
 
 ### Stratification vs. IP Weighting
 
@@ -334,6 +354,8 @@ Figure 8.12 depicts a study with dichotomous surgery $A$, genetic haplotype $E$,
 2. associated conditionally on $Y$: e.g., among survivors ($Y = 0$), the probability of surgery varies by haplotype.
 
 Conditioning on a common effect $Y$ of two independent causes always induces an association between them in **at least one** stratum of $Y$ (say $Y = 1$). But there is a special case in which they remain independent in the other stratum (say $Y = 0$).
+
+---
 
 ### When Collider Stratification Does Not Cause Bias
 
@@ -373,7 +395,7 @@ A **multiplicative survival model** holds when survival given $A$ and $E$ factor
 
 $$\Pr[Y = 0 \mid E = e, A = a] = g(e) h(a).$$
 
-Equivalently, the survival ratio $\Pr[Y = 0 \mid E = e, A = a] / \Pr[Y = 0 \mid E = e, A = 0]$ does not depend on $e$ and equals $h(a)$ (taking $h(0) = 1$ without loss of generality): there is no interaction between $A$ and $E$ for $Y = 0$ on the multiplicative scale.
+Equivalently, the survival ratio $\Pr[Y = 0 \mid E = e, A = a] / \Pr[Y = 0 \mid E = e, A = 0]$ equals $g(e)h(a) / [g(e)h(0)] = h(a)/h(0)$, which does not depend on $e$: there is no interaction between $A$ and $E$ for $Y = 0$ on the multiplicative scale.
 
 Proof that Figure 8.13 implies this model:
 
@@ -387,7 +409,7 @@ $$
 
 Set $g(e) = \Pr[Y_E = 0 \mid E = e]$ and $h(a) = \Pr[Y_O = 0] \Pr[Y_A = 0 \mid A = a]$.
 
-If survival follows $g(e)h(a)$, then mortality $\Pr[Y = 1 \mid E = e, A = a] = 1 - g(e)h(a)$ does not factor in the same way, i.e., it does not follow a multiplicative mortality model. Hence, when $A$ and $E$ are conditionally independent given $Y = 0$, they will be conditionally dependent given $Y = 1$.
+If survival follows $g(e)h(a)$, then mortality $\Pr[Y = 1 \mid E = e, A = a] = 1 - g(e)h(a)$ does not, in general, factor in the same way, i.e., it does not, in general, follow a multiplicative mortality model (it does only when $g$ or $h$ is constant). Hence, when $A$ and $E$ are conditionally independent given $Y = 0$, they will in general be conditionally dependent given $Y = 1$.
 :::
 
 ::: {.callout-note title="Fine Point 8.2: The Strength and Direction of Selection Bias"}

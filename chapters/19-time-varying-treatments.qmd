@@ -127,15 +127,16 @@ For example, $\E{Y^{\bar{a}}} - \E{Y^{\bar{a}'}}$ could compare
 - "treat every other month", $\bar{a} = (1, 0, 1, 0, \ldots)$, with
 - "treat in all months except the first", $\bar{a}' = (0, 1, 1, 1, \ldots)$.
 
-There are at least $2^K$ such strategies,
+There are $2^{K+1}$ such static strategies,
 one for each combination of values $(a_0, a_1, \ldots, a_K)$ of a dichotomous $a_k$.
 These do not exhaust all strategies.
 
 ::: {.notes}
-Strictly, the vector $(a_0, \ldots, a_K)$ has $K + 1$ components,
-so there are $2^{K+1}$ such vectors;
-the book's "at least $2^K$" is a lower bound,
-and it uses $2^K$ again when counting static strategies in Technical Point 19.3.
+The vector $(a_0, \ldots, a_K)$ has $K + 1$ components,
+so there are $2^{K+1}$ such vectors.
+The book writes "at least $2^K$", a lower bound,
+and uses $2^K$ again when counting static strategies in Technical Point 19.3;
+these notes write $2^{K+1}$ throughout.
 The point is only that the number grows exponentially with the length of follow-up.
 :::
 
@@ -223,8 +224,7 @@ If treatment under $g$ already does not depend on past treatment, $g$ and $g'$ a
 
 ::: {.notes}
 In the recursion, $g'_{k-1}(\bar{l}_{k-1})$ stands for the whole treatment history
-$\bar{a}_{k-1}$ that $g'$ would have produced through $k-1$ given $\bar{l}_{k-1}$;
-the book uses the same compressed notation.
+$\bar{a}_{k-1}$ that $g'$ would have produced through $k-1$ given $\bar{l}_{k-1}$.
 :::
 
 ## 19.3 Sequentially Randomized Experiments (pp. 257-259)
@@ -400,14 +400,17 @@ It implies that association is causation: $\E{Y^{\bar{a}}} = \E{Y \mid \bar{A} =
 \begin{align}
 \E{Y^{a_0, a_1}}
 &= \E{Y^{a_0, a_1} \mid A_0 = a_0}
-  && \text{(exchangeability at } k = 0\text{)} \\
+  && \text{(exchangeability at } k = 0\text{; positivity: } \Pr[A_0 = a_0] > 0\text{)} \\
 &= \E{Y^{a_0, a_1} \mid A_0 = a_0, A_1 = a_1}
-  && \text{(exchangeability at } k = 1 \text{, given } A_0 = a_0\text{)} \\
+  && \text{(exchangeability at } k = 1 \text{, given } A_0 = a_0\text{; positivity: } \Pr[A_1 = a_1 \mid A_0 = a_0] > 0\text{)} \\
 &= \E{Y \mid A_0 = a_0, A_1 = a_1}
   && \text{(consistency: } Y^{a_0, a_1} = Y \text{ when } (A_0, A_1) = (a_0, a_1)\text{)}
 \end{align}
 
-With more time points, repeat the middle step once for each $k$.
+The positivity conditions make each conditional expectation well defined:
+without them, no one in the data has the history $(a_0, a_1)$ to condition on.
+With more time points, repeat the middle step once for each $k$,
+each time requiring $\Pr[A_k = a_k \mid \bar{A}_{k-1} = \bar{a}_{k-1}] > 0$.
 :::
 
 ---
@@ -608,7 +611,7 @@ which cannot be read from SWIGs and are not needed for identification, e.g.
 - $\left\{\left(Y^{\bar{a}}, \underline{L}_{k+1}^{\bar{a}}\right); \text{all } \bar{a}\right\} \ind A_k \mid \bar{A}_{k-1}, \bar{L}_k$;
 - **full sequential exchangeability**:
   $\left(Y^{\bar{\mathcal{A}}}, \bar{L}^{\bar{\mathcal{A}}}\right) \ind A_k \mid \bar{A}_{k-1}, \bar{L}_k$,
-  where $\bar{\mathcal{A}}$ is the set of all $2^K$ static strategies,
+  where $\bar{\mathcal{A}}$ is the set of all $2^{K+1}$ static strategies,
   and $Y^{\bar{\mathcal{A}}}$, $\bar{L}^{\bar{\mathcal{A}}}$ the corresponding sets of counterfactuals
   (by analogy with Technical Point 2.1).
 :::

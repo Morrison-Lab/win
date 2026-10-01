@@ -25,7 +25,7 @@ This chapter describes the structure of treatment-confounder feedback
 and explains why traditional methods fail.
 
 ::: {.notes}
-This chapter is based on @hernan2020causal [Chapter 20, pp. 267–275].
+This chapter is based on @hernan2020causal [Chapter 20, pp. 267-275].
 
 **Key insight**: with treatment-confounder feedback,
 a time-varying confounder $L_1$ is also affected by (or shares causes with) earlier treatment $A_0$.
@@ -36,7 +36,7 @@ Either way the estimate of a treatment-strategy effect is biased;
 g-methods (Chapter 21) avoid both problems.
 :::
 
-## 20.1 The Elements of Treatment-Confounder Feedback (pp. 267–269)
+## 20.1 The Elements of Treatment-Confounder Feedback (pp. 267-269)
 
 ---
 
@@ -64,6 +64,8 @@ The book's Figure 20.1 (the same diagram as Figure 19.2) shows the first two mon
 As in Chapter 19, the example has no censoring, so we can focus on confounding.
 :::
 
+---
+
 ### Time-Varying Confounding Without Feedback
 
 Time-varying confounding can occur *without* treatment-confounder feedback.
@@ -84,10 +86,13 @@ In practice the intervals can be made as short as the data's granularity require
 and time is usually recorded in discrete units anyway [@hernan2020causal, Fine Point 20.1, p. 268].
 :::
 
+---
+
 ### The Simplest Case: Figure 20.3
 
 The smallest diagram that shows treatment-confounder feedback in a two-time-point
-sequentially randomized trial (the book's Figure 20.3) has the arrows
+sequentially randomized trial is the book's Figure 20.3.
+Its arrows include, among others,
 
 $$A_0 \to L_1, \qquad L_1 \to A_1, \qquad U_1 \to L_1, \qquad U_1 \to Y.$$
 
@@ -114,10 +119,13 @@ and Chapter 19's results say the observed data on $(A_0, L_1, A_1, Y)$
 should identify this effect as 0.
 :::
 
+---
+
 ### Feedback Through Shared Causes: Figure 20.4
 
 The same problem arises when the time-varying confounder is not affected by prior treatment
-but **shares a cause** $W_0$ with it (the book's Figure 20.4, a subset of Figure 19.4):
+but **shares a cause** $W_0$ with it (the book's Figure 20.4, a subset of Figure 19.4).
+Its arrows include, among others,
 
 $$W_0 \to A_0, \qquad W_0 \to L_1, \qquad L_1 \to A_1, \qquad U_1 \to L_1, \qquad U_1 \to Y.$$
 
@@ -135,7 +143,7 @@ even when the data suffice for sequential exchangeability.
 G-methods adjust correctly even in the presence of feedback.
 :::
 
-## 20.2 The Bias of Traditional Methods (pp. 269–271)
+## 20.2 The Bias of Traditional Methods (pp. 269-271)
 
 ---
 
@@ -181,6 +189,8 @@ then $L_k$ would be a time-varying confounder too.
 Random variability is ignored throughout.
 :::
 
+---
+
 ### Each Treatment, Taken Separately, Has No Effect
 
 **Effect of $A_1$.**
@@ -198,7 +208,7 @@ $\E{Y^{a_1=1} \mid A_0 = 0, L_1 = 0} - \E{Y^{a_1=0} \mid A_0 = 0, L_1 = 0}$.
 **Effect of $A_0$.**
 Because $A_0$ is randomized, $\E{Y \mid A_0 = 1} - \E{Y \mid A_0 = 0}$
 estimates $\E{Y^{a_0=1}} - \E{Y^{a_0=0}}$.
-Averaging rows 1–4 (16,000 individuals with $A_0 = 0$):
+Averaging rows 1-4 (16,000 individuals with $A_0 = 0$):
 
 $$
 \begin{aligned}
@@ -209,7 +219,7 @@ $$
 \end{aligned}
 $$
 
-Averaging rows 5–8 (16,000 individuals with $A_0 = 1$):
+Averaging rows 5-8 (16,000 individuals with $A_0 = 1$):
 
 $$
 \begin{aligned}
@@ -239,6 +249,8 @@ these two independencies hold if and only if the distribution of $Y^g$
 and equal to the distribution (and mean) of the observed $Y$
 [@hernan2020causal, Technical Point 20.1, p. 270].
 :::
+
+---
 
 ### Analyzing the Joint Treatment
 
@@ -299,7 +311,7 @@ and the difference is $60 - 60 = 0$, as it should be.
 Chapter 21 develops this computation.
 :::
 
-## 20.3 Why Traditional Methods Fail (pp. 271–273)
+## 20.3 Why Traditional Methods Fail (pp. 271-273)
 
 ---
 
@@ -309,9 +321,11 @@ because we have data on $L_1$.
 Yet neither analysis gave the correct answer.
 The problem is the **adjustment method**: stratification cannot handle treatment-confounder feedback.
 
+---
+
 ### Stratification Opens a Collider Path
 
-Stratifying on $L_1$ means estimating the treatment–outcome association
+Stratifying on $L_1$ means estimating the treatment-outcome association
 separately in the subsets $L_1 = 0$ (high CD4) and $L_1 = 1$ (low CD4).
 But $L_1$ is affected by prior treatment $A_0$,
 so it is a **collider** on the path
@@ -345,6 +359,8 @@ The net bias depends on the relative sizes of the confounding removed
 and the selection bias created.
 :::
 
+---
+
 ### Feedback Through Shared Causes
 
 The same bias arises when the confounder shares an unmeasured cause $W_0$ with prior treatment
@@ -355,6 +371,8 @@ $$A_0 \leftarrow W_0 \to L_1 \leftarrow U_1 \to Y.$$
 
 The settings of Figures 20.3 and 20.4 cannot be distinguished using the observed data,
 which is why both are called treatment-confounder feedback.
+
+---
 
 ### Beyond the Null and Beyond Two Time Points
 
@@ -377,7 +395,7 @@ even when $L_1$ is not on a causal pathway from treatment to outcome
 In Figure 20.7, by contrast, $L_1$ is a confounder for $A_1$
 *and* lies on the causal pathway $A_0 \to L_1 \to Y$.
 Even if $U_1$ were not a common cause of $L_1$ and $Y$ (no selection bias),
-the $A$–$Y$ associations within strata of $L_1$ would estimate only the direct effect of $A_0$
+the $A$-$Y$ associations within strata of $L_1$ would estimate only the direct effect of $A_0$
 not through $L_1$, not the overall effect of $\bar{A}$ on $Y$.
 
 The common rule that variables on a causal pathway cannot be confounders
@@ -388,7 +406,7 @@ stratification does; g-methods do not
 [@hernan2020causal, Fine Point 20.2, p. 272].
 :::
 
-## 20.4 Why Traditional Methods Cannot Be Fixed (pp. 273–274)
+## 20.4 Why Traditional Methods Cannot Be Fixed (pp. 273-274)
 
 ---
 
@@ -407,6 +425,8 @@ The number of combinations of the *data* is larger still,
 because several confounders $L_k$ are measured at each time point.
 :::
 
+---
+
 ### Modeling Is Needed, but Does Not Help
 
 As argued since Chapter 11, many possible strategies require **modeling**:
@@ -419,6 +439,8 @@ The price is a new threat to validity: misspecification of the dose-response mod
 Paying that price buys no protection.
 Regression **is** a conventional stratification-based method,
 so it cannot remove the bias of stratification under treatment-confounder feedback.
+
+---
 
 ### Example: A Cumulative-Treatment Regression
 
@@ -442,21 +464,42 @@ $$
 
 It is tempting to read $2\theta_1$ as the effect of "always treat" versus "never treat" within levels of $L_1$.
 But conditioning on $L_1$ induces an association between $A_0$ (a component of $\text{cum}(\bar{A})$) and $Y$,
-so $\theta_1 \neq 0$ even though the true effect is zero
-**and** the regression model is correctly specified.
+so $\theta_1 \neq 0$ even though the true effect is zero [@hernan2020causal, p. 274].
+The bias comes from conditioning on the collider $L_1$,
+not from the form of the model or from the sample size:
+it would persist with unlimited data.
 
 ::: {.notes}
 A similar argument applies to **matching**.
 G-methods are needed to adjust appropriately for time-varying confounders
 in the presence of treatment-confounder feedback [@hernan2020causal, p. 274].
 
-The failure is not a matter of model flexibility or sample size:
-the regression model in the example is correct,
-and the bias would persist with unlimited data,
-because it comes from conditioning on a collider.
+The book states that $\theta_1$ is non-zero
+"even if the true causal effect is zero and the regression model for $\E{Y \mid \bar{A}, L_1}$ is correct"
+[@hernan2020causal, p. 274].
+Under Figure 20.5, the cumulative-treatment model itself cannot be the correct one.
+$Y$ is independent of $A_1$ given $(A_0, L_1)$,
+so a correct model for $\E{Y \mid A_0, A_1, L_1}$ has no $A_1$ term,
+whereas $\text{cum}(\bar{A})$ forces $A_0$ and $A_1$ to share the coefficient $\theta_1$.
+The data in Table 20.1 illustrate this.
+Their cell means depend on $(A_0, L_1)$ only, and they are fit exactly by
+
+$$\E{Y \mid A_0, A_1, L_1} = 84 - 8 A_0 + 0 \cdot A_1 - 32 L_1,$$
+
+which reproduces all four distinct cell means:
+
+- $A_0 = 0, L_1 = 0$: $84$;
+- $A_0 = 0, L_1 = 1$: $84 - 32 = 52$;
+- $A_0 = 1, L_1 = 0$: $84 - 8 = 76$;
+- $A_0 = 1, L_1 = 1$: $84 - 8 - 32 = 44$.
+
+The conclusion is unchanged:
+even this correctly specified model gives $A_0$ a non-zero coefficient ($-8$)
+although the true effect of $A_0$ is zero,
+because the model conditions on the collider $L_1$.
 :::
 
-## 20.5 Adjusting for Past Treatment (pp. 274–275)
+## 20.5 Adjusting for Past Treatment (pp. 274-275)
 
 ---
 
@@ -488,6 +531,8 @@ That is why every sequential exchangeability statement in Chapters 19 and 20
 conditions on treatment history.
 :::
 
+---
+
 ### Past Treatment and Time-Fixed Treatments
 
 Suppose the target is the effect of the time-fixed treatment $A_1$ alone on $Y$
@@ -498,7 +543,7 @@ Without adjustment for $A_0$:
 - if $A_0$ affects $Y$ directly, there is confounding.
 
 So $\E{Y \mid A_1 = 1, L_1} - \E{Y \mid A_1 = 0, L_1}$ need not be zero
-even if $A_1$ has no effect on anyone's outcome (Figures 20.8–20.10).
+even if $A_1$ has no effect on anyone's outcome (Figures 20.8-20.10).
 
 ::: {.notes}
 In practice, this bias can arise in analyses comparing current users ($A_1 = 1$)
@@ -511,6 +556,8 @@ If past treatment could be correctly adjusted for,
 the restriction to new users would be unnecessary.
 :::
 
+---
+
 ### Mismeasured Past Treatment
 
 The need to adjust for past treatment matters when past treatment is **mismeasured**.
@@ -521,7 +568,7 @@ As in Section 9.3, adjusting for a mismeasured confounder can leave bias in eith
 
 Suppose HIV investigators lack medical records and ascertain prior treatment by questionnaire,
 so they observe a mismeasured $A_0^*$ rather than $A_0$.
-Adding the arrow $A_0 \to A_0^*$ to Figures 20.8–20.10 shows that
+Adding the arrow $A_0 \to A_0^*$ to Figures 20.8-20.10 shows that
 conditioning on $A_0^*$ cannot block the biasing paths between $A_1$ and $Y$ that pass through $A_0$.
 Investigators would find an association between $A_1$ and $Y$
 even after adjusting for $A_0^*$ and $L_1$,
