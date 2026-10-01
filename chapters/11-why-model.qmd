@@ -12,12 +12,17 @@ format:
 
 {{< include ../latex-macros/macros.qmd >}}
 
-Part I of the book was mostly conceptual, with calculations simple enough to do by hand. Part II requires computers to fit regression models such as linear and logistic models. This chapter contrasts the **nonparametric estimators** used in Part I with the **parametric (model-based) estimators** used in Part II, reviews **smoothing**, and briefly introduces the **bias-variance trade-off** behind every modeling decision. The need for models arises whether the goal is causal inference or, say, prediction, so the chapter sets causal considerations aside until Chapter 12.
+Part I of the book was mostly conceptual, with calculations simple enough to do by hand.
+Part II requires computers to fit regression models such as linear and logistic models.
+This chapter contrasts the **nonparametric estimators** used in Part I with the **parametric (model-based) estimators** used in Part II, reviews **smoothing**, and briefly introduces the **bias-variance trade-off** behind every modeling decision.
+The need for models arises whether the goal is causal inference or, say, prediction, so the chapter sets causal considerations aside until Chapter 12.
 
 ::: {.notes}
 This chapter is based on @hernan2020causal [Chapter 11, pp. 153-161].
 
-**Important context**: Most examples in Part II use real data that can be downloaded from the book's website, together with code in R, SAS, Stata, and Python. The book assumes a working knowledge of linear and logistic regression; the "code" margin notes point to the program (e.g., Program 11.1) that reproduces each analysis.
+**Important context**: Most examples in Part II use real data that can be downloaded from the book's website, together with code in R, SAS, Stata, and Python.
+The book assumes a working knowledge of linear and logistic regression;
+the "code" margin notes point to the program (e.g., Program 11.1) that reproduces each analysis.
 :::
 
 ## 11.1 Data Cannot Speak for Themselves (pp. 153-155)
@@ -26,7 +31,8 @@ This chapter is based on @hernan2020causal [Chapter 11, pp. 153-161].
 
 ### Example: HIV Treatment and CD4 Count
 
-Consider 16 individuals infected with HIV, randomly sampled from a large, possibly hypothetical **super-population** (the target population). Unlike in Part I, they are not viewed as representatives of a billion identical individuals.
+Consider 16 individuals infected with HIV, randomly sampled from a large, possibly hypothetical **super-population** (the target population).
+Unlike in Part I, they are not viewed as representatives of a billion identical individuals.
 
 - Treatment $A$: antiretroviral therapy, assigned at baseline and maintained
 - Outcome $Y$: CD4 cell count (cells/mm³) at the end of the study
@@ -54,7 +60,8 @@ $A \in \{0, 1\}$, with 8 individuals in each group.
 - Estimated mean in the untreated: $\hE{Y|A = 0} = 67.50$
 
 ::: {.notes}
-Under exchangeability of the treated and the untreated, the difference $146.25 - 67.50 = 78.75$ could be interpreted as an estimate of the average causal effect of $A$ on $Y$ in the target population. This chapter, however, is not about causal inference: the goal is only to motivate models for estimating population quantities such as $\E{Y|A = a}$, whether or not they have a causal interpretation.
+Under exchangeability of the treated and the untreated, the difference $146.25 - 67.50 = 78.75$ could be interpreted as an estimate of the average causal effect of $A$ on $Y$ in the target population.
+This chapter, however, is not about causal inference: the goal is only to motivate models for estimating population quantities such as $\E{Y|A = a}$, whether or not they have a causal interpretation.
 :::
 
 ---
@@ -82,7 +89,8 @@ $A$ is a dose in mg/day taking integer values from 0 to 100.
 ::: {.notes}
 If $A$ were truly continuous, the sample average would be undefined for nearly all treatment levels: a continuous variable can be viewed as a categorical variable with uncountably many categories.
 
-The lesson is that we cannot always let the data "speak for themselves" to obtain a meaningful estimate. We often need to supplement the data with a model.
+The lesson is that we cannot always let the data "speak for themselves" to obtain a meaningful estimate.
+We often need to supplement the data with a model.
 :::
 
 ## 11.2 Parametric Estimators of the Conditional Mean (pp. 155-156)
@@ -98,7 +106,9 @@ $$\E{Y|A} = \theta_0 + \theta_1 A$$
 - A model that describes the conditional mean with a finite number of parameters is a **parametric conditional mean model**
 
 ::: {.notes}
-The restriction on the shape of the relation is known as the **functional form**. Some authors call it the "dose-response curve"; the book avoids that term because it suggests that the dose causally affects the response, which could be false in the presence of confounding.
+The restriction on the shape of the relation is known as the **functional form**.
+Some authors call it the "dose-response curve";
+the book avoids that term because it suggests that the dose causally affects the response, which could be false in the presence of confounding.
 :::
 
 ### Estimation by Ordinary Least Squares
@@ -109,7 +119,8 @@ The restriction on the shape of the relation is known as the **functional form**
 ::: {#exm-linear-model}
 ## Linear Model for the Dose Data (Figure 11.4)
 
-The OLS estimates are $\hat\theta_0 = 24.55$ and $\hat\theta_1 = 2.14$ (Program 11.2). The predicted mean at $A = 90$ is
+The OLS estimates are $\hat\theta_0 = 24.55$ and $\hat\theta_1 = 2.14$ (Program 11.2).
+The predicted mean at $A = 90$ is
 
 $$
 \begin{aligned}
@@ -124,7 +135,8 @@ Wald 95% confidence intervals, assuming homoscedastic residuals: $(-21.2, 70.3)$
 :::
 
 ::: {.notes}
-Multiplying out the rounded estimates gives $24.55 + 192.6 = 217.15$; the book's 216.9 is consistent with the unrounded estimates.
+Multiplying out the rounded estimates gives $24.55 + 192.6 = 217.15$;
+the book's 216.9 is consistent with the unrounded estimates.
 
 Because OLS uses all data points to find the best line, $\E{Y|A = 90}$ is estimated by **borrowing information** from individuals whose treatment value is not 90.
 :::
@@ -139,7 +151,9 @@ Because OLS uses all data points to find the best line, $\E{Y|A = 90}$ is estima
 ::: {.notes}
 **No free lunch**: parametric estimators let us estimate quantities that cannot be estimated otherwise (e.g., $\E{Y|A = 90}$ when nobody received $A = 90$), but the inferences are correct only if the model's restrictions are correct, i.e., if the model is **correctly specified**.
 
-Much of the remainder of the book uses model-based causal inference, which relies on (approximately) no model misspecification. Since parametric models are rarely if ever perfectly specified, some misspecification is almost always expected; nonparametric estimators can partially address it.
+Much of the remainder of the book uses model-based causal inference, which relies on (approximately) no model misspecification.
+Since parametric models are rarely if ever perfectly specified, some misspecification is almost always expected;
+nonparametric estimators can partially address it.
 :::
 
 ## 11.3 Nonparametric Estimators of the Conditional Mean (pp. 156-157)
@@ -168,25 +182,31 @@ These are exactly the sample averages from Section 11.1, as expected.
 
 ### Saturated Models
 
-Rewrite the model as $\E{Y|A = 1} = \E{Y|A = 0} + \theta_1$. Since $\theta_1$ can be any number, this statement is always true: the "model" imposes **no restriction** on the two means.
+Rewrite the model as $\E{Y|A = 1} = \E{Y|A = 0} + \theta_1$.
+Since $\theta_1$ can be any number, this statement is always true: the "model" imposes **no restriction** on the two means.
 
 ::: {#def-saturated-model}
 ## Saturated Model
 
-A conditional mean "model" is **saturated** when it imposes no restrictions on the distribution of the data. This occurs whenever the number of parameters equals the number of unknown conditional means in the population ("the same number of unknowns on both sides of the equal sign").
+A conditional mean "model" is **saturated** when it imposes no restrictions on the distribution of the data.
+This occurs whenever the number of parameters equals the number of unknown conditional means in the population ("the same number of unknowns on both sides of the equal sign").
 :::
 
 ::: {#exm-saturated}
 ## Saturated vs. Parsimonious
 
-- $\E{Y|A} = \theta_0 + \theta_1 A$ with dichotomous $A$: 2 parameters, 2 unknown means. **Saturated.**
-- The same model with $A \in \{0, 1, \ldots, 100\}$: 2 parameters, 101 unknown means $\E{Y|A = 0}, \ldots, \E{Y|A = 100}$. It is unbiased only if all 101 means happen to lie on a straight line.
+- $\E{Y|A} = \theta_0 + \theta_1 A$ with dichotomous $A$: 2 parameters, 2 unknown means.
+  **Saturated.**
+- The same model with $A \in \{0, 1, \ldots, 100\}$: 2 parameters, 101 unknown means $\E{Y|A = 0}, \ldots, \E{Y|A = 100}$.
+  It is unbiased only if all 101 means happen to lie on a straight line.
 :::
 
 A model with few parameters used to estimate many population quantities is **parsimonious**.
 
 ::: {.notes}
-Strictly, a saturated "model" is not a model under the book's definition, because it lets the data speak for themselves just as the sample average does. Because saturated models look like models, they are still ordinarily called models. Part I was titled "Causal inference without models" because it only used saturated models.
+Strictly, a saturated "model" is not a model under the book's definition, because it lets the data speak for themselves just as the sample average does.
+Because saturated models look like models, they are still ordinarily called models.
+Part I was titled "Causal inference without models" because it only used saturated models.
 :::
 
 ### Nonparametric Estimators
@@ -205,7 +225,8 @@ A **nonparametric estimator** of the conditional mean function produces estimate
 ::: {.notes}
 **Identifiability vs. modeling assumptions** (margin note, p. 157):
 
-- **Identifiability assumptions** are needed to compute the parameter even with an infinite amount of data; formally, they make the parameter a unique function of the joint distribution of the observed data.
+- **Identifiability assumptions** are needed to compute the parameter even with an infinite amount of data;
+  formally, they make the parameter a unique function of the joint distribution of the observed data.
 - **Modeling assumptions** are the additional assumptions needed to *estimate* the parameter because we do not have an infinite amount of data.
 :::
 
@@ -223,18 +244,21 @@ The book's nonparametric estimators coincide with what statistics calls **Fisher
 
 In $\E{Y|A} = \theta_0 + \theta_1 A$, the single number $\theta_1$ forces the change in mean outcome per unit of dose to be the same over the whole range of $A$.
 
-But the effect of one more unit could be larger at low doses and smaller at high doses. Linear models can be made more flexible:
+But the effect of one more unit could be larger at low doses and smaller at high doses.
+Linear models can be made more flexible:
 
 $$\E{Y|A} = \theta_0 + \theta_1 A + \theta_2 A^2$$
 
 ::: {.notes}
-**Two meanings of "linear"**: a model is *linear* when the mean is a linear combination of parameters and functions of the covariates, even if those functions are nonlinear (powers, logarithms). So the model with $A^2$ is still a linear model, even though, whenever $\theta_2 \neq 0$, $(\theta_0, \theta_1, \theta_2)$ define a parabola rather than a straight line. $\theta_1$ is the parameter for the linear term $A$ and $\theta_2$ the parameter for the quadratic term $A^2$.
+**Two meanings of "linear"**: a model is *linear* when the mean is a linear combination of parameters and functions of the covariates, even if those functions are nonlinear (powers, logarithms).
+So the model with $A^2$ is still a linear model, even though, whenever $\theta_2 \neq 0$, $(\theta_0, \theta_1, \theta_2)$ define a parabola rather than a straight line. $\theta_1$ is the parameter for the linear term $A$ and $\theta_2$ the parameter for the quadratic term $A^2$.
 :::
 
 ::: {#exm-quadratic-model}
 ## Quadratic Model for the Dose Data (Figure 11.5)
 
-OLS estimates (Program 11.3): $\hat\theta_0 = -7.41$, $\hat\theta_1 = 4.11$, $\hat\theta_2 = -0.02$. The predicted mean at $A = 90$ is
+OLS estimates (Program 11.3): $\hat\theta_0 = -7.41$, $\hat\theta_1 = 4.11$, $\hat\theta_2 = -0.02$.
+The predicted mean at $A = 90$ is
 
 $$
 \begin{aligned}
@@ -248,7 +272,9 @@ with Wald 95% confidence interval $(142.8, 251.5)$ under homoscedasticity.
 :::
 
 ::: {.notes}
-The estimate 197.1 uses the unrounded coefficients. Plugging in the rounded values gives $-7.41 + 369.9 - 162 = 200.49$; the discrepancy comes from rounding $\hat\theta_2$, which is multiplied by $8100$.
+The estimate 197.1 uses the unrounded coefficients.
+Plugging in the rounded values gives $-7.41 + 369.9 - 162 = 200.49$;
+the discrepancy comes from rounding $\hat\theta_2$, which is multiplied by $8100$.
 :::
 
 ### More Parameters, Less Smoothness
@@ -260,7 +286,8 @@ The estimate 197.1 uses the unrounded coefficients. Plugging in the rounded valu
 
 ### Smoothing as Borrowing Information
 
-**Smoothing** results from estimating $\E{Y|A = a}$ by borrowing information from individuals with $A \neq a$. All parametric estimators smooth to some degree.
+**Smoothing** results from estimating $\E{Y|A = a}$ by borrowing information from individuals with $A \neq a$.
+All parametric estimators smooth to some degree.
 
 - The 2-parameter model borrows information from all 16 individuals to estimate $\E{Y|A = 90}$
 - A model with as many parameters as individuals borrows no information at the observed values of $A$ (but does borrow, by interpolation, at unobserved values)
@@ -299,16 +326,22 @@ Which is closer to the population mean?
 - But when the 2-parameter estimate is biased, its nominal 95% CI is **not calibrated**: it does not cover $\E{Y|A = 90}$ 95% of the time
 
 ::: {.notes}
-**The bias-variance trade-off**: investigators must decide whether added protection against bias (e.g., more parameters) is worth the cost in variance. Formal procedures exist, but in practice models are often chosen by tradition, interpretability of the parameters, and software availability.
+**The bias-variance trade-off**: investigators must decide whether added protection against bias (e.g., more parameters) is worth the cost in variance.
+Formal procedures exist, but in practice models are often chosen by tradition, interpretability of the parameters, and software availability.
 
-**The book's working convention**: it usually assumes parametric models are correctly specified. This assumption is unrealistic, but it lets the book focus on problems specific to causal analysis; misspecification can affect any data analysis. Careful investigators question their models and run alternative analyses under model specifications compatible with expert knowledge, to assess the sensitivity of their estimates to model specification.
+**The book's working convention**: it usually assumes parametric models are correctly specified.
+This assumption is unrealistic, but it lets the book focus on problems specific to causal analysis;
+misspecification can affect any data analysis.
+Careful investigators question their models and run alternative analyses under model specifications compatible with expert knowledge, to assess the sensitivity of their estimates to model specification.
 :::
 
 ---
 
 ::: {.callout-note title="Fine Point 11.2: Model Dimensionality and Frequentist vs. Bayesian Intervals"}
-- Frequentist inference defines probability as frequency; Bayesian inference defines it as degree of belief.
-- A Bayesian 95% **credible interval** means that, given the observed data, there is a 95% probability that the estimand lies in the interval. Partly because it requires specifying a prior, Bayesian inference is less commonly used.
+- Frequentist inference defines probability as frequency;
+  Bayesian inference defines it as degree of belief.
+- A Bayesian 95% **credible interval** means that, given the observed data, there is a 95% probability that the estimand lies in the interval.
+  Partly because it requires specifying a prior, Bayesian inference is less commonly used.
 - In **low-dimensional** parametric models with large samples, 95% credible intervals are also 95% confidence intervals: the data swamp reasonable priors.
 - In **high-dimensional** or nonparametric models, a 95% credible interval may trap the estimand much less than 95% of the time: if the true parameter values are unlikely under the prior, the interval is pulled toward values the prior favors.
 :::
@@ -324,7 +357,9 @@ $$g\{\E{Y|X}\} = \sum_{i=0}^{p} \theta_i X_i$$
 - **Log link** (strictly positive outcomes, e.g., counts): $\E{Y|X} = \exp\left(\sum_{i=0}^{p} \theta_i X_i\right) > 0$
 - **Logit link** (dichotomous outcomes; logistic regression): $\E{Y|X} = \expitf{\sum_{i=0}^{p} \theta_i X_i} \in (0, 1)$
 
-For these canonical links, $\theta$ can be estimated by maximum likelihood under a normal, Poisson, or logistic working model, respectively; the estimates are consistent as long as the model for $\E{Y|X}$ is correct. GEE models for repeated measures are another example [@hernan2020causal, p. 161].
+For these canonical links, $\theta$ can be estimated by maximum likelihood under a normal, Poisson, or logistic working model, respectively;
+the estimates are consistent as long as the model for $\E{Y|X}$ is correct.
+GEE models for repeated measures are another example [@hernan2020causal, p. 161].
 
 A conditional mean model leaves the rest of the distribution of $Y \mid X$ and the distribution of $X$ unrestricted, so with continuous $X$ or $Y$ it is a **semiparametric** model for the joint distribution of $(X, Y)$.
 
@@ -341,8 +376,10 @@ Kernel regression borrows information only from values of $X$ **near** $x$, so i
 ---
 
 1. **Data cannot always speak for themselves**: with sparse data, nonparametric (saturated) estimators of $\E{Y|A = a}$ can be imprecise or undefined.
-2. **Parametric models** are a priori restrictions on the distribution of the data; they let us estimate otherwise inestimable quantities by borrowing information, but only correctly if the model is correctly specified.
-3. **Saturated models** impose no restrictions; Part I's methods were nonparametric estimators under saturated models.
+2. **Parametric models** are a priori restrictions on the distribution of the data;
+   they let us estimate otherwise inestimable quantities by borrowing information, but only correctly if the model is correctly specified.
+3. **Saturated models** impose no restrictions;
+   Part I's methods were nonparametric estimators under saturated models.
 4. **Smoothing**: fewer parameters, smoother fit, more borrowing of information.
 5. **Bias-variance trade-off**: more flexible models protect against misspecification bias at the cost of variance.
 

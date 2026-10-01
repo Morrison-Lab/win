@@ -12,14 +12,21 @@ format:
 
 {{< include ../latex-macros/macros.qmd >}}
 
-Chapters 12 and 13 estimated the average causal effect of smoking cessation on weight gain with IP weighting and standardization. This chapter describes the third **g-method**: **g-estimation**, applied to the same NHEFS data. Models whose parameters are estimated by g-estimation are called **structural nested models**.
+Chapters 12 and 13 estimated the average causal effect of smoking cessation on weight gain with IP weighting and standardization.
+This chapter describes the third **g-method**: **g-estimation**, applied to the same NHEFS data.
+Models whose parameters are estimated by g-estimation are called **structural nested models**.
 
 ::: {.notes}
 This chapter is based on @hernan2020causal [Chapter 14, pp. 187-198].
 
-**Why g-methods?** IP weighting, standardization, and g-estimation are called g-methods because they are designed for generalized treatment contrasts involving time-varying treatments. For time-fixed treatments they may be overkill, but the simple setting lets us focus on their main features before Part III.
+**Why g-methods?**
+IP weighting, standardization, and g-estimation are called g-methods because they are designed for generalized treatment contrasts involving time-varying treatments.
+For time-fixed treatments they may be overkill, but the simple setting lets us focus on their main features before Part III.
 
-**Why only now?** IP weighting and standardization appeared already in Part I (Chapter 2). G-estimation waits until Part II because it is easiest to describe with a structural model, even a saturated one. The three g-methods rest on different modeling assumptions.
+**Why only now?**
+IP weighting and standardization appeared already in Part I (Chapter 2).
+G-estimation waits until Part II because it is easiest to describe with a structural model, even a saturated one.
+The three g-methods rest on different modeling assumptions.
 :::
 
 ## 14.1 The Causal Question Revisited (pp. 187-188)
@@ -61,7 +68,8 @@ For effects in a subset (e.g., individuals aged 45) one could also use marginal 
 Conditional exchangeability says that, within levels of $L$, the treated and untreated would have the same outcome distribution under the same treatment level:
 $$Y^a \ind A \mid L \quad \text{for } a = 0, 1$$
 
-For $Y^{a=0}$: knowing $Y^{a=0}$ does not help distinguish quitters from non-quitters with the same $L$. For a dichotomous $A$ this is equivalent to
+For $Y^{a=0}$: knowing $Y^{a=0}$ does not help distinguish quitters from non-quitters with the same $L$.
+For a dichotomous $A$ this is equivalent to
 $$\Pr[A = 1 \mid Y^{a=0}, L] = \Pr[A = 1 \mid L]$$
 
 ::: {.notes}
@@ -78,13 +86,15 @@ $$\logit \Pr[A = 1 \mid Y^{a=0}, L] = \alpha_0 + \alpha_1 Y^{a=0} + \alpha_2 L$$
 
 **Question**: If we could fit it, and exchangeability held and the model were correct, what would $\hat\alpha_1$ be?
 
-**Answer**: its expected value is **zero**, because $Y^{a=0}$ does not predict $A$ given $L$. This is half of g-estimation; the other half is the structural model.
+**Answer**: its expected value is **zero**, because $Y^{a=0}$ does not predict $A$ given $L$.
+This is half of g-estimation; the other half is the structural model.
 
 ## 14.3 Structural Nested Mean Models (pp. 189-191)
 
 ---
 
-Target: $\E{Y^{a=1} \mid L} - \E{Y^{a=0} \mid L} = \E{Y^{a=1} - Y^{a=0} \mid L}$ (the difference of means equals the mean of differences). Ignore censoring for now.
+Target: $\E{Y^{a=1} \mid L} - \E{Y^{a=0} \mid L} = \E{Y^{a=1} - Y^{a=0} \mid L}$ (the difference of means equals the mean of differences).
+Ignore censoring for now.
 
 **No effect modification by $L$**:
 $$\E{Y^a - Y^{a=0} \mid L} = \beta_1 a$$
@@ -107,7 +117,8 @@ The parameters $\beta_1$ and $\beta_2$ (a vector), estimated by g-estimation, qu
 :::
 
 ::: {.notes}
-Robins (1994) first described structural nested models. They are "nested" when treatment is time-varying (Part III).
+Robins (1994) first described structural nested models.
+They are "nested" when treatment is time-varying (Part III).
 :::
 
 ---
@@ -130,7 +141,8 @@ $$\E{Y^a - Y^{a=0} \mid V} = \beta_1 a + \beta_2 a V$$
 
 This **semiparametric marginal structural mean model** is more robust when $V$ is continuous or high-dimensional, because a misspecified model $\beta_0 + \beta_3 V$ can bias $(\hat\beta_1, \hat\beta_2)$ through correlated estimates.
 
-- Conditional on a strict subset $V$ of $L$, it equals a structural nested model for a "blip" of treatment given $V$; estimate it by g-estimation with $V$ in place of $L$, weighting each individual by $SW^A(V) = f(A \mid V)/f(A \mid L)$
+- Conditional on a strict subset $V$ of $L$, it equals a structural nested model for a "blip" of treatment given $V$;
+  estimate it by g-estimation with $V$ in place of $L$, weighting each individual by $SW^A(V) = f(A \mid V)/f(A \mid L)$
 - Conditional on all of $L$ ($SW^A = 1$), the "faux semiparametric MSM" $\E{Y^a - Y^{a=0} \mid L} = \beta_1 a + \beta_2 a L$ is, under conditional exchangeability, the structural nested mean model of this chapter
 :::
 
@@ -160,7 +172,8 @@ For positive outcomes, a multiplicative model is often preferred:
 $$\log\left(\frac{\E{Y^a \mid A = a, L}}{\E{Y^{a=0} \mid A = a, L}}\right) = \beta_1 a + \beta_2 a L$$
 It can be g-estimated with $H(\psi^\dagger) = Y \exp\left[-\psi_1^\dagger a - \psi_2^\dagger a L\right]$.
 
-- For binary outcomes, this model was originally usable only for rare outcomes (to avoid predicted probabilities above 1); Richardson, Robins, and Wang (2017) removed that restriction, and the approach was extended to time-varying treatments with doubly robust g-estimation (Wang et al. 2022)
+- For binary outcomes, this model was originally usable only for rare outcomes (to avoid predicted probabilities above 1);
+  Richardson, Robins, and Wang (2017) removed that restriction, and the approach was extended to time-varying treatments with doubly robust g-estimation (Wang et al. 2022)
 - The older alternative, a structural nested **logistic** model ($\logit$ contrast of $Y^a$ vs. $Y^{a=0}$), is not collapsible (Fine Point 4.3) and does not generalize easily to time-varying treatments [@hernan2020causal, p. 191]
 :::
 
@@ -168,7 +181,8 @@ It can be g-estimated with $H(\psi^\dagger) = Y \exp\left[-\psi_1^\dagger a - \p
 
 ---
 
-Rank all individuals by their observed $Y$: individual 23522 first (48.5 kg), 6928 second (47.5 kg), ..., 23321 last ($-41.3$ kg). Now imagine ranking everyone by $Y^{a=1}$ and, separately, by $Y^{a=0}$.
+Rank all individuals by their observed $Y$: individual 23522 first (48.5 kg), 6928 second (47.5 kg), ..., 23321 last ($-41.3$ kg).
+Now imagine ranking everyone by $Y^{a=1}$ and, separately, by $Y^{a=0}$.
 
 ::: {#def-rank-preservation}
 ## Rank Preservation
@@ -190,7 +204,9 @@ $$Y_i^a - Y_i^{a=0} = \psi_1 a + \psi_2 a L_i \quad \text{for all individuals } 
 :::
 
 ::: {.notes}
-**Figures 14.1-14.3**: In Figure 14.1 (stratum $L = l$) every individual's outcome shifts by the same $\psi_1 + \psi_2 l$ from $Y^{a=0}$ to $Y^{a=1}$; Figure 14.2 shows another stratum $L = l'$ with a different outcome distribution and shift $\psi_1 + \psi_2 l'$. Figure 14.3 shows the realistic case: shifts vary across individuals with the same $L$, and ranks are not preserved (individual $i$ is below $j$ under $a = 0$ but not under $a = 1$).
+**Figures 14.1-14.3**: In Figure 14.1 (stratum $L = l$) every individual's outcome shifts by the same $\psi_1 + \psi_2 l$ from $Y^{a=0}$ to $Y^{a=1}$;
+Figure 14.2 shows another stratum $L = l'$ with a different outcome distribution and shift $\psi_1 + \psi_2 l'$.
+Figure 14.3 shows the realistic case: shifts vary across individuals with the same $L$, and ranks are not preserved (individual $i$ is below $j$ under $a = 0$ but not under $a = 1$).
 :::
 
 ### Rank Preservation Is Implausible, and Not Needed
@@ -200,7 +216,9 @@ $$Y_i^a - Y_i^{a=0} = \psi_1 a + \psi_2 a L_i \quad \text{for all individuals } 
 - The rank-preserving model is used only to **introduce** g-estimation, because g-estimation is easier to understand for it and the procedure is the same for rank-preserving and non-rank-preserving models
 
 ::: {.notes}
-A structural nested mean model is well defined without rank preservation; for the setting of Figure 14.3, one can still model the average effect within strata of $L$. The rank-preserving model is a special structural mean model: the mean of the individual shifts within levels of $L$ equals each individual shift.
+A structural nested mean model is well defined without rank preservation;
+for the setting of Figure 14.3, one can still model the average effect within strata of $L$.
+The rank-preserving model is a special structural mean model: the mean of the individual shifts within levels of $L$ equals each individual shift.
 :::
 
 ## 14.5 G-Estimation (pp. 193-196)
@@ -209,12 +227,14 @@ A structural nested mean model is well defined without rank preservation; for th
 
 Goal: estimate $\beta_1$ in $\E{Y^a - Y^{a=0} \mid A = a, L} = \beta_1 a$ (no effect modification by $L$).
 
-Temporarily assume the rank-preserving model $Y_i^a - Y_i^{a=0} = \psi_1 a$ for all $i$, so $\psi_1 = \beta_1$. Rewrite it as
+Temporarily assume the rank-preserving model $Y_i^a - Y_i^{a=0} = \psi_1 a$ for all $i$, so $\psi_1 = \beta_1$.
+Rewrite it as
 $$Y^{a=0} = Y^a - \psi_1 a$$
 
 ### Linking the Model to the Observed Data
 
-By consistency, $Y = Y^A$. Replacing $a$ by each individual's observed $A$:
+By consistency, $Y = Y^A$.
+Replacing $a$ by each individual's observed $A$:
 $$
 \begin{aligned}
 Y^{a=0} &= Y^A - \psi_1 A && \text{(set } a = A\text{)} \\
@@ -222,27 +242,32 @@ Y^{a=0} &= Y^A - \psi_1 A && \text{(set } a = A\text{)} \\
 \end{aligned}
 $$
 
-If we knew $\psi_1$ we could compute $Y^{a=0}$ for everyone. We don't.
+If we knew $\psi_1$ we could compute $Y^{a=0}$ for everyone.
+We don't.
 
 ---
 
 ### The Guessing Game
 
-A friend says $\psi_1$ is one of $\psi^\dagger \in \{-20, 0, 10\}$. For each candidate compute
+A friend says $\psi_1$ is one of $\psi^\dagger \in \{-20, 0, 10\}$.
+For each candidate compute
 $$H(\psi^\dagger) = Y - \psi^\dagger A$$
 
 - $H(\psi^\dagger) = Y^{a=0}$ only when $\psi^\dagger = \psi_1$
 - Under conditional exchangeability, $Y^{a=0}$ does not predict $A$ given $L$ (Section 14.2)
 - So fit, for each candidate,
 $$\logit \Pr[A = 1 \mid H(\psi^\dagger), L] = \alpha_0 + \alpha_1 H(\psi^\dagger) + \alpha_2 L$$
-- The candidate with $\alpha_1 = 0$ is $Y^{a=0}$; e.g., if $H(10)$ is unassociated with $A$ given $L$, then $\hat\psi_1 = 10$
+- The candidate with $\alpha_1 = 0$ is $Y^{a=0}$;
+  e.g., if $H(10)$ is unassociated with $A$ given $L$, then $\hat\psi_1 = 10$
 
 ::: {.callout-important}
 G-estimation does **not test** whether conditional exchangeability holds; it **assumes** it [@hernan2020causal, p. 194].
 :::
 
 ::: {.notes}
-Rosenbaum (1987) proposed a version of this procedure for non-time-varying treatments. Without a friend, we search over many values $\psi^\dagger$ (e.g., $-20$ to $20$ in steps of 0.01); a finer search is closer to $\hat\psi_1$ but more computationally demanding.
+Rosenbaum (1987) proposed a version of this procedure for non-time-varying treatments.
+Without a friend, we search over many values $\psi^\dagger$ (e.g., $-20$ to $20$ in steps of 0.01);
+a finer search is closer to $\hat\psi_1$ but more computationally demanding.
 :::
 
 ### NHEFS Results
@@ -251,21 +276,25 @@ Rosenbaum (1987) proposed a version of this procedure for non-time-varying treat
 ## G-Estimate of the Effect of Smoking Cessation (Program 14.2)
 
 - Computed 31 candidates $H(2.0), H(2.1), \ldots, H(5.0)$ and fit 31 logistic models (the Chapter 12 IP-weight denominator model plus $H(\psi^\dagger)$)
-- $\hat\alpha_1$ was closest to zero for $H(3.4)$ and $H(3.5)$; a finer search found $\hat\alpha_1 \approx 0$ at $H(3.446)$
+- $\hat\alpha_1$ was closest to zero for $H(3.4)$ and $H(3.5)$;
+  a finer search found $\hat\alpha_1 \approx 0$ at $H(3.446)$
 - **G-estimate**: $\hat\psi_1 = 3.4$ kg
 - **95% CI**: 2.5 to 4.5 kg
 :::
 
 ### Confidence Intervals by Test Inversion
 
-- For each $\psi^\dagger$, test $\alpha_1 = 0$ (Wald test); at $\psi^\dagger = 3.446$ the P-value was 0.998
+- For each $\psi^\dagger$, test $\alpha_1 = 0$ (Wald test);
+  at $\psi^\dagger = 3.446$ the P-value was 0.998
 - The P-value exceeded 0.05 for $\psi^\dagger$ between about 2.5 and 4.5
 - The 95% CI is the set of $\psi^\dagger$ with P-value $> 0.05$: **inversion** of the test
 
 ::: {.notes}
-- Any valid test can be used; a score test avoids fitting multiple models and is essentially equivalent to the Wald test in large samples.
+- Any valid test can be used;
+  a score test avoids fitting multiple models and is essentially equivalent to the Wald test in large samples.
 - With censoring, the logistic models are fit to uncensored individuals ($C = 0$), each weighted by the estimated IP weight for censoring (Technical Point 14.2).
-- Because the test used a robust variance estimator (due to the IP weights), the 95% CI is conservative in large samples: it traps the true value at least 95% of the time. Bootstrapping the whole g-estimation procedure gives a non-conservative, possibly narrower, interval.
+- Because the test used a robust variance estimator (due to the IP weights), the 95% CI is conservative in large samples: it traps the true value at least 95% of the time.
+  Bootstrapping the whole g-estimation procedure gives a non-conservative, possibly narrower, interval.
 :::
 
 ### Back to Non-Rank-Preserving Models
@@ -281,7 +310,8 @@ G-estimation uses the fact that $\alpha_1 = 0$ under conditional exchangeability
 - Suppose quitting is less likely when one's spouse smokes, and spouse's smoking is associated with determinants of weight gain not in $L$: unmeasured confounding, so $\alpha_1 \neq 0$
 - G-estimation does not actually require $\alpha_1 = 0$, only that the **magnitude of nonexchangeability** (the value of $\alpha_1$) be known: if $\alpha_1 = 0.1$, search for the $\psi^\dagger$ at which $\hat\alpha_1 = 0.1$
 - Repeating the analysis over a range of $\alpha_1$ values and plotting the estimates gives a **sensitivity analysis** for unmeasured confounding
-- A practical difficulty: how much confounding is $\alpha_1 = 0.1$? See Robins, Rotnitzky, and Scharfstein (1999) for technical details
+- A practical difficulty: how much confounding is $\alpha_1 = 0.1$?
+  See Robins, Rotnitzky, and Scharfstein (1999) for technical details
 :::
 
 ## 14.6 Structural Nested Models with Two or More Parameters (pp. 196-197)
@@ -295,7 +325,8 @@ Without the product term $\beta_2 a L$, the model assumes no effect modification
 - Structural nested models, by definition, target effects **within levels of $L$**
 
 ::: {.notes}
-**Null preservation**: when the null of no average causal effect is true, marginal structural models (Chapter 12) and structural nested models are never misspecified. The parametric g-formula preserves the null for time-fixed treatments but not in the time-varying setting (Part III).
+**Null preservation**: when the null of no average causal effect is true, marginal structural models (Chapter 12) and structural nested models are never misspecified.
+The parametric g-formula preserves the null for time-fixed treatments but not in the time-varying setting (Part III).
 :::
 
 ### Two Parameters
@@ -317,7 +348,8 @@ $$\logit \Pr[A = 1 \mid H(\beta^\dagger), L] = \alpha_0 + \alpha_1 H(\beta^\dagg
 ::: {#exm-two-parameter-nhefs}
 ## Two-Parameter Model in NHEFS (Program 14.3)
 
-G-estimates: $\hat\beta_1 = 2.86$ and $\hat\beta_2 = 0.03$. Confidence intervals are most easily obtained by bootstrapping.
+G-estimates: $\hat\beta_1 = 2.86$ and $\hat\beta_2 = 0.03$.
+Confidence intervals are most easily obtained by bootstrapping.
 :::
 
 ---
@@ -326,7 +358,8 @@ G-estimates: $\hat\beta_1 = 2.86$ and $\hat\beta_2 = 0.03$. Confidence intervals
 
 For dichotomous $A$, the unsaturated model
 $$\E{Y^a - Y^{a=0} \mid A = a, L} = \beta_1 a + a \sum_{j=1}^{p} \beta_{2j} L_j$$
-has $p + 1$ parameters. The average causal effect in the study population is then estimated by averaging the stratum-specific effect over the $n$ individuals:
+has $p + 1$ parameters.
+The average causal effect in the study population is then estimated by averaging the stratum-specific effect over the $n$ individuals:
 $$
 \begin{aligned}
 \frac{1}{n} \sum_{i=1}^{n} \left(\beta_1 + \sum_{j=1}^{p} \beta_{2j} L_{ij}\right)
@@ -346,11 +379,17 @@ The book writes the left-hand side of this model as $\E{Y^a - Y^{a=0}}$; the con
 ::: {.callout-note title="Technical Point 14.2: G-Estimation of Structural Nested Mean Models"}
 General model: $\E{Y - Y^{a=0} \mid A, L} = A \gamma(L; \beta)$, with $\gamma(L; \beta^\dagger)$ known and $\gamma(L; 0) = 0$.
 
-**Estimating equation.** Choose $\beta^\dagger$ minimizing the association between $H(\beta^\dagger) = Y - A\gamma(L; \beta^\dagger)$ and $A$ given $L$. Basing this on a score test means solving
+**Estimating equation.**
+Choose $\beta^\dagger$ minimizing the association between $H(\beta^\dagger) = Y - A\gamma(L; \beta^\dagger)$ and $A$ given $L$.
+Basing this on a score test means solving
 $$\sum_{i=1}^{n} I[C_i = 0] \, W_i^C \, H_i(\beta^\dagger) \left(A_i - \E{A \mid L_i}\right) q(L_i) = 0$$
-where $q(L_i)$ is a user-chosen vector function of the same dimension as $\beta$, and $W_i^C$ and $\E{A \mid L_i} = \Pr[A = 1 \mid L_i]$ are replaced by estimates. The choice of $q$ affects efficiency (CI length), not consistency; Robins (1994) derived the choice that minimizes CI length.
+where $q(L_i)$ is a user-chosen vector function of the same dimension as $\beta$, and $W_i^C$ and $\E{A \mid L_i} = \Pr[A = 1 \mid L_i]$ are replaced by estimates.
+The choice of $q$ affects efficiency (CI length), not consistency;
+Robins (1994) derived the choice that minimizes CI length.
 
-**Closed form.** If $\gamma(L; \beta^\dagger) = \beta^{\dagger T} d(L)$ for a known $d(L)$, choose $q(L) = d(L)$ and write $R_i = I[C_i = 0] W_i^C (A_i - \E{A \mid L_i})$. Then
+**Closed form.**
+If $\gamma(L; \beta^\dagger) = \beta^{\dagger T} d(L)$ for a known $d(L)$, choose $q(L) = d(L)$ and write $R_i = I[C_i = 0] W_i^C (A_i - \E{A \mid L_i})$.
+Then
 $$
 \begin{aligned}
 0 &= \sum_i R_i \left(Y_i - A_i\, d(L_i)^T \beta\right) d(L_i)
@@ -362,9 +401,13 @@ $$
 \end{aligned}
 $$
 
-**Mean vs. distributional independence.** Structural nested mean models only impose $\E{H(\beta_1) \mid A, L} = \E{H(\beta_1) \mid L}$, so nonlinear functions of $H_i(\beta^\dagger)$ (e.g., its cube) cannot be used in the estimating equation; they can be for **structural nested distribution models**, which impose $H(\beta_1) \ind A \mid L$.
+**Mean vs. distributional independence.**
+Structural nested mean models only impose $\E{H(\beta_1) \mid A, L} = \E{H(\beta_1) \mid L}$, so nonlinear functions of $H_i(\beta^\dagger)$ (e.g., its cube) cannot be used in the estimating equation;
+they can be for **structural nested distribution models**, which impose $H(\beta_1) \ind A \mid L$.
 
-**Double robustness.** The estimator above is consistent only if the models for $\E{A \mid L}$ and $\Pr[C = 1 \mid A, L]$ are both correct. Replacing $H(\beta^\dagger)$ by $H(\beta^\dagger) - \E{H(\beta^\dagger) \mid L}$, with the latter estimated by an unweighted linear model among the uncensored, gives an estimator that is consistent if either (i) the model for $\E{H(\beta^\dagger) \mid L}$ or (ii) both the treatment and censoring models are correct: a **doubly robust** estimator [@hernan2020causal, p. 198].
+**Double robustness.**
+The estimator above is consistent only if the models for $\E{A \mid L}$ and $\Pr[C = 1 \mid A, L]$ are both correct.
+Replacing $H(\beta^\dagger)$ by $H(\beta^\dagger) - \E{H(\beta^\dagger) \mid L}$, with the latter estimated by an unweighted linear model among the uncensored, gives an estimator that is consistent if either (i) the model for $\E{H(\beta^\dagger) \mid L}$ or (ii) both the treatment and censoring models are correct: a **doubly robust** estimator [@hernan2020causal, p. 198].
 :::
 
 ## Summary
@@ -373,10 +416,13 @@ $$
 
 1. **Structural nested mean models** $\E{Y^a - Y^{a=0} \mid A = a, L} = \beta_1 a + \beta_2 a L$ model the effect within levels of $L$ and leave $\E{Y^{a=0} \mid L}$ unspecified (semiparametric).
 2. **Exchangeability** can be written as: $Y^{a=0}$ does not predict $A$ given $L$ ($\alpha_1 = 0$).
-3. **G-estimation** finds the parameter value whose candidate counterfactual $H(\psi^\dagger)$ is unassociated with $A$ given $L$; NHEFS: 3.4 kg (95% CI 2.5, 4.5).
+3. **G-estimation** finds the parameter value whose candidate counterfactual $H(\psi^\dagger)$ is unassociated with $A$ given $L$;
+   NHEFS: 3.4 kg (95% CI 2.5, 4.5).
 4. **Rank preservation** is implausible and **not required**: it only simplifies the explanation.
-5. **Censoring** is handled by IP weights; g-estimation itself adjusts only for confounding.
-6. Models with **effect modification** need product terms; linear models have a closed-form g-estimator, which can be made **doubly robust**.
+5. **Censoring** is handled by IP weights;
+   g-estimation itself adjusts only for confounding.
+6. Models with **effect modification** need product terms;
+   linear models have a closed-form g-estimator, which can be made **doubly robust**.
 
 ## References
 

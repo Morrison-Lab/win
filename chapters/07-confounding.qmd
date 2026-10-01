@@ -140,7 +140,8 @@ draw_dag(dag_7_2, unmeasured = "U", title = "Figure 7.2") +
 **A historical note** [@hernan2020causal, p. 92]:
 early statistical descriptions of confounding were given by Yule (1903) for discrete variables and by Pearson et al. (1899) for continuous variables,
 who called these associations "fictitious", "illusory", "apparent", or "spurious".
-But associations due to common causes are real associations; they simply cannot be interpreted as treatment effects.
+But associations due to common causes are real associations;
+they simply cannot be interpreted as treatment effects.
 
 **Common structure:**
 in every example the bias is due to a cause ($L$ or $U$) shared by treatment and outcome, which opens a backdoor path between $A$ and $Y$.
@@ -189,7 +190,9 @@ Positivity, $\Pr[A = a \mid L = l] > 0$ for all $l$ with $\Pr[L = l] > 0$, ensur
 ---
 
 This hypothetical example is not from the book.
-Twenty individuals receive a drug $A$; $L = 1$ indicates a high-risk group; $Y = 1$ indicates death.
+Twenty individuals receive a drug $A$;
+$L = 1$ indicates a high-risk group;
+$Y = 1$ indicates death.
 
 | $L$ | $A$ | $n$ | Deaths | $\Pr[Y = 1 \mid A, L]$ |
 |:---:|:---:|:---:|:------:|:----------------------:|
@@ -255,7 +258,8 @@ The book assumes an FFRCISTG model and faithfulness unless stated otherwise [@he
 
 1. **No common causes of treatment and outcome** (e.g., Figure 6.2):
    there are no backdoor paths, the empty set satisfies the criterion, and there is **no confounding**.
-   This is a marginally randomized experiment; marginal exchangeability is equivalent to no common causes of treatment and outcome.
+   This is a marginally randomized experiment;
+   marginal exchangeability is equivalent to no common causes of treatment and outcome.
 2. **Common causes, but a set $L$ of measured non-descendants of $A$ blocks all backdoor paths** (e.g., Figure 7.1):
    there is confounding, but **no unmeasured confounding**.
    This is a conditionally randomized experiment, with an arrow $L \rightarrow A$ by design.
@@ -331,7 +335,8 @@ and there is no need to adjust for $L$ to compute $\Pr[Y^{a=1} = 1]$ or $\Pr[Y^{
 Adjusting for $L$ in Figure 7.4 would **create** bias, because conditioning on the collider $L$ opens the path $A \leftarrow U_2 \rightarrow L \leftarrow U_1 \rightarrow Y$.
 Here unconditional exchangeability holds but conditional exchangeability given $L$ does not:
 the average causal effect is identified, but the effects within levels of $L$ generally are not.
-The book calls the resulting bias **selection bias** (Chapter 8); it is also known as **M-bias**.
+The book calls the resulting bias **selection bias** (Chapter 8);
+it is also known as **M-bias**.
 
 ::: {.notes}
 **Why "M-bias":**
@@ -369,10 +374,13 @@ so adjusting for smoking moves the estimate upward (the book's illustration: fro
 Failing to adjust exaggerates the apparent benefit.
 
 **Signed causal diagrams.**
-With dichotomous $L$, $A$, $Y$ in Figure 7.1, put a $+$ on the arrow $L \rightarrow A$ if $L$ has a positive average causal effect on $A$, otherwise a $-$; likewise for $L \rightarrow Y$.
+With dichotomous $L$, $A$, $Y$ in Figure 7.1, put a $+$ on the arrow $L \rightarrow A$ if $L$ has a positive average causal effect on $A$, otherwise a $-$;
+likewise for $L \rightarrow Y$.
 
-- Both signs equal: **positive** confounding; the unadjusted estimate is biased upward.
-- Signs differ: **negative** confounding; the unadjusted estimate is biased downward.
+- Both signs equal: **positive** confounding;
+  the unadjusted estimate is biased upward.
+- Signs differ: **negative** confounding;
+  the unadjusted estimate is biased downward.
 
 In the smoking example, $L \rightarrow A$ is $-$ and $L \rightarrow Y$ is $+$, so the confounding is negative,
 consistent with the unadjusted 0.6 lying below the adjusted 0.7.
@@ -437,10 +445,13 @@ because identifiability depends only on whether conditional or unconditional exc
 :::
 
 ::: {.callout-note title="Fine Point 7.2: Identification of Conditional and Unconditional Effects"}
-Which effects can be identified depends on which variables are measured. In Figure 7.6:
+Which effects can be identified depends on which variables are measured.
+In Figure 7.6:
 
-- Measuring only $L_2$: no exchangeability given $L_2$; no causal effects are identified.
-- Measuring $L_2$ and $L$: conditional exchangeability given $\{L_2, L\}$ (but not given either alone). Identified are:
+- Measuring only $L_2$: no exchangeability given $L_2$;
+  no causal effects are identified.
+- Measuring $L_2$ and $L$: conditional exchangeability given $\{L_2, L\}$ (but not given either alone).
+  Identified are:
   - effects within joint strata of $L$ and $L_2$, via $\E{Y \mid A = a, L = l, L_2 = l_2}$;
   - the unconditional effect, via $\sum_{l, l_2} \E{Y \mid A = a, L = l, L_2 = l_2} \Pr[L = l, L_2 = l_2]$;
   - effects within strata of $L$, via $\sum_{l_2} \E{Y \mid A = a, L = l, L_2 = l_2} \Pr[L_2 = l_2 \mid L = l]$;
@@ -493,7 +504,8 @@ including selection bias from adjusting for non-confounders (Chapter 8)
 and the noncollapsibility of some effect measures (Fine Point 4.3).
 Attempts to define confounding by change in estimates were abandoned long ago because of these problems [@hernan2020causal, p. 100].
 
-Technically, investigators do not need full structural knowledge; they only need to know a set of variables that guarantees conditional exchangeability.
+Technically, investigators do not need full structural knowledge;
+they only need to know a set of variables that guarantees conditional exchangeability.
 :::
 
 ### Confounding Is Absolute; Confounder Is Relative
@@ -502,7 +514,8 @@ Technically, investigators do not need full structural knowledge; they only need
 
 The structural approach first identifies the sources of confounding (the common causes of treatment and outcome) and then a sufficient adjustment set.
 Whether a variable belongs to a sufficient set depends on the other variables in it.
-In Figures 7.2 and 7.3, $L$ is needed only because $U$ is unmeasured; given $U$, $L$ would not be a confounder.
+In Figures 7.2 and 7.3, $L$ is needed only because $U$ is unmeasured;
+given $U$, $L$ would not be a confounder.
 Given a causal DAG, **confounding is an absolute concept, whereas confounder is a relative one** [@hernan2020causal, p. 100].
 
 The structural approach has two advantages:
@@ -622,7 +635,8 @@ Under that assumption, methods that adjust for $L$ fall into two categories:
   Part II covers the parametric g-formula, IP weighting of marginal structural models, and g-estimation of structural nested models.
 - **Conventional stratification-based methods**: stratification (including restriction) and matching.
   They estimate the association between $A$ and $Y$ within subsets defined by $L$
-  (Sections 4.4 and 4.5); Part II covers their model-based extension, outcome regression.
+  (Sections 4.4 and 4.5);
+  Part II covers their model-based extension, outcome regression.
 
 ::: {.notes}
 **"Deleting" versus conditioning.**
@@ -679,7 +693,8 @@ That gives a testable challenge: adjust for smoking or, if smoking was not measu
 
 ::: {.notes}
 Hernán et al. (2002) give a practical example of using expert knowledge of the causal structure to evaluate confounding.
-One can never be certain that the causal structures considered include the true one; this uncertainty is unavoidable with observational data.
+One can never be certain that the causal structures considered include the true one;
+this uncertainty is unavoidable with observational data.
 
 Valid causal inference from observational data also requires the absence of selection and measurement biases,
 which, unlike confounding, can arise in randomized experiments too.
@@ -768,12 +783,16 @@ This proof requires well-defined counterfactuals $Y^m$; Technical Points 21.11 a
 ---
 
 1. **Confounding** is the bias due to common causes of treatment and outcome, which create open backdoor paths.
-2. **No confounding is equivalent to marginal exchangeability**; with confounding, a sufficient set $L$ of measured non-descendants of $A$ gives conditional exchangeability, and standardization or IP weighting identifies the average causal effect.
+2. **No confounding is equivalent to marginal exchangeability**;
+   with confounding, a sufficient set $L$ of measured non-descendants of $A$ gives conditional exchangeability, and standardization or IP weighting identifies the average causal effect.
 3. Under faithfulness and an FFRCISTG model, $Y^a \ind A \mid L$ holds **if and only if** $L$ satisfies the **backdoor criterion**.
-4. Adjusting for a collider such as $L$ in Figure 7.4 (M-bias) creates selection bias; in Figure 7.5 no adjustment set based on $L$ alone works.
-5. The **traditional** associational definition of confounder can recommend harmful adjustment; confounding is absolute, but "confounder" is relative to the other adjustment variables.
+4. Adjusting for a collider such as $L$ in Figure 7.4 (M-bias) creates selection bias;
+   in Figure 7.5 no adjustment set based on $L$ alone works.
+5. The **traditional** associational definition of confounder can recommend harmful adjustment;
+   confounding is absolute, but "confounder" is relative to the other adjustment variables.
 6. **SWIGs** split the treatment node and show exchangeability directly via d-separation.
-7. **G-methods** and conventional stratification-based methods both require conditional exchangeability; difference-in-differences, proximal inference, the front door criterion, and instrumental variables rely on other unverifiable assumptions.
+7. **G-methods** and conventional stratification-based methods both require conditional exchangeability;
+   difference-in-differences, proximal inference, the front door criterion, and instrumental variables rely on other unverifiable assumptions.
 
 ::: {.notes}
 **Looking ahead:**

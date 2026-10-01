@@ -92,7 +92,8 @@ For prediction with very many candidate predictors (perhaps more than individual
   Computationally infeasible for many variables, and in a finite data set not guaranteed to give the smallest prediction error.
 - **Forward selection**, **backward elimination**, and **stepwise selection** (a combination): efficient, but do not explore all subsets.
 - **Shrinkage**: add a penalty that pulls parameter estimates (other than the intercept) toward zero, lowering variance and stabilizing predictions.
-  **Ridge regression** shrinks; the **lasso** ("least absolute shrinkage and selection operator") can set some parameters exactly to zero, so it also selects variables.
+  **Ridge regression** shrinks;
+  the **lasso** ("least absolute shrinkage and selection operator") can set some parameters exactly to zero, so it also selects variables.
 :::
 
 ---
@@ -101,9 +102,11 @@ For prediction with very many candidate predictors (perhaps more than individual
 **Overfitting**: a model selected to fit the data as well as possible also fits random variation, so it predicts well for the individuals used to fit it and poorly for new ones.
 The same holds for random forests, neural networks, and other machine learning algorithms.
 
-- **Training/validation split**: with sample size $n$, fit on $n - v$ individuals and evaluate predictions on the other $v$; with the lasso, the validation performance can guide the degree of shrinkage.
+- **Training/validation split**: with sample size $n$, fit on $n - v$ individuals and evaluate predictions on the other $v$;
+  with the lasso, the validation performance can guide the degree of shrinkage.
 - **Cross-validation**: repeat the split many times and average the predictive accuracy over the validation samples, so the algorithm effectively uses more individuals.
-- **Leave-$v$-out** examines all partitions with a validation set of size $v$; this can be infeasible, so one can take $v = 1$ or evaluate only some partitions.
+- **Leave-$v$-out** examines all partitions with a validation set of size $v$;
+  this can be infeasible, so one can take $v = 1$ or evaluate only some partitions.
 - **$k$-fold**: split into $k$ equal subsamples, use each as the validation sample with the other $k - 1$ as training; $k = 10$ is common [@hernan2020causal, p. 244].
 :::
 
@@ -123,7 +126,8 @@ Imagine unlimited computing power and a quasi-infinite number of individuals, wi
 
 - For **prediction** (under squared-error loss), the best predictor of $Y$ is the mean of $Y$ in each joint stratum of $A$ and $X$.
 - For the **average causal effect** $\E{Y^{a=1}} - \E{Y^{a=0}}$, we could adjust for all of $X$.
-  Is there any reason to adjust for only a subset? **Yes**: adjusting for some variables induces bias [@hernan2020causal, pp. 242-243].
+  Is there any reason to adjust for only a subset?
+  **Yes**: adjusting for some variables induces bias [@hernan2020causal, pp. 242-243].
 
 ::: {.notes}
 Collapsibility reminder: an adjusted association measure may differ from the unadjusted one even without confounding (Fine Point 4.3) [@hernan2020causal, p. 243].
@@ -141,7 +145,8 @@ Collapsibility reminder: an adjusted association measure may differ from the una
   $$
 
   is biased, because $L$ is associated with $Y$ given $A$ and with $A$, so $\Pr(L = l) \neq \Pr(L = l \mid A)$.
-  This is **selection bias under the null**. The same holds for a **descendant of a collider** (Figure 18.2).
+  This is **selection bias under the null**.
+  The same holds for a **descendant of a collider** (Figure 18.2).
 - **Noncolliders affected by treatment** (Figure 18.3): adjusting for $L$ biases a non-null effect,
   but under the null $A$ no longer affects $L$ and the adjusted contrast is unbiased.
   This is **selection bias under the alternative** (off the null; Section 6.5).
@@ -249,7 +254,8 @@ $$
 b(X) \eqdef \E{Y \mid A = 1, X}, \qquad \pi(X) \eqdef \Pr[A = 1 \mid X].
 $$
 
-The plug-in g-formula (standardization) estimates $b(X)$; IP weighting estimates $\pi(X)$ [@hernan2020causal, pp. 246-247].
+The plug-in g-formula (standardization) estimates $b(X)$;
+IP weighting estimates $\pi(X)$ [@hernan2020causal, pp. 246-247].
 :::
 
 ---
@@ -387,7 +393,8 @@ $\hat\psi_{\text{cross-fit}}$ is then semiparametric efficient, with standard er
 ::: {#prp-conditional-bias}
 ## Conditional Bias of the Split-Sample AIPW Estimator
 
-Assume conditional exchangeability given $X$ and positivity, so $\psi = \E{b(X)}$. Then
+Assume conditional exchangeability given $X$ and positivity, so $\psi = \E{b(X)}$.
+Then
 
 $$
 \E{\hat\psi - \psi \mid Tr} = \E{\pi(X) \left( \frac{1}{\pi(X)} - \frac{1}{\hat\pi(X)} \right) \left( \hat b(X) - b(X) \right) \mid Tr} .
@@ -395,7 +402,8 @@ $$
 :::
 
 ::: {.proof}
-Given $Tr$, each term of $\hat\psi$ has the same mean, so $\E{\hat\psi \mid Tr}$ is the mean of one term. Conditioning on $X$ first:
+Given $Tr$, each term of $\hat\psi$ has the same mean, so $\E{\hat\psi \mid Tr}$ is the mean of one term.
+Conditioning on $X$ first:
 
 $$
 \begin{aligned}
@@ -470,9 +478,12 @@ If they agree, we gain confidence; if they disagree, our job is to understand wh
 
 ---
 
-- **Prediction** needs no confounding adjustment and may use any algorithm that predicts well; **causal inference** needs a carefully chosen adjustment set.
+- **Prediction** needs no confounding adjustment and may use any algorithm that predicts well;
+  **causal inference** needs a carefully chosen adjustment set.
 - Adjusting for some variables **induces** bias (colliders and their descendants, noncolliders affected by treatment, mediators, M-bias structures) or **amplifies** it (instruments; Z-bias).
   Data alone cannot find them, so **expert knowledge** must guide selection.
 - Temporal order alone is not the rule: a post-treatment variable can be a valid adjustment variable, and a pre-treatment variable can be a collider.
 - With high-dimensional $X$, estimate $b(X)$ and $\pi(X)$ with machine learning inside a **doubly robust** estimator, with **sample splitting and cross-fitting**, to get valid Wald intervals.
-- Valid intervals may still be very wide; dropping covariates after seeing the data threatens validity. Run multiple sensitivity analyses.
+- Valid intervals may still be very wide;
+  dropping covariates after seeing the data threatens validity.
+  Run multiple sensitivity analyses.

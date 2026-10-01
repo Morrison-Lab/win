@@ -175,7 +175,8 @@ From the logistic model for quitting smoking given $L$ [@hernan2020causal, p. 20
 - highest: 0.793 (individual 24949);
 - mean estimated propensity score: 0.312 among quitters ($A = 1$), 0.245 among nonquitters ($A = 0$).
 
-Figure 15.1 of the book shows the two distributions; they overlap over most of the range.
+Figure 15.1 of the book shows the two distributions;
+they overlap over most of the range.
 :::
 
 ::: {.notes}
@@ -199,9 +200,11 @@ We say the propensity score **balances** the covariates.
 ::: {.notes}
 Two caveats from the book [@hernan2020causal, pp. 201-202]:
 
-- The propensity score balances only the **measured** covariates $L$; unlike randomization, it does nothing about unmeasured confounders.
+- The propensity score balances only the **measured** covariates $L$;
+  unlike randomization, it does nothing about unmeasured confounders.
 - In a finite study population the **true** propensity score balances $L$ only approximately, because of sampling variability.
-  An estimated propensity score from a correct model generally gives better balance; in a randomized experiment, adjusting for the estimated $\pi(L)$ corrects both systematic and chance imbalances, whereas the true $\pi(L)$ ignores the chance imbalances.
+  An estimated propensity score from a correct model generally gives better balance;
+  in a randomized experiment, adjusting for the estimated $\pi(L)$ corrects both systematic and chance imbalances, whereas the true $\pi(L)$ ignores the chance imbalances.
 :::
 
 ---
@@ -209,13 +212,15 @@ Two caveats from the book [@hernan2020causal, pp. 201-202]:
 ::: {#def-balancing-score}
 ## Balancing Score and Prognostic Score (Technical Point 15.1)
 
-- A **balancing score** $b(L)$ is any function of $L$ such that $A \ind L \mid b(L)$. The propensity score is the simplest example.
+- A **balancing score** $b(L)$ is any function of $L$ such that $A \ind L \mid b(L)$.
+  The propensity score is the simplest example.
 - A **prognostic score** $s(L)$ is a function of $L$ such that $Y^{a=0} \ind L \mid s(L)$.
 :::
 
 ::: {.notes}
 Rosenbaum and Rubin (1983) proved that exchangeability and positivity given $L$ imply exchangeability and positivity given any balancing score [@hernan2020causal, p. 202].
-Graphically, $\pi(L)$ sits between $L$ and $A$, with a deterministic arrow $L \to \pi(L)$ (book Figure 15.2); since $\pi(L)$ blocks every backdoor path between $A$ and $L$, adjusting for it suffices.
+Graphically, $\pi(L)$ sits between $L$ and $A$, with a deterministic arrow $L \to \pi(L)$ (book Figure 15.2);
+since $\pi(L)$ blocks every backdoor path between $A$ and $L$, adjusting for it suffices.
 
 Methods based on prognostic scores need stronger assumptions and do not extend readily to time-varying treatments; see Hansen (2008) and Abadie et al. (2013), as cited in @hernan2020causal [p. 202].
 :::
@@ -238,7 +243,8 @@ Positivity given the propensity score means $\Pr[A = a \mid \pi(L) = s] > 0$ for
 
 ### Supplement: An Algebraic Proof of the Balancing Results
 
-The book argues graphically (Technical Point 15.1); the same results follow from iterated expectations.
+The book argues graphically (Technical Point 15.1);
+the same results follow from iterated expectations.
 
 ::: {.proof}
 ## Proof that $A \ind L \mid \pi(L)$
@@ -391,18 +397,22 @@ e.g., untreated individuals within $\pm 0.05$ of the treated individual's estima
 **Bias-variance trade-off**:
 
 - criteria too loose: the $\pi(L)$ distribution differs between matched treated and untreated, so exchangeability fails;
-- criteria too tight: many individuals are excluded; approximate exchangeability, but wider confidence intervals.
+- criteria too tight: many individuals are excluded;
+  approximate exchangeability, but wider confidence intervals.
 
 ---
 
 ### Matching and Positivity
 
-- In NHEFS, the estimated $\pi(L)$ distributions overlapped over most of the range; only 2 treated individuals had values above those of every untreated individual.
+- In NHEFS, the estimated $\pi(L)$ distributions overlapped over most of the range;
+  only 2 treated individuals had values above those of every untreated individual.
 - Outcome regression on $\pi(L)$ (Section 15.3) kept them, implicitly treating the lack of comparable untreated individuals as **random nonpositivity**.
-- Most matched analyses would drop them. Matching does not distinguish random from structural nonpositivity.
+- Most matched analyses would drop them.
+  Matching does not distinguish random from structural nonpositivity.
 
 ::: {.notes}
-The book also states this count as a percentage of the study population (0.01%); that percentage is not reproduced here because it is inconsistent with the counts: 2 individuals are about 0.1% of a study population of roughly 1,600.
+The book also states this count as a percentage of the study population (0.01%);
+that percentage is not reproduced here because it is inconsistent with the counts: 2 individuals are about 0.1% of a study population of roughly 1,600.
 :::
 
 ---
@@ -444,8 +454,11 @@ Part II used two kinds of models for causal inference.
 ::: {#def-propensity-structural-models}
 ## Propensity Models and Structural Models
 
-- **Propensity models**: models for $\Pr[A \mid L]$, where $L$ are the variables needed for conditional exchangeability. Their parameters are **nuisance parameters** with no causal interpretation.
-- **Structural models**: models relating $A$ to some feature (e.g., the mean) of the counterfactual $Y^a$, marginally or within levels of $L$. Their treatment parameters **do** have a causal interpretation. For continuous treatments they are often called **dose-response models**.
+- **Propensity models**: models for $\Pr[A \mid L]$, where $L$ are the variables needed for conditional exchangeability.
+  Their parameters are **nuisance parameters** with no causal interpretation.
+- **Structural models**: models relating $A$ to some feature (e.g., the mean) of the counterfactual $Y^a$, marginally or within levels of $L$.
+  Their treatment parameters **do** have a causal interpretation.
+  For continuous treatments they are often called **dose-response models**.
 :::
 
 ::: {.notes}
@@ -476,7 +489,8 @@ See Fine Point 14.1 of the book for the relation between structural nested model
   (Technical Point 4.1 gives IP weighting and standardization alternatives for that effect).
 - Effect modification across propensity strata may suggest that decision makers treat those likely to benefit (Kurth et al. 2006, as cited in @hernan2020causal [p. 206]),
   but statements like "beneficial for propensity scores between 0.11 and 0.93" have little policy relevance because they are not expressed in terms of measured variables $L$.
-- Other reasons matched and overall estimates may differ: positivity violations among the unmatched, or an unmeasured confounder that is more (or less) prevalent, or better (or worse) measured, in the matched population; apparent effect modification may reflect different residual confounding across propensity strata.
+- Other reasons matched and overall estimates may differ: positivity violations among the unmatched, or an unmeasured confounder that is more (or less) prevalent, or better (or worse) measured, in the matched population;
+  apparent effect modification may reflect different residual confounding across propensity strata.
 :::
 
 ### Causal Versus Predictive Uses of Outcome Regression
@@ -507,7 +521,8 @@ It need not; it only needs to include the $L$ that guarantee exchangeability.
 
 ::: {.notes}
 Reporting predictive measures such as Mallows's $C_p$ for propensity models is common, but their relevance for causal inference is questionable [@hernan2020causal, p. 207].
-Covariates strongly associated with $A$ but not needed for exchangeability do not reduce bias; including them can yield very large variances or even amplify existing bias.
+Covariates strongly associated with $A$ but not needed for exchangeability do not reduce bias;
+including them can yield very large variances or even amplify existing bias.
 :::
 
 ---
@@ -520,7 +535,8 @@ Hospital affects the outcome only through $A$, so it is not needed for exchangea
 
 - Adding Hospital to the propensity model gives $\pi(L) \approx 0.99$ in Aceso and $\approx 0.01$ in Panacea in the target population.
 - By chance, some $L$-strata of the study population may then contain only treated (Aceso) or only untreated (Panacea) individuals.
-- Result: a near-infinite variance with **no** reduction in confounding. That $A$ is now well predicted is irrelevant.
+- Result: a near-infinite variance with **no** reduction in confounding.
+  That $A$ is now well predicted is irrelevant.
 :::
 
 ::: {.notes}
@@ -564,7 +580,8 @@ NHEFS estimates of the effect of smoking cessation on weight gain (kg):
 
 - Outcome regression and propensity score methods need the same identifying conditions as the g-methods, plus correct nuisance models.
 - The propensity score balances measured covariates only.
-- Matching guarantees positivity automatically but can produce a target population that is hard to characterize; restricting on real-world variables is preferable.
+- Matching guarantees positivity automatically but can produce a target population that is hard to characterize;
+  restricting on real-world variables is preferable.
 - Propensity models should include the variables needed for exchangeability, not the best predictors of treatment.
 - Unlike the g-methods, these methods do not extend readily to time-varying treatments (Part III).
 :::
