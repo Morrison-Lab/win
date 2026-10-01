@@ -3,7 +3,8 @@
 
 Reads the book's table of contents from the text that
 fetch-whatif-book.sh extracts (inst/book/whatif.txt), and each chapter's
-numbered section headings from chapters/*.qmd, which take the form
+numbered section headings from the chapter files chapters/NN-*.qmd
+(headings in included subfiles are not read), which take the form
 
     ## 12.3 Stabilized IP Weights (pp. 167-169)
 
@@ -14,9 +15,14 @@ and reports, per chapter:
 - headings whose title differs from the book's (renamed),
 - headings whose cited start page differs from the book's (page).
 
-Titles are compared case-insensitively, ignoring punctuation.
-Exits 1 when any mismatch is found and 2 when an input is missing,
-so a run that examined nothing never reads as a clean one.
+With no chapters named, a book chapter that has no notes file is also
+reported. Titles are compared case-insensitively, ignoring punctuation.
+
+Exits 0 when everything matches and 1 when any mismatch is found. Exits 2
+when an input is unusable: the book text is missing or unreadable or holds
+no parsable table of contents, a chapter file is unreadable, no chapter
+files exist, or a named chapter has no file. A run that examined nothing
+therefore never reads as a clean one.
 
 Usage: .github/scripts/check-book-sync.py [--book-text PATH] [CHAPTER ...]
 """
@@ -126,7 +132,7 @@ def main() -> int:
         return 2
     try:
         toc = read_toc(args.book_text.read_text(encoding="utf-8"))
-    except (ValueError, UnicodeDecodeError) as error:
+    except (OSError, ValueError, UnicodeDecodeError) as error:
         print(f"cannot read the book's contents from {args.book_text}: {error}", file=sys.stderr)
         return 2
 
@@ -143,16 +149,31 @@ def main() -> int:
 
     total = 0
     examined = 0
+    if not args.chapters:
+        for chapter in sorted({key[0] for key in toc} - available):
+            sections = sum(1 for key in toc if key[0] == chapter)
+            print(f"Chapter {chapter:2d}: no chapters/{chapter:02d}-*.qmd file"
+                  f" for its {sections} book section(s)")
+            total += sections
     for path in files:
         chapter = int(path.name[:2])
         if args.chapters and chapter not in args.chapters:
             continue
         examined += 1
         problems: list[str] = []
-        notes = read_notes(path, problems)
+        try:
+            notes = read_notes(path, problems)
+        except (OSError, UnicodeDecodeError) as error:
+            print(f"cannot read {path}: {error}", file=sys.stderr)
+            return 2
         problems += compare(chapter, toc, notes)
         total += len(problems)
-        status = "ok" if not problems else f"{len(problems)} mismatch(es)"
+        if problems:
+            status = f"{len(problems)} mismatch(es)"
+        elif notes:
+            status = "ok"
+        else:
+            status = "nothing to compare (no numbered sections in book or notes)"
         print(f"Chapter {chapter:2d} ({path.name}): {status}")
         for problem in problems:
             print(f"    {problem}")

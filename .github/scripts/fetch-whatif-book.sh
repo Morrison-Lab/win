@@ -23,7 +23,7 @@ for tool in curl pdftotext sha256sum; do
   fi
 done
 
-repo_root=$(git rev-parse --show-toplevel)
+repo_root=$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)
 book_dir="$repo_root/inst/book"
 version_file="$book_dir/VERSION"
 
@@ -71,11 +71,12 @@ if [[ -n $expected_sha && $actual_sha != "$expected_sha" ]]; then
   exit 1
 fi
 
-# Extract before moving anything into place, so a failure cannot leave a new
-# PDF beside the previous revision's text.
+# Extract before moving anything into place, so a failed extraction leaves the
+# previous files untouched. The text moves first: the checker reads only the
+# text, so if the second move fails the text is already the new revision's.
 pdftotext -layout "$tmp" "$tmp_txt"
-mv "$tmp" "$pdf"
 mv "$tmp_txt" "$book_dir/whatif.txt"
+mv "$tmp" "$pdf"
 trap - EXIT
 
 echo "Saved $pdf"

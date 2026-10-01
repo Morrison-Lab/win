@@ -43,5 +43,11 @@ compares each chapter's numbered `## N.M Title (pp. X-Y)` headings
 with the book's table of contents,
 and lists sections that are missing, extra, renamed,
 or cited at the wrong page.
-It exits 1 when it finds a mismatch,
-and 2 when the book text or the chapter files are missing.
+With no chapters named, it also lists book chapters that have no notes file.
+It exits 0 when everything matches, 1 when it finds a mismatch,
+and 2 when an input is unusable:
+the book text is missing, unreadable, or has no parsable table of contents,
+a chapter file is unreadable,
+no `chapters/NN-*.qmd` files exist,
+or a named chapter has no file.
+Headings in included subfiles are not read.
