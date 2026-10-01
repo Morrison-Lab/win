@@ -7,9 +7,13 @@ by Miguel A. Hernán and James M. Robins.
 ([the checker](#checking-the-notes-against-the-book) reports how closely they match it).
 
 The book's copyright page reads "All rights reserved",
-so this repository never commits the book itself.
-The authors distribute the PDF free of charge from the link above.
-Everything in this directory except this README and `VERSION` is gitignored.
+and the authors distribute the PDF free of charge from the link above.
+Everything in this directory except this README and `VERSION` is gitignored,
+so new downloads and the extracted text are not committed.
+The 21 November 2025 PDF is already tracked here
+(added in commit 8ffa8bd);
+ignore rules do not untrack a file,
+so removing it is a separate decision (`git rm --cached`).
 
 ## Getting a local copy
 
