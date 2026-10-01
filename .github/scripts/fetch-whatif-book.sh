@@ -73,7 +73,8 @@ tmp_txt=$(mktemp)
 trap 'rm -f "$tmp" "$tmp_txt"' EXIT
 
 echo "Downloading $url"
-curl --fail --location --silent --show-error --output "$tmp" "$url"
+curl --fail --location --proto =https --proto-redir =https \
+  --silent --show-error --output "$tmp" "$url"
 
 if [[ $(head -c 5 "$tmp") != "%PDF-" ]]; then
   echo "Downloaded file is not a PDF: $url" >&2
@@ -91,6 +92,13 @@ if [[ -n $expected_sha && $actual_sha != "$expected_sha" ]]; then
   echo "Kept it as $pdf.unverified; compare it with a known-good copy" >&2
   echo "before updating $version_file." >&2
   exit 1
+fi
+
+# A new revision can reuse the pinned revision's file name, so never replace an
+# existing PDF with different bytes: save the new one under a name carrying its
+# checksum instead.
+if [[ -n ${BOOK_URL:-} && -e $pdf && $(sha256 "$pdf") != "$actual_sha" ]]; then
+  pdf="${pdf%.*}-${actual_sha:0:12}.pdf"
 fi
 
 # Extract before moving anything into place, so a failed extraction leaves the

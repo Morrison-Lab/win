@@ -35,6 +35,9 @@ BOOK_URL=<pdf url> .github/scripts/fetch-whatif-book.sh
 ```
 
 then update `date`, `url`, `sha256` and `pages` (the PDF's page count) in `VERSION`.
+If a different PDF already has the new file's name,
+the script keeps that file and saves the new one as `<name>-<first 12 hex digits of its sha256>.pdf`.
+The script fetches over HTTPS only, redirects included.
 
 ## Checking the notes against the book
 
