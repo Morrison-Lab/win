@@ -236,7 +236,7 @@ Throughout the book, when the emphasis is on confounding and selection, it omits
 The second assumption, which is fundamental to any causal diagram, is the subject of Section 9.5.
 :::
 
-## 9.5 Many Proposed Causal Diagrams Include Noncausal Arrows (pp. 131-134)
+## 9.5 Many Proposed Causal Diagrams Include Noncausal Arrows (pp. 131-133)
 
 ---
 
@@ -247,14 +247,18 @@ Assume treatment depends only on $L$ and on physician preference, and that there
 
 **Assumption 2: every arrow corresponds to a well-defined intervention.**
 
-- The intervention on antiviral treatment $A$ is well defined, so the arrow $A \rightarrow Y$ (or its absence) is meaningful.
-- Interventions on obesity $L$ for its effect on death are **not** well defined (Chapter 3), so the counterfactuals $Y^l$ are undefined,
-  and the arrow $L \rightarrow Y$ has no causal interpretation.
+- Inference about the effect of $A$ on $Y$ needs well-defined counterfactuals $Y^a$, hence well-defined interventions on $A$ (Chapter 3).
+  Antiviral treatment can clearly be given or withheld, so the arrow $A \rightarrow Y$ (or its absence) is meaningful.
+- Obesity $L$ is not an intervention.
+  As in Chapter 3, $Y^l$ is defined only if some well-defined **effective no-direct-effect (ENDE)** intervention
+  can change $L$ while having no direct effect on $Y$.
+  Few experts would grant that such an intervention exists for obesity and mortality,
+  so the arrow $L \rightarrow Y$ cannot be assumed to be well defined [@hernan2020causal, p. 131].
 
 ::: {#def-causal-dag-strict}
 ## Causal DAG (Strict Sense)
 
-The book restricts the term **causal DAG** to DAGs in which every arrow has a well-defined causal interpretation.
+The book restricts the term **causal DAG** to DAGs in which every arrow has a causal interpretation.
 A DAG with at least one arrow lacking such an interpretation, such as Figure 9.13 under current knowledge, is a **"noncausal" diagram** [@hernan2020causal, p. 132].
 :::
 
@@ -264,19 +268,20 @@ A DAG with at least one arrow lacking such an interpretation, such as Figure 9.1
 
 - **$L \rightarrow A$ is reasonable.**
   Doctors are more likely to treat patients they learn are obese,
-  and one can imagine a well-defined intervention, such as presenting the physician with a patient whose body mass index differs.
+  and one can imagine a well-defined ENDE intervention, such as showing the physician a patient with a different body mass index.
 - **$L \rightarrow Y$ is not.**
-  Experts know obese patients are more likely to die but cannot propose a well-defined intervention on obesity for that effect.
+  Experts know obese patients are more likely to die, but because they do not accept that ENDE interventions on obesity exist for that effect,
+  the arrow has no causal interpretation for them.
 
 ::: {.callout-note title="Fine Point 9.3: Whether Interventions Are Well-Defined Depends on the Outcome of Interest"}
 If we know how to intervene on $L$ to study its effect on $A$, why not use the same intervention for $Y$?
 The apparent contradiction comes from using $L$ for two things:
-the physical quantity body weight, and the recorded value of that quantity.
+the physical quantity body weight, and the doctor's perception of that quantity.
 
-Let $L$ be body weight and $L^*$ its recording.
-Without measurement error there is a deterministic arrow $L \rightarrow L^*$, and the arrow into treatment is $L^* \rightarrow A$:
+Let $L$ be body weight and $L^*$ the doctor's perception of it.
+With perfect perception there is a deterministic arrow $L \rightarrow L^*$, and the arrow into treatment is $L^* \rightarrow A$:
 body weight affects treatment only once the doctor learns $L^*$.
-Intervening on the recorded $L^*$ while leaving body weight unchanged would change the doctor's behavior just as intervening on $L$ would.
+Intervening on the perceived $L^*$ while leaving body weight unchanged would change the doctor's behavior just as intervening on $L$ would.
 In this sense the counterfactuals $A^l$ are well defined, while $Y^l$ are not [@hernan2020causal, p. 132].
 :::
 
@@ -284,39 +289,25 @@ In this sense the counterfactuals $A^l$ are well defined, while $Y^l$ are not [@
 
 ---
 
-A second group of experts explains the obesity-death association differently:
-obesity is a surrogate for hidden factors $H$ that cause death
-(genetic factors, metabolic factors related to body fat, microbiota, and others not yet discovered).
-Figure 9.14 (structurally identical to Figure 7.2) has
+Experts who want a causal DAG that still accounts for the fact that obese patients die more often
+can instead propose Figure 9.14, which has the same structure as Figure 7.2.
+It adds a hidden node $H$ that causes both $L$ and $Y$;
+$H$ may contain unmeasured, possibly unknown, factors (genetic factors, metabolic factors related to body fat, microbiota, and others not yet discovered).
+Figure 9.14 has
 
 $$H \rightarrow L \rightarrow A \rightarrow Y, \qquad H \rightarrow Y,$$
 
 with no arrow $H \rightarrow A$, which is reasonable if obesity $L$ is the only information used in treatment decisions.
 
-Its counterfactuals are $A^l$ and $Y^a$, and they define $Y^l$ by **recursive substitution** (Technical Point 6.2):
+Is Figure 9.14 itself causal?
+Its new arrows $H \rightarrow L$ and $H \rightarrow Y$ are causal exactly when the counterfactuals $L^h$ and $Y^h$ are well defined.
+That holds if the experts are willing to assume either
 
-$$Y^l = Y^{A^l},$$
+- that $H$ corresponds to a well-defined intervention, or
+- that there is a well-defined ENDE intervention on $H$ that affects $L$ and $Y$ only through $H$.
 
-that is, $Y^l$ equals $Y^a$ evaluated at $a = A^l$.
-There is no contradiction in $Y^l$ being well defined under Figure 9.14 but not under Figure 9.13:
-if Figure 9.14 is causal, Figure 9.13 is not, because it omits the common cause $H$ of $L$ and $Y$.
-
-::: {.notes}
-**What $H$ is.**
-When a proposed diagram contains a variable $L$ for which $Y^l$ is ill-defined, the book introduces a high-dimensional parent $H$
-that encodes all unmeasured (known and unknown) causal determinants of $L$,
-other than any known but unmeasured $U$ already on the diagram;
-$H$ may also be a parent of other variables such as $Y$.
-$L$ is a lower-dimensional effect of, or surrogate for, $H$ that was recorded for analysis,
-sometimes a deterministic many-to-one function of $H$; body mass index is an effect of the largely unknown factors that regulate body weight.
-
-Figure 9.14 also asserts well-defined interventions for $H$ on $L$ and on $Y$ (counterfactuals $L^h$, $Y^h$).
-That can seem odd when many components of $H$ are unknown, but current knowledge does not rule such interventions out,
-so the arrow $H \rightarrow Y$ is tentatively justified and Figure 9.14 is treated as causal.
-
-The book uses $H$ for unmeasured common causes of two variables when the effect of one on the other is ill-defined,
-and $U$ when it is well defined; elsewhere it uses $U$ for all unmeasured variables [@hernan2020causal, pp. 132-134].
-:::
+The precise intervention on $H$ is unknown, but current knowledge does not exclude it,
+so both arrows out of $H$ are tentatively justified and Figure 9.14 is treated as a causal diagram [@hernan2020causal, pp. 132-133].
 
 ::: {.callout-note title="Fine Point 9.4: \"Noncausal\" Diagrams With Well-Defined Statistical Interpretations"}
 Consider an FFRCISTG model in which only $A$ has well-defined interventions (counterfactuals $(M^a, Y^a)$)
@@ -348,7 +339,7 @@ $Y^l - Y^{l'}$ becomes the total effect along both $L \rightarrow Y$ and $L \rig
 The effect along $L \rightarrow A \rightarrow Y$ alone remains identified by the front door formula, which the book proves in Chapter 23 [@hernan2020causal, p. 134].
 :::
 
-## 9.6 Does It Matter That Many Proposed Diagrams Include Noncausal Arrows? (pp. 134-136)
+## 9.6 Does It Matter That Many Proposed Diagrams Include Noncausal Arrows? (pp. 133-136)
 
 ---
 
@@ -372,7 +363,7 @@ and $L$ blocks the backdoor path between $A$ and $Y$.
 If instead $L$ is a surrogate for hidden factors $H$ for which well-defined interventions exist (Figure 9.16),
 $L$ does not block the backdoor path.
 Investigators unaware that $L$ is only a surrogate confounder would wrongly conclude that adjusting for $L$ suffices,
-as discussed in Section 9.3 [@hernan2020causal, p. 135].
+as discussed in Section 9.3 [@hernan2020causal, p. 134].
 
 When proposing a causal DAG, ask of each arrow $X \rightarrow Y$ whether there is a well-defined intervention on $X$ for its effect on $Y$.
 This scrutiny is unnecessary for an electrical circuit, where all interventions are well defined,
@@ -383,7 +374,7 @@ but indispensable in the health and social sciences.
 No intervention is perfectly well defined (Chapter 3), but for some there is scientific consensus that they are sufficiently well defined.
 From here on, except for clearly sign-posted exceptions, the book assumes all DAGs are strictly causal:
 every arrow corresponds to an intervention that can be specified with no meaningful vagueness given current knowledge,
-while acknowledging that such beliefs, and the diagrams, may later prove wrong [@hernan2020causal, pp. 135-136].
+while acknowledging that such beliefs, and the diagrams, may later prove wrong [@hernan2020causal, p. 135].
 :::
 
 ::: {.callout-note title="Fine Point 9.6: From Noncausal Diagrams to Causal Diagrams"}
