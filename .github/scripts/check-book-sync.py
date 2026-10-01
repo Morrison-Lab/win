@@ -29,7 +29,9 @@ reported. Titles are compared case-insensitively, ignoring punctuation.
 Exits 0 when everything matches and 1 when any mismatch is found. Exits 2
 when an input is unusable: the book text is missing or unreadable or holds
 a table of contents that does not parse completely and plausibly (every
-contents title must also match the body's own heading for that section),
+contents title must also match the body's own heading for that section,
+and every capitalized numbered body heading in a chapter the contents
+lists needs a contents entry),
 VERSION is missing or has no page count, a chapter file is unreadable, no chapter
 files exist, or a named chapter has no file. A chapter file with no
 numbered sections in either the book or the notes is reported as having
@@ -161,11 +163,13 @@ def read_toc(
 
 
 def check_body_headings(toc, body: list[str]) -> None:
-    """Require each contents title to match the body's own section heading.
+    """Require the contents and the body's section headings to agree.
 
     The body sets each heading on one line ("12.3 Stabilized IP weights"),
     so a contents title that closed early, or picked up a stray line, no
     longer matches it. This does not depend on the contents' layout.
+    Conversely, a capitalized numbered heading in a chapter the contents
+    lists must have a contents entry, so a lost contents line is caught.
     """
     headings: dict[tuple[int, int], list[str]] = {}
     capitalized: set[tuple[int, int]] = set()
