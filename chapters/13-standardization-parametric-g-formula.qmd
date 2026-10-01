@@ -95,16 +95,14 @@ The average causal effect **in the treated** can also be estimated by standardiz
 More generally, the stratum-specific means can be standardized to any distribution of $L$ (the treated, the untreated, an external population). The choice defines the target population of the causal effect.
 :::
 
-### Fine Point 13.1: Structural Positivity
-
----
-
+::: {.callout-note title="Fine Point 13.1: Structural Positivity"}
 - Positivity is needed for standardization too: if $\Pr[A = a \mid L = l] = 0$ while $\Pr[L = l] \neq 0$, then $\E{Y \mid A = a, L = l}$ is undefined.
 - With a parametric outcome model, one *can* ignore structural nonpositivity by **extrapolating** over the empty strata, at the cost of bias (95% confidence intervals then cover the truth less than 95% of the time).
 - Near positivity violations, standardization typically has a smaller standard error than IP weighting, but differences in bias may outweigh differences in standard error.
 
 ::: {.notes}
 @hernan2020causal [Fine Point 13.1, p. 176] stresses the different role of modeling here: we model not because data are scarce but to estimate a quantity that is not identified even with infinite data, because of structural nonpositivity.
+:::
 :::
 
 ## 13.2 Estimating the Mean Outcome via Modeling (pp. 177-178)
@@ -217,10 +215,7 @@ The summary in Section 13.5 states one interval, (2.5, 4.5), for both methods to
 that interval matches the IP weighted one, and the g-formula's own is (2.6, 4.5).
 :::
 
-### Technical Point 13.1: Bootstrapping
-
----
-
+::: {.callout-note title="Technical Point 13.1: Bootstrapping"}
 The **nonparametric bootstrap** estimates standard errors when analytic or large-sample formulas are impractical:
 
 1. Draw a sample of size 1629 **with replacement** from the 1629 individuals (a bootstrap sample).
@@ -232,6 +227,7 @@ The **nonparametric bootstrap** estimates standard errors when analytic or large
 - When an estimator's limiting distribution is normal, Wald intervals with bootstrap standard errors are calibrated in large samples. For IP weighted MSM estimates, the bootstrap interval is calibrated, whereas the robust ("sandwich") variance from Chapter 12 often gives a conservative, wider interval.
 - Published analyses often use 200-500 bootstrap samples to save computation; in this example that would have given an almost identical interval, but not necessarily in general. The "bag of little bootstraps" (Kleiner et al. 2014) is a scalable alternative.
 - Wasserman (2004) introduces the theory behind the bootstrap.
+:::
 :::
 
 ## 13.4 IP Weighting or Standardization? (pp. 179-180)
@@ -278,26 +274,22 @@ Part III defines the g-formula for time-varying treatments.
 - Whenever possible, use **doubly robust** estimators, which combine a treatment model and an outcome model: under exchangeability and positivity given $L$, they are consistent if **either** model is correct, without knowing which.
 - Both methods can also target a subset of the population, e.g., estimating standardized means separately in men and women to study effect modification by sex.
 
-### Fine Point 13.2: A Doubly Robust Plug-In Estimator
-
----
-
+::: {.callout-note title="Fine Point 13.2: A Doubly Robust Plug-In Estimator"}
 For dichotomous $A$ and no censoring [@bang2005doubly]:
 
 1. Estimate the IP weights $W^A = 1/f(A \mid L)$ as in Chapter 12.
 2. Fit an outcome model (a GLM with canonical link) for $\E{Y \mid A, L, R}$ that adds the covariate
    $R = W^A$ if $A = 1$ and $R = -W^A$ if $A = 0$.
-3. Predict with $A$ set to 1 for everyone and average; repeat with $A$ set to 0.
+3. Predict for everyone with $A$ set to 1 and $R$ recomputed at that value, $R = 1/f(1 \mid L)$, and average;
+   repeat with $A$ set to 0 and $R = -1/f(0 \mid L)$.
 4. The difference of the two averages is a doubly robust plug-in estimate of the average causal effect.
 
 ::: {.notes}
 Equivalently, $R = \{I(A = 1) - I(A = 0)\}/f(A \mid L)$, which is the "clever covariate" of targeted minimum loss-based estimation (TMLE); see the book's Technical Point 13.3. Including $R$ makes the fitted model's residuals, weighted by $R$, sum to zero, which is what makes the plug-in estimator doubly robust.
 :::
+:::
 
-### Technical Point 13.2: The Augmented IP Weighted Estimator
-
----
-
+::: {.callout-note title="Technical Point 13.2: The Augmented IP Weighted Estimator"}
 For dichotomous $A$, write $b(L) = \E{Y \mid A = 1, L}$ and $\pi(L) = \Pr[A = 1 \mid L]$. Under the identifiability conditions,
 
 $$\E{Y^{a=1}} = \E{b(L)} = \E{\frac{AY}{\pi(L)}}.$$
@@ -325,6 +317,7 @@ $$
 $$
 
 The first form is the outcome-model estimator plus an IP weighted correction; the second is the Horvitz-Thompson estimator plus an outcome-model correction ("augmentation"), hence the name.
+:::
 :::
 
 ### Why the AIPW Estimator Is Doubly Robust

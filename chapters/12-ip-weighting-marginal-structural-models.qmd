@@ -100,8 +100,7 @@ $$Y^a \ind A \mid L$$
 Chapter 18 discusses how to select confounders; here the 9-variable adjustment set is taken as given [@hernan2020causal, Chapter 12, p. 164].
 :::
 
-### Fine Point 12.1: Setting a Bad Example
-
+::: {.callout-note title="Fine Point 12.1: Setting a Bad Example"}
 ::: {.notes}
 The smoking cessation example is convenient (no deep subject-matter knowledge required, public data) but carries a potential **selection bias** [@hernan2020causal, Fine Point 12.1, p. 164]:
 
@@ -111,6 +110,7 @@ The smoking cessation example is convenient (no deep subject-matter knowledge re
 - Smoking cessation is really a time-varying treatment (people quit at different times); Part II ignores this, and Part III handles time-varying treatments.
 
 A randomized trial would not have this problem, because treatment would be assigned at baseline and known even for people who did not reach the 1982 visit. Unlike the censoring of the outcome handled in Section 12.6, here the missing information concerns the treatment itself; it can be addressed through sensitivity analysis. The book uses the example deliberately to illustrate a common problem in observational analyses that emulate a target trial: misalignment of eligibility, treatment assignment, and the start of follow-up.
+:::
 :::
 
 ## 12.2 Estimating IP Weights via Modeling (pp. 164-167)
@@ -233,8 +233,7 @@ If the model for $\Pr[A = 1 \mid L]$ is misspecified, the estimates of $\theta_0
 
 ---
 
-### Technical Point 12.1: Horvitz-Thompson and Hajek Estimators
-
+::: {.callout-note title="Technical Point 12.1: Horvitz-Thompson and Hajek Estimators"}
 ::: {#def-ht-hajek}
 ## Horvitz-Thompson and Hajek Estimators
 
@@ -265,6 +264,7 @@ so the ratio equals the IP weighted mean $\E{\indicp{A = a} Y / f(A \mid L)}$, w
 **Why the Hajek estimator is preferred in practice**: even when $f(A \mid L)$ is replaced by predictions from a misspecified model, the Hajek estimator stays within $[0, 1]$ for a dichotomous $Y$; the Horvitz-Thompson estimator need not.
 
 **Without positivity**: let $Q(a) = \{l : \Pr(A = a \mid L = l) > 0\}$. The Hajek ratio then equals $\sum_l \E{Y \mid A = a, L = l, L \in Q(a)} \Pr[L = l \mid L \in Q(a)]$, which under exchangeability is $\E{Y^a \mid L \in Q(a)}$. Its denominator converges to $\Pr[Q(a)]$ rather than 1, so the ratio of the Horvitz-Thompson limit to the Hajek limit is $\Pr[Q(a)]$, and the difference of Hajek estimators for $a = 1$ versus $a = 0$ has no causal interpretation.
+:::
 :::
 
 ## 12.3 Stabilized IP Weights (pp. 167-169)
@@ -346,8 +346,7 @@ If both kinds of weights give the same estimate, why stabilize?
 
 ---
 
-### Fine Point 12.2: Checking Positivity
-
+::: {.callout-note title="Fine Point 12.2: Checking Positivity"}
 In the NHEFS, there are 4 white women aged 66, and none of them quit smoking: positivity is **empirically** violated in that stratum.
 
 - **Structural violations**: some values of $L$ make treatment (or non-treatment) impossible. Example: people off work cannot be exposed to an occupational chemical. Zero cells appear whenever we condition on such a confounder.
@@ -360,6 +359,7 @@ The two kinds of violation have different consequences [@hernan2020causal, Fine 
 - Under **random** violations, the parametric model smooths over the zeros: the logistic model of Section 12.2 estimated the probability of quitting for white women aged 66 by interpolating from everyone else.
 
 Whenever we use parametric IP weights in the presence of zero cells, as in the estimate $\hat\theta_1 = 3.4$, we are effectively assuming that the nonpositivity is random.
+:::
 :::
 
 ## 12.4 Marginal Structural Models (pp. 169-171)
@@ -654,8 +654,7 @@ Chapter 13 describes the alternative to IP weighting for adjusting for confoundi
 
 ---
 
-### Technical Point 12.2: More on Stabilized Weights
-
+::: {.callout-note title="Technical Point 12.2: More on Stabilized Weights"}
 ::: {.notes}
 The stabilized weights $f[A]/f[A \mid L]$ belong to a larger class $g[A]/f[A \mid L]$, where $g[A]$ is any function of $A$ that is not a function of $L$. With unsaturated marginal structural models, such weights are preferable to $1/f[A \mid L]$ because some $g[A]$ (often $f[A]$) yield more efficient estimators [@hernan2020causal, Technical Point 12.2, p. 174].
 
@@ -675,6 +674,7 @@ so the ratio of the two equals $g(a)\E{Y^a}/g(a) = \E{Y^a}$ (assuming $g(a) \neq
 The Hajek mean is the solution $u$ of $\E{\frac{g[A] \indicp{A = a}}{f[A \mid L]} (Y - u)} = 0$, since solving for $u$ gives the ratio of the two expectations. (The book prints this equation without the indicator $\indicp{A = a}$ [@hernan2020causal, Technical Point 12.2, p. 174]; without it, the solution would average $Y$ over all treatment levels rather than estimate $\E{Y^a}$.) Similarly, for $\E{Y^a} = \beta_0 + \beta_1 a$, the weighted least squares estimators with weights $g[A]/f[A \mid L]$ solve
 $$\hE{\frac{g[A]}{f[A \mid L]} \sb{Y - (\beta_0 + \beta_1 A)} \begin{pmatrix} 1 \\ A \end{pmatrix}} = 0,$$
 and $\hat\beta_0$ and $\hat\beta_0 + \hat\beta_1$ are exactly the Hajek estimators of $\E{Y^{a=0}}$ and $\E{Y^{a=1}}$. In the pseudo-population created by $g[A]/f[A \mid L]$, the mean of $Y$ given $A = a$ still equals $\E{Y^a}$.
+:::
 :::
 
 ## Summary
