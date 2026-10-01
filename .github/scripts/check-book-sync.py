@@ -168,19 +168,31 @@ def check_body_headings(toc, body: list[str]) -> None:
     longer matches it. This does not depend on the contents' layout.
     """
     headings: dict[tuple[int, int], list[str]] = {}
+    capitalized: set[tuple[int, int]] = set()
     for line in body:
         match = BODY_HEADING.match(line)
         if match:
             chapter, section, title = match.groups()
+            key = (int(chapter), int(section))
             title = TRAILING_PAGE.sub("", title)
-            headings.setdefault((int(chapter), int(section)), []).append(
-                normalize(title)
-            )
+            headings.setdefault(key, []).append(normalize(title))
+            if title[:1].isupper():
+                capitalized.add(key)
     for (chapter, section), (title, _) in toc.items():
         if normalize(title) not in headings.get((chapter, section), []):
             raise ValueError(
                 f"contents title {chapter}.{section} {title!r} matches no"
                 f" '{chapter}.{section}' heading in the book's body"
+            )
+    # The reverse direction: a contents line lost in extraction would
+    # otherwise go unnoticed. Body prose that happens to start with a number
+    # like "6.7" continues a sentence, so it starts lowercase or with a symbol;
+    # only a capitalized title in one of the book's chapters counts here.
+    chapters = {chapter for chapter, _ in toc}
+    for chapter, section in sorted(capitalized):
+        if chapter in chapters and (chapter, section) not in toc:
+            raise ValueError(
+                f"body heading {chapter}.{section} has no entry in the contents"
             )
 
 

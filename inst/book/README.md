@@ -64,6 +64,7 @@ and 2 when an input is unusable:
 - its table of contents does not parse completely,
   a section's page is out of order or past the page count in `VERSION`,
   a contents title does not match the section's own heading in the book's body,
+  a capitalized numbered heading in the body has no contents entry,
   or the contents has no `References` entry;
 - `VERSION` is missing or has no `pages:` line;
 - a chapter file is unreadable;
