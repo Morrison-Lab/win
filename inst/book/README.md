@@ -44,15 +44,20 @@ then update `date`, `url`, `sha256` and `pages` in `VERSION`.
 compares each chapter's numbered `## N.M Title (pp. X-Y)` headings
 with the book's table of contents,
 and lists sections that are missing, extra, renamed,
-cited at the wrong page or with no page, or duplicated.
+cited at the wrong start page or with no page,
+cited with an end page before the start page or after the next section's start,
+or duplicated.
 With no chapters named, it also lists book chapters that have no notes file.
 It exits 0 when everything matches, 1 when it finds a mismatch,
 and 2 when an input is unusable:
-the book text is missing or unreadable,
-its table of contents does not parse completely,
-or a section's page is out of order or past the page count in `VERSION`,
-a chapter file is unreadable,
-no `chapters/NN-*.qmd` files exist,
-or a named chapter has no file.
+
+- the book text is missing or unreadable;
+- its table of contents does not parse completely,
+  or a section's page is out of order or past the page count in `VERSION`;
+- `VERSION` has no `pages:` line;
+- a chapter file is unreadable;
+- no `chapters/NN-*.qmd` files exist;
+- a named chapter has no file.
+
 Headings in included subfiles, fenced code blocks and HTML comments are not read;
 a fence or comment left open at the end of a file is reported as a mismatch.

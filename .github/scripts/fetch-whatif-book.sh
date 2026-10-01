@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Download the current revision of Hernan & Robins, "Causal Inference: What If",
+# Download a revision of Hernan & Robins, "Causal Inference: What If",
 # into inst/book/ and extract its text for local reference.
 #
 # The book is "All rights reserved" (see its copyright page), so nothing this
@@ -59,6 +59,12 @@ if [[ -z $url ]]; then
 fi
 
 pdf="$book_dir/$(basename "${url%%\?*}")"
+# Only a PDF name can be saved here; anything else could overwrite VERSION,
+# README.md or whatif.txt.
+if [[ $pdf != *.pdf ]]; then
+  echo "URL does not name a .pdf file: $url" >&2
+  exit 2
+fi
 tmp=$(mktemp)
 tmp_txt=$(mktemp)
 trap 'rm -f "$tmp" "$tmp_txt"' EXIT
