@@ -23,7 +23,8 @@ and extracts the text to `inst/book/whatif.txt`.
 The recorded sha256 was taken from a local copy of the 21 November 2025 revision,
 not from a download of the recorded URL,
 so if the first run reports a mismatch,
-compare the two files before concluding the book changed.
+compare the download it keeps as `<name>.pdf.unverified`
+with a known-good copy before concluding the book changed.
 To move to a newer revision,
 take its PDF link from the book's page and run
 
@@ -47,8 +48,11 @@ cited at the wrong page or with no page, or duplicated.
 With no chapters named, it also lists book chapters that have no notes file.
 It exits 0 when everything matches, 1 when it finds a mismatch,
 and 2 when an input is unusable:
-the book text is missing, unreadable, or has no parsable table of contents,
+the book text is missing or unreadable,
+its table of contents does not parse completely,
+or a section's page is out of order or past the page count in `VERSION`,
 a chapter file is unreadable,
 no `chapters/NN-*.qmd` files exist,
 or a named chapter has no file.
-Headings in included subfiles are not read.
+Headings in included subfiles, fenced code blocks and HTML comments are not read;
+a fence or comment left open at the end of a file is reported as a mismatch.

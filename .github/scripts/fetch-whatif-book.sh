@@ -73,10 +73,14 @@ fi
 
 actual_sha=$(sha256 "$tmp")
 if [[ -n $expected_sha && $actual_sha != "$expected_sha" ]]; then
-  echo "sha256 mismatch for $url" >&2
+  # Keep the download so it can be compared with a known-good copy.
+  chmod 644 "$tmp"
+  mv "$tmp" "$pdf.unverified"
+  echo "The download from $url differs from the recorded checksum." >&2
   echo "  expected $expected_sha" >&2
   echo "  got      $actual_sha" >&2
-  echo "The file at this URL changed; update $version_file if that is intended." >&2
+  echo "Kept it as $pdf.unverified; compare it with a known-good copy" >&2
+  echo "before updating $version_file." >&2
   exit 1
 fi
 
@@ -84,6 +88,7 @@ fi
 # previous files untouched. The text moves first: the checker reads only the
 # text, so if the second move fails the text is already the new revision's.
 pdftotext -layout "$tmp" "$tmp_txt"
+chmod 644 "$tmp" "$tmp_txt"  # mktemp creates files readable only by their owner
 mv "$tmp_txt" "$book_dir/whatif.txt"
 mv "$tmp" "$pdf"
 trap - EXIT
