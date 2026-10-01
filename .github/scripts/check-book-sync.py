@@ -15,7 +15,7 @@ and reports, per chapter:
 - headings whose title differs from the book's (renamed),
 - headings whose cited start page differs from the book's (page),
 - headings whose end page precedes their start page or falls after the
-  next section's start or the book's last page (end page),
+  next section's start or the page where the References start (end page),
 - headings that cite no page (no page), or a page citation this script
   cannot read (bad page),
 - section numbers that appear twice in one file (duplicate).
@@ -31,8 +31,9 @@ when an input is unusable: the book text is missing or unreadable or holds
 a table of contents that does not parse completely and plausibly (every
 contents title must also match the body's own heading for that section),
 VERSION is missing or has no page count, a chapter file is unreadable, no chapter
-files exist, or a named chapter has no file. A run that examined nothing
-therefore never reads as a clean one.
+files exist, or a named chapter has no file. A chapter file with no
+numbered sections in either the book or the notes is reported as having
+nothing to compare.
 
 Usage: .github/scripts/check-book-sync.py [--book-text PATH] [CHAPTER ...]
 """
@@ -50,7 +51,7 @@ DEFAULT_TEXT = REPO / "inst" / "book" / "whatif.txt"
 
 TOC_SECTION = re.compile(r"^\s*(\d+)\.(\d+)\s+(.+?)(?:\s*\.(?:\s*\.)+)?\s+(\d+)\s*$")
 NOTE_HEADING = re.compile(
-    r"^##\s+(\d+)\.(\d+)\s+(.+?)\s*"
+    r"^[ ]{0,3}##\s+(\d+)\.(\d+)\s+(.+?)\s*"
     r"(?:\((?:pp?\.)\s*(\d+)(?:\s*[-\u2013]+\s*(\d+))?\s*\))?"
     r"\s*(?:\{[^}]*\})?\s*$"
 )
@@ -73,10 +74,25 @@ PAGE_HEADER = re.compile(
 FENCE = re.compile(r"^[ ]{0,3}(`{3,}|~{3,})")
 BODY_HEADING = re.compile(r"^\f?\s*(\d+)\.(\d+)\s+(\S.*?)\s*$")
 TRAILING_PAGE = re.compile(r"\s+\d+$")
-# A page citation the heading regex could not read, such as "(pp. 5--9)" or
-# "(p. 5, Fig. 2)".
+# The contents entry for the back matter, which bounds the last section.
+REFERENCES_ENTRY = re.compile(r"^\s*References(?:\s*\.)*\s+(\d+)\s*$")
+CODE_SPAN = re.compile(r"(`+)(?!`).*?(?<!`)\1(?!`)")
+INLINE_COMMENT = re.compile(r"<!--.*?-->")
+ATX_CLOSING = re.compile(r"\s+#+\s*$")
+# A page citation the heading regex could not read, such as "(p. 5, Fig. 2)".
 UNPARSED_PAGES = re.compile(r"\s*\((?:pp?\.)[^)]*\)\s*(?:\{[^}]*\})?\s*$")
 MAX_CONTINUATION = 3
+
+
+def references_page(text: str) -> int:
+    """The printed page where the References start, from the contents."""
+    for line in text.splitlines():
+        if TOC_END_MARKER in line:
+            break
+        match = REFERENCES_ENTRY.match(line)
+        if match:
+            return int(match.group(1))
+    raise ValueError("no 'References' entry in the table of contents")
 
 
 def read_toc(
@@ -208,10 +224,12 @@ def read_notes(path: Path, problems: list[str]) -> dict[tuple[int, int], Note]:
             continue
         # Headings inside an HTML comment are not rendered, so skip them.
         started_in_comment = comment
-        comment = ends_in_comment(line, comment)
+        # Code spans render literally, so markers inside them open nothing.
+        comment = ends_in_comment(CODE_SPAN.sub("", line), comment)
         if started_in_comment:
             continue
-        match = NOTE_HEADING.match(line)
+        heading = ATX_CLOSING.sub("", INLINE_COMMENT.sub("", line))
+        match = NOTE_HEADING.match(heading)
         if match:
             chapter, section, title, page, last = match.groups()
             key = (int(chapter), int(section))
@@ -238,12 +256,13 @@ def read_notes(path: Path, problems: list[str]) -> dict[tuple[int, int], Note]:
     return notes
 
 
-def compare(chapter: int, toc, notes, max_page: int) -> list[str]:
+def compare(chapter: int, toc, notes, last_page: int) -> list[str]:
     problems = []
     book = {key: value for key, value in toc.items() if key[0] == chapter}
     order = list(toc)
     # A section may end on the page where the next one starts, including the
-    # first section of the next chapter; the last ends by the book's last page.
+    # first section of the next chapter; the last ends by the printed page
+    # where the References start.
     next_start = {key: toc[order[i + 1]][1] for i, key in enumerate(order[:-1])}
     for key in sorted(book.keys() | notes.keys()):
         label = f"{key[0]}.{key[1]}"
@@ -279,16 +298,20 @@ def compare(chapter: int, toc, notes, max_page: int) -> list[str]:
                         f"end page {label} notes: pp. {note_page}-{note_last}"
                         f" / next section starts p. {next_start[key]}"
                     )
-            elif note_last is not None and note_last > max_page:
+            elif note_last is not None and note_last > last_page:
                 problems.append(
                     f"end page {label} notes: pp. {note_page}-{note_last}"
-                    f" / book has {max_page} pages"
+                    f" / References start p. {last_page}"
                 )
     return problems
 
 
 def book_pages() -> int:
-    """The page count recorded in inst/book/VERSION."""
+    """The PDF page count recorded in inst/book/VERSION.
+
+    Printed page numbers run lower than PDF pages, so this only bounds the
+    contents' page numbers loosely.
+    """
     version = (REPO / "inst" / "book" / "VERSION").read_text(encoding="utf-8")
     match = re.search(r"^pages:\s*(\d+)\s*$", version, re.MULTILINE)
     if not match:
@@ -317,7 +340,9 @@ def main() -> int:
         )
         return 2
     try:
-        toc = read_toc(args.book_text.read_text(encoding="utf-8"), max_page)
+        text = args.book_text.read_text(encoding="utf-8")
+        toc = read_toc(text, max_page)
+        last_page = references_page(text)
     except (OSError, ValueError, UnicodeDecodeError) as error:
         print(
             f"cannot read the book's contents from {args.book_text}: {error}",
@@ -357,7 +382,7 @@ def main() -> int:
         except (OSError, UnicodeDecodeError) as error:
             print(f"cannot read {path}: {error}", file=sys.stderr)
             return 2
-        problems += compare(chapter, toc, notes, max_page)
+        problems += compare(chapter, toc, notes, last_page)
         total += len(problems)
         if problems:
             status = f"{len(problems)} mismatch(es)"
