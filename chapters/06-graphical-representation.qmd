@@ -17,569 +17,781 @@ format:
 #| echo: false
 #| message: false
 #| warning: false
-library(ggdag)
-library(dagitty)
-library(ggplot2)
-library(patchwork)
+draw_dag <- function(spec) {
+  ggdag::ggdag(dagitty::dagitty(spec), stylized = TRUE) +
+    ggdag::theme_dag() +
+    ggdag::geom_dag_edges() +
+    ggdag::geom_dag_point(color = "steelblue", size = 14) +
+    ggdag::geom_dag_text(color = "white", size = 4)
+}
 ```
 
-So far we have used potential outcomes to represent causal effects. In this chapter we use causal diagrams—directed acyclic graphs (DAGs)—to represent causal relations. Causal diagrams encode our qualitative assumptions about the causal structure of the problem and allow us to determine when association equals causation, and which variables need to be adjusted for to eliminate confounding.
+Causal inference needs expert knowledge and untestable assumptions about the causal network linking treatment, outcome, and other variables.
+In the simple settings of Chapters 1-5 that network could stay implicit;
+in realistic settings we must state what we know and what we assume.
+
+This chapter introduces **causal diagrams**, a graphical tool for encoding qualitative causal assumptions.
+The book's advice: draw your assumptions before your conclusions.
 
 ::: {.notes}
-This chapter is based on @hernan2020causal [Chapter 6, pp. 59–76].
+This chapter is based on @hernan2020causal [Chapter 6, pp. 75-89].
+Chapters 6-9 of the book use causal diagrams to conceptualize problems.
 :::
 
-## 6.1 Causal Diagrams (pp. 59–61)
+## 6.1 Causal Diagrams (pp. 75-77)
 
 ---
 
-A **causal diagram** is a directed acyclic graph (DAG) in which:
-
-- Each **node** (vertex) represents a variable
-- Each **directed edge** (arrow) from node $V$ to node $W$ represents a direct causal effect of $V$ on $W$
-- There are **no cycles**: following the arrows, you can never return to a starting node
-
-::: {#def-dag}
-## Directed Acyclic Graph (DAG)
-
-A **directed acyclic graph (DAG)** used as a causal diagram represents a **non-parametric structural equation model (NPSEM)**. For each variable $V_k$ with parents $\mathrm{pa}(V_k)$ in the graph, there is a structural equation:
-
-$$V_k = f_k\bigl(\mathrm{pa}(V_k),\, U_k\bigr)$$
-
-where $U_k$ is an **unmeasured background variable** (exogenous variable) that represents all causes of $V_k$ not otherwise shown in the graph.
-:::
-
-### The Main Example
-
-Consider a study of the causal effect of treatment $A$ on outcome $Y$, where $L$ is a measured variable that causes both $A$ and $Y$. The structural equations are:
-
-$$L = f_L(U_L)$$
-$$A = f_A(L,\, U_A)$$
-$$Y = f_Y(L,\, A,\, U_Y)$$
-
-where $U_L$, $U_A$, and $U_Y$ are **mutually independent** unmeasured background variables. The corresponding causal diagram is:
-
 ```{r}
+#| label: fig-dag-6-1
 #| echo: false
 #| fig-width: 4
 #| fig-height: 2.5
-#| fig-cap: "Figure 6.1. Causal diagram: L causes both A and Y, and A causes Y."
-dag_main <- dagitty('dag {
+#| fig-cap: "Book Figure 6.1: disease severity $L$, heart transplant $A$, death $Y$."
+draw_dag('dag {
   L [pos="0,0"]
-  A [pos="1,-1"]
+  A [pos="1,0"]
   Y [pos="2,0"]
   L -> A
   L -> Y
   A -> Y
 }')
-ggdag(dag_main, stylized = TRUE) +
-  theme_dag() +
-  geom_dag_edges() +
-  geom_dag_point(color = "steelblue", size = 14) +
-  geom_dag_text(color = "white", size = 4)
 ```
 
-### DAG Terminology
-
-For a node $W$ in a causal diagram:
-
-- A **parent** of $W$ is any node with a direct arrow into $W$
-- A **child** of $W$ is any node that $W$ has a direct arrow into
-- An **ancestor** of $W$ is any node from which $W$ is reachable by following arrows
-- A **descendant** of $W$ is any node reachable from $W$ by following arrows
-- A **path** between two nodes is any sequence of nodes connected by edges (arrows), regardless of direction
-
-In Figure 6.1: $L$ is a parent of $A$ and a parent of $Y$; $A$ is a child of $L$; $Y$ is a descendant of $L$ via two paths ($L \to Y$ directly, and $L \to A \to Y$).
-
-### What DAG Arrows Represent
-
-The **presence** of an arrow $V \to W$ encodes the assumption that $V$ has a direct causal effect on $W$ (i.e., not entirely mediated by other variables explicitly shown in the graph).
-
-The **absence** of an arrow between $V$ and $W$ (with no directed path from $V$ to $W$) encodes the assumption that $V$ has no direct causal effect on $W$, given the other variables in the graph. This is a substantive causal assumption that must be justified by subject-matter knowledge.
+- Nodes are random variables; time flows left to right.
+- An arrow $V \to W$: $V$ has a **direct** causal effect on $W$ (not mediated by other variables on the graph) **for at least one individual**.
+- No arrow from $V$ to $W$: $V$ has no direct causal effect on $W$ **for any individual**.
 
 ::: {.notes}
-**What DAGs do and do not represent:**
-
-- **Do represent**: qualitative causal structure (which variables directly cause which)
-- **Do not represent**: magnitude, direction, or functional form of effects
-- **Do not represent**: effect modification (heterogeneity of effects across subgroups)
-
-**Why acyclic?** DAGs do not allow feedback loops (e.g., $A \to Y \to A$). For dynamic settings with feedback, longitudinal DAGs or other frameworks are needed (see Part III of the textbook).
-
-**Unmeasured common causes:** In Figure 6.1, we assume $U_L$, $U_A$, $U_Y$ are mutually independent. If they were not independent — for instance, if $U_A$ and $U_Y$ were correlated — we would need to add an unmeasured common cause node connecting $A$ and $Y$, representing unmeasured confounding.
+A standard causal diagram does not say whether an arrow is harmful or protective,
+and when a variable (here $Y$) has two causes it does not say how they interact
+[@hernan2020causal, p. 75].
+The modern theory of causal diagrams arose in computer science and artificial intelligence;
+see Pearl (2009) and Spirtes, Glymour, and Scheines (2000).
 :::
-
-## 6.2 Causal Diagrams and Marginal Independence (pp. 61–64)
 
 ---
 
-Causal diagrams encode information about which variables are **marginally independent** (independent unconditionally, before conditioning on any variable). We can read this information directly from the graph structure.
+### Directed Acyclic Graphs and the Causal Markov Assumption
 
-### Open and Blocked Paths
+- **Directed**: each edge has a direction ($L \to A$ means $L$ may cause $A$, not the reverse).
+- **Acyclic**: no variable causes itself, directly or through other variables.
 
-A path between two nodes $V$ and $W$ is either **open** or **blocked**:
+::: {#def-causal-markov}
+## Causal Markov Assumption
 
-- A path is **blocked** if it contains a **collider** node — a node where two arrowheads meet on the path: $\cdots \to C \leftarrow \cdots$
-- A path is **open** if it contains no collider (all intermediate nodes are non-colliders)
-
-Two variables are **marginally associated** if and only if there is at least one open path between them.
-
-::: {#exm-marginal-independence}
-## Marginal Independence: Key Examples
-
-**Example 1**: $A \rightarrow Y$
-
-- One open path $A \to Y$: $A$ and $Y$ are **associated**
-
-**Example 2**: $A \quad Y$ (no path)
-
-- No path between $A$ and $Y$: they are **independent**
-
-**Example 3**: $A \leftarrow L \rightarrow Y$ (fork with common cause $L$)
-
-- One open path $A \leftarrow L \to Y$ (non-collider $L$ not conditioned on)
-- $A$ and $Y$ are **associated** even though $A$ does not cause $Y$
-
-**Example 4**: $A \rightarrow C \leftarrow Y$ (collider at $C$)
-
-- The only path $A \to C \leftarrow Y$ is **blocked** by the collider $C$
-- $A$ and $Y$ are **independent** marginally
+Conditional on its direct causes (parents),
+any variable on a causal DAG is independent of any variable for which it is not a cause
+(its non-descendants) [@hernan2020causal, pp. 76-77].
 :::
 
-::: {.notes}
-**d-separation:**
-
-The formal criterion for reading independence from a DAG is called **d-separation**. Two variables $X$ and $Y$ are *d-separated* by a conditioning set $Z$ if all paths between $X$ and $Y$ are blocked given $Z$. Under the Markov condition (which holds in any NPSEM with mutually independent $U$ variables), d-separation implies conditional independence in the observed data.
-
-**Why colliders block paths marginally:**
-
-In an NPSEM, the collider $C$ has independent causes $A$ and $Y$ (via their $U$ variables). Without any conditioning, $C$ is irrelevant to the association between $A$ and $Y$ — they have no shared cause and do not affect each other directly. The path through $C$ is blocked.
-
-**Markov condition:** In the NPSEM, each variable is independent of its non-descendants given its parents. This property is encoded in the DAG and is what allows us to use d-separation to determine independence.
-:::
-
-## 6.3 Causal Diagrams and Conditional Independence (pp. 64–68)
+A consequence: **all common causes of any pair of variables on the graph must also be on the graph**, even if unmeasured.
 
 ---
 
-Conditioning on a variable — by stratifying, restricting, or including it in a regression — can change independence relationships. Whether conditioning on a variable opens or blocks a path depends on whether that variable is a **collider** or a **non-collider** on the path.
-
-### Three Fundamental Path Structures
-
-#### 1. Chain: $A \rightarrow B \rightarrow Y$
-
-- **Marginally**: $A$ and $Y$ are **associated** (open path $A \to B \to Y$)
-- **Conditional on $B$**: $A$ and $Y$ are **independent** — conditioning on the intermediate variable $B$ blocks the path
-
-#### 2. Fork: $A \leftarrow B \rightarrow Y$
-
-- **Marginally**: $A$ and $Y$ are **associated** (open path through common cause $B$)
-- **Conditional on $B$**: $A$ and $Y$ are **independent** — conditioning on the common cause $B$ blocks the non-causal association
-
-#### 3. Collider: $A \rightarrow B \leftarrow Y$
-
-- **Marginally**: $A$ and $Y$ are **independent** (path blocked by collider $B$)
-- **Conditional on $B$**: $A$ and $Y$ are **dependent** — conditioning on a collider **opens** the previously blocked path
+### Randomized Experiments and Observational Studies
 
 ```{r}
+#| label: fig-dag-6-2
 #| echo: false
-#| fig-width: 9
-#| fig-height: 3
-#| fig-cap: "The three fundamental path structures. Left: chain (conditioning on B blocks path). Middle: fork (conditioning on B blocks path). Right: collider (conditioning on B opens path — collider bias)."
-dag_chain <- dagitty('dag {
-  A [pos="0,0"]; B [pos="1,0"]; Y [pos="2,0"]
-  A -> B -> Y
+#| fig-width: 3
+#| fig-height: 1.5
+#| fig-cap: "Book Figure 6.2: a marginally randomized experiment."
+draw_dag('dag {
+  A [pos="0,0"]
+  Y [pos="1,0"]
+  A -> Y
 }')
-dag_fork <- dagitty('dag {
-  A [pos="0,0"]; B [pos="1,1"]; Y [pos="2,0"]
-  B -> A; B -> Y
-}')
-dag_collider <- dagitty('dag {
-  A [pos="0,0"]; B [pos="1,0"]; Y [pos="2,0"]
-  A -> B; Y -> B
-}')
-
-p1 <- ggdag(dag_chain, stylized = TRUE) + theme_dag() +
-  geom_dag_edges() +
-  geom_dag_point(color = "steelblue", size = 14) +
-  geom_dag_text(color = "white", size = 4) +
-  labs(title = "Chain: A \u2192 B \u2192 Y")
-
-p2 <- ggdag(dag_fork, stylized = TRUE) + theme_dag() +
-  geom_dag_edges() +
-  geom_dag_point(color = "steelblue", size = 14) +
-  geom_dag_text(color = "white", size = 4) +
-  labs(title = "Fork: A \u2190 B \u2192 Y")
-
-p3 <- ggdag(dag_collider, stylized = TRUE) + theme_dag() +
-  geom_dag_edges() +
-  geom_dag_point(color = "steelblue", size = 14) +
-  geom_dag_text(color = "white", size = 4) +
-  labs(title = "Collider: A \u2192 B \u2190 Y")
-
-p1 + p2 + p3
 ```
 
-### Collider Stratification Bias
-
-Collider stratification bias is a **subtle and important** source of spurious association that arises from conditioning on a common effect of two variables.
-
-::: {#exm-collider-bias}
-## Collider Stratification Bias: Aspirin, Smoking, and Hospitalization
-
-Consider two variables that are **independent** in the general population:
-
-- $A$: regular aspirin use
-- $B$: smoking
-
-Both $A$ and $B$ independently cause hospitalization ($C$):
-
-$$A \longrightarrow C \longleftarrow B$$
-
-**In the general population**: aspirin use $A$ and smoking $B$ are independent — knowing someone uses aspirin tells you nothing about whether they smoke.
-
-**Among hospitalized patients ($C = 1$)**: aspirin use and smoking become **negatively associated**. If a hospitalized patient does not use aspirin, it is more likely their hospitalization is due to smoking-related disease. If a hospitalized patient does not smoke, their admission is more likely due to a cardiovascular condition related to aspirin use.
-
-This spurious negative association between $A$ and $B$ among the hospitalized is **collider stratification bias**: conditioning on hospitalization $C$ opens the previously blocked path $A \to C \leftarrow B$.
-:::
+- If transplant is randomized with a probability that depends on severity $L$,
+  $L$ is a common cause of $A$ and $Y$ and must appear: @fig-dag-6-1 (conditionally randomized experiment).
+- If everyone has the same probability of transplant, $L$ is not a common cause and can be omitted: @fig-dag-6-2 (marginally randomized experiment).
+- @fig-dag-6-1 can also depict an observational study in which the only parent of $A$ is $L$, with no other causes of $Y$ affecting $A$.
 
 ::: {.notes}
-**Collider bias is pervasive in epidemiology:**
-
-- **Berkson's bias**: Selecting cases and controls from a hospital creates a collider; diseases that are independent in the general population appear associated among hospitalized patients
-- **Healthy worker effect**: Restricting to employed workers (whose employment is a common effect of health status and occupational exposure) induces a spurious association
-- **Survivorship bias**: Among survivors of some condition, factors affecting survival appear spuriously associated
-
-**Descendants of colliders:**
-
-Conditioning on a *descendant* of a collider also partially opens the path, though with weaker bias. Any variable affected by both $A$ and $Y$ (or by a cause of $A$ and a cause of $Y$) is potentially a collider or descendant of one.
-
-**Key practical principle:** Do NOT adjust for variables that are downstream (descendants) of both treatment and outcome. This applies to selection into studies, loss to follow-up, or other post-treatment variables.
+Chapter 7 shows that being willing to draw @fig-dag-6-1 for an observational study
+is the graphical translation of conditional exchangeability $Y^a \ind A \mid L$ for all $a$
+[@hernan2020causal, p. 77].
 :::
-
-### D-separation Rules (Summary)
-
-The complete rules for determining whether a path is open or blocked after conditioning on a set $Z$:
-
-| Node type on path | $B \notin Z$ (not conditioned on) | $B \in Z$ (conditioned on) |
-|:------------------|:---------------------------------:|:--------------------------:|
-| Non-collider (chain or fork) | **Open** | **Blocked** |
-| Collider | **Blocked** | **Open** |
-
-Two variables are **d-separated** given $Z$ if every path between them is blocked given $Z$. D-separated variables are (conditionally) independent in any distribution generated by the NPSEM.
-
-## 6.4 Positivity and Structural Causal Models (pp. 68–69)
 
 ---
 
-### Non-Parametric Structural Equation Models
+### Technical Point 6.1: Causal DAGs, Formally
 
-Causal diagrams and their associated structural equations constitute **non-parametric structural equation models (NPSEMs)**. The NPSEM framework provides a rigorous basis for defining counterfactual quantities from the observed data structure.
+For a DAG $G$ with nodes $V = (V_1, \ldots, V_M)$,
+ordered so that $V_m$ is not an ancestor of $V_j$ when $m > j$:
 
-Given the structural equations $L = f_L(U_L)$, $A = f_A(L, U_A)$, $Y = f_Y(L, A, U_Y)$ with $U_L$, $U_A$, $U_Y$ mutually independent, the counterfactual outcome $Y^a$ is formally defined as:
+- $PA_m$, the **parents** of $V_m$, are the nodes with an arrow into $V_m$;
+- $V_m$ is a **descendant** of $V_j$ (and $V_j$ an **ancestor** of $V_m$) if one can reach $V_m$ from $V_j$ by following arrows.
 
-$$Y^a = f_Y\bigl(L,\, a,\, U_Y\bigr)$$
+The distribution of $V$ is **Markov** with respect to $G$ if each $V_j$ is independent of its non-descendants given its parents,
+which is equivalent to the **Markov factorization**
 
-That is, $Y^a$ is the value $Y$ would take if we **intervened** to set $A = a$, leaving all other structural equations (including those for $L$ and the $U$ variables) unchanged. This corresponds to Pearl's **do-operator**: $Y^a \equiv Y \,\mathrm{do}(A=a)$.
-
-### Positivity in Structural Causal Models
-
-The **positivity assumption** requires that every individual has a positive probability of receiving each treatment level:
-
-$$\Pr[A = a \mid L = l] > 0 \quad \text{for all } a \text{ and all } l \text{ with } \Pr[L = l] > 0$$
-
-In structural equation terms, positivity requires that the function $f_A(L, U_A)$ is not deterministic — no value of $L$ should completely determine the treatment assignment $A$.
-
-**Structural positivity violations** occur when $L$ deterministically forces $A$ to a particular value. In these strata, the counterfactual $Y^a$ cannot be identified from observational data regardless of sample size.
-
-**Random positivity violations** occur when, by chance, certain $(A, L)$ combinations do not appear in the finite sample, even though they have positive probability in the population.
+$$
+f(v) = \prod_{j=1}^{M} f(v_j \mid pa_j).
+$$
 
 ::: {.notes}
-**Why positivity matters for the NPSEM:**
+A **causal DAG** is a DAG in which [@hernan2020causal, Technical Point 6.1, p. 76]:
 
-When $\Pr[A = a \mid L = l] = 0$ for some $l$, we observe no individuals with treatment $a$ in stratum $L = l$. We cannot therefore identify the counterfactual $Y^a$ in that stratum from observational data. The causal effect is then not identifiable using standard methods (IP weighting, standardization, etc.) — a situation captured formally by the positivity assumption.
+1. the lack of an arrow from $V_j$ to $V_m$ means no direct causal effect of $V_j$ on $V_m$ relative to the other variables on the graph;
+2. all common causes, even unmeasured, of any pair of variables on the graph are on the graph;
+3. any variable is a cause of its descendants.
 
-**Consistency revisited:**
-
-In the NPSEM framework, the consistency assumption $Y = Y^A$ follows directly from the structural equations: when $A = a$ is actually assigned, $Y = f_Y(L, A, U_Y) = f_Y(L, a, U_Y) = Y^a$. Consistency violations (e.g., multiple versions of treatment) correspond to a situation where the node $A$ in the DAG actually represents several distinct interventions, each potentially yielding different outcomes.
+The causal Markov assumption links the causal DAG to the data:
+it says the distribution is Markov with respect to the causal DAG.
 :::
-
-## 6.5 A Structural Classification of Bias (pp. 69–73)
 
 ---
 
-Causal diagrams provide a **structural classification** of the biases that may affect causal estimates. Three main types arise from the structure of the causal diagram.
+::: {#exm-markov-factorization}
+## Markov Factorization Implies an Independence
 
-### Confounding Bias
+Take the DAG $A \leftarrow L \to Y$ (@fig-dag-6-3).
+The parents are: none for $L$; $L$ for $A$; $L$ for $Y$.
+Start from the chain rule, which holds for any distribution, and apply the Markov factorization:
 
-**Confounding** is present when there is an open **backdoor path** from treatment $A$ to outcome $Y$.
+$$
+\begin{aligned}
+f(l, a, y)
+  &= f(l)\, f(a \mid l)\, f(y \mid l, a)
+  && \text{(chain rule)} \\
+  &= f(l)\, f(a \mid l)\, f(y \mid l)
+  && \text{(the only parent of } Y \text{ is } L\text{)}.
+\end{aligned}
+$$
 
-::: {#def-backdoor-path}
-## Backdoor Path
+Dividing both sides by $f(l)$:
 
-A **backdoor path** from $A$ to $Y$ is any path that:
+$$
+\begin{aligned}
+f(a, y \mid l)
+  &= \frac{f(l, a, y)}{f(l)}
+  && \text{(definition of conditional density)} \\
+  &= f(a \mid l)\, f(y \mid l)
+  && \text{(substitute the factorization)},
+\end{aligned}
+$$
 
-1. Starts with an arrow **pointing into** $A$ (i.e., begins $\cdots \to A$)
-2. Ends at $Y$
-
-Such paths represent non-causal flows of association between $A$ and $Y$ induced by common causes.
+so $A \ind Y \mid L$: the missing arrow from $A$ to $Y$ implies a conditional independence.
 :::
 
-::: {#def-dag-confounding}
-## Confounding (Structural Definition)
+---
 
-**Confounding** of the effect of $A$ on $Y$ exists when there is at least one open backdoor path from $A$ to $Y$.
+### Graphs and Counterfactuals
 
-In the diagram $L \to A$, $L \to Y$, $A \to Y$: the path $A \leftarrow L \to Y$ is a backdoor path. Since $L$ is a non-collider on this path and has not been conditioned on, the path is open. There is therefore confounding.
+Each causal DAG has an **underlying counterfactual model** (Technical Points 6.2 and 6.3).
+That model justifies the intuitive graphical rules in this chapter,
+but conventional diagrams do not show the counterfactual variables.
+
+**Single World Intervention Graphs (SWIGs)** (Richardson and Robins 2013) put counterfactuals on the graph;
+they are introduced in Chapter 7.
+
+::: {.notes}
+Causal diagrams encode both causation (our subject-matter knowledge)
+and the associations that the causal structure implies.
+That simultaneous representation is what makes them attractive [@hernan2020causal, p. 77].
+The book's treatment is informal, aiming at conceptual insight rather than rigor.
 :::
+
+---
+
+### Technical Point 6.2: Nonparametric Structural Equation Models
+
+A **nonparametric structural equation model (NPSEM)** for a DAG with ordered nodes $V_1, \ldots, V_M$ assumes
+unobserved errors $\epsilon_m$ and unknown deterministic functions $f_m$ such that
+
+- $V_1 = f_1(\epsilon_1)$;
+- the one-step-ahead counterfactual $V_m^{pa_m}$, the value of $V_m$ when its parents are set to $pa_m$, equals $f_m(pa_m, \epsilon_m)$.
+
+Only the parents of $V_m$ have a direct effect on it.
+Every variable can be intervened on,
+and all factual and counterfactual values are obtained recursively.
+
+::: {#exm-npsem-6-1}
+## The NPSEM for Book Figure 6.1
+
+The structural equations are $L = f_L(\epsilon_L)$, $A = f_A(L, \epsilon_A)$, $Y = f_Y(L, A, \epsilon_Y)$.
+Setting $A$ to $a$ leaves $L$ unchanged, because $L$ is not a descendant of $A$,
+so the counterfactual outcome is obtained by substituting $a$ for $A$:
+$Y^a = f_Y(L, a, \epsilon_Y)$.
+:::
+
+::: {.notes}
+Robins (1986) introduced this model as a finest causally interpreted structural tree graph (FCISTG) "as detailed as the data";
+Pearl (2009) showed how to represent it with a DAG [@hernan2020causal, Technical Point 6.2, p. 77].
+For exposition the book assumes every variable can be intervened on,
+although its statistical methods do not require this.
+:::
+
+---
+
+### Technical Point 6.3: Which Independences?
+
+An FCISTG alone does not imply the causal Markov assumption; independence assumptions must be added.
+
+| Model | Assumption | Fig. 6.2 implies |
+|---|---|---|
+| NPSEM-IE (Pearl) | all errors $\epsilon_m$ mutually independent | full exchangeability $(Y^{a=0}, Y^{a=1}) \ind A$ |
+| FFRCISTG (Robins 1986) | one-step-ahead counterfactuals jointly independent | marginal exchangeability $Y^a \ind A$ for each $a$ |
+
+Both imply the causal Markov assumption.
+An NPSEM-IE is an FFRCISTG, not vice versa.
+**Unless stated otherwise, the book's causal DAGs represent an FFRCISTG.**
+
+::: {.notes}
+Source: @hernan2020causal [Technical Point 6.3, p. 78].
+Robins and Richardson (2010) showed that Robins's original formulation is equivalent to the joint-independence assumption for a positive distribution,
+and that an NPSEM-IE makes many more independence assumptions than an FFRCISTG.
+:::
+
+## 6.2 Causal Diagrams and Marginal Independence (pp. 77-79)
+
+---
+
+Three examples, all with no conditioning:
 
 ```{r}
+#| label: fig-dag-6-3
 #| echo: false
 #| fig-width: 4
 #| fig-height: 2.5
-#| fig-cap: "Figure 6.2. Confounding: L opens the backdoor path A ← L → Y. Adjusting for L blocks this path."
-dag_confounding <- dagitty('dag {
+#| fig-cap: "Book Figure 6.3: smoking $L$ causes carrying a lighter $A$ and lung cancer $Y$."
+draw_dag('dag {
   L [pos="1,1"]
   A [pos="0,0"]
   Y [pos="2,0"]
   L -> A
   L -> Y
-  A -> Y
 }')
-ggdag(dag_confounding, stylized = TRUE) +
-  theme_dag() +
-  geom_dag_edges() +
-  geom_dag_point(color = "steelblue", size = 14) +
-  geom_dag_text(color = "white", size = 4)
 ```
 
-### The Backdoor Criterion
+```{r}
+#| label: fig-dag-6-4
+#| echo: false
+#| fig-width: 4
+#| fig-height: 2.5
+#| fig-cap: "Book Figure 6.4: haplotype $A$ and smoking $Y$ both cause heart disease $L$, a collider."
+draw_dag('dag {
+  A [pos="0,0"]
+  L [pos="1,0"]
+  Y [pos="2,0"]
+  A -> L
+  Y -> L
+}')
+```
 
-::: {#def-backdoor-criterion}
-## Backdoor Criterion
-
-A set of measured variables $L$ satisfies the **backdoor criterion** for estimating the causal effect of $A$ on $Y$ if:
-
-1. No variable in $L$ is a descendant of $A$
-2. $L$ blocks every backdoor path from $A$ to $Y$
-
-When $L$ satisfies the backdoor criterion, adjusting for $L$ (via stratification, standardization, or IP weighting) eliminates confounding and yields an unbiased estimate of the causal effect.
-:::
-
-::: {#exm-backdoor}
-## Backdoor Criterion Example
-
-**DAG**: $U \to L \to A \to Y$, $L \to Y$
-
-**Backdoor path from $A$ to $Y$**: $A \leftarrow L \to Y$
-
-**Does $\{L\}$ satisfy the backdoor criterion?**
-
-1. $L$ is not a descendant of $A$ ✓
-2. Conditioning on $L$ (a non-collider on $A \leftarrow L \to Y$) blocks this path ✓
-
-Yes — adjusting for $L$ suffices to identify the causal effect, even though $L$ has an unmeasured cause $U$.
-
-**Does $\{U\}$ satisfy the backdoor criterion?**
-
-No — $U$ is an ancestor of $L$ but is not on the backdoor path $A \leftarrow L \to Y$. Conditioning on $U$ alone does not block the path through $L$.
-:::
-
-::: {.notes}
-**Minimal sufficient adjustment sets:**
-
-Multiple sets may satisfy the backdoor criterion. A **minimal sufficient adjustment set** is one from which no variable can be removed while still satisfying the criterion. The R package `dagitty` enumerates minimal sufficient adjustment sets automatically.
-
-**Avoiding over-adjustment:**
-
-- Adjusting for a **mediator** (a descendant of $A$ on a causal path to $Y$) blocks part of the causal effect — this is over-adjustment
-- Adjusting for a **collider** introduces collider stratification bias
-- Adjusting for a **descendant of a collider** partially introduces this bias
-:::
-
-### Selection Bias
-
-**Selection bias** arises when the analysis conditions on a variable $C$ that is a collider (or ancestor/descendant of a collider) on a path between $A$ and $Y$.
-
-**Structural representation:**
-
-$$A \longrightarrow C \longleftarrow Y$$
-
-Restricting the analysis to individuals with $C = 1$ (e.g., individuals selected into the study) opens the path $A \to C \leftarrow Y$ and induces a spurious association between $A$ and $Y$.
-
-::: {.notes}
-**Connection to collider stratification bias:**
-
-Selection bias is collider stratification bias applied to the selection mechanism. The "collider" is a variable related to study participation, follow-up completion, or analysis inclusion, and both $A$ (or a cause of $A$) and $Y$ (or a cause of $Y$) affect it.
-
-**Common examples:**
-
-- Loss to follow-up affected by both treatment and outcome
-- Case-control studies where hospital admission depends on both exposure and disease
-- Analysis restricted to survivors when survival depends on treatment and outcome
-
-**Chapter 8** covers selection bias in detail with specific examples.
-:::
-
-### Measurement Bias
-
-**Measurement bias** (information bias) occurs when a variable is measured imperfectly. In the causal diagram, we distinguish:
-
-- $A$: the true (unmeasured or imperfectly measured) treatment
-- $A^*$: the observed (potentially error-prone) measurement of treatment
-
-The structural relationship is $A \to A^*$: the true value generates the measurement, with additional unmeasured factors $U_{A^*}$ affecting the measurement.
-
-**Structural representation:**
-
-$$A \longrightarrow Y \qquad A \longrightarrow A^*$$
-
-Using $A^*$ in place of $A$ produces a biased estimate of the causal effect of $A$ on $Y$.
-
-::: {.notes}
-**Differential vs. non-differential measurement error:**
-
-- **Non-differential** (classical): $A^* = f(A, U_{A^*})$ where $U_{A^*}$ is independent of $Y$ and $L$ — typically attenuates estimates toward the null
-- **Differential**: $A^* = f(A, U_{A^*})$ where $U_{A^*}$ is correlated with $Y$ or its causes — can bias in either direction
-
-**Measurement error in confounders:**
-
-Measuring $L$ imperfectly (using $L^*$ instead of $L$) creates **residual confounding**: after adjusting for $L^*$, the backdoor path $A \leftarrow L \to Y$ is only partially blocked, and confounding bias remains.
-
-**Chapter 9** covers measurement bias in detail.
-:::
-
-## 6.6 The Structure of Effect Modification (pp. 73–76)
+| Figure | Structure | Example | $A$ and $Y$ |
+|---|---|---|---|
+| @fig-dag-6-2 | $A \to Y$ | aspirin prevents heart disease (randomized) | associated |
+| @fig-dag-6-3 | $A \leftarrow L \to Y$ | lighter, smoking, lung cancer | associated (no effect of $A$) |
+| @fig-dag-6-4 | $A \to L \leftarrow Y$ | haplotype, heart disease, smoking | independent |
 
 ---
 
-### Effect Modification in Causal Diagrams
+### Paths and the Flow of Association
 
-**Effect modification** (heterogeneity of treatment effects) occurs when the causal effect of $A$ on $Y$ differs across levels of another variable $V$. Standard DAGs, however, **cannot directly represent effect modification**.
+::: {#def-path}
+## Path; Causal Path
 
-A DAG with $V \to Y$ and $A \to Y$ is compatible with:
-
-- **No effect modification**: the $A \to Y$ effect is the same for all values of $V$
-- **Effect modification**: the $A \to Y$ effect varies across levels of $V$
-
-Both cases have identical qualitative structure. The DAG encodes only the *presence* of causal effects (which variables cause which), not their *magnitude* or *heterogeneity*.
-
-::: {.notes}
-**Why DAGs cannot encode effect modification:**
-
-Effect modification is a quantitative (or distributional) feature of the structural equations. A DAG specifies that $Y = f_Y(L, A, U_Y)$ but makes no claim about whether $f_Y$ involves an $A \times V$ interaction term. Two different NPSEMs — one with and one without effect modification — are represented by the same DAG if they share the same qualitative causal structure.
-
-**Frameworks that can encode effect modification:**
-
-Extensions of the DAG framework, such as *Single World Intervention Graphs (SWIGs)* (Richardson and Robins, 2014) and annotated DAGs, can explicitly represent counterfactual quantities and some aspects of effect modification, but these are beyond the scope of this chapter.
+A **path** between $R$ and $S$ is a route connecting them along a sequence of edges that visits no variable more than once.
+A path is **causal** if all its arrows point in the same direction; otherwise it is **noncausal**
+[@hernan2020causal, p. 78, margin note].
 :::
 
-### Confounders, Effect Modifiers, and Both
+Picture paths as pipes through which **association** flows.
+Association is symmetric, so it flows regardless of the direction of the arrows.
 
-A variable $V$ can play different roles with respect to the $A \to Y$ effect:
+::: {#def-collider}
+## Collider
 
-- **Confounder**: opens a backdoor path ($V \to A$, $V \to Y$) — must adjust for $V$ to remove bias
-- **Effect modifier**: the $A \to Y$ effect varies by $V$ — should stratify by $V$ to fully characterize effects
-- **Both**: must adjust for $V$ (confounding) and stratify (modification)
-- **Neither**: $V$ is unrelated to the $A \to Y$ causal structure
-
-::: {#exm-confounder-modifier-dag}
-## Confounder and Effect Modifier Roles
-
-**Scenario 1: $V$ is a confounder only**
-
-$$V \to A \to Y, \quad V \to Y$$
-
-$V$ opens the backdoor path $A \leftarrow V \to Y$. We must adjust for $V$ to remove confounding. Whether the $A \to Y$ effect varies by $V$ is a separate empirical question.
-
-**Scenario 2: $V$ is an effect modifier only (in a randomized trial)**
-
-$$V \to Y, \quad A \to Y, \quad \text{($A$ randomized, no } V \to A \text{ arrow)}$$
-
-No backdoor paths exist (randomization removes $V \to A$). Adjustment for $V$ is not needed to remove bias. However, if the $A \to Y$ effect varies by $V$, we should report stratum-specific estimates.
-
-**Scenario 3: $V$ is both confounder and effect modifier**
-
-$$V \to A \to Y, \quad V \to Y, \quad \text{($A$-$Y$ effect varies by $V$)}$$
-
-We must adjust for $V$ (removes confounding) and report stratum-specific effects (captures modification).
+A variable on a path is a **collider** on that path if two arrowheads on the path collide at it,
+as $L$ does on $A \to L \leftarrow Y$.
 :::
 
-### Identifying Effect Modification
+---
 
-Because DAGs cannot directly represent effect modification, we must assess it empirically:
+### The Three Examples
 
-1. First, ensure the causal effect is identified within each stratum of $V$ (using the backdoor criterion or other identification strategies)
-2. Estimate stratum-specific causal effects $\E{Y^{a=1} - Y^{a=0} \mid V = v}$ for each level $v$
-3. Compare effect estimates across strata: if they differ, effect modification is present
+- @fig-dag-6-2: causation implies association; in an ideal randomized experiment
+  $\Pr[Y^{a=1}=1] \neq \Pr[Y^{a=0}=1]$ if and only if $\Pr[Y=1 \mid A=1] \neq \Pr[Y=1 \mid A=0]$.
+- @fig-dag-6-3: learning that Hera carries a lighter makes it likelier she smokes, hence likelier she gets lung cancer;
+  association flows through the common cause $L$, though $A$ has no effect on $Y$.
+- @fig-dag-6-4: learning that Apollo lacks the haplotype says nothing about his smoking;
+  a collider **blocks** the flow of association, so $A \ind Y$.
+
+**Summary**: two variables are marginally associated if one causes the other or if they share a common cause;
+otherwise they are marginally independent.
 
 ::: {.notes}
-**Effect modification and interaction:**
+In @fig-dag-6-3, an investigator who concludes from the association that carrying a lighter causes lung cancer makes a mistake:
+information about $A$ improves prediction of $Y$ without $A$ affecting $Y$ [@hernan2020causal, p. 79].
+In @fig-dag-6-4, that both $A$ and $Y$ cause heart disease $L$ is irrelevant to the marginal association between $A$ and $Y$.
+:::
 
-Chapter 5 defined additive interaction between two treatments $A$ and $E$ using the interaction contrast $\text{IC} = \E{Y^{a=1,e=1}} - \E{Y^{a=1,e=0}} - \E{Y^{a=0,e=1}} + \E{Y^{a=0,e=0}}$. Effect modification of the $A \to Y$ effect by $V$ corresponds to the case where $V$ plays the role of $E$, but one where $V$ is not itself a treatment under consideration — it simply describes a subgroup characteristic.
+## 6.3 Causal Diagrams and Conditional Independence (pp. 80-81)
 
-**Scale-dependence:**
+---
 
-Effect modification is scale-dependent (Chapter 4). The $A \to Y$ effect may be modified by $V$ on the risk difference scale but not on the risk ratio scale. The DAG cannot distinguish between these cases; the scale of modification must be specified separately.
+A square box around a node means we condition on it (e.g., restrict to one of its levels).
+
+```{r}
+#| label: fig-dag-6-5
+#| echo: false
+#| fig-width: 4
+#| fig-height: 1.5
+#| fig-cap: "Book Figure 6.5: aspirin $A$ lowers platelet aggregation $B$, which affects heart disease $Y$ (the book boxes $B$ to show conditioning)."
+draw_dag('dag {
+  A [pos="0,0"]
+  B [pos="1,0"]
+  Y [pos="2,0"]
+  A -> B
+  B -> Y
+}')
+```
+
+| Structure | Conditioning on | Path | $A$, $Y$ given the conditioning variable |
+|---|---|---|---|
+| $A \to B \to Y$ (Fig. 6.5) | mediator $B$ | blocked | independent: $A \ind Y \mid B$ |
+| $A \leftarrow L \to Y$ (Fig. 6.6) | common cause $L$ | blocked | independent: $A \ind Y \mid L$ |
+| $A \to L \leftarrow Y$ (Fig. 6.7) | collider $L$ | **opened** | associated |
+
+::: {.notes}
+- **Mediator** [@hernan2020causal, p. 80]: among those with low platelet aggregation ($B=0$),
+  knowing whether someone took aspirin adds no information about heart disease,
+  because aspirin acts only through $B$:
+  $\Pr[Y=1 \mid A=1, B=b] = \Pr[Y=1 \mid A=0, B=b]$ for all $b$.
+- **Common cause**: among nonsmokers ($L=0$), carrying a lighter no longer predicts lung cancer.
+  Blocking the flow of association through common causes is the graph-based justification
+  for stratification as a way to achieve exchangeability.
+- Because complete diagrams (all possible arrows present) imply no conditional independences,
+  it is often said that the information about associations is in the **missing** arrows.
+:::
+
+---
+
+### Conditioning on a Collider Opens the Path
+
+In @fig-dag-6-4, restrict to people with heart disease ($L=1$, book Figure 6.7).
+Among them, someone without the haplotype is more likely to have the other cause, smoking:
+$A$ and $Y$ are **inversely associated** given $L=1$.
+
+In the extreme, if $A$ and $Y$ were the only causes of $L$,
+then among those with $L=1$ the absence of one would perfectly predict the presence of the other.
+
+::: {.notes}
+Intuition from the book [@hernan2020causal, p. 81]:
+whether two causes are associated cannot depend on a future event (their common effect),
+but two causes of an effect generally become associated once we stratify on that effect.
+Chapter 8 develops associations due to conditioning on common effects.
+:::
+
+---
+
+### Conditioning on a Descendant of a Collider
+
+```{r}
+#| label: fig-dag-6-8
+#| echo: false
+#| fig-width: 4
+#| fig-height: 2.5
+#| fig-cap: "Book Figure 6.8: diuretic use $C$ follows a diagnosis of heart disease $L$ (the book boxes $C$)."
+draw_dag('dag {
+  A [pos="0,0"]
+  L [pos="1,0"]
+  Y [pos="2,0"]
+  C [pos="1,1"]
+  A -> L
+  Y -> L
+  L -> C
+}')
+```
+
+Conditioning on $C$, a variable affected by the collider $L$, also opens $A \to L \leftarrow Y$.
+The path stays blocked only if we condition on neither $L$ nor $C$.
+
+---
+
+### Three Structural Sources of Association
+
+Two variables can be associated because
+
+1. one causes the other;
+2. they share a common cause;
+3. they share a common effect and the analysis is restricted to a level of that effect (or of its descendants).
+
+A fourth, nonstructural source is **chance** (random variability), which shrinks as the study population grows.
+Until Chapter 10 the book assumes a very large population, so all associations discussed are structural.
+
+::: {.notes}
+The heuristic arguments of this section are formalized by **d-separation** (Pearl 1995);
+Fine Point 6.1 lists the rules and Fine Point 6.2 introduces faithfulness [@hernan2020causal, p. 81].
+:::
+
+## 6.4 Positivity and Consistency in Causal Diagrams (pp. 81-85)
+
+---
+
+### Fine Point 6.1: D-Separation
+
+A path is **blocked** if and only if
+
+- it contains a **non-collider** that has been conditioned on, or
+- it contains a **collider** that has not been conditioned on and has no descendant that has been conditioned on.
+
+Otherwise it is **open**.
+Two variables are **d-separated** if all paths between them are blocked; otherwise they are **d-connected**.
+Two sets are d-separated if each variable in one is d-separated from every variable in the other.
+
+::: {#exm-d-separation}
+## D-Separation in Book Figures 6.1 and 6.4
+
+- @fig-dag-6-1, $A$ and $L$: the path $L \to A$ is open, so they are d-connected,
+  even though the other path $A \to Y \leftarrow L$ is blocked by the collider $Y$.
+- @fig-dag-6-4, $A$ and $Y$: the only path is blocked by the collider $L$, so they are d-separated.
+:::
+
+---
+
+### From D-Separation to Independence
+
+- **Pearl (1988)**: under the causal Markov assumption, if $\mathcal{A}$ is d-separated from $\mathcal{B}$ given $\mathcal{C}$,
+  then $\mathcal{A}$ is statistically independent of $\mathcal{B}$ given $\mathcal{C}$ (disjoint sets of variables).
+- **Faithfulness** is the separate assumption that the converse holds:
+  independence implies d-separation.
+
+::: {.notes}
+"d-" stands for directional.
+An equivalent set of graphical rules, **moralization**, was developed by Lauritzen et al. (1990)
+[@hernan2020causal, Fine Point 6.1, p. 82].
+:::
+
+---
+
+### Fine Point 6.2: Faithfulness
+
+An arrow $A \to Y$ means $A$ affects $Y$ for at least one individual,
+yet the average causal effect and the association can still both be null.
+
+::: {#exm-unfaithful-table-4-1}
+## Unfaithfulness from Cancelling Effects
+
+In the book's Table 4.1, transplant increases the risk of death in women and decreases it in men,
+each half of the population, and the effects cancel exactly:
+$\Pr[Y^{a=1}=1] = \Pr[Y^{a=0}=1]$.
+@fig-dag-6-2 is still the correct diagram, because $A$ affects every individual's $Y$,
+but the expected association is absent: the distribution is **not faithful** to the DAG
+[@hernan2020causal, Fine Point 6.2, p. 83].
+:::
+
+Exact cancellation is rare, so the book assumes faithfulness:
+lack of d-separation can almost always be equated with a non-zero association.
+
+::: {.notes}
+Faithfulness can be violated **by design**.
+In a matched study (book Section 4.5, Figure 6.9), selection $S$ depends on both $A$ and $L$,
+and the analysis is restricted to $S=1$.
+D-separation predicts $L$ and $A$ associated given $S$ (open paths $L \to A$ and $L \to S \leftarrow A$),
+but matching makes them unassociated:
+the association created through $L \to S \leftarrow A$ exactly cancels the one through $L \to A$.
+
+Faithfulness may also fail when variables are linked by deterministic arrows:
+two variables can then be independent even though some paths between them are open.
+:::
+
+---
+
+### Graphs, Do-Calculus, and Notation
+
+Standardization and IP weighting (Chapter 2) can also be derived from causal graph theory,
+as part of what is sometimes called the **do-calculus** (reviewed in Pearl 2009).
+So using counterfactuals in Chapters 1-5 privileged a notation, not an approach.
+
+Whatever the notation, causal inference via standardization or IP weighting requires
+exchangeability, positivity, and consistency.
+This section covers positivity and consistency; exchangeability is translated into graphs in Section 6.5 and Chapters 7-8.
+
+---
+
+### Positivity and Consistency in the Graph
+
+- **Positivity** concerns arrows **into** treatment nodes.
+  Causal graphs generally cannot encode its violations, except special cases,
+  e.g., $A$ a deterministic function of a pretreatment $L$ (drawn as a bold $L \to A$ arrow).
+- **Consistency** (well-defined counterfactuals) concerns arrows **out of** treatment nodes:
+  $A \to Y$ must correspond to a possibly hypothetical but relatively unambiguous intervention
+  (or, if $A$ is a state, to well-defined interventions that affect $Y$ only through $A$; Fine Point 6.4).
+
+In the book's diagrams, positivity is implicit unless stated
+and consistency is embedded in the notation.
+
+::: {.notes}
+Treatment nodes thus have a special status [@hernan2020causal, pp. 83-84].
+Some authors draw it explicitly with **decision nodes**;
+influence diagrams are causal diagrams augmented with decision nodes (Dawid 2000, 2002).
+The book omits them, because it is always explicit about the interventions on $A$,
+but gives treatment nodes a distinct status in SWIGs later.
+The causal trees of Chapter 2 and the sufficient-cause "pies" of Chapter 5 also distinguished treatments from other variables.
+:::
+
+---
+
+### Treatment Nodes Need Well-Defined Interventions
+
+Diagrams read as NPSEMs with independent errors seem to give all variables equal status,
+which can mislead when some nodes correspond to ill-defined interventions.
+
+- A node for "obesity" may be acceptable as an outcome $Y$ or a covariate $L$.
+- It is generally **not** acceptable as a treatment $A$ (Chapter 3).
+
+::: {.notes}
+Pearl (2018, 2019) has proposed a concept of causation based on variables that "listen to others",
+which still assumes well-defined counterfactuals for every variable [@hernan2020causal, p. 84, margin note].
+:::
+
+---
+
+```{r}
+#| label: fig-dag-6-10
+#| echo: false
+#| fig-width: 5
+#| fig-height: 3
+#| fig-cap: "Book Figure 6.10, as described in the text: caloric intake $Z$, exercise $L$, and genetic traits $U$ affect weight loss $A$; $L$ and $U$ also affect mortality $Y$ through other pathways."
+draw_dag('dag {
+  Z [pos="0,0"]
+  L [pos="0,1"]
+  U [pos="0,-1"]
+  A [pos="1,0"]
+  Y [pos="2,0"]
+  Z -> A
+  L -> A
+  U -> A
+  A -> Y
+  L -> Y
+  U -> Y
+}')
+```
+
+When there are several ways to intervene on $A$ and some of them affect $Y$ directly,
+"the effect of $A$ on $Y$" is unclear:
+losing weight by caloric restriction, by exercise, or by genetic manipulation would lead to different mortality.
+Being explicit about the intervention is a step toward a well-defined effect,
+relevant data, and the right adjustment variables.
+
+---
+
+### Fine Point 6.3: Discovery of Causal Structure
+
+**Discovery** is learning parts of the causal structure from data.
+It sometimes works if we assume faithfulness, but often it does not:
+a strong association between $B$ and $C$ fits $B \to C$, $C \to B$, a shared unmeasured cause,
+a conditioned-on common effect, and combinations.
+
+::: {#exm-discovery}
+## Learning $Z \to A \to Y$ [@hernan2020causal, Fine Point 6.3, p. 85]
+
+Suppose $Z$ precedes $A$, which precedes $Y$, and with infinite data
+all three are marginally associated and the only conditional independence is $Z \ind Y \mid A$.
+Under faithfulness the only consistent causal DAGs are $Z \to A \to Y$,
+possibly with a common cause of $Z$ and $A$ in addition to, or instead of, $Z \to A$.
+Then there is no unmeasured common cause of $A$ and $Y$,
+and the average causal effect is identified by $\E{Y \mid A=1} - \E{Y \mid A=0}$.
+:::
+
+::: {.notes}
+Why: a direct arrow $Z \to Y$, a common cause of $Z$ and $Y$, or an unmeasured common cause of $A$ and $Y$
+would each make $Z$ and $Y$ dependent given $A$ (assuming faithfulness);
+the marginal association of $A$ and $Y$ then requires an arrow $A \to Y$.
+If an unmeasured common cause of $A$ and $Y$ existed, no conditional independence would be found,
+and discovery could not tell whether $A$ causes $Y$.
+Approaches to discovery are described by Spirtes et al. (2000) and Peters et al. (2017);
+finite samples are discussed in the book's Technical Point 10.7.
+:::
+
+## 6.5 A Structural Classification of Bias (pp. 85-87)
+
+---
+
+::: {#def-systematic-bias}
+## Systematic Bias
+
+There is **systematic bias** when the data are insufficient to identify the causal effect even with an infinite sample size.
+Informally: any structural association between treatment and outcome that does not arise from the causal effect of treatment on outcome
+[@hernan2020causal, p. 85].
+:::
+
+- **Unconditional bias**: $\Pr[Y^{a=1}=1] - \Pr[Y^{a=0}=1] \neq \Pr[Y=1 \mid A=1] - \Pr[Y=1 \mid A=0]$,
+  the case when $Y^a \ind A$ fails.
+- **Conditional bias**: $\Pr[Y^{a=1}=1 \mid L=l] - \Pr[Y^{a=0}=1 \mid L=l] \neq \Pr[Y=1 \mid L=l, A=1] - \Pr[Y=1 \mid L=l, A=0]$
+  for at least one $l$, generally the case when $Y^a \ind A \mid L=l$ fails for some $a$ and $l$.
+
+::: {.notes}
+With systematic bias no estimator can be consistent (see Chapter 1 for consistent estimators).
+Absence of unconditional bias means the association measure in the population is a consistent estimate of the corresponding effect measure.
+In this chapter "bias" means systematic bias, because the sample size is assumed infinite.
+:::
+
+---
+
+### Bias Under the Null
+
+Lack of exchangeability causes bias **even when treatment has no effect**: **bias under the null**.
+
+::: {#exm-bias-under-null}
+## Table 3.1
+
+In the book's observational study of Table 3.1 the causal risk ratio was 1,
+whereas the associational risk ratio was 1.26 [@hernan2020causal, p. 86].
+:::
+
+Any structure that causes bias under the null also causes bias under the alternative (a non-null effect);
+the converse is false.
+
+::: {.notes}
+For example, conditioning on some variables may cause selection bias under the alternative but not under the null
+(Greenland 1977; Hernán 2017; see also Chapter 18) [@hernan2020causal, p. 86, margin note].
+:::
+
+---
+
+### Two Structures That Break Exchangeability
+
+1. **Common causes** of treatment and outcome: what many epidemiologists call **confounding** (Chapter 7).
+2. **Conditioning on common effects**: what many epidemiologists call **selection bias under the null** (Chapter 8).
+
+A third source is **measurement bias** (information bias), from mismeasured treatment, outcome, or covariates;
+some types also cause bias under the null (Chapter 9).
+Random variability is a separate, nonstructural source (Chapter 10).
+
+::: {.notes}
+All three biases can arise in observational studies **and** in randomized experiments.
+Earlier chapters used idealized experiments (no loss to follow-up, full adherence, blinded assignment),
+but real experiments rarely look like that;
+the remaining chapters of Part I examine the boundary between experimenting and observing [@hernan2020causal, pp. 86-87].
+:::
+
+## 6.6 The Structure of Effect Modification (pp. 87-89)
+
+---
+
+Causal diagrams are good at locating sources of bias,
+but less helpful for illustrating effect modification.
+
+```{r}
+#| label: fig-dag-6-12
+#| echo: false
+#| fig-width: 4
+#| fig-height: 2.5
+#| fig-cap: "Book Figure 6.12: randomized transplant $A$; quality of care $V$ affects death $Y$."
+draw_dag('dag {
+  A [pos="0,0"]
+  V [pos="1,1"]
+  Y [pos="2,0"]
+  A -> Y
+  V -> Y
+}')
+```
+
+Transplant $A$ is randomized, so association is causation;
+investigators stratify by quality of care $V$ and find additive effect modification.
+
+---
+
+### Two Caveats
+
+1. @fig-dag-6-12 would be valid **without** $V$, since $V$ is not a common cause of $A$ and $Y$;
+   $V$ appears only because the question refers to it.
+   Variables on the path from $V$ to $Y$, such as therapy complications $N$ (book Figure 6.13), could also be effect modifiers.
+2. @fig-dag-6-12 does **not** show whether, or how, $V$ modifies the effect of $A$. It cannot distinguish:
+   - effects in the same direction in both strata of $V$;
+   - effects in opposite directions (**qualitative** effect modification);
+   - an effect in one stratum only (e.g., $A$ kills only those with $V=0$).
+
+---
+
+### Surrogate Effect Modifiers
+
+A **surrogate effect modifier** is associated with the causal effect modifier $V$ but does not affect $Y$.
+The association can come from any structure:
+
+| Book figure | Surrogate | Structure linking it to $V$ |
+|---|---|---|
+| 6.14 | cost of treatment $S$ | cause and effect: $V \to S$ |
+| 6.15 | passport nationality $P$ | common cause: residence $U$ affects $V$ and $P$ |
+| 6.16 | bottled mineral water $W$ | conditioning on a common effect: $V$ and $W$ affect cost $S$, analysis restricted to $S=0$ |
+
+::: {.notes}
+Causal and surrogate effect modifiers are often indistinguishable in practice,
+so "effect modification" covers both (Section 4.2);
+some prefer the neutral term "heterogeneity of causal effects".
+Reading "cost modifies the effect of transplant" causally could suggest raising prices without raising quality
+[@hernan2020causal, p. 88].
+
+Intuition for the mineral-water example (book margin note, p. 88):
+low-cost hospitals that buy mineral water must spend less on care that lowers mortality,
+so among low-cost hospitals, mineral water use is inversely associated with quality of care.
+VanderWeele and Robins (2007b) give a finer classification of effect modification via causal diagrams.
+:::
+
+---
+
+### Interaction in Causal Diagrams
+
+Causal diagrams are agnostic about interaction between two treatments $A$ and $E$.
+They can encode it if augmented with nodes for sufficient-component causes (Chapter 5),
+with deterministic arrows from the treatments to those nodes;
+the book develops such diagrams in Chapter 8.
+
+---
+
+### Fine Point 6.4: Evidence That a State Has Well-Defined Counterfactuals
+
+Consider drug $Z$, systolic blood pressure $A$ (a state, not directly manipulable), and stroke $Y$.
+If (i) $Z$ is associated with $A$ and $Y$, (ii) $A$ and $Y$ are associated, and (iii) $Z \ind Y \mid A$,
+then under faithfulness the only causal DAG has $A \to Y$, no $Z \to Y$, and no unmeasured common cause of $A$ and $Y$ or of $Z$ and $Y$.
+
+- If $Y^a$ is well defined, $Y^a \ind A$ holds and $\E{Y \mid A=1} - \E{Y \mid A=0}$ is the average causal effect.
+- An investigator who doubted that $Y^a$ was well defined might take (i)-(iii) as empirical evidence that it is.
+
+::: {.notes}
+Usually unmeasured common causes $U_3$ of $A$ and $Y$ remain;
+then $Z$ and $Y$ are associated given the collider $A$, (iii) fails,
+and the data give no support for $Y^a$ being well defined [@hernan2020causal, Fine Point 6.4, p. 89].
+
+The book's remedy is a four-arm factorial **dose-finding** trial:
+randomize the drug ($Z=1$ or $Z=2$) and the target blood-pressure reduction ($A=a_1$ or $A=a_2$),
+and increase each individual's dose $D$ until the assigned reduction is reached and maintained.
+The achieved $A$ is then a deterministic function of the assigned value, so nothing else has an arrow into $A$ (book Figure 6.18).
+If $Y$ is independent of $D$ given $A$ and $\E{Y \mid A=a_1} \neq \E{Y \mid A=a_2}$,
+then under faithfulness (and assuming $Y^{d,a}$ and $Y^a$ are well defined)
+$D$ has no direct effect on $Y$ outside $A$,
+and $\E{Y^{a_1} - Y^{a_2}}$ is identified by $\E{Y \mid A=a_1} - \E{Y \mid A=a_2}$,
+even with unknown common causes of $A$ and $Y$.
+In a standard trial (book Figure 6.17), by contrast, $Y$ and $Z$ are associated given $A$,
+so a direct effect of $Z$ on $Y$ cannot be ruled out.
 :::
 
 ## Summary
 
 ---
 
-This chapter introduced **causal diagrams (DAGs)** as graphical tools for encoding causal assumptions and determining the identifiability of causal effects from observed data.
-
-**Key concepts:**
-
-1. **DAGs and NPSEMs**: A DAG represents a non-parametric structural equation model. Each variable $V_k$ satisfies $V_k = f_k(\mathrm{pa}(V_k), U_k)$ with mutually independent background variables $U_k$
-
-2. **Marginal independence**: Two variables are marginally independent if all paths between them are blocked (d-separated). A collider on a path blocks it marginally.
-
-3. **Three fundamental path structures**:
-   - **Chain** ($A \to B \to Y$): Conditioning on $B$ blocks the path
-   - **Fork** ($A \leftarrow B \to Y$): Conditioning on $B$ blocks the path
-   - **Collider** ($A \to B \leftarrow Y$): Conditioning on $B$ **opens** the path — collider stratification bias
-
-4. **Positivity and NPSEMs**: The positivity assumption requires that treatment assignment is not deterministic given $L$. Counterfactuals $Y^a$ are formally defined via the structural equations as $Y^a = f_Y(L, a, U_Y)$
-
-5. **Structural classification of bias**:
-   - **Confounding**: open backdoor path from $A$ to $Y$ (common cause not conditioned on)
-   - **Selection bias**: conditioning on a collider (common effect) on a path between $A$ and $Y$
-   - **Measurement bias**: using an imperfect measure $A^*$ instead of the true $A$
-
-6. **Backdoor criterion**: A set $L$ satisfying (i) no descendant of $A$ in $L$, (ii) $L$ blocks all backdoor paths — adjusting for $L$ eliminates confounding
-
-7. **Effect modification**: Standard DAGs encode qualitative structure only; effect modification cannot be read from the DAG and must be assessed empirically
+- A **causal DAG** encodes qualitative causal knowledge:
+  an arrow means a direct effect for at least one individual; a missing arrow means none for anyone;
+  all common causes of variables on the graph must be on the graph (causal Markov assumption).
+- Each causal DAG represents a counterfactual model (by default an FFRCISTG).
+- Association flows along open paths:
+  marginally, causal chains and common causes transmit association, colliders block it;
+  conditioning on a non-collider blocks a path, conditioning on a collider or its descendant opens it (**d-separation**).
+- **Faithfulness**, assumed throughout the book, lets us equate d-connection with association.
+- Graphs rarely show **positivity** violations; **consistency** requires treatment nodes with well-defined interventions.
+- **Systematic bias** from lack of exchangeability has two structures: common causes (confounding) and conditioning on common effects (selection bias); measurement bias is a third type.
+- Causal diagrams do not show whether or how a variable modifies an effect, and cannot separate causal from surrogate effect modifiers.
 
 ::: {.notes}
-**Practical workflow:**
+**Looking ahead**: Chapter 7 (confounding), Chapter 8 (selection bias), Chapter 9 (measurement bias), Chapter 10 (random variability).
 
-1. Draw a DAG based on subject-matter knowledge before analyzing data
-2. Identify all backdoor paths from $A$ to $Y$
-3. Find a sufficient adjustment set satisfying the backdoor criterion
-4. Adjust for that set (IP weighting, standardization, regression)
-5. Do **not** adjust for colliders, mediators, or descendants of treatment
-
-**Software:**
-
-- R package `dagitty`: draw DAGs, enumerate adjustment sets, test d-separation
-- R package `ggdag`: visualize DAGs (used in this chapter)
-- Web interface: [dagitty.net](https://www.dagitty.net)
-
-**Limitations of DAGs:**
-
-- Require qualitative causal assumptions justified by subject-matter knowledge
-- Unmeasured common causes must be added explicitly as $U$ nodes; otherwise assumed absent
-- Cannot represent dynamic feedback (cycles)
-- Cannot encode effect modification or effect magnitudes
-- Cannot represent interference between individuals
-
-**Looking ahead:**
-
-- **Chapter 7**: Detailed treatment of confounding — definition, assessment, and adjustment
-- **Chapter 8**: Selection bias — conditioning on common effects
-- **Chapter 9**: Measurement bias — error in exposures and confounders
-- **Chapters 11–15**: Estimation methods — IP weighting, g-formula, propensity scores
+The diagrams in this chapter are drawn with the R packages `dagitty` and `ggdag`.
 :::
 
 ## References
