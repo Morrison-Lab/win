@@ -13,7 +13,11 @@ and reports, per chapter:
 - book sections with no matching note heading (missing),
 - note headings numbered as sections the book does not have (extra),
 - headings whose title differs from the book's (renamed),
-- headings whose cited start page differs from the book's (page).
+- headings whose cited start page differs from the book's (page),
+- headings that cite no page (no page),
+- section numbers that appear twice in one file (duplicate).
+
+Headings inside fenced code blocks are ignored.
 
 With no chapters named, a book chapter that has no notes file is also
 reported. Titles are compared case-insensitively, ignoring punctuation.
@@ -51,8 +55,21 @@ def normalize(title: str) -> str:
     return re.sub(r"[^a-z0-9]+", " ", title).strip()
 
 
+SECTION_START = re.compile(r"^\s*\d+\.\d+\s")
+# Lines that end a wrapped section title: a chapter or part entry.
+ENTRY_START = re.compile(r"^\s*(?:\d+|[IVX]+)\s+\S")
+PAGE_HEADER = re.compile(r"^\s*(?:\f)?(?:[ivx]+\s+)?(?:CONTENTS\s+)?.*Causal Inference\s*$")
+MAX_CONTINUATION = 3
+
+
 def read_toc(text: str) -> dict[tuple[int, int], tuple[str, int]]:
-    """Parse numbered sections from the front-matter table of contents."""
+    """Parse numbered sections from the front-matter table of contents.
+
+    A section title may wrap onto later lines, possibly across a page
+    header; the entry ends at the line carrying its page number. Every line
+    that starts a numbered section must yield exactly one parsed section,
+    so a title the parser cannot close is an error rather than a gap.
+    """
     lines = text.splitlines()
     end = next(
         (i for i, line in enumerate(lines) if "INTRODUCTION: TOWARDS" in line),
@@ -61,28 +78,51 @@ def read_toc(text: str) -> dict[tuple[int, int], tuple[str, int]]:
     if end is None:
         raise ValueError("table of contents not found in book text")
     toc: dict[tuple[int, int], tuple[str, int]] = {}
+    starts = 0
     pending = ""
+    continued = 0
     for line in lines[:end]:
-        line = re.sub(r"^\s*(?:CONTENTS|[ivx]+)\s{2,}.*Causal Inference\s*$", "", line)
-        candidate = f"{pending} {line.strip()}".strip() if pending else line
-        match = TOC_SECTION.match(candidate)
+        if SECTION_START.match(line):
+            starts += 1
+            pending, continued = line.strip(), 0
+        elif not pending:
+            continue
+        elif not line.strip() or PAGE_HEADER.match(line):
+            continue
+        elif ENTRY_START.match(line) or continued >= MAX_CONTINUATION:
+            pending = ""
+            continue
+        else:
+            pending = f"{pending} {line.strip()}"
+            continued += 1
+        match = TOC_SECTION.match(pending)
         if match:
             chapter, section, title, page = match.groups()
             toc[(int(chapter), int(section))] = (title.strip(" ."), int(page))
             pending = ""
-        elif re.match(r"^\s*\d+\.\d+\s", line):
-            # A title that wraps onto the next line in the contents.
-            pending = line.strip()
-        else:
-            pending = ""
     if not toc:
         raise ValueError("no numbered sections parsed from the table of contents")
+    if len(toc) != starts:
+        raise ValueError(
+            f"{starts} numbered section lines in the contents but {len(toc)} parsed"
+        )
     return toc
 
 
 def read_notes(path: Path, problems: list[str]) -> dict[tuple[int, int], tuple[str, int | None]]:
     notes = {}
+    fence = None
     for line in path.read_text(encoding="utf-8").splitlines():
+        opener = re.match(r"^\s{0,3}(`{3,}|~{3,})", line)
+        if opener:
+            run = opener.group(1)
+            if fence is None:
+                fence = run
+            elif run[0] == fence[0] and len(run) >= len(fence) and not line.strip()[len(run):].strip():
+                fence = None
+            continue
+        if fence is not None:
+            continue
         match = NOTE_HEADING.match(line)
         if match:
             chapter, section, title, page = match.groups()

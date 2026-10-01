@@ -12,16 +12,25 @@
 #   .github/scripts/fetch-whatif-book.sh            # revision named in VERSION
 #   BOOK_URL=<pdf url> .github/scripts/fetch-whatif-book.sh
 #
-# Requires curl and pdftotext (poppler-utils).
+# Requires curl, pdftotext (poppler-utils), and sha256sum or shasum.
 
 set -euo pipefail
 
-for tool in curl pdftotext sha256sum; do
+for tool in curl pdftotext; do
   if ! command -v "$tool" >/dev/null; then
     echo "Required tool not found: $tool" >&2
     exit 2
   fi
 done
+
+if command -v sha256sum >/dev/null; then
+  sha256() { sha256sum "$1" | cut -d' ' -f1; }
+elif command -v shasum >/dev/null; then
+  sha256() { shasum -a 256 "$1" | cut -d' ' -f1; }
+else
+  echo "Required tool not found: sha256sum or shasum" >&2
+  exit 2
+fi
 
 repo_root=$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)
 book_dir="$repo_root/inst/book"
@@ -62,7 +71,7 @@ if [[ $(head -c 5 "$tmp") != "%PDF-" ]]; then
   exit 1
 fi
 
-actual_sha=$(sha256sum "$tmp" | cut -d' ' -f1)
+actual_sha=$(sha256 "$tmp")
 if [[ -n $expected_sha && $actual_sha != "$expected_sha" ]]; then
   echo "sha256 mismatch for $url" >&2
   echo "  expected $expected_sha" >&2

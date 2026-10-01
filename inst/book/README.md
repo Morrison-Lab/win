@@ -3,7 +3,8 @@
 The lecture notes follow
 [*Causal Inference: What If*](https://miguelhernan.org/whatifbook)
 by Miguel A. Hernán and James M. Robins.
-`VERSION` records the revision the notes are currently synced to.
+`VERSION` records the revision the notes are compared against
+(see the checker below for how closely they currently match it).
 
 The book's copyright page reads "All rights reserved",
 so this repository never commits the book itself.
@@ -42,7 +43,7 @@ then update `date`, `url`, `sha256` and `pages` in `VERSION`.
 compares each chapter's numbered `## N.M Title (pp. X-Y)` headings
 with the book's table of contents,
 and lists sections that are missing, extra, renamed,
-or cited at the wrong page.
+cited at the wrong page or with no page, or duplicated.
 With no chapters named, it also lists book chapters that have no notes file.
 It exits 0 when everything matches, 1 when it finds a mismatch,
 and 2 when an input is unusable:
