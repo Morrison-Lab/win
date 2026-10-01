@@ -17,13 +17,21 @@ format:
 #| echo: false
 #| message: false
 #| warning: false
-draw_dag <- function(spec) {
+# Nodes named in `conditioned` are drawn as squares, the book's box for conditioning.
+draw_dag <- function(spec, conditioned = character()) {
   ggdag::ggdag(
     dagitty::dagitty(spec),
     node = FALSE, text = FALSE, stylized = TRUE
   ) +
     ggdag::theme_dag() +
-    ggdag::geom_dag_point(color = "steelblue", size = 14) +
+    ggdag::geom_dag_point(
+      ggplot2::aes(shape = name %in% conditioned),
+      color = "steelblue", size = 14
+    ) +
+    ggplot2::scale_shape_manual(
+      values = c("FALSE" = 16, "TRUE" = 15),
+      guide = "none"
+    ) +
     ggdag::geom_dag_text(color = "white", size = 4)
 }
 ```
@@ -339,14 +347,14 @@ A square box around a node means we condition on it (e.g., restrict to one of it
 #| echo: false
 #| fig-width: 4
 #| fig-height: 1.5
-#| fig-cap: "Book Figure 6.5: aspirin $A$ lowers platelet aggregation $B$, which affects heart disease $Y$ (the book boxes $B$ to show conditioning)."
+#| fig-cap: "Book Figure 6.5: aspirin $A$ lowers platelet aggregation $B$, which affects heart disease $Y$ (the square node $B$ marks conditioning)."
 draw_dag('dag {
   A [pos="0,0"]
   B [pos="1,0"]
   Y [pos="2,0"]
   A -> B
   B -> Y
-}')
+}', conditioned = "B")
 ```
 
 | Structure | Conditioning on | Path | $A$, $Y$ given the conditioning variable |
@@ -394,7 +402,7 @@ Chapter 8 develops associations due to conditioning on common effects.
 #| echo: false
 #| fig-width: 4
 #| fig-height: 2.5
-#| fig-cap: "Book Figure 6.8: diuretic use $C$ follows a diagnosis of heart disease $L$ (the book boxes $C$)."
+#| fig-cap: "Book Figure 6.8: diuretic use $C$ follows a diagnosis of heart disease $L$ (the square node $C$ marks conditioning)."
 draw_dag('dag {
   A [pos="0,0"]
   L [pos="1,0"]
@@ -403,7 +411,7 @@ draw_dag('dag {
   A -> L
   Y -> L
   L -> C
-}')
+}', conditioned = "C")
 ```
 
 Conditioning on $C$, a variable affected by the collider $L$, also opens $A \to L \leftarrow Y$.

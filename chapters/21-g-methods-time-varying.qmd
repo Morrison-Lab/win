@@ -96,9 +96,10 @@ where treatment and confounders are measured at a single time.
 for every $l_1$ with $f(l_1 \mid a_0) \neq 0$,
 some individuals have $(A_0 = a_0, A_1 = a_1, L_1 = l_1)$
 (the definition of positivity in Technical Point 19.2).
+:::
 
-**Fine Point 21.1 (what "history" means)**:
-the relevant history at time $k$ is the set of treatments and confounders
+::: {.callout-note title="Fine Point 21.1: Treatment and Covariate History"}
+The relevant history at time $k$ is the set of treatments and confounders
 needed for conditional exchangeability of $A_k$.
 Usually this is the chronological past,
 but confounders can in principle lie in the temporal future of treatment (Fine Point 7.4),
@@ -194,14 +195,18 @@ $$\sum_{\bar{a}, \bar{l}} \E{Y \mid \bar{A} = \bar{a}, \bar{L} = \bar{l}}
 Replacing $f^{int}$ by the observed $f(a_k \mid \bar{a}_{k-1}, \bar{l}_k)$ gives the observed mean of $Y$.
 For a deterministic strategy, $f^{int}$ is 1 for the mandated treatment values and 0 otherwise,
 so the $f^{int}$ factors and the sum over $\bar{a}$ can be dropped.
+:::
 
-**Technical Point 21.1 (the g-formula density)**: for a static strategy $\bar{a}$,
+::: {.callout-note title="Technical Point 21.1: The g-formula Density"}
+For a static strategy $\bar{a}$,
 the g-formula density of $(Y, \bar{L})$ at $(y, \bar{l})$ is
 $f(y \mid \bar{a}_K, \bar{l}_K) \prod_{k=0}^{K} f(l_k \mid \bar{a}_{k-1}, \bar{l}_{k-1})$,
 and integrating out $\bar{l}$ gives the g-formula density of $Y$.
 For a deterministic dynamic strategy $g$, replace each $a_k$
 by the value $a_k^g$ that $g$ assigns given the simulated history.
+:::
 
+::: {.notes}
 **Software**: the `gfoRmula` R package (Lin et al. 2019) is on CRAN,
 and a GFORMULA SAS macro is available on GitHub [@hernan2020causal, p. 281].
 :::
@@ -347,13 +352,17 @@ With treatment-confounder feedback, $V$ may include only baseline variables;
 if $V$ included any $L_k$ with $k > 0$,
 the weighted estimates of $\theta_1$ and $\theta_3$ could be non-null even though $\beta_1 = \beta_3 = 0$ under the null
 [@hernan2020causal, p. 285].
+:::
 
-**Technical Point 21.2 (dynamic strategies)**: for a deterministic dynamic strategy $g$,
+::: {.callout-note title="Technical Point 21.2: IP Weighting for Dynamic Treatment Strategies"}
+For a deterministic dynamic strategy $g$,
 the g-formula equals the mean of $Y$ among pseudo-population members who follow $g$
 in the pseudo-population created by **nonstabilized** weights.
 Stabilized weights cannot be used, because their numerator depends on $A$.
+:::
 
-**Technical Point 21.3 (the g-null paradox)**: under the sharp null with treatment-confounder feedback,
+::: {.callout-note title="Technical Point 21.3: The g-null Paradox"}
+Under the sharp null with treatment-confounder feedback,
 the g-formula does not depend on $\bar{a}$,
 but non-saturated parametric models for $\E{Y \mid \bar{A}, \bar{L}}$ and $f(l_k \mid \cdot)$
 with variation-independent parameters cannot all be correctly specified
@@ -431,9 +440,8 @@ the treatment model is correct for times $0$ to $m$
 and the outcome model is correct for times $m + 1$ to $K$
 [@hernan2020causal, p. 288].
 
-::: {.notes}
-**Technical Point 21.4 (an augmented IP weighted estimator, $K = 1$)**:
-let $\hat{b}_1(L_0, L_1) = \hat{\mathrm{E}}[Y \mid L_0, A_0 = 1, L_1, A_1 = 1]$
+::: {.callout-note title="Technical Point 21.4: A K+2 Robust Augmented IP Weighted Estimator"}
+For $K = 1$, let $\hat{b}_1(L_0, L_1) = \hat{\mathrm{E}}[Y \mid L_0, A_0 = 1, L_1, A_1 = 1]$
 and $\hat{b}_0(L_0) = \hat{\mathrm{E}}[\hat{b}_1(L_0, L_1) \mid A_0 = 1, L_0]$
 (the iterated conditional expectation, ICE, plug-in estimator of the g-formula averages $\hat{b}_0$),
 and let $\hat{\pi}_0, \hat{\pi}_1$ estimate $\Pr[A_0 = 1 \mid L_0]$ and $\Pr[A_1 = 1 \mid L_0, L_1, A_0 = 1]$.
@@ -468,15 +476,19 @@ The two versions differ by $(1 - A_0/\hat{\pi}_0)\,\hat{b}_1$,
 which does not average to 0 in general,
 so only the corrected form supports the three robustness arguments.
 The book's third rearrangement (used for the Molina et al. argument) agrees with the corrected form.
+:::
 
-**Fine Point 21.2 (representations of the g-formula)**: the same g-formula can be written as
+::: {.callout-note title="Fine Point 21.2: Representations of the g-formula"}
+The same g-formula can be written as
 standardization (the *joint density modeling* estimator of Section 21.1),
 as iterated conditional expectations (the ICE estimator, the basis of this section),
 or as an IP weighted mean (Section 21.2).
 Without parametric restrictions the three coincide, but in practice each suggests a different estimator
 [@hernan2020causal, p. 291].
+:::
 
-**Technical Point 21.6** gives a multiply robust plug-in estimator of $\E{Y^g}$
+::: {.callout-note title="Technical Point 21.6: A Multiply Robust Estimator"}
+This technical point gives a multiply robust plug-in estimator of $\E{Y^g}$
 for static, dynamic, or random strategies $g$, based on Rotnitzky et al. (2017);
 without the weight covariate, the same algorithm is the ICE estimator of the g-formula.
 The book expects such estimators, fit with machine learning and sample splitting,
@@ -634,8 +646,10 @@ $\beta_1$ (same effect for all histories and times),
 $\beta_1 + \beta_2 k$ (effect varies linearly with time),
 and $\beta_1 + \beta_2 k + \beta_3 a_{k-1} + \beta_4 l_k + \beta_5 l_k a_{k-1}$
 (modification by the most recent treatment and covariate).
+:::
 
-**Technical Point 21.7 (SNMMs and MSMs)**: an SNMM is a semiparametric MSM
+::: {.callout-note title="Technical Point 21.7: Marginal Structural Models and Structural Nested Models"}
+An SNMM is a semiparametric MSM
 if and only if $\gamma_k$ does not depend on $\bar{l}_k$;
 the implied MSM is $\E{Y^{\bar{a}}} = \alpha_0 + \sum_{k=0}^{K} a_k \gamma_k(\bar{a}_{k-1}, \beta)$ with $\alpha_0 = \E{Y^{\bar{0}}}$.
 Such an SNMM additionally assumes no effect modification by past covariates.
@@ -693,8 +707,8 @@ but for an SNMM linear in $\beta$ the estimating equation has a closed-form solu
 - If $\gamma_k$ depends on $\bar{l}_k$, or $g$ is dynamic,
   simulate $L_k$ from a model for $f(l_k \mid \bar{a}_{k-1}, \bar{l}_{k-1})$ (Technical Point 21.9).
 
-::: {.notes}
-**Technical Point 21.9**: estimate $\E{Y^{\bar{0}}}$ by the average of $H_0(\hat{\beta})$;
+::: {.callout-note title="Technical Point 21.9: Estimating a Counterfactual Mean After g-estimation of a Structural Nested Mean Model"}
+Estimate $\E{Y^{\bar{0}}}$ by the average of $H_0(\hat{\beta})$;
 fit a model for $f(l_k \mid \bar{a}_{k-1}, \bar{l}_{k-1})$;
 simulate covariate histories under $g$;
 and add to $\hat{\mathrm{E}}[Y^{\bar{0}}]$ the average over simulations of
@@ -707,8 +721,10 @@ So, under the identifiability conditions, this procedure **preserves the null**,
 provided $\Pr[A_k = 1 \mid \bar{L}_k, \bar{A}_{k-1}]$ is known (as in a sequentially randomized experiment)
 or either the treatment model or the outcome model is correct at each $k$
 [@hernan2020causal, p. 297].
+:::
 
-**Technical Point 21.13** generalizes SNMMs to blips followed by an arbitrary strategy $g$ rather than "never treat"
+::: {.callout-note title="Technical Point 21.13: Formal Definition of a General Structural Nested Mean Model"}
+This technical point generalizes SNMMs to blips followed by an arbitrary strategy $g$ rather than "never treat"
 (Robins 2004), and notes identification under a time-varying parallel-trends assumption
 instead of sequential exchangeability [@hernan2020causal, p. 303].
 :::
@@ -787,8 +803,10 @@ the pseudo-population has no arrows from $L_k$ and $A_k$ into future $C_m$ [@her
 For stabilized weights this holds for $L_k$ only:
 their numerator $\Pr[C_k = 0 \mid C_{k-1} = 0, \bar{A}_{k-1}]$ keeps the dependence of censoring on past treatment,
 which is harmless because the analysis conditions on $\bar{A}$.
+:::
 
-**Technical Point 21.10 (failure-time outcomes)**: to estimate the risk $\Pr[D_{k+1}^{\bar{a}, \bar{c} = \bar{0}} = 1]$,
+::: {.callout-note title="Technical Point 21.10: Survival Analysis with Time-Varying Treatments"}
+To estimate the risk $\Pr[D_{k+1}^{\bar{a}, \bar{c} = \bar{0}} = 1]$,
 either use the g-formula with models for the discrete-time hazards
 and for the confounder densities, conditional on being event-free and uncensored
 (e.g., pooled logistic models, as in Chapter 17),
