@@ -12,357 +12,392 @@ format:
 
 {{< include ../latex-macros/macros.qmd >}}
 
-This chapter describes **standardization** and the **parametric g-formula**, methods for computing standardized means and risks by outcome modeling. While IP weighting models the treatment assignment mechanism, standardization models the outcome mechanism. Both approaches can estimate the same causal effects under conditional exchangeability.
+This chapter estimates the same causal effect as Chapter 12 (smoking cessation on weight gain in NHEFS) by **standardization**, now combined with outcome models: the **parametric g-formula**. IP weighting models the treatment (and censoring); standardization models the outcome. Both rely on the same identifiability conditions but on different modeling assumptions.
 
 ::: {.notes}
-This chapter is based on @hernan2020causal [Chapter 13, pp. 175-188].
+This chapter is based on @hernan2020causal [Chapter 13, pp. 175-185].
 
-**Key insight**: Standardization and IP weighting are "doubly robust" in the sense that we need to correctly specify either the treatment model or the outcome model (but not necessarily both) for some estimators. However, standard implementations require correct specification of one or the other.
+Chapter 2 introduced standardization only as a nonparametric method. Combining it with models lets us handle many covariates and nondichotomous treatments.
+
+**Key insight**: IP weighting needs a correct model for treatment (and censoring) given $L$; the parametric g-formula needs a correct model for the outcome given treatment and $L$. Neither is doubly robust on its own. Doubly robust estimators (Section 13.4) combine the two models and are consistent if *either* one is correct.
 :::
 
 ## 13.1 Standardization as an Alternative to IP Weighting (pp. 175-177)
 
 ---
 
-We've seen two approaches to confounding adjustment:
+**Setting** (same as Chapter 12):
 
-1. **IP weighting** (Chapter 12): Model $\Pr[A \mid L]$ and weight observations
-2. **Standardization** (this chapter): Model $\E{Y \mid A, L}$ and compute weighted averages
+- NHEFS: 1629 cigarette smokers aged 25-74 with a baseline visit and a follow-up visit about 10 years later
+- 1566 had weight measured at follow-up, i.e., are uncensored ($C = 0$)
+- Treatment $A$: smoking cessation (1: yes, 0: no); outcome $Y$: weight gain (kg)
 
-Both can estimate $\E{Y^a}$ under conditional exchangeability.
+**Causal effect of interest**:
 
-### Standardization Review
+$$\E{Y^{a=1,c=0}} - \E{Y^{a=0,c=0}}$$
 
-From Chapter 2, **standardization** computes:
+the difference in mean weight gain had everybody been treated and uncensored versus untreated and uncensored.
 
-$$\E{Y^a} = \sum_{\ell} \E{Y \mid A = a, L = \ell} \Pr[L = \ell]$$
+::: {.notes}
+Quitters and non-quitters differ in the distribution of predictors of weight gain (Table 12.1), so the associational difference $\E{Y \mid A = 1, C = 0} - \E{Y \mid A = 0, C = 0} = 2.5$ kg is not expected to equal the causal difference.
 
-This is a weighted average of stratum-specific means, with weights equal to the population distribution of $L$.
+As in Chapter 12, we assume that the 9 baseline variables in $L$ suffice to adjust for both confounding and selection bias:
+
+- sex (0: male, 1: female), age (years), race (0: white, 1: other)
+- education (5 categories)
+- intensity and duration of smoking (cigarettes per day; years of smoking)
+- physical activity in daily life (3 categories), recreational exercise (3 categories)
+- weight (kg)
+
+We also assume, as in Chapter 12, that the components of $L$ needed to adjust for $C$ are not affected by $A$; otherwise the methods of Part III would be needed.
+
+IP weighting estimates $\E{Y^{a,c=0}}$ as the mean outcome in a pseudo-population where $L$ is balanced between treatment groups; it requires modeling the joint probability $\Pr[A = a, C = 0 \mid L]$.
+:::
+
+### The Standardized Mean
 
 ::: {#def-standardization}
-## Standardization
+## Standardized mean
 
-**Standardization** estimates the mean outcome under treatment $a$ by:
+The **standardized mean** outcome in the uncensored who received treatment level $a$ is
 
-1. Computing $\E{Y \mid A = a, L = \ell}$ for all levels $\ell$
-2. Averaging over the population distribution of $L$:
+$$\sum_{l} \E{Y \mid A = a, C = 0, L = l} \times \Pr[L = l],$$
 
-$$\hE{Y^a} = \sum_{\ell} \hE{Y \mid A = a, L = \ell} \times \hat{\Pr}[L = \ell]$$
-
-where $\hat{\Pr}[L = \ell]$ is the observed proportion with $L = \ell$.
+the average of the stratum-specific means, weighted by the prevalence of each stratum $l$ in the study population. When some components of $L$ are continuous, $\Pr[L = l]$ is replaced by the density $f_L(l)$ and the sum becomes an integral, $\int \E{Y \mid A = a, C = 0, L = l} \, dF_L(l)$, where $F_L$ is the joint cdf of $L$.
 :::
 
-### Example: Discrete Confounders
-
-**Setting**: Binary $A$, binary $Y$, discrete $L$ with $k$ levels
-
-**Step 1**: Compute proportion $Y = 1$ within each stratum $(A = a, L = \ell)$
-
-**Step 2**: Standardize to population distribution:
-
-$$\hE{Y^{a=1}} = \sum_{\ell=1}^k \hat{\Pr}[Y = 1 \mid A = 1, L = \ell] \times \hat{\Pr}[L = \ell]$$
-
-$$\hE{Y^{a=0}} = \sum_{\ell=1}^k \hat{\Pr}[Y = 1 \mid A = 0, L = \ell] \times \hat{\Pr}[L = \ell]$$
-
-**Causal effect**: $\hE{Y^{a=1}} - \hE{Y^{a=0}}$
+Under exchangeability and positivity given $L$ (plus consistency), the standardized mean with $a = 1$ consistently estimates $\E{Y^{a=1,c=0}}$, and with $a = 0$ consistently estimates $\E{Y^{a=0,c=0}}$.
 
 ::: {.notes}
-**Comparison to Chapter 2**: In Part I (Chapter 2), we used **nonparametric standardization** where we directly computed sample proportions within each stratum. This chapter introduces **parametric standardization** using regression models, which is necessary when $L$ is high-dimensional or continuous.
+**Derivation** (discrete $L$; Technical Point 2.3 of the book, with $A = a$ replaced by $(A = a, C = 0)$):
+
+$$
+\begin{aligned}
+\E{Y^{a,c=0}}
+&= \sum_l \E{Y^{a,c=0} \mid L = l} \Pr[L = l] && \text{(law of total expectation)} \\
+&= \sum_l \E{Y^{a,c=0} \mid A = a, C = 0, L = l} \Pr[L = l] && \text{(exchangeability given } L\text{; positivity)} \\
+&= \sum_l \E{Y \mid A = a, C = 0, L = l} \Pr[L = l] && \text{(consistency)}
+\end{aligned}
+$$
+
+Positivity is needed in the second line so that the conditional mean given $(A = a, C = 0, L = l)$ is defined for every $l$ with $\Pr[L = l] > 0$.
 :::
 
-## 13.2 Estimating the Mean Outcome via Modeling (pp. 177-179)
+### Supplement: Standardizing to the Treated
+
+The average causal effect **in the treated** can also be estimated by standardization (book's Technical Point 4.1): replace $\Pr[L = l]$ by $\Pr[L = l \mid A = 1]$ in @def-standardization.
+
+::: {.notes}
+More generally, the stratum-specific means can be standardized to any distribution of $L$ (the treated, the untreated, an external population). The choice defines the target population of the causal effect.
+:::
+
+### Fine Point 13.1: Structural Positivity
 
 ---
 
-When confounders are continuous or high-dimensional, we cannot compute stratum-specific means directly. Instead, we use **parametric models**.
-
-### Parametric Outcome Model
-
-**Model**: Specify a model for $\E{Y \mid A, L}$, such as:
-
-$$\E{Y \mid A, L} = \beta_0 + \beta_1 A + \beta_2^{\top} L + \beta_3^{\top} (A \times L)$$
-
-This includes:
-- Main effects of $A$ and $L$
-- Interactions between $A$ and $L$ to allow effect modification
-
-**Estimation**: Fit the model using standard regression (e.g., linear regression for continuous $Y$, logistic regression for binary $Y$).
-
-### The Parametric G-Formula
-
-::: {#def-g-formula}
-## Parametric G-Formula
-
-Given a model $\hE{Y \mid A, L}$, the **parametric g-formula** estimates:
-
-$$\hE{Y^a} = \frac{1}{n} \sum_{i=1}^n \hE{Y \mid A = a, L = L_i}$$
-
-**Algorithm**:
-
-1. Fit outcome model $\hE{Y \mid A, L}$ using all data
-2. For each individual $i$, predict $\hat{Y}_i^a = \hE{Y \mid A = a, L = L_i}$
-3. Average the predictions: $\hE{Y^a} = n^{-1} \sum_i \hat{Y}_i^a$
-4. Repeat for each treatment level $a$
-:::
-
-### Example: NHEFS Data
-
-**Outcome model**: Linear regression for weight change
-
-$$\E{Y \mid A, L} = \beta_0 + \beta_1 A + \sum_{j} \beta_j L_j + \sum_{j} \gamma_j (A \times L_j)$$
-
-**Procedure**:
-
-1. Fit model using observed $(A, L, Y)$
-2. Predict $\hat{Y}_i^{a=1}$ for all $i$ by setting $A = 1$, keeping $L_i$ as observed
-3. Predict $\hat{Y}_i^{a=0}$ for all $i$ by setting $A = 0$, keeping $L_i$ as observed
-4. Average: $\hE{Y^{a=1}} = \bar{\hat{Y}}^{a=1}$, $\hE{Y^{a=0}} = \bar{\hat{Y}}^{a=0}$
-5. Estimate causal effect: $\hE{Y^{a=1}} - \hE{Y^{a=0}}$
+- Positivity is needed for standardization too: if $\Pr[A = a \mid L = l] = 0$ while $\Pr[L = l] \neq 0$, then $\E{Y \mid A = a, L = l}$ is undefined.
+- With a parametric outcome model, one *can* ignore structural nonpositivity by **extrapolating** over the empty strata, at the cost of bias (95% confidence intervals then cover the truth less than 95% of the time).
+- Near positivity violations, standardization typically has a smaller standard error than IP weighting, but differences in bias may outweigh differences in standard error.
 
 ::: {.notes}
-**Why this works**: Under conditional exchangeability $Y^a \ind A \mid L$:
-
-$$\E{Y^a} = E_L[\E{Y^a \mid L}] = E_L[\E{Y \mid A = a, L}]$$
-
-The g-formula estimates this by averaging the conditional mean $\E{Y \mid A = a, L}$ over the empirical distribution of $L$.
+@hernan2020causal [Fine Point 13.1, p. 176] stresses the different role of modeling here: we model not because data are scarce but to estimate a quantity that is not identified even with infinite data, because of structural nonpositivity.
 :::
 
-## 13.3 Standardizing the Mean Outcome to the Confounder Distribution (pp. 179-181)
+## 13.2 Estimating the Mean Outcome via Modeling (pp. 177-178)
 
 ---
 
-The g-formula standardizes to the **observed distribution** of confounders. We can also standardize to other distributions.
+**Problem**: nonparametric estimation of $\E{Y \mid A = 1, C = 0, L = l}$ (as in Section 2.3) is out of the question. Only 403 uncensored treated individuals are spread across possibly millions of strata of the 9 confounders. Same for the untreated.
 
-### Alternative Reference Distributions
+**Solution**: fit a parametric model for the mean outcome.
 
-**Options for standardization**:
+::: {#exm-nhefs-outcome-model}
+## NHEFS outcome model
 
-1. **Population distribution**: $\sum_{\ell} \E{Y \mid A = a, L = \ell} \Pr[L = \ell]$ (standard g-formula)
-2. **Treated distribution**: $\sum_{\ell} \E{Y \mid A = a, L = \ell} \Pr[L = \ell \mid A = 1]$
-3. **Untreated distribution**: $\sum_{\ell} \E{Y \mid A = a, L = \ell} \Pr[L = \ell \mid A = 0]$
-4. **External distribution**: $\sum_{\ell} \E{Y \mid A = a, L = \ell} \Pr_{\text{ext}}[L = \ell]$
+A linear regression model for $\E{Y \mid A, C = 0, L}$ (among the uncensored) with covariates:
 
-### ATT vs ATE
+- treatment $A$ and all 9 confounders in $L$
+- linear and quadratic terms for age, weight, smoking intensity, and smoking duration
+- a product term $A \times$ smoking intensity
 
-**Average treatment effect (ATE)**:
-$$\E{Y^{a=1}} - \E{Y^{a=0}}$$
-Standardized to the population (or sample) distribution of $L$.
-
-**Average treatment effect in the treated (ATT)**:
-$$\E{Y^{a=1} \mid A = 1} - \E{Y^{a=0} \mid A = 1}$$
-Standardized to the distribution of $L$ among the treated.
-
-**G-formula for ATT**:
-$$\hE{Y^a \mid A = 1} = \frac{1}{n_1} \sum_{i: A_i = 1} \hE{Y \mid A = a, L = L_i}$$
-where $n_1 = \sum_i I(A_i = 1)$.
-
-::: {.notes}
-**When to use ATT vs ATE**:
-
-- **ATE**: Answers "what if we intervened on the whole population?"
-- **ATT**: Answers "what if we intervened on those who were actually treated?"
-
-ATT is useful when:
-- Treatment is not feasible for some individuals
-- Policy question focuses on those currently receiving treatment
-- Positivity violations make ATE estimation unstable
+The model assumes each covariate contributes additively to the mean, except that the contribution of $A$ varies linearly with smoking intensity.
 :::
 
-## 13.4 IP Weighting or Standardization? (pp. 181-183)
+::: {.notes}
+Fitting this model (book's Program 13.1) gives a predicted mean $\hE{Y \mid A = a, C = 0, L = l}$ for each combination of $A$ and $L$, and hence for each of the 403 uncensored treated and 1163 uncensored untreated individuals.
+
+For example, a non-quitter who is male, white, age 26, a college dropout, smoking 15 cigarettes/day for 12 years, with moderate exercise, very active, and weighing 112 kg had a predicted mean weight gain of 0.34 kg (individual 24770 in the data).
+
+The mean of the predicted values was 2.6 kg, the same as the mean of the observed weight gain (which ranged from $-41.3$ to $48.5$ kg).
+:::
+
+### Supplement: Other Outcome and Treatment Types
+
+The same approach applies with other outcome models:
+
+- **Dichotomous $Y$**: fit, e.g., a logistic model for $\Pr[Y = 1 \mid A, C = 0, L]$; the standardized means are then standardized risks, from which a risk difference, risk ratio, or odds ratio can be computed.
+- **Nondichotomous $A$**: standardize the predicted means at each treatment level $a$ of interest.
+
+::: {.notes}
+The conditional (on $L$) odds ratio from a logistic outcome model is generally not equal to the marginal causal odds ratio, because the odds ratio is not collapsible; standardization averages predicted *risks* first and then forms the effect measure.
+:::
+
+## 13.3 Standardizing the Mean Outcome to the Confounder Distribution (pp. 178-179)
 
 ---
 
-Both IP weighting and standardization can estimate causal effects. How do they compare?
+We do **not** need to estimate $\Pr[L = l]$. The standardized mean is a double expectation:
 
-### Comparison
+$$\sum_l \E{Y \mid A = a, C = 0, L = l} \Pr[L = l] = \E{\E{Y \mid A = a, C = 0, L}}$$
 
-| Aspect | IP Weighting | Standardization |
-|--------|--------------|-----------------|
-| **Models** | $\Pr[A \mid L]$ (treatment) | $\E{Y \mid A, L}$ (outcome) |
-| **Target** | Marginal effect | Marginal effect (via averaging) |
-| **Natural for** | Marginal structural models | Conditional models |
-| **Handles** | Time-varying treatment easily | Time-varying treatment (complex) |
-| **Efficiency** | Less efficient (if outcome model correct) | More efficient (if outcome model correct) |
-| **Robustness** | Robust to outcome model misspec. | Robust to treatment model misspec. |
+so it can be estimated by averaging the model predictions over the **empirical distribution** of $L$:
 
-### Which to Choose?
+$$\frac{1}{n} \sum_{i=1}^n \hE{Y \mid A = a, C = 0, L = L_i}$$
 
-**Use IP weighting when**:
-- Treatment mechanism is simple to model
-- Outcome is complex or multiply measured
-- Time-varying treatments
-- Interested in marginal effects explicitly
-
-**Use standardization when**:
-- Outcome mechanism is simple to model
-- Treatment assignment is complex
-- Efficiency is important
-- Natural to think about outcome modeling
-
-**Use both**:
-- Doubly robust estimation combines both approaches
-- Agreement between methods is reassuring
-- Disagreement suggests model misspecification
+where $n$ is the number of individuals in the study.
 
 ::: {.notes}
-**Practical consideration**: Many researchers fit both methods as a sensitivity analysis. If results differ substantially, it suggests model misspecification in one or both approaches. This motivates the development of doubly robust methods that require only one model to be correct.
+The equality holds because the outer expectation is over the marginal distribution of $L$: writing $g(l) = \E{Y \mid A = a, C = 0, L = l}$, we have $\E{g(L)} = \sum_l g(l) \Pr[L = l]$ by the definition of expectation. Replacing $g$ by its estimate $\hat g$ and the distribution of $L$ by the empirical distribution (mass $1/n$ on each observed $L_i$) gives $\frac{1}{n}\sum_i \hat g(L_i)$.
+
+Averaging over the observed $L_i$ is a nonparametric estimate of the distribution of $L$, which is valid here because $L$ consists of baseline covariates unaffected by treatment.
 :::
 
-## 13.5 How Seriously Do We Take Our Models? (pp. 183-185)
+### The Four-Step Algorithm
 
 ---
 
-Parametric models are **approximations**. How much does misspecification matter?
+::: {#def-g-formula-algorithm}
+## Standardization by expanding the dataset
 
-### Model Misspecification
-
-**Reality**: No model is exactly correct
-
-- Linear models may be wrong for nonlinear relationships
-- We may omit important interactions
-- Functional form assumptions may be incorrect
-
-**Consequences**:
-
-1. **Bias**: Misspecified models give biased effect estimates
-2. **Efficiency loss**: Correct models are most efficient
-3. **Extrapolation problems**: Predictions far from data may be poor
-
-### Strategies for Model Selection
-
-**Include product terms** (interactions):
-- Between treatment and confounders: $A \times L$
-- Allows effect modification
-- Helps model fit in treated and untreated separately
-
-**Add polynomial terms**:
-- Quadratic: $L + L^2$
-- Cubic: $L + L^2 + L^3$
-- Flexible fit for continuous $L$
-
-**Use flexible methods**:
-- Splines
-- Generalized additive models
-- Machine learning methods (with care)
-
-**Model checking**:
-- Residual plots
-- Goodness-of-fit tests
-- Cross-validation
-- Subject-matter knowledge
-
-::: {.notes}
-**Trade-offs**:
-
-- **Complex models**: More flexible, less bias from misspecification, but more variance, potential overfitting
-- **Simple models**: Less flexible, potential bias from misspecification, but less variance, easier to interpret
-
-The **bias-variance trade-off** from Chapter 11 applies here. With large samples, lean toward flexibility. With small samples, lean toward parsimony.
+1. **Expansion**: make three copies of the data. Block 1 is the original data. In block 2 set $A = 0$ for everyone; in block 3 set $A = 1$ for everyone. Set $Y$ to missing in blocks 2 and 3.
+2. **Outcome modeling**: fit the outcome model on the 3-block dataset. Only block 1 contributes, because $Y$ is missing elsewhere.
+3. **Prediction**: use the fitted model to predict $Y$ for every row of blocks 2 and 3.
+4. **Standardization by averaging**: the mean prediction in block 2 estimates the standardized mean under $A = 0$; in block 3, under $A = 1$.
 :::
 
-### Example: Polynomial Models in NHEFS
+### Example: Table 2.2 (No Censoring, One Binary $L$)
 
-**Simple model**:
-$$\E{Y \mid A, L} = \beta_0 + \beta_1 A + \beta_2 \text{Age} + \beta_3 \text{Sex} + \ldots$$
+::: {#exm-table22}
+## Standardization of the Table 2.2 data
 
-**Flexible model**:
-$$\E{Y \mid A, L} = \beta_0 + \beta_1 A + \beta_2 \text{Age} + \beta_3 \text{Age}^2 + \beta_4 A \times \text{Age} + \ldots$$
+The 20-row Table 2.2 becomes 60 rows. With a saturated model (main effects of $A$ and $L$ plus $A \times L$), the predictions equal the stratum-specific risks: $\Pr[Y = 1 \mid A = a, L = 0] = 1/4$ and $\Pr[Y = 1 \mid A = a, L = 1] = 2/3$ for both $a = 0$ and $a = 1$. Since 60% of rows have $L = 1$ and 40% have $L = 0$, each block's average prediction is
 
-Including $A \times L$ interactions is especially important, as it allows the confounder-outcome relationship to differ between treated and untreated.
+$$\frac{1}{4} \times 0.4 + \frac{2}{3} \times 0.6 = 0.1 + 0.4 = 0.5,$$
 
-## 13.6 G-Formula for Continuous Treatments (pp. 185-186)
+exactly the standardized risks of Section 2.3 (0.5 under both $a = 0$ and $a = 1$).
+:::
+
+::: {.notes}
+With a saturated model, this procedure is completely nonparametric, so it reproduces the direct calculation of Chapter 2 (book's Program 13.2). The averaging step weights each stratum by its share of rows, which is how it implements $\Pr[L = l]$ without estimating it.
+:::
+
+### Example: NHEFS
+
+::: {#exm-nhefs-standardization}
+## Parametric g-formula in NHEFS
+
+Applying the four steps with the outcome model of @exm-nhefs-outcome-model (book's Program 13.3):
+
+- standardized mean in the untreated (block 2): 1.66 kg
+- standardized mean in the treated (block 3): 5.18 kg
+- estimated effect: $5.18 - 1.66 = 3.52 \approx 3.5$ kg
+
+With a nonparametric bootstrap (Program 13.4), the 95% confidence interval is 2.6 to 4.5 kg.
+:::
+
+::: {.notes}
+Section 13.5 of the book reports the interval for the same estimate as (2.5, 4.5); the two pages of this revision differ in the lower limit, and the book does not explain the difference.
+:::
+
+### Technical Point 13.1: Bootstrapping
 
 ---
 
-The g-formula extends naturally to **continuous treatments**.
+The **nonparametric bootstrap** estimates standard errors when analytic or large-sample formulas are impractical:
 
-### Continuous Treatment
-
-**Setting**: Treatment $A$ is continuous (e.g., dose, duration, intensity)
-
-**G-formula**:
-$$\E{Y^a} = E_L[\E{Y \mid A = a, L}]$$
-
-Same as before, but now $a$ can be any value in the continuous range.
-
-**Estimation**:
-
-1. Fit outcome model $\hE{Y \mid A, L}$ (e.g., linear regression)
-2. For chosen dose $a$, predict $\hat{Y}_i^a = \hE{Y \mid A = a, L = L_i}$ for all $i$
-3. Average: $\hE{Y^a} = n^{-1} \sum_i \hat{Y}_i^a$
-4. Repeat for different doses to trace out **dose-response curve**
-
-### Dose-Response Curve
-
-::: {#def-dose-response}
-## Dose-Response Curve
-
-The **dose-response curve** is the function $a \mapsto \E{Y^a}$ showing how the mean potential outcome varies with treatment level $a$.
-
-For continuous treatment, this is a smooth curve rather than discrete points.
-:::
-
-**Example**: Effect of smoking intensity (cigarettes/day) on lung function
-
-- Estimate $\hE{Y^a}$ for $a = 0, 5, 10, 15, 20, \ldots$ cigarettes/day
-- Plot $a$ vs $\hE{Y^a}$ to visualize dose-response
+1. Draw a sample of size 1629 **with replacement** from the 1629 individuals (a bootstrap sample).
+2. Compute the effect estimate in the bootstrap sample with the same method (here, standardization).
+3. Repeat many times (the book uses 1000).
+4. The standard deviation of the bootstrap estimates estimates the standard error; the 95% CI is the estimate $\pm 1.96 \times$ that standard error.
 
 ::: {.notes}
-**Modeling considerations** for continuous $A$:
-
-1. Include $A$ and powers of $A$ (e.g., $A, A^2, A^3$) for flexibility
-2. Include interactions $A \times L$ to allow effect modification
-3. Use splines or generalized additive models for very flexible fits
-4. Positivity: Need overlap in $A$ distribution across $L$ levels
+- When an estimator's limiting distribution is normal, Wald intervals with bootstrap standard errors are calibrated in large samples. For IP weighted MSM estimates, the bootstrap interval is calibrated, whereas the robust ("sandwich") variance from Chapter 12 often gives a conservative, wider interval.
+- Published analyses often use 200-500 bootstrap samples to save computation; in this example that would have given an almost identical interval, but not necessarily in general. The "bag of little bootstraps" (Kleiner et al. 2014) is a scalable alternative.
+- Wasserman (2004) introduces the theory behind the bootstrap.
 :::
 
-## 13.7 Standardization or IP Weighting for Dichotomous Outcomes (pp. 186-188)
+## 13.4 IP Weighting or Standardization? (pp. 179-180)
 
 ---
 
-For binary outcomes, we can estimate **causal risk ratios** and **risk differences** using either approach.
-
-### Standardization for Binary Outcomes
-
-**Outcome model**: Logistic regression (or log-binomial model)
-
-$$\text{logit} \Pr[Y = 1 \mid A, L] = \beta_0 + \beta_1 A + \beta_2^{\top} L + \beta_3^{\top} (A \times L)$$
-
-**G-formula**:
-$$\hat{\Pr}[Y^a = 1] = \frac{1}{n} \sum_{i=1}^n \text{expit}(\hat{\beta}_0 + \hat{\beta}_1 a + \hat{\beta}_2^{\top} L_i + \hat{\beta}_3^{\top} (a \times L_i))$$
-
-where $\text{expit}(x) = \frac{e^x}{1 + e^x}$.
-
-**Causal measures**:
-
-- **Risk difference**: $\hat{\Pr}[Y^{a=1} = 1] - \hat{\Pr}[Y^{a=0} = 1]$
-- **Risk ratio**: $\frac{\hat{\Pr}[Y^{a=1} = 1]}{\hat{\Pr}[Y^{a=0} = 1]}$
-- **Odds ratio**: $\frac{\hat{\Pr}[Y^{a=1} = 1] / \hat{\Pr}[Y^{a=1} = 0]}{\hat{\Pr}[Y^{a=0} = 1] / \hat{\Pr}[Y^{a=0} = 0]}$
-
-### IP Weighting for Binary Outcomes
-
-**Marginal structural model**: 
-
-For risk difference:
-$$\Pr[Y^a = 1] = \beta_0 + \beta_1 a$$
-
-For risk ratio (log-binomial):
-$$\log \Pr[Y^a = 1] = \beta_0 + \beta_1 a$$
-
-For odds ratio (logistic):
-$$\text{logit} \Pr[Y^a = 1] = \beta_0 + \beta_1 a$$
-
-**Estimation**: Fit weighted model using IP weights
-
-**Caution**: Logistic MSM models odds ratios, not risk ratios. For risk ratios, use log-binomial or Poisson models.
+- Without models, the IP weighted and standardized means are **exactly equal** (Technical Point 2.3).
+- With models, they generally **differ**, because they model different things:
+  - IP weighting: $\Pr[A = a, C = 0 \mid L]$ (in Chapter 12, logistic models for $\Pr[A = a \mid L]$ and $\Pr[C = 0 \mid A = a, L]$)
+  - Standardization: $\E{Y \mid A = a, C = 0, L}$ (here, a linear model)
+- Some misspecification is inescapable, and it will usually bias the two estimates differently.
 
 ::: {.notes}
-**Important distinction**:
+- A **large** difference between the two estimates signals serious misspecification in at least one of them.
+- A **small** difference does not guarantee correct models, but it is reassuring: badly misspecified models are unlikely to produce biases of similar magnitude and direction.
+- In NHEFS both estimates round to **3.5 kg**.
+- Neither method modeled the confounders $L$: IP weighting does not need their distribution, and standardization used their empirical distribution.
+:::
 
-- Conditional odds ratio from $\text{logit} \Pr[Y = 1 \mid A, L] = \beta_0 + \beta_1 A + \ldots$ is **NOT** generally a causal odds ratio (it's conditional on $L$)
-- Marginal odds ratio from IP weighted logistic MSM **IS** a causal odds ratio (marginal over $L$)
-- Standardization can compute any causal measure (risk difference, risk ratio, odds ratio)
-- IP weighting model choice determines which causal measure is estimated
+### The (Parametric) G-Formula
+
+---
+
+::: {#def-parametric-g-formula}
+## Parametric g-formula
+
+Both IP weighting and standardization are estimators of the **g-formula** (Robins 1986). Standardization is a **plug-in** g-formula estimator: it replaces the conditional mean outcome in the g-formula by an estimate. When that estimate comes from a parametric model, the method is the **parametric g-formula**.
+:::
+
+- For an average causal effect we only need the conditional **mean** outcome; for a standardized **distribution** (pdf) we would need the conditional distribution of $Y$ given $A$ and $L$.
+- Without time-varying confounders, the parametric g-formula does not require modeling the distribution of $L$.
+
+::: {.notes}
+@robins1986new generalized standardization to time-varying treatments and confounders under the name *g-computation algorithm formula*. Some authors shorten this to "g-formula", others to "g-computation". The book uses only "g-formula", because "g-computation" is often confused with g-estimation, a different method (Chapter 14).
+
+Part III defines the g-formula for time-varying treatments.
+:::
+
+### Use Both, and Use Doubly Robust Methods
+
+---
+
+- When both IP weighting and the parametric g-formula can be used, **use both**.
+- Whenever possible, use **doubly robust** estimators, which combine a treatment model and an outcome model: under exchangeability and positivity given $L$, they are consistent if **either** model is correct, without knowing which.
+- Both methods can also target a subset of the population, e.g., estimating standardized means separately in men and women to study effect modification by sex.
+
+### Fine Point 13.2: A Doubly Robust Plug-In Estimator
+
+---
+
+For dichotomous $A$ and no censoring [@bang2005doubly]:
+
+1. Estimate the IP weights $W^A = 1/f(A \mid L)$ as in Chapter 12.
+2. Fit an outcome model (a GLM with canonical link) for $\E{Y \mid A, L, R}$ that adds the covariate
+   $R = W^A$ if $A = 1$ and $R = -W^A$ if $A = 0$.
+3. Predict with $A$ set to 1 for everyone and average; repeat with $A$ set to 0.
+4. The difference of the two averages is a doubly robust plug-in estimate of the average causal effect.
+
+::: {.notes}
+Equivalently, $R = \{I(A = 1) - I(A = 0)\}/f(A \mid L)$, which is the "clever covariate" of targeted minimum loss-based estimation (TMLE); see the book's Technical Point 13.3. Including $R$ makes the fitted model's residuals, weighted by $R$, sum to zero, which is what makes the plug-in estimator doubly robust.
+:::
+
+### Technical Point 13.2: The Augmented IP Weighted Estimator
+
+---
+
+For dichotomous $A$, write $b(L) = \E{Y \mid A = 1, L}$ and $\pi(L) = \Pr[A = 1 \mid L]$. Under the identifiability conditions,
+
+$$\E{Y^{a=1}} = \E{b(L)} = \E{\frac{AY}{\pi(L)}}.$$
+
+- Plug-in g-formula estimator: $\frac{1}{n}\sum_i \hat b(L_i)$
+- Horvitz-Thompson IP weighted estimator: $\frac{1}{n}\sum_i A_i Y_i / \hat\pi(L_i)$
+
+::: {#def-aipw}
+## Augmented IP weighted (AIPW) estimator
+
+$$
+\hE{Y^{a=1}}_{DR} = \frac{1}{n} \sum_{i=1}^n \left[ \hat b(L_i) + \frac{A_i}{\hat\pi(L_i)} \left\{ Y_i - \hat b(L_i) \right\} \right]
+$$
+:::
+
+::: {.notes}
+**Two equivalent forms.** Expanding the summand:
+
+$$
+\begin{aligned}
+\hat b(L_i) + \frac{A_i}{\hat\pi(L_i)}\{Y_i - \hat b(L_i)\}
+&= \hat b(L_i) + \frac{A_i Y_i}{\hat\pi(L_i)} - \frac{A_i}{\hat\pi(L_i)} \hat b(L_i) && \text{(distribute)} \\
+&= \frac{A_i Y_i}{\hat\pi(L_i)} - \left( \frac{A_i}{\hat\pi(L_i)} - 1 \right) \hat b(L_i) && \text{(collect the } \hat b(L_i) \text{ terms)}
+\end{aligned}
+$$
+
+The first form is the outcome-model estimator plus an IP weighted correction; the second is the Horvitz-Thompson estimator plus an outcome-model correction ("augmentation"), hence the name.
+:::
+
+### Why the AIPW Estimator Is Doubly Robust
+
+---
+
+Let $\pi^*$ and $b^*$ be the probability limits of $\hat\pi$ and $\hat b$. The estimator converges to $\E{b^*(L) + A\{Y - b^*(L)\}/\pi^*(L)}$, and its asymptotic bias is
+
+$$
+\E{\pi(L) \left( \frac{1}{\pi^*(L)} - \frac{1}{\pi(L)} \right) \left( b(L) - b^*(L) \right)},
+$$
+
+which is zero if $\pi^* = \pi$ (treatment model correct) **or** $b^* = b$ (outcome model correct).
+
+::: {.notes}
+**Derivation.** First condition on $L$:
+
+$$
+\begin{aligned}
+\E{\frac{A\{Y - b^*(L)\}}{\pi^*(L)} \,\middle|\, L}
+&= \frac{\Pr[A = 1 \mid L] \, \E{Y - b^*(L) \mid A = 1, L}}{\pi^*(L)} && \text{(only } A = 1 \text{ contributes)} \\
+&= \frac{\pi(L) \{b(L) - b^*(L)\}}{\pi^*(L)} && \text{(definitions of } \pi, b\text{)}
+\end{aligned}
+$$
+
+Then, subtracting $\E{Y^{a=1}} = \E{b(L)}$:
+
+$$
+\begin{aligned}
+\text{bias}
+&= \E{b^*(L) - b(L) + \frac{\pi(L)}{\pi^*(L)}\{b(L) - b^*(L)\}} && \text{(law of total expectation)} \\
+&= \E{\left( \frac{\pi(L)}{\pi^*(L)} - 1 \right) \{b(L) - b^*(L)\}} && \text{(factor out } b(L) - b^*(L)\text{)} \\
+&= \E{\pi(L) \left( \frac{1}{\pi^*(L)} - \frac{1}{\pi(L)} \right) \{b(L) - b^*(L)\}} && \text{(factor out } \pi(L)\text{)}
+\end{aligned}
+$$
+
+The book [@hernan2020causal, Technical Point 13.2, p. 184] displays this limit with the opposite sign, $(1/\pi(L) - 1/\pi^*(L))$; the derivation here gives the sign shown, which does not affect the conclusion.
+
+**Second-order bias.** The bias depends on the *product* of the errors in $1/\pi$ and in $b$. This property lets doubly robust estimators that use machine learning for $\pi$ and $b$ achieve small bias in high-dimensional settings (Chapter 18), where no parametric model is expected to be correct.
+
+**Technical Point 13.3** shows that the doubly robust plug-in estimator of Fine Point 13.2 is the AIPW estimator in which the outcome model is fit so that the augmentation term sums to zero in every sample (a TMLE). Using two clever covariates, $A/\hat\pi(L)$ and $(1-A)/\{1 - \hat\pi(L)\}$, also makes each plug-in counterfactual mean doubly robust.
+:::
+
+## 13.5 How Seriously Do We Take Our Estimates? (pp. 181-185)
+
+---
+
+Our first estimates from real data, by IP weighting and by the parametric g-formula:
+
+- mean weight gain: 5.2 kg if everybody had quit, 1.7 kg if nobody had quit
+- effect: **3.5 kg** (95% CI: 2.5, 4.5)
+
+Agreement across methods (and, in the next chapters, g-estimation, outcome regression, and propensity scores) is reassuring because each relies on different modeling assumptions. But observational estimates remain open to serious criticism.
+
+### Three Groups of Conditions
+
+---
+
+1. **Identifiability**: exchangeability, positivity, and consistency, so that the observational study emulates the target trial.
+2. **No measurement error** in $A$, $Y$, or $L$ (Chapter 9).
+3. **No model misspecification** (Chapter 11).
+
+::: {.notes}
+- **Exchangeability**: quitters and non-quitters must be exchangeable given the 9 measured covariates; unmeasured confounding (Chapter 7) or selection bias (Chapter 8) would violate it.
+- **Positivity**: the distribution of $L$ in quitters must fully overlap that in non-quitters. Outcome-regression methods (including doubly robust ones) can proceed without positivity if one trusts the outcome model to extrapolate (Fine Point 13.1).
+- **Consistency**: there are multiple versions of quitting (gradually, abruptly) and of not quitting (smoking more, smoking less). The estimate corresponds to a vague intervention assigning these versions with their observed frequencies; other interventions could give different effects, which matters for policy and clinical decisions [@hernan2020causal, p. 182].
+- **Measurement**: some mismeasurement of most variables is unavoidable.
+- **Models**: e.g., if the true functional form of age in the treatment model is a complex polynomial rather than a parabola, IP weighting will not fully adjust for confounding even if all confounders are measured. Model misspecification acts much like measurement error in the confounders.
+:::
+
+### Sensitivity Analysis and Skepticism
+
+---
+
+- None of these conditions is empirically testable; we assume they hold approximately, based on **expert knowledge**.
+- Expert knowledge is incomplete, so analyses should explore **sensitivity** to the assumptions.
+
+::: {.notes}
+Sensitivity analyses discussed in the book include those for confounding (Fine Point 7.1; negative outcome controls, Technical Point 7.5; g-estimation, Fine Point 14.2), selection bias (Fine Point 12.1), and model misspecification (Section 11.5), as well as quantitative bias analysis (Fine Point 10.2). Alternative unverifiable conditions, such as those for instrumental variable estimation (Chapter 16), proximal causal inference (Technical Point 7.3), or the front door criterion (Technical Point 7.4), can also be used.
+
+The book's closing message: skepticism of observational causal inferences should be grounded in expert knowledge about each assumption, and "we only take our effect estimates as seriously as we take the conditions that are needed to endow them with a causal interpretation" [@hernan2020causal, p. 183].
 :::
 
 ## Summary
@@ -371,33 +406,18 @@ $$\text{logit} \Pr[Y^a = 1] = \beta_0 + \beta_1 a$$
 
 **Key concepts introduced**:
 
-1. **Parametric standardization**: Use outcome regression models to compute standardized means
-2. **Parametric g-formula**: Average predicted outcomes over covariate distribution
-3. **Alternative standardization**: Can standardize to different reference populations (ATE, ATT, etc.)
-4. **IP weighting vs standardization**: Two sides of the same coin, with different modeling and efficiency properties
-5. **Model misspecification**: Always a concern; use flexible models and model checking
-6. **Continuous treatments**: G-formula estimates dose-response curves
-7. **Binary outcomes**: Can estimate risk differences, risk ratios, and odds ratios
-
-**Relationship to IP weighting**:
-
-- IP weighting models treatment, standardization models outcome
-- Both estimate the same causal parameters under conditional exchangeability
-- Neither is uniformly better; choice depends on context
-- Doubly robust methods combine both approaches
-
-**Practical advice**:
-
-- Include product terms $A \times L$ in outcome models
-- Use flexible models (polynomials, splines) when sample size permits
-- Check model fit with residual analysis and goodness-of-fit tests
-- Consider both approaches as sensitivity analysis
-- For binary outcomes, be clear about which causal measure you're estimating
+1. **Standardized mean**: $\sum_l \E{Y \mid A = a, C = 0, L = l} \Pr[L = l] = \E{\E{Y \mid A = a, C = 0, L}}$
+2. **Parametric g-formula**: estimate the conditional mean with a parametric model and average predictions over the empirical distribution of $L$ (the four-step algorithm)
+3. **NHEFS**: standardized means 5.18 kg (quit) and 1.66 kg (did not quit); effect 3.5 kg, essentially the same as IP weighting
+4. **Bootstrap**: resample individuals with replacement to estimate the standard error
+5. **IP weighting vs standardization**: equal without models; with models they rely on different assumptions, so compare them
+6. **Doubly robust estimators**: consistent if either the treatment or the outcome model is correct
+7. **Conditions for causal interpretation**: identifiability, no measurement error, no model misspecification
 
 ::: {.notes}
-**Looking ahead**: 
+**Looking ahead**:
 
-- Chapter 14 introduces G-estimation for structural nested models, another approach that models neither the outcome nor the treatment directly
-- Part III will show how the g-formula extends to time-varying treatments, where it becomes the "generalized" g-formula
-- Doubly robust methods will combine IP weighting and outcome modeling for improved robustness
+- Chapter 14 introduces g-estimation of structural nested models, which models the treatment given $L$ together with a model for the causal effect itself.
+- Part III defines the g-formula, and the parametric g-formula, for time-varying treatments.
+- Chapter 18 returns to doubly robust estimation with machine learning.
 :::
