@@ -37,13 +37,13 @@ This chapter is based on @hernan2020causal [Chapter 8, pp. 109-123].
 
 "Selection bias" covers various biases that arise from how individuals are selected into the analysis.
 
-::: {#def-selection-bias-under-null}
+::: {#rem-selection-bias-under-null}
 ## Selection bias under the null
 
-The chapter focuses on bias that would arise even if treatment had no effect on the outcome, i.e., **selection bias under the null** (Section 6.5).
+The chapter focuses on bias that would arise even if treatment had no effect on the outcome, i.e., **selection bias under the null** ([Section 6.5](06-graphical-representation.qmd#bias-under-the-null)).
 :::
 
-Causal diagrams make its structure explicit.
+Causal diagrams make the structure of selection bias explicit.
 
 ---
 
@@ -86,13 +86,13 @@ Figure 8.2 adds a node $S$, parental grief (1: yes, 0: no), which is affected by
 If only nongrieving parents ($S = 0$) agreed to participate, the analysis conditions on $S = 0$.
 As shown in Chapter 6, conditioning on a variable affected by the collider $C$ also opens the path $A \rightarrow C \leftarrow Y$.
 
-In both Figures 8.1 and 8.2 the bias comes from conditioning on a common effect of treatment and outcome ($C$ or $S$), and it is present whether or not there is an arrow $A \rightarrow Y$: it is selection bias under the null.
+In both Figures 8.1 and 8.2 the bias comes from conditioning on a common effect of treatment and outcome ($C$ or $S$), and it is present whether or not there is an arrow $A \rightarrow Y$: it is selection bias under the null (@rem-selection-bias-under-null).
 :::
 
 ::: {.notes}
 A structure that produces bias under the null also produces bias when the treatment has a non-null effect.
 Confounding (common causes of treatment and outcome) and selection bias (conditioning on common effects of treatment and outcome) are both biases under the null.
-Figures 8.3-8.6 show that selection bias under the null can be defined more generally than conditioning on a common effect of treatment and outcome.
+Figures 8.3-8.6 show that selection bias under the null (@rem-selection-bias-under-null) can be defined more generally than conditioning on a common effect of treatment and outcome.
 :::
 
 ---
@@ -197,7 +197,7 @@ Causal diagrams have also characterized biases from attempts to eliminate ascert
 ::: {#rem-selection-bias-study-designs}
 ## Selection bias across study designs
 
-These examples show that selection bias can occur:
+These examples show that selection bias (@def-selection-bias) can occur:
 
 - in **retrospective** studies (treatment data collected after the outcome) and in **prospective** studies (treatment data collected before the outcome);
 - in **observational studies** and in **randomized experiments**.
@@ -423,7 +423,7 @@ In a causal diagram with no arrow from $C$ to the observed $Y$, one can replace 
 ::: {#rem-censoring-as-treatment}
 ## Censoring as another treatment
 
-With the contrast written in terms of $Y^{a,c=0}$, **censoring $C$ is just another treatment**, and the goal is the effect of a joint intervention on $A$ and $C$.
+With the contrast written in terms of $Y^{a,c=0}$ (@def-counterfactual-no-censoring), **censoring $C$ is just another treatment**, and the goal is the effect of a joint intervention on $A$ and $C$.
 To eliminate selection bias for the effect of $A$, we adjust for confounding for the effect of $C$.
 That requires:
 
@@ -458,7 +458,7 @@ $$W^C = \frac{1}{\Pr[C = 0 \mid L, A]}.$$
 
 ::: {.notes}
 IP weights for confounding are $W^A = 1/f(A \mid L)$;
-IP weights for selection bias are $W^C = 1/\Pr[C = 0 \mid A, L]$.
+IP weights for selection bias are $W^C = 1/\Pr[C = 0 \mid A, L]$ (@def-censoring-ip-weights).
 When both biases exist, the product $W^A W^C$ adjusts for both simultaneously, under assumptions described in Chapter 12 and Part III.
 :::
 
@@ -486,14 +486,14 @@ The book gives:
 ::: {#exm-wasabi-missing-branch}
 ## The wasabi trial: completing the tree
 
-The remaining branch follows from the totals in Section 8.4:
+The remaining branch follows from the totals in Section 8.4 (@exm-wasabi-censoring):
 
 - treated uncensored: $5 + 4 = 9$, matching the 9 reported;
 - untreated uncensored: $22 - 12 = 10$ in the $L = 0, A = 0$ branch, i.e., all 10, so $\Pr[C = 0 \mid L = 0, A = 0] = 10/10 = 1$.
 
 :::
 
-The weights $W^C = 1/\Pr[C = 0 \mid L, A]$ for each branch are therefore those in @tbl-wasabi-censoring-weights.
+The weights $W^C = 1/\Pr[C = 0 \mid L, A]$ (@def-censoring-ip-weights) for each branch are therefore those in @tbl-wasabi-censoring-weights.
 
 ::: {#tbl-wasabi-censoring-weights}
 
@@ -523,36 +523,78 @@ With those numbers, the risk ratio in the entire population is 1 and the risk ra
 
 In the $L = 1, A = 1$ branch, the 16 censored individuals get weight 0 (they do not contribute) and each of the 4 uncensored individuals gets weight $1/0.2 = 5$: IP weighting replaces the 20 original individuals by 5 copies of each of the 4 uncensored ones.
 Repeating this for every branch (Figure 8.11) creates a pseudo-population of the original size in which nobody is lost to follow-up.
-In that pseudo-population the associational risk ratio is 1, equal to $\Pr[Y^{a=1,c=0} = 1] / \Pr[Y^{a=0,c=0} = 1]$, the risk ratio had nobody been censored.
+In that pseudo-population the associational risk ratio is 1, equal to $\Pr[Y^{a=1,c=0} = 1] / \Pr[Y^{a=0,c=0} = 1]$ (@def-counterfactual-no-censoring), the risk ratio had nobody been censored.
 :::
 
 ---
 
 ### Identifiability Conditions for IP Weighting
 
-::: {#prp-ipw-selection-identification}
-## Identifiability conditions for IP weighting of selection
-
-The association in the pseudo-population equals the effect in the original population if three conditions hold:
-
-1. **Exchangeability**: the average outcome of the uncensored equals the (unobserved) average outcome of the censored with the same $A$ and $L$.
-   This holds if $\Pr[C = 0 \mid L, A]$ conditions on treatment and on all factors that independently predict both selection and the outcome, i.e., if $A$ and $L$ block all backdoor paths between $C$ and $Y$.
-   We can never be sure that $L$ contains all such factors, so this assumption is untestable.
-2. **Positivity**: $\Pr[C = 0 \mid A, L] > 0$ for all values of $A$ and $L$.
-   Positivity is required for being uncensored, not for being censored: we do not want a pseudo-population in which everybody is censored.
-   In Figure 8.10, $\Pr[C = 1 \mid L = 0, A = 0] = 0$, and that zero does not prevent constructing a pseudo-population in which nobody is censored.
-3. **Consistency**, including sufficiently well-defined interventions: the pseudo-population effect is the effect had nobody been censored.
-   That is reasonably well defined when censoring is loss to follow-up or nonresponse, but not when censoring is a **competing event**.
-
-:::
-
-::: {.notes}
-
 ::: {#def-competing-event}
 ## Competing event
 
-A competing event is an event that prevents the outcome of interest from happening, typically death.
+A **competing event** is an event that prevents the outcome of interest from happening, typically death.
 :::
+
+::: {#prp-ipw-selection-identification}
+## Identifiability conditions for IP weighting of selection
+
+Let $L$ be discrete,
+and let the pseudo-population be the original population with each individual weighted by $W^C$ (@def-censoring-ip-weights),
+counting only the uncensored ($C = 0$).
+Fix a treatment level $a$ and suppose that:
+
+1. **Exchangeability for censoring**: $Y^{a,c=0} \ind C \mid A = a, L$.
+2. **Positivity**: $\Pr[C = 0 \mid A = a, L = l] > 0$ for every $l$ with $\Pr[A = a, L = l] > 0$.
+3. **Consistency**: $Y = Y^{a,c=0}$ for every individual with $A = a$ and $C = 0$.
+   This requires sufficiently well-defined interventions on $A$ and $C$,
+   and no measurement error in $A$ or $Y$.
+4. **No confounding for $A$**: $Y^{a,c=0} \ind A$, as under marginal randomization.
+
+Then the mean outcome among individuals with $A = a$ in the pseudo-population equals $\E{Y^{a,c=0}}$,
+the mean outcome had everyone received $a$ and nobody been censored (@def-counterfactual-no-censoring):
+
+$$\frac{\E{I(A = a)\, (1 - C)\, W^C\, Y}}{\E{I(A = a)\, (1 - C)\, W^C}} = \E{Y^{a,c=0}}.$$
+
+So if the conditions hold for every $a$,
+any contrast of the pseudo-population means, such as the risk ratio, equals the same contrast of the $\E{Y^{a,c=0}}$.
+:::
+
+::: {.proof}
+Write $\pi(a, l) \eqdef \Pr[C = 0 \mid A = a, L = l]$, which is positive by positivity.
+Conditioning on $A$ and $L$, and summing over the $l$ with $\Pr[A = a, L = l] > 0$:
+
+$$
+\begin{aligned}
+\E{I(A = a)\, (1 - C)\, W^C\, Y}
+&= \sum_l \Pr[A = a, L = l]\, \frac{\E{(1 - C)\, Y \mid A = a, L = l}}{\pi(a, l)} && \text{(definition of } W^C\text{)} \\
+&= \sum_l \Pr[A = a, L = l]\, \E{Y \mid A = a, C = 0, L = l} && \text{(conditioning on } C\text{)} \\
+&= \sum_l \Pr[A = a, L = l]\, \E{Y^{a,c=0} \mid A = a, C = 0, L = l} && \text{(consistency)} \\
+&= \sum_l \Pr[A = a, L = l]\, \E{Y^{a,c=0} \mid A = a, L = l} && \text{(exchangeability for censoring)} \\
+&= \Pr[A = a]\, \E{Y^{a,c=0} \mid A = a} && \text{(law of total expectation)} \\
+&= \Pr[A = a]\, \E{Y^{a,c=0}} && \text{(no confounding for } A\text{)}
+\end{aligned}
+$$
+
+The second line uses $\E{(1 - C)\, Y \mid A = a, L = l} = \pi(a, l)\, \E{Y \mid A = a, C = 0, L = l}$.
+Replacing $Y$ by 1 in the first two lines shows that the denominator is $\sum_l \Pr[A = a, L = l] = \Pr[A = a]$.
+Dividing the two gives the result.
+:::
+
+In words, exchangeability for censoring says that the average outcome of the uncensored equals the (unobserved) average outcome of the censored with the same $A$ and $L$.
+It holds if $\Pr[C = 0 \mid L, A]$ conditions on treatment and on all factors that independently predict both selection and the outcome, i.e., if $A$ and $L$ block all backdoor paths between $C$ and $Y$.
+
+::: {.callout-warning title="Exchangeability for Censoring Is Untestable"}
+We can never be sure that $L$ contains all such factors, so this assumption is untestable.
+:::
+
+Positivity is required for being uncensored, not for being censored: we do not want a pseudo-population in which everybody is censored.
+In Figure 8.10, $\Pr[C = 1 \mid L = 0, A = 0] = 0$, and that zero does not prevent constructing a pseudo-population in which nobody is censored.
+
+Consistency, including sufficiently well-defined interventions, makes the pseudo-population effect the effect had nobody been censored.
+That is reasonably well defined when censoring is loss to follow-up or nonresponse, but not when censoring is a competing event (@def-competing-event).
+
+::: {.notes}
 
 ::: {.callout-warning title="Competing Events Are Not Censoring"}
 In a study of a treatment's effect on Alzheimer's disease, treating death from other causes (cancer, heart disease, and so on) as censoring would target a pseudo-population in which all other causes of death have been removed.
@@ -608,7 +650,7 @@ By d-separation, $A$ and $E$ are:
 ::: {#rem-collider-association-some-stratum}
 ## Collider stratification need not affect every stratum
 
-Conditioning on a common effect $Y$ of two independent causes always induces an association between them in **at least one** stratum of $Y$ (say $Y = 1$).
+Conditioning on a common effect $Y$ of two independent causes generically (that is, under faithfulness) induces an association between them in **at least one** stratum of $Y$ (say $Y = 1$).
 But there is a special case in which they remain independent in the other stratum (say $Y = 0$).
 :::
 
@@ -632,23 +674,47 @@ Figure 8.13 expands Figure 8.12 with these unmeasured variables ($A \rightarrow 
 only $A$, $E$, $Y$ are recorded.
 :::
 
+::: {#def-augmented-causal-diagram}
+## Augmented causal diagram
+
+Adding to a causal diagram unmeasured variables, such as $Y_A$, $Y_E$, $Y_O$, that functionally determine one of its nodes, such as $Y$, gives an **augmented causal diagram**.
+Figure 8.13 is the augmented version of Figure 8.12 (@exm-separate-death-mechanisms).
+Augmented causal DAGs were introduced by Hernán, Hernández-Díaz, and Robins (2004) and can be extended to represent the sufficient causes of Chapter 5 (VanderWeele and Robins 2007c).
+:::
+
 ---
 
 ::: {#prp-independence-among-survivors}
 ## Independence among survivors
 
-In the causal diagram of Figure 8.13, $A$ and $E$ are d-separated, and hence independent, given $Y = 0$.
-Given $Y = 1$ the path between them through $Y$ is not blocked, so they are in general associated.
+Suppose, as in @exm-separate-death-mechanisms, that:
+
+- $Y = 1$ if at least one of $Y_A$, $Y_E$, $Y_O$ equals 1, and $Y = 0$ if all three equal 0;
+- the causal diagram is Figure 8.13, whose only arrows are $A \rightarrow Y_A$, $E \rightarrow Y_E$, and $Y_A, Y_E, Y_O \rightarrow Y$,
+  so there are no arrows between the mechanisms and no common causes of any of $A$, $E$, $Y_A$, $Y_E$, $Y_O$;
+- $\Pr[Y = 0] > 0$.
+
+Then $A \ind E \mid Y = 0$.
 :::
 
 ::: {.proof}
-Because $Y$ is a deterministic function of $Y_A$, $Y_E$, $Y_O$:
+In Figure 8.13 the only path between $A$ and $E$ is $A \rightarrow Y_A \rightarrow Y \leftarrow Y_E \leftarrow E$.
+Conditioning on the set $\{Y_A, Y_E, Y_O\}$ blocks this path at the non-collider $Y_A$ (and at $Y_E$),
+and the collider $Y$ is neither in the set nor an ancestor of anything in it,
+so $A$ and $E$ are d-separated given $\{Y_A, Y_E, Y_O\}$.
+By the causal Markov property, $A \ind E \mid Y_A, Y_E, Y_O$,
+and in particular $A$ and $E$ are independent given the event $Y_A = Y_E = Y_O = 0$.
+Because $Y$ is a deterministic function of $Y_A$, $Y_E$, $Y_O$,
+the event $Y = 0$ is the same event as $Y_A = Y_E = Y_O = 0$,
+so $A \ind E \mid Y = 0$.
+:::
 
-- **Given $Y = 0$**: $Y = 0$ implies $Y_A = Y_E = Y_O = 0$, so conditioning on $Y = 0$ also conditions on the non-colliders $Y_A$, $Y_E$, $Y_O$, which blocks the path between $A$ and $E$.
-  By d-separation in Figure 8.13, $A$ and $E$ are independent given $Y = 0$.
-- **Given $Y = 1$**: $Y = 1$ is compatible with 7 combinations of $(Y_A, Y_E, Y_O)$, every combination except $(0, 0, 0)$, so it does not fix their values;
-  the path through $Y$ stays open and $A$ and $E$ are associated given $Y = 1$.
+::: {#rem-dependence-among-decedents}
+## Dependence among the dead
 
+Given $Y = 1$ the argument of @prp-independence-among-survivors does not apply:
+$Y = 1$ is compatible with 7 combinations of $(Y_A, Y_E, Y_O)$, every combination except $(0, 0, 0)$, so it does not fix their values;
+the path through $Y$ stays open and, generically (that is, under faithfulness), $A$ and $E$ are associated given $Y = 1$.
 :::
 
 When the data can be summarized by Figure 8.13, they follow a **multiplicative survival model** (Technical Point 8.2).
@@ -660,12 +726,7 @@ $A$ and $E$ are dependent given $Y = 0$ (in fact within both strata of $Y$) when
 - $Y_A$ and $Y_E$ share a common cause $V$ (Figure 8.15);
 - $Y_A$ and $Y_O$, and $Y_E$ and $Y_O$, share common causes $W_1$ and $W_2$ (Figure 8.16).
 
-::: {#def-augmented-causal-diagram}
-## Augmented causal diagram
-
-Adding the unmeasured $Y_A$, $Y_E$, $Y_O$ that functionally determine $Y$ gives an **augmented causal diagram** that represents both the independence of $A$ and $E$ given $Y = 0$ and their dependence given $Y = 1$.
-Augmented causal DAGs were introduced by Hernán, Hernández-Díaz, and Robins (2004) and can be extended to represent the sufficient causes of Chapter 5 (VanderWeele and Robins 2007c).
-:::
+The augmented causal diagram (@def-augmented-causal-diagram) represents both the independence of $A$ and $E$ given $Y = 0$ and their dependence given $Y = 1$.
 :::
 
 ---
@@ -673,7 +734,7 @@ Augmented causal DAGs were introduced by Hernán, Hernández-Díaz, and Robins (
 ::: {#rem-collider-stratification-without-bias}
 ## Selection without bias
 
-**Summary of Section 8.6**: conditioning on a collider always induces an association between its causes, but the association may be confined to some levels of the collider.
+**Summary of Section 8.6**: conditioning on a collider generically (under faithfulness) induces an association between its causes, but the association may be confined to some levels of the collider.
 Restricting the analysis to a single level of a common effect does not necessarily produce selection bias: collider stratification is not always a source of selection bias.
 :::
 
@@ -751,7 +812,7 @@ This chapter examined **selection bias**: lack of exchangeability that arises fr
 5. **Adjustment**: IP weighting with $W^C = 1 / \Pr[C = 0 \mid L, A]$ creates a pseudo-population with no censoring.
    Under the null, stratification on $L$ works in Figures 8.3 and 8.5 but not in Figures 8.4 and 8.6.
 
-6. **Selection without bias**: when the data follow a multiplicative survival model (Figure 8.13), $A$ and $E$ remain independent among survivors ($Y = 0$), though not among the dead ($Y = 1$).
+6. **Selection without bias**: when the data follow a multiplicative survival model (Figure 8.13), $A$ and $E$ remain independent among survivors ($Y = 0$; @prp-independence-among-survivors), though not among the dead ($Y = 1$).
 
 ::: {.notes}
 **Practical implications**:
