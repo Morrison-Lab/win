@@ -226,7 +226,7 @@
 <p><span class="math display">\[\Pr[T = k \mid T &gt; k - 1]\]</span></p>
 </div>
 <div id="rem-discrete-time-hazard" class="proof remark">
-<p><span class="proof-title"><em>Remark 1</em> (Discrete-time hazards). </span>Strictly speaking this is a discrete-time hazard, defined for time measured in intervals rather than continuously. Since real data always record time in units such as years, months, or days, we simply call it the hazard.</p>
+<p><span class="proof-title"><em>Remark 1</em> (Discrete-time hazards). </span>Strictly speaking, the hazard of <a href="#/def-survival-risk-hazard-time" class="quarto-xref">Definition&nbsp;2</a> is a discrete-time hazard, defined for time measured in intervals rather than continuously. Since real data always record time in units such as years, months, or days, we simply call it the hazard.</p>
 </div>
 <aside class="notes">
 <p>A natural summary of the treatment effect in a survival analysis contrasts the survival, or the risk, under each treatment level at one or more times <span class="math inline">\(k\)</span>. Survival curves also yield other measures, such as the restricted mean survival time or the years of life lost.</p>
@@ -325,7 +325,7 @@
 <h2>From Hazards to Survival</h2>
 <p>Surviving through <span class="math inline">\(k\)</span> means surviving each interval up to <span class="math inline">\(k\)</span> in turn, so the survival at <span class="math inline">\(k\)</span> is the product of the interval-specific conditional survivals.</p>
 <div id="prp-survival-product-of-hazards" class="theorem proposition">
-<p><span class="theorem-title"><strong>Proposition 1 (Survival as a product of conditional survivals)</strong></span> For every <span class="math inline">\(k \geq 1\)</span> such that the conditioning events have positive probability,</p>
+<p><span class="theorem-title"><strong>Proposition 1 (Survival as a product of conditional survivals)</strong></span> Suppose <span class="math inline">\(D_0 = 0\)</span> for everyone and that <span class="math inline">\(D_{m-1} = 1\)</span> implies <span class="math inline">\(D_m = 1\)</span> for every <span class="math inline">\(m \geq 1\)</span>. Then for every <span class="math inline">\(k \geq 1\)</span> such that the conditioning events have positive probability,</p>
 <p><span class="math display">\[\Pr[D_k = 0] = \prod_{m=1}^k \Pr[D_m = 0 \mid D_{m-1} = 0]\]</span></p>
 </div>
 <div class="proof">
@@ -451,15 +451,17 @@
 <section class="slide level2">
 
 <p>In the NHEFS example the only censoring is administrative, at the same time <span class="math inline">\(k_\text{end} = 120\)</span> for everyone. Then the hazard-based procedure is more than needed: <span class="math inline">\(\Pr[D_{k+1} = 0 \mid A = a]\)</span> can be estimated directly as the proportion of people with treatment <span class="math inline">\(a\)</span> still alive at <span class="math inline">\(k + 1\)</span>, or with a separate logistic model for <span class="math inline">\(\Pr[D_{k+1} = 0 \mid A]\)</span> at each <span class="math inline">\(k = 0, 1, \ldots, k_\text{end}\)</span>.</p>
+<p>Things change with staggered entry.</p>
 <div id="def-staggered-entry" class="theorem definition">
-<p><span class="theorem-title"><strong>Definition 7 (Staggered entry)</strong></span> Things change with <strong>staggered entry</strong>, where people enter the study on different dates while the study closes on one date. Each person’s administrative censoring time is the closing date minus their entry date, so it now varies across individuals.</p>
+<p><span class="theorem-title"><strong>Definition 7 (Staggered entry)</strong></span> Under <strong>staggered entry</strong>, people enter the study on different dates while the study closes on one date. Each person’s administrative censoring time is the closing date minus their entry date, so it now varies across individuals.</p>
 </div>
 </section>
 <section id="the-censoring-indicator" class="slide level2">
 <h2>The Censoring Indicator</h2>
 <div id="def-time-varying-censoring-indicator" class="theorem definition">
-<p><span class="theorem-title"><strong>Definition 8 (Time-varying censoring indicator)</strong></span> We therefore add a time-varying <strong>censoring indicator</strong> <span class="math inline">\(C_k\)</span>, equal to 0 if the person’s administrative end of follow-up lies beyond <span class="math inline">\(k\)</span> and 1 otherwise. In the person-time format, the row for an individual at time <span class="math inline">\(k\)</span> includes <span class="math inline">\(C_{k+1}\)</span>. The NHEFS dataset omits this variable because <span class="math inline">\(C_{k+1} = 0\)</span> for everyone at all <span class="math inline">\(k\)</span> before 120 months; with individual-specific administrative censoring, <span class="math inline">\(C_{k+1}\)</span> switches from 0 to 1 at different times for different people.</p>
+<p><span class="theorem-title"><strong>Definition 8 (Time-varying censoring indicator)</strong></span> The time-varying <strong>censoring indicator</strong> <span class="math inline">\(C_k\)</span> equals 0 if the person’s administrative end of follow-up lies at or beyond <span class="math inline">\(k\)</span> and 1 otherwise. In the person-time format, the row for an individual at time <span class="math inline">\(k\)</span> includes <span class="math inline">\(C_{k+1}\)</span>.</p>
 </div>
+<p>The NHEFS dataset omits this variable because <span class="math inline">\(C_{k+1} = 0\)</span> for everyone at all <span class="math inline">\(k\)</span> before 120 months; with individual-specific administrative censoring, <span class="math inline">\(C_{k+1}\)</span> switches from 0 to 1 at different times for different people.</p>
 <div id="def-survival-without-censoring" class="theorem definition">
 <p><span class="theorem-title"><strong>Definition 9 (Survival without censoring)</strong></span> The target is the survival curve we would see if no one were censored before <span class="math inline">\(k_\text{end}\)</span>, that is, <span class="math inline">\(\Pr[D_k = 0 \mid A = a]\)</span> with <span class="math inline">\(D_k\)</span> observed even after censoring. In the notation of Chapter 12 this is <span class="math inline">\(\Pr[D^{\bar{c}=0}_k = 0 \mid A = a]\)</span>, where <span class="math inline">\(\bar{c} = (c_1, c_2, \ldots, c_{k_\text{end}})\)</span> and the superscript <span class="math inline">\(\bar{c} = 0\)</span> denotes no censoring; the superscript is dropped when the meaning is clear.</p>
 </div>
@@ -496,9 +498,21 @@
 <section id="correct-estimation-under-as-if-randomly-assigned-censoring" class="slide level2">
 <h2>Correct Estimation Under As-If Randomly Assigned Censoring</h2>
 <div id="prp-survival-random-censoring" class="theorem proposition">
-<p><span class="theorem-title"><strong>Proposition 2 (Survival under as-if random censoring)</strong></span> If censoring is (as if) randomly assigned, the survival <span class="math inline">\(\Pr[D_k = 0 \mid A = a]\)</span> at <span class="math inline">\(k\)</span> is:</p>
-<p><span class="math display">\[\Pr[D_k = 0 \mid A = a] = \prod_{m=1}^k \Pr[D_m = 0 \mid D_{m-1} = 0, C_m = 0, A = a] \quad \text{for } k &lt; k_\text{end}\]</span></p>
+<p><span class="theorem-title"><strong>Proposition 2 (Survival under as-if random censoring)</strong></span> Fix a treatment level <span class="math inline">\(a\)</span> with <span class="math inline">\(\Pr[A = a] &gt; 0\)</span> and a time <span class="math inline">\(k \in \{1, \ldots, k_\text{end}\}\)</span>. Suppose the uncensored event indicators start at zero and never revert, that is, <span class="math inline">\(D^{\bar{c}=0}_0 = 0\)</span> for everyone and <span class="math inline">\(D^{\bar{c}=0}_{m-1} = 1\)</span> implies <span class="math inline">\(D^{\bar{c}=0}_m = 1\)</span> for every <span class="math inline">\(m \geq 1\)</span>. Suppose also that, for every <span class="math inline">\(m = 1, \ldots, k\)</span>:</p>
+<ul>
+<li><strong>Censoring as if randomly assigned</strong>: given <span class="math inline">\(A\)</span> and survival without censoring through <span class="math inline">\(m - 1\)</span>, being censored by <span class="math inline">\(m\)</span> is independent of the event at <span class="math inline">\(m\)</span> without censoring, <span class="math inline">\(C_m \perp\!\!\!\perp D^{\bar{c}=0}_m \mid A = a, D^{\bar{c}=0}_{m-1} = 0\)</span>;</li>
+<li><strong>Positivity</strong>: <span class="math inline">\(\Pr[C_m = 0 \mid A = a, D^{\bar{c}=0}_{m-1} = 0] &gt; 0\)</span> and <span class="math inline">\(\Pr[D^{\bar{c}=0}_{m-1} = 0 \mid A = a] &gt; 0\)</span>;</li>
+<li><strong>Consistency</strong>: for anyone with <span class="math inline">\(C_m = 0\)</span>, <span class="math inline">\(D_m = D^{\bar{c}=0}_m\)</span> and <span class="math inline">\(D_{m-1} = D^{\bar{c}=0}_{m-1}\)</span>.</li>
+</ul>
+<p>Then the survival without censoring (<a href="#/def-survival-without-censoring" class="quarto-xref">Definition&nbsp;9</a>) at <span class="math inline">\(k\)</span> is</p>
+<p><span class="math display">\[\Pr[D^{\bar{c}=0}_k = 0 \mid A = a] = \prod_{m=1}^k \Pr[D_m = 0 \mid D_{m-1} = 0, C_m = 0, A = a]\]</span></p>
 </div>
+<div class="proof">
+<p><span class="proof-title"><em>Proof</em>. </span>Applying <a href="#/prp-survival-product-of-hazards" class="quarto-xref">Proposition&nbsp;1</a> to the uncensored event indicators <span class="math inline">\(D^{\bar{c}=0}_m\)</span>, within the stratum <span class="math inline">\(A = a\)</span>, gives</p>
+<p><span class="math display">\[\Pr[D^{\bar{c}=0}_k = 0 \mid A = a] = \prod_{m=1}^k \Pr[D^{\bar{c}=0}_m = 0 \mid D^{\bar{c}=0}_{m-1} = 0, A = a]\]</span></p>
+<p>Fix one factor <span class="math inline">\(m\)</span>. By the independence assumption (with positivity ensuring the added conditioning event has positive probability), adding <span class="math inline">\(C_m = 0\)</span> to the conditioning event leaves the factor unchanged: it equals <span class="math inline">\(\Pr[D^{\bar{c}=0}_m = 0 \mid D^{\bar{c}=0}_{m-1} = 0, C_m = 0, A = a]\)</span>. Among people with <span class="math inline">\(C_m = 0\)</span>, consistency replaces <span class="math inline">\(D^{\bar{c}=0}_m\)</span> by <span class="math inline">\(D_m\)</span> and <span class="math inline">\(D^{\bar{c}=0}_{m-1}\)</span> by <span class="math inline">\(D_{m-1}\)</span>, so the factor equals <span class="math inline">\(\Pr[D_m = 0 \mid D_{m-1} = 0, C_m = 0, A = a]\)</span>, which involves only observed data. Multiplying the <span class="math inline">\(k\)</span> factors gives the result.</p>
+</div>
+<p>The range <span class="math inline">\(k = 1, \ldots, k_\text{end}\)</span> in <a href="#/prp-survival-random-censoring" class="quarto-xref">Proposition&nbsp;2</a> covers the same times as <span class="math inline">\(D_{k+1}\)</span> for <span class="math inline">\(k = 0, \ldots, k_\text{end} - 1\)</span> elsewhere in this chapter.</p>
 <div id="def-cause-specific-hazard" class="theorem definition">
 <p><span class="theorem-title"><strong>Definition 10 (Cause-specific hazard)</strong></span> The <strong>cause-specific hazard</strong> at <span class="math inline">\(k + 1\)</span> is <span class="math inline">\(\Pr[D_{k+1} = 1 \mid D_k = 0, C_{k+1} = 0, A = a]\)</span>.</p>
 </div>
@@ -543,12 +557,13 @@
 <h2>Estimation via IP Weighting</h2>
 <p>Assume that treated and untreated are exchangeable conditional on <span class="math inline">\(L\)</span>, which, as in Chapters 12 to 15, contains sex, age, race, education, smoking intensity and duration, weight, recreational exercise, and physical activity in daily life. Assume positivity and consistency as well. IP weighted survival curves are then estimated in two steps.</p>
 <div id="alg-ipw-survival-curves" class="theorem algorithm">
-<p><span class="theorem-title"><strong>Algorithm 1 (IP weighted survival curves)</strong></span> <strong>Step 1</strong>: Estimate each person’s stabilized IP weight <span class="math inline">\(SW^A\)</span> as in Chapter 12. Fit a logistic model for <span class="math inline">\(\Pr[A = 1 \mid L]\)</span>. The denominator is the fitted <span class="math inline">\(\widehat{\Pr}[A = 1 \mid L]\)</span> for the treated and <span class="math inline">\(1 - \widehat{\Pr}[A = 1 \mid L]\)</span> for the untreated; the numerator is <span class="math inline">\(\widehat{\Pr}[A = 1]\)</span> for the treated and <span class="math inline">\(1 - \widehat{\Pr}[A = 1]\)</span> for the untreated, with <span class="math inline">\(\widehat{\Pr}[A = 1]\)</span> estimated nonparametrically or by a logistic model without covariates. In the weighted pseudo-population <span class="math inline">\(L\)</span> and <span class="math inline">\(A\)</span> are independent, so <span class="math inline">\(L\)</span> no longer confounds. The estimated weights averaged 1, as they should, and ranged from 0.33 to 4.21.</p>
+<p><span class="theorem-title"><strong>Algorithm 1 (IP weighted survival curves)</strong></span> <strong>Step 1</strong>: Estimate each person’s stabilized IP weight <span class="math inline">\(SW^A\)</span> as in Chapter 12. Fit a logistic model for <span class="math inline">\(\Pr[A = 1 \mid L]\)</span>. The denominator is the fitted <span class="math inline">\(\widehat{\Pr}[A = 1 \mid L]\)</span> for the treated and <span class="math inline">\(1 - \widehat{\Pr}[A = 1 \mid L]\)</span> for the untreated; the numerator is <span class="math inline">\(\widehat{\Pr}[A = 1]\)</span> for the treated and <span class="math inline">\(1 - \widehat{\Pr}[A = 1]\)</span> for the untreated, with <span class="math inline">\(\widehat{\Pr}[A = 1]\)</span> estimated nonparametrically or by a logistic model without covariates. In the weighted pseudo-population <span class="math inline">\(L\)</span> and <span class="math inline">\(A\)</span> are independent, so <span class="math inline">\(L\)</span> no longer confounds.</p>
 <p><strong>Step 2</strong>: In the person-time data, fit the hazards model</p>
 <p><span class="math display">\[\text{logit}\,\Pr[D^a_{k+1} = 1 \mid D^a_k = 0] = \beta_{0,k} + \beta_1 a + \beta_2 (a \times k) + \beta_3 (a \times k^2)\]</span></p>
 <p>weighting each person by the estimated <span class="math inline">\(SW^A\)</span>. The weighted fit estimates the parameters of a <strong>marginal structural logistic model</strong>: the hazards over time that would have occurred had the whole study population been treated (<span class="math inline">\(a = 1\)</span>), and had it been untreated (<span class="math inline">\(a = 0\)</span>). (The book writes this model for the complementary probability <span class="math inline">\(\Pr[D^a_{k+1} = 0 \mid D^a_k = 0]\)</span>; because <span class="math inline">\(\text{logit}(1 - p) = -\text{logit}(p)\)</span>, the two forms are equivalent with the signs of the <span class="math inline">\(\beta\)</span>’s reversed.)</p>
 <p>The fitted counterfactual hazards <span class="math inline">\(\Pr[D^a_{k+1} = 1 \mid D^a_k = 0]\)</span> are turned into survival estimates <span class="math inline">\(\Pr[D^a_{k+1} = 0] = \prod_{m=0}^k (1 - \Pr[D^a_{m+1} = 1 \mid D^a_m = 0])\)</span> for <span class="math inline">\(a = 1\)</span> and <span class="math inline">\(a = 0\)</span> (the book’s Figure 17.6).</p>
 </div>
+<p>In the NHEFS, the estimated weights averaged 1, as they should, and ranged from 0.33 to 4.21.</p>
 <aside class="notes">
 <div id="exm-nhefs-ipw-survival" class="theorem example">
 <p><span class="theorem-title"><strong>Example 6 (NHEFS: IP weighted survival curves)</strong></span> Estimated 120-month survival: 80.7% if everyone had quit and 80.5% if no one had quit, a difference of 0.2% (95% confidence interval <span class="math inline">\(-4.1\%\)</span> to <span class="math inline">\(3.7\%\)</span>, from 500 bootstrap samples). The curve under quitting lay below the one under not quitting for most of follow-up, but the difference was never larger in magnitude than 1.4 percentage points (the most extreme value was <span class="math inline">\(-1.4\%\)</span>; 95% confidence interval <span class="math inline">\(-3.4\%\)</span> to <span class="math inline">\(0.7\%\)</span>). After IP weighting for <span class="math inline">\(L\)</span>, then, the data show little evidence that quitting affects mortality at any point during follow-up.</p>
@@ -609,7 +624,7 @@
 <p><span class="math display">\[\Pr[D^a_{k+1} = 0] = \sum_l \Pr[D_{k+1} = 0 \mid L = l, A = a]\, \Pr[L = l]\]</span></p>
 </div>
 <div class="proof">
-<p><span class="proof-title"><em>Proof</em>. </span>For a formal proof, see Section 2.3. In outline:</p>
+<p><span class="proof-title"><em>Proof</em>. </span>The argument is the one that identifies the <a href="../chapters/02-randomized-experiments.html#def-standardization">standardization formula</a> in chapter 2, applied to survival. Step by step:</p>
 <p><span class="math display">\[
 \begin{aligned}
 \Pr[D^a_{k+1} = 0]
