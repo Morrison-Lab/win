@@ -118,7 +118,8 @@ $$\Pr[T = k \mid T > k - 1]$$
 ::: {#rem-discrete-time-hazard}
 ## Discrete-time hazards
 
-Strictly speaking, the hazard of @def-survival-risk-hazard-time is a discrete-time hazard, defined for time measured in intervals rather than continuously.
+Strictly speaking, the hazard of @def-survival-risk-hazard-time is a discrete-time hazard,
+defined for time measured in intervals rather than continuously.
 Since real data always record time in units such as years, months, or days,
 we simply call it the hazard.
 :::
@@ -438,7 +439,7 @@ so it now varies across individuals.
 ## Time-varying censoring indicator
 
 The time-varying **censoring indicator** $C_k$
-equals 0 if the person's administrative end of follow-up lies beyond $k$ and 1 otherwise.
+equals 0 if the person's administrative end of follow-up lies at or beyond $k$ and 1 otherwise.
 In the person-time format, the row for an individual at time $k$ includes $C_{k+1}$.
 :::
 
@@ -487,30 +488,31 @@ the survival would be $1 \times 0.9 \times 1 \times 0.9 = 0.81$.
 ::: {#prp-survival-random-censoring}
 ## Survival under as-if random censoring
 
-Let $C_0 = 0$ for everyone, and fix a treatment level $a$ and a time $k \in \{1, \ldots, k_\text{end}\}$.
-Suppose that, for every $m = 1, \ldots, k$:
+Fix a treatment level $a$ with $\Pr[A = a] > 0$ and a time $k \in \{1, \ldots, k_\text{end}\}$.
+Suppose the uncensored event indicators start at zero and never revert,
+that is, $D^{\bar{c}=0}_0 = 0$ for everyone and $D^{\bar{c}=0}_{m-1} = 1$ implies $D^{\bar{c}=0}_m = 1$ for every $m \geq 1$.
+Suppose also that, for every $m = 1, \ldots, k$:
 
 - **Censoring as if randomly assigned**: given $A$ and survival without censoring through $m - 1$,
   being censored by $m$ is independent of the event at $m$ without censoring,
   $C_m \ind D^{\bar{c}=0}_m \mid A = a, D^{\bar{c}=0}_{m-1} = 0$;
-- **Positivity**: $\Pr[C_m = 0 \mid A = a, D^{\bar{c}=0}_{m-1} = 0] > 0$ and $\Pr[D^{\bar{c}=0}_{m-1} = 0 \mid A = a] > 0$;
+- **Positivity**: $\Pr[C_m = 0 \mid A = a, D^{\bar{c}=0}_{m-1} = 0] > 0$
+  and $\Pr[D^{\bar{c}=0}_{m-1} = 0 \mid A = a] > 0$;
 - **Consistency**: for anyone with $C_m = 0$, $D_m = D^{\bar{c}=0}_m$ and $D_{m-1} = D^{\bar{c}=0}_{m-1}$.
 
 Then the survival without censoring (@def-survival-without-censoring) at $k$ is
 
 $$\Pr[D^{\bar{c}=0}_k = 0 \mid A = a] = \prod_{m=1}^k \Pr[D_m = 0 \mid D_{m-1} = 0, C_m = 0, A = a]$$
-
-For $k = 1, \ldots, k_\text{end}$ this covers the same times as $D_{k+1}$ for $k = 0, \ldots, k_\text{end} - 1$.
 :::
 
 ::: {.proof}
-The uncensored event indicators $D^{\bar{c}=0}_m$ start at 0 and stay at 1 once they reach 1, as the observed ones do.
-Applying @prp-survival-product-of-hazards to them, within the stratum $A = a$, gives
+Applying @prp-survival-product-of-hazards to the uncensored event indicators $D^{\bar{c}=0}_m$, within the stratum $A = a$, gives
 
 $$\Pr[D^{\bar{c}=0}_k = 0 \mid A = a] = \prod_{m=1}^k \Pr[D^{\bar{c}=0}_m = 0 \mid D^{\bar{c}=0}_{m-1} = 0, A = a]$$
 
 Fix one factor $m$.
-By the independence assumption, and positivity so that the extra conditioning event has positive probability,
+By the independence assumption
+(with positivity ensuring the added conditioning event has positive probability),
 adding $C_m = 0$ to the conditioning event leaves the factor unchanged:
 it equals $\Pr[D^{\bar{c}=0}_m = 0 \mid D^{\bar{c}=0}_{m-1} = 0, C_m = 0, A = a]$.
 Among people with $C_m = 0$, consistency replaces $D^{\bar{c}=0}_m$ by $D_m$ and $D^{\bar{c}=0}_{m-1}$ by $D_{m-1}$,
@@ -518,6 +520,9 @@ so the factor equals $\Pr[D_m = 0 \mid D_{m-1} = 0, C_m = 0, A = a]$,
 which involves only observed data.
 Multiplying the $k$ factors gives the result.
 :::
+
+The range $k = 1, \ldots, k_\text{end}$ in @prp-survival-random-censoring
+covers the same times as $D_{k+1}$ for $k = 0, \ldots, k_\text{end} - 1$ elsewhere in this chapter.
 
 ::: {#def-cause-specific-hazard}
 ## Cause-specific hazard
@@ -657,7 +662,7 @@ $$\Pr[D^a_{k+1} = 0] = \sum_l \Pr[D_{k+1} = 0 \mid L = l, A = a]\, \Pr[L = l]$$
 :::
 
 ::: {.proof}
-For a formal proof, see [Section 2.3](02-randomized-experiments.qmd#def-standardization).
+The argument is the same as for the [standardization formula](02-randomized-experiments.qmd#def-standardization).
 In outline:
 
 $$
