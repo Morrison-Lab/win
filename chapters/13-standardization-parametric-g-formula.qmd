@@ -37,7 +37,7 @@ Doubly robust estimators (Section 13.4) combine the two models and are consisten
 
 ---
 
-::: {#exm-nhefs-target-effect}
+::: {#rem-nhefs-target-effect}
 ## NHEFS: Setting and Target Effect
 
 **Setting** (same as Chapter 12):
@@ -87,7 +87,8 @@ When some components of $L$ are continuous, $\Pr[L = l]$ is replaced by the dens
 ::: {#thm-standardized-mean-identifies}
 ## Standardization identifies the counterfactual mean
 
-Under exchangeability and positivity given $L$ (plus consistency), the standardized mean with $a = 1$ consistently estimates $\E{Y^{a=1,c=0}}$, and with $a = 0$ consistently estimates $\E{Y^{a=0,c=0}}$.
+Let $L$ be discrete.
+Under exchangeability and positivity given $L$ (plus consistency), the standardized mean of @def-standardization equals $\E{Y^{a,c=0}}$ for each treatment level $a$.
 :::
 
 ::: {.proof}
@@ -104,6 +105,9 @@ $$
 
 Positivity is needed in the second line so that the conditional mean given $(A = a, C = 0, L = l)$ is defined for every $l$ with $\Pr[L = l] > 0$.
 :::
+
+The same argument, with sums replaced by integrals, covers continuous components of $L$.
+So a consistent estimator of the standardized mean with $a = 1$ consistently estimates $\E{Y^{a=1,c=0}}$, and with $a = 0$ consistently estimates $\E{Y^{a=0,c=0}}$.
 
 ### Supplement: Standardizing to the Treated
 
@@ -175,6 +179,7 @@ The same approach applies with other outcome models:
 :::
 
 ::: {.callout-warning title="Conditional Odds Ratios Are Not Marginal"}
+
 ::: {.notes}
 The conditional (on $L$) odds ratio from a logistic outcome model is generally not equal to the marginal causal odds ratio, because the odds ratio is not collapsible;
 standardization averages predicted *risks* first and then forms the effect measure.
@@ -189,6 +194,8 @@ We do **not** need to estimate $\Pr[L = l]$.
 
 ::: {#prp-standardized-mean-iterated}
 ## The standardized mean is an iterated expectation
+
+For discrete $L$,
 
 $$\sum_l \E{Y \mid A = a, C = 0, L = l} \Pr[L = l] = \E{\E{Y \mid A = a, C = 0, L}}$$
 :::
@@ -262,6 +269,7 @@ With a nonparametric bootstrap (Program 13.4), the 95% confidence interval is 2.
 :::
 
 ::: {.callout-warning title="Two Different Confidence Intervals"}
+
 ::: {.notes}
 The two intervals in the book belong to different methods.
 The bootstrap interval (2.6, 4.5) is the parametric g-formula's own [@hernan2020causal, Chapter 13, p. 179].
@@ -305,6 +313,7 @@ The **nonparametric bootstrap** estimates standard errors when analytic or large
 :::
 
 ::: {.callout-tip title="Compare the Two Estimates"}
+
 ::: {.notes}
 - A **large** difference between the two estimates signals serious misspecification in at least one of them.
 - A **small** difference does not guarantee correct models, but it is reassuring: badly misspecified models are unlikely to produce biases of similar magnitude and direction.
@@ -334,6 +343,7 @@ When that estimate comes from a parametric model, the method is the **parametric
 :::
 
 ::: {.callout-tip title="Terminology: G-Formula, G-Computation, G-Estimation"}
+
 ::: {.notes}
 @robins1986new generalized standardization to time-varying treatments and confounders under the name *g-computation algorithm formula*.
 Some authors shorten this to "g-formula", others to "g-computation".
@@ -418,8 +428,9 @@ the second is the Horvitz-Thompson estimator plus an outcome-model correction ("
 ::: {#thm-aipw-doubly-robust}
 ## The AIPW estimator is doubly robust
 
-Let $\pi^*$ and $b^*$ be the probability limits of $\hat\pi$ and $\hat b$.
-The estimator converges to $\E{b^*(L) + A\{Y - b^*(L)\}/\pi^*(L)}$, and its asymptotic bias is
+Assume exchangeability, positivity and consistency, and let $b$ and $\pi$ be as in Technical Point 13.2.
+Let $\pi^*$ and $b^*$ be the probability limits of $\hat\pi$ and $\hat b$, with $\pi^*(L) > 0$.
+The AIPW estimator of @def-aipw converges to $\E{b^*(L) + A\{Y - b^*(L)\}/\pi^*(L)}$, and its asymptotic bias is
 
 $$
 \E{\pi(L) \paren{\frac{1}{\pi^*(L)} - \frac{1}{\pi(L)}} \paren{b(L) - b^*(L)}},
