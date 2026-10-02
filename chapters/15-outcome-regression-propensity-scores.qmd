@@ -329,8 +329,9 @@ The two probabilities are equal, so $A$ does not depend on $L$ once $\pi(L)$ is 
 In words: individuals with the same $\pi(L)$ may differ in $L$ (e.g., smoking intensity and exercise),
 but among all individuals with a given value of $\pi(L)$ in the super-population,
 the distribution of $L$ is the same in the treated and the untreated.
-The propensity score is the coarsest balancing score (Rosenbaum and Rubin 1983, as cited in @hernan2020causal [p. 202]):
-a function $b(L)$ is a balancing score exactly when $\pi(L)$ can be written as a function of $b(L)$.
+A function $b(L)$ is a balancing score exactly when $\pi(L)$ can be written as a function of $b(L)$
+[@rosenbaum1983central, Theorem 2],
+so the propensity score is the coarsest balancing score.
 
 ::: {.notes}
 If the distribution of $\pi(L)$ were the same in the treated and the untreated, there would be no association between $L$ and $A$:
@@ -348,7 +349,7 @@ Two caveats from the book [@hernan2020causal, pp. 201-202]:
 :::
 
 ::: {.notes}
-Rosenbaum and Rubin (1983) proved that exchangeability and positivity given $L$ imply exchangeability and positivity given any balancing score [@hernan2020causal, p. 202].
+Rosenbaum and Rubin proved that exchangeability and positivity given $L$ imply exchangeability and positivity given any balancing score [@rosenbaum1983central, Theorem 3; @hernan2020causal, p. 202].
 Graphically, $\pi(L)$ sits between $L$ and $A$, with a deterministic arrow $L \to \pi(L)$ (book Figure 15.2);
 conditioning on $\pi(L)$ blocks the backdoor paths from $A$ to $Y$ through $L$ ($A \leftarrow \pi(L) \leftarrow L \to Y$), so adjusting for it suffices.
 
@@ -414,7 +415,9 @@ part 2 of @thm-ps-exchangeability states the positivity condition given $\pi(L)$
 
 Suppose exchangeability and positivity hold given $\pi(L)$,
 consistency holds,
-and the model for $\Pr[A = 1 \mid L]$ is correctly specified.
+and the model for $\Pr[A = 1 \mid L]$ is correctly specified;
+for outcome regression on, or standardization over, $\hat\pi(L)$,
+suppose also that the model for the relation between $\pi(L)$ and $Y$ is correctly specified.
 Then causal effects can be estimated as follows.
 
 1. Fit a model for $\Pr[A = 1 \mid L]$.
@@ -531,6 +534,9 @@ The outcome model on $\pi(L)$ estimates effects **within** levels $s$ of $\pi(L)
 
 For the population average causal effect $\E{Y^{a=1,c=0}} - \E{Y^{a=0,c=0}}$, standardize the fitted conditional means over the distribution of the estimated $\pi(L)$:
 the Chapter 13 procedure with $\pi(L)$ in place of $L$.
+This procedure assumes $\pi(L)$ suffices for adjustment,
+as it does when no one is censored and exchangeability and positivity hold given $L$ (@thm-ps-exchangeability);
+with censoring, replace $\pi(L)$ by a joint score $b(L)$ with $(A, C) \ind L \mid b(L)$, as discussed after @prp-ps-stratum-effect.
 
 1. Estimate the propensity score $\hat\pi(L_i)$ for each individual $i = 1, \ldots, n$.
 2. Fit an outcome model for $\E{Y \mid A, C = 0, \pi(L)}$ once, among the uncensored, with $\hat\pi(L)$ as the covariate;
