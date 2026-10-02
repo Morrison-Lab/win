@@ -18,18 +18,19 @@ Suppose a study satisfies the strongest form of sequential exchangeability,
 so the measured time-varying confounders suffice to estimate the effect of any treatment strategy.
 Which confounding adjustment method should we then use?
 The answer exposes a central problem for time-varying treatments:
-treatment-confounder feedback.
-When it is present, traditional adjustment methods can be biased
+a time-varying confounder can drive later treatment
+while itself being affected by, or sharing a cause with, earlier treatment.
+When that happens, traditional adjustment methods can be biased
 even though all the information needed for valid estimation is available.
-This chapter describes the structure of treatment-confounder feedback
+This chapter describes the structure of the problem
 and explains why traditional methods fail.
 
 ::: {.notes}
 This chapter is based on @hernan2020causal [Chapter 20, pp. 267-275].
 
-**Key insight**: with treatment-confounder feedback,
-a time-varying confounder $L_1$ is also affected by (or shares causes with) earlier treatment $A_0$.
-Stratifying on $L_1$ removes confounding for the later treatment $A_1$
+**Key insight**: when a time-varying confounder $L_1$ that affects later treatment $A_1$
+is also affected by (or shares causes with) earlier treatment $A_0$,
+stratifying on $L_1$ removes confounding for the later treatment $A_1$
 but opens a collider path that creates selection bias for $A_0$.
 Not adjusting for $L_1$ leaves $A_1$ confounded.
 Either way the estimate of a treatment-strategy effect is biased;
@@ -45,12 +46,18 @@ g-methods (Chapter 21) avoid both problems.
 ## Treatment-Confounder Feedback
 
 Consider a time-varying treatment $A_k$ and a time-varying confounder $L_k$, measured at times $k = 0, 1, \ldots$.
-There is **treatment-confounder feedback** when the time-varying confounder affects treatment
-($L_k \to A_k$) *and* earlier treatment affects the confounder ($A_{k-1} \to L_k$):
-"the confounder affects the treatment and the treatment affects the confounder"
-[@hernan2020causal, p. 267].
+There is **treatment-confounder feedback** when, for some $k \ge 1$,
+the time-varying confounder affects treatment ($L_k \to A_k$)
+*and* $L_k$ is affected by, or shares a cause with, earlier treatment $A_{k-1}$.
 
 :::
+
+The book's one-line description is the narrower arrow form ($A_{k-1} \to L_k$):
+"the confounder affects the treatment and the treatment affects the confounder"
+[@hernan2020causal, p. 267].
+This chapter uses the wider form,
+because the book applies the same name to the shared-cause case,
+which the observed data cannot tell apart from the arrow form.
 
 ::: {#exm-hiv-trial-time-varying}
 ## The Sequentially Randomized HIV Trial
@@ -550,7 +557,7 @@ The price is a new threat to validity: misspecification of the dose-response mod
 :::
 
 ::: {.callout-warning title="Regression Does Not Remove the Bias"}
-Paying the price of a dose-response model buys no protection against this bias.
+Paying the price of a dose-response model buys no protection against the bias of stratification under treatment-confounder feedback.
 Regression **is** a conventional stratification-based method,
 so it cannot remove the bias of stratification under treatment-confounder feedback.
 
@@ -674,7 +681,9 @@ conditions on treatment history.
 ::: {#def-short-term-effect}
 ## Short-Term Effect
 
-The **short-term effect** of $\bar{A}$ is the effect of $A_1$ alone on $Y$.
+The **short-term effect** of $\bar{A}$ is the effect of $A_1$ on $Y$
+with $A_0$ left at whatever value it naturally takes,
+that is, the effect of $A_1$ when $A_1$ is treated as a time-fixed treatment.
 
 :::
 
@@ -695,7 +704,7 @@ even if $A_1$ has no effect on anyone's outcome (Figures 20.8-20.10).
 ::: {.notes}
 
 ::: {.callout-tip title="Adjust for Treatment History or Restrict to New Users"}
-In practice, this bias can arise in analyses comparing current users ($A_1 = 1$)
+In practice, the bias from ignoring past treatment can arise in analyses comparing current users ($A_1 = 1$)
 with nonusers ($A_1 = 0$) of a time-fixed treatment.
 It can be avoided by adjusting for prior treatment history
 or by restricting to individuals with a particular treatment history.
