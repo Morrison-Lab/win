@@ -396,7 +396,7 @@
 <p><strong>Technical Point 17.1: Approximating the Hazard Ratio via a Logistic Model</strong></p>
 </div>
 <div class="callout-content">
-<p>The discrete-time hazard ratio <span class="math inline">\(\frac{\Pr[D_{k+1}=1 \mid D_k=0,A=1]}{\Pr[D_{k+1}=1 \mid D_k=0,A=0]}\)</span> equals <span class="math inline">\(\text{exp}(\alpha_1)\)</span> at all times <span class="math inline">\(k+1\)</span> in the hazards model <span class="math inline">\(\Pr[D_{k+1} = 1 \mid D_k = 0, A] = \Pr[D_{k+1} = 1 \mid D_k = 0, A = 0] \times \text{exp}(\alpha_1 A)\)</span>.</p>
+<p>The discrete-time hazard ratio <span class="math inline">\(\frac{\Pr[D_{k+1}=1 \mid D_k=0,A=1]}{\Pr[D_{k+1}=1 \mid D_k=0,A=0]}\)</span> equals <span class="math inline">\(\text{exp}{\left\{\alpha_1\right\}}\)</span> at all times <span class="math inline">\(k+1\)</span> in the hazards model <span class="math inline">\(\Pr[D_{k+1} = 1 \mid D_k = 0, A] = \Pr[D_{k+1} = 1 \mid D_k = 0, A = 0] \times \text{exp}{\left\{\alpha_1 A\right\}}\)</span>.</p>
 <p>Taking logs on both sides of the hazards model gives</p>
 <p><span class="math display">\[\log \Pr[D_{k+1} = 1 \mid D_k = 0, A] = \alpha_{0,k} + \alpha_1 A,
 \quad \text{where } \alpha_{0,k} \stackrel{\text{def}}{=}\log \Pr[D_{k+1} = 1 \mid D_k = 0, A = 0].\]</span></p>
@@ -594,10 +594,10 @@
 </div>
 <div class="callout-content">
 <p>With a treatment fixed at baseline, a (non-nested) structural <strong>CFT</strong> model relates the counterfactual risk under treatment <span class="math inline">\(a\)</span> to that under treatment 0, given <span class="math inline">\(A\)</span> and <span class="math inline">\(L\)</span>:</p>
-<p><span class="math display">\[\frac{\Pr[D^a_k = 1 \mid L, A]}{\Pr[D^{a=0}_k = 1 \mid L, A]} = \text{exp}[\gamma_k(L, A; \psi)]\]</span></p>
-<p>with <span class="math inline">\(\gamma_k(L, A; \psi)\)</span> a function of treatment and covariates indexed by a parameter <span class="math inline">\(\psi\)</span>, possibly a vector. <span class="math inline">\(\text{exp}[\gamma_k(L, A; \psi)]\)</span> has to equal 1 when <span class="math inline">\(A = 0\)</span>, since both sides then refer to the same treatment, and when treatment does not affect the outcome at <span class="math inline">\(k\)</span>. For instance, with <span class="math inline">\(\gamma_k(L, A; \psi) = \psi A\)</span>, <span class="math inline">\(\psi = 0\)</span> means no effect, <span class="math inline">\(\psi &lt; 0\)</span> benefit, and <span class="math inline">\(\psi &gt; 0\)</span> harm.</p>
+<p><span class="math display">\[\frac{\Pr[D^a_k = 1 \mid L, A]}{\Pr[D^{a=0}_k = 1 \mid L, A]} = \text{exp}{\left\{\gamma_k(L, A; \psi)\right\}}\]</span></p>
+<p>with <span class="math inline">\(\gamma_k(L, A; \psi)\)</span> a function of treatment and covariates indexed by a parameter <span class="math inline">\(\psi\)</span>, possibly a vector. <span class="math inline">\(\text{exp}{\left\{\gamma_k(L, A; \psi)\right\}}\)</span> has to equal 1 when <span class="math inline">\(A = 0\)</span>, since both sides then refer to the same treatment, and when treatment does not affect the outcome at <span class="math inline">\(k\)</span>. For instance, with <span class="math inline">\(\gamma_k(L, A; \psi) = \psi A\)</span>, <span class="math inline">\(\psi = 0\)</span> means no effect, <span class="math inline">\(\psi &lt; 0\)</span> benefit, and <span class="math inline">\(\psi &gt; 0\)</span> harm.</p>
 <p>A structural <strong>CST</strong> model is the same with survivals in place of risks:</p>
-<p><span class="math display">\[\frac{\Pr[D^a_k = 0 \mid L, A]}{\Pr[D^{a=0}_k = 0 \mid L, A]} = \text{exp}[\gamma_k(L, A; \psi)]\]</span></p>
+<p><span class="math display">\[\frac{\Pr[D^a_k = 0 \mid L, A]}{\Pr[D^{a=0}_k = 0 \mid L, A]} = \text{exp}{\left\{\gamma_k(L, A; \psi)\right\}}\]</span></p>
 <p>The two differ only in whether risk or survival is modeled multiplicatively, yet <span class="math inline">\(\gamma_k\)</span> has a different meaning in each, because a multiplicative model for risk is not multiplicative for survival unless the effect is null. In continuous time, structural CST models and structural additive hazards models coincide (Tchetgen Tchetgen et al., 2015).</p>
 <p>Structural CFT models need a specific rare-failure assumption at every value of <span class="math inline">\(L\)</span>. When it holds, they have an edge over AFT models: their unbiased estimating equations are differentiable in the parameters and therefore easy to solve (Page 2005; Picciotto et al.&nbsp;2012). With time-varying treatments, they fall within the class of multivariate structural nested mean models (Robins 1994).</p>
 </div>
@@ -608,8 +608,8 @@
 <section id="structural-nested-aft-models" class="slide level2">
 <h2>Structural Nested AFT Models</h2>
 <p>Let <span class="math inline">\(T^a_i\)</span> be individual <span class="math inline">\(i\)</span>’s counterfactual survival time under treatment <span class="math inline">\(a\)</span>. The ratio <span class="math inline">\(T^{a=1}_i / T^{a=0}_i\)</span> measures the effect of <span class="math inline">\(A\)</span> on <span class="math inline">\(i\)</span>’s survival time: above 1, treatment lengthens survival (benefit); below 1, it shortens survival (harm); equal to 1, no effect. Assume for now that the effect is identical for everyone. This gives the <strong>structural nested AFT model</strong></p>
-<p><span class="math display">\[T^a_i / T^{a=0}_i = \text{exp}(-\psi_1 a)\]</span></p>
-<p>in which <span class="math inline">\(\text{exp}(-\psi_1)\)</span> is the factor by which treatment stretches or shrinks each person’s survival time:</p>
+<p><span class="math display">\[T^a_i / T^{a=0}_i = \text{exp}{\left\{-\psi_1 a\right\}}\]</span></p>
+<p>in which <span class="math inline">\(\text{exp}{\left\{-\psi_1\right\}}\)</span> is the factor by which treatment stretches or shrinks each person’s survival time:</p>
 <ul>
 <li><span class="math inline">\(\psi_1 &lt; 0\)</span>: treatment increases survival time</li>
 <li><span class="math inline">\(\psi_1 &gt; 0\)</span>: treatment decreases survival time</li>
@@ -628,10 +628,10 @@
           overflow: hidden!important;
           display:block!important;
       }</style></aside>
-<p>If the effect varies with covariates <span class="math inline">\(L\)</span>, a more general structural AFT model is <span class="math inline">\(T^a_i / T^{a=0}_i = \text{exp}(-\psi_1 a - \psi_2 a L_i)\)</span>, with <span class="math inline">\(\psi_1\)</span> and the vector <span class="math inline">\(\psi_2\)</span> common to all individuals. Multiplying both sides by <span class="math inline">\(T^{a=0}_i \text{exp}(\psi_1 a + \psi_2 a L_i)\)</span> gives the equivalent form</p>
-<p><span class="math display">\[T^{a=0}_i = T^a_i \text{exp}(\psi_1 a + \psi_2 a L_i) \quad \text{for all individuals } i\]</span></p>
+<p>If the effect varies with covariates <span class="math inline">\(L\)</span>, a more general structural AFT model is <span class="math inline">\(T^a_i / T^{a=0}_i = \text{exp}{\left\{-\psi_1 a - \psi_2 a L_i\right\}}\)</span>, with <span class="math inline">\(\psi_1\)</span> and the vector <span class="math inline">\(\psi_2\)</span> common to all individuals. Multiplying both sides by <span class="math inline">\(T^{a=0}_i \text{exp}{\left\{\psi_1 a + \psi_2 a L_i\right\}}\)</span> gives the equivalent form</p>
+<p><span class="math display">\[T^{a=0}_i = T^a_i \text{exp}{\left\{\psi_1 a + \psi_2 a L_i\right\}} \quad \text{for all individuals } i\]</span></p>
 <p>By consistency, <span class="math inline">\(T^{A_i}_i = T_i\)</span>, so setting <span class="math inline">\(a = A_i\)</span> gives a model in terms of the observed survival time:</p>
-<p><span class="math display">\[T^{a=0}_i = T_i \text{exp}(\psi_1 A_i + \psi_2 A_i L_i)\]</span></p>
+<p><span class="math display">\[T^{a=0}_i = T_i \text{exp}{\left\{\psi_1 A_i + \psi_2 A_i L_i\right\}}\]</span></p>
 <p>Its parameters can be estimated by g-estimation, modified to allow for administrative censoring.</p>
 <aside class="notes">
 <p>As a description of reality this model is implausible on two counts. It is <strong>deterministic</strong>: it says that each person’s untreated survival time <span class="math inline">\(T^{a=0}\)</span> follows exactly from <span class="math inline">\(T\)</span>, <span class="math inline">\(A\)</span>, and <span class="math inline">\(L\)</span>. It is <strong>rank-preserving</strong>: if <span class="math inline">\(i\)</span> would die before <span class="math inline">\(j\)</span> when both are untreated (<span class="math inline">\(T^{a=0}_i &lt; T^{a=0}_j\)</span>), then <span class="math inline">\(i\)</span> would also die before <span class="math inline">\(j\)</span> when both are treated (<span class="math inline">\(T^{a=1}_i &lt; T^{a=1}_j\)</span>). Rank preservation is not believable, and methods that require it are generally best avoided (Chapter 14). The book uses a rank-preserving model anyway because it makes g-estimation easier to explain, and the procedure is identical with or without rank preservation. Robins (1997b) describes structural nested AFT models that are neither deterministic nor rank-preserving.</p>
@@ -649,9 +649,9 @@
 </section>
 <section id="g-estimation-without-censoring" class="slide level2 scrollable">
 <h2>G-Estimation Without Censoring</h2>
-<p>Take the simpler rank-preserving model <span class="math inline">\(T^{a=0}_i = T_i \text{exp}(\psi A_i)\)</span>. If no one were administratively censored, so that <span class="math inline">\(T\)</span> were known for all, g-estimation would follow Section 14.5:</p>
+<p>Take the simpler rank-preserving model <span class="math inline">\(T^{a=0}_i = T_i \text{exp}{\left\{\psi A_i\right\}}\)</span>. If no one were administratively censored, so that <span class="math inline">\(T\)</span> were known for all, g-estimation would follow Section 14.5:</p>
 <ol type="1">
-<li>For many candidate values <span class="math inline">\(\psi^\dagger\)</span>, compute <span class="math inline">\(H_i(\psi^\dagger) = T_i \text{exp}(\psi^\dagger A_i)\)</span>.</li>
+<li>For many candidate values <span class="math inline">\(\psi^\dagger\)</span>, compute <span class="math inline">\(H_i(\psi^\dagger) = T_i \text{exp}{\left\{\psi^\dagger A_i\right\}}\)</span>.</li>
 <li>The g-estimate of <span class="math inline">\(\psi\)</span> is the <span class="math inline">\(\psi^\dagger\)</span> at which <span class="math inline">\(H_i(\psi^\dagger)\)</span> is unrelated to <span class="math inline">\(A\)</span> in a logistic model for <span class="math inline">\(\Pr[A = 1]\)</span> that includes <span class="math inline">\(H_i(\psi^\dagger)\)</span> and the confounders <span class="math inline">\(L\)</span>.</li>
 </ol>
 <aside class="notes">
@@ -707,7 +707,7 @@ Table&nbsp;1: Survival times (months) under treatment and no treatment for each 
 </figure>
 </div>
 <aside class="notes">
-<p>In this example treatment shortens survival time by the same factor for every type: <span class="math inline">\(24/36 = 48/72 = 72/108 = 2/3\)</span>. In terms of the AFT model <span class="math inline">\(T^{a=1}/T^{a=0} = \text{exp}(-\psi_1)\)</span>, this means <span class="math inline">\(\text{exp}(-\psi_1) = 2/3\)</span>, so <span class="math inline">\(\psi_1 = \log(3/2) \approx 0.41 &gt; 0\)</span>, a harmful effect.</p>
+<p>In this example treatment shortens survival time by the same factor for every type: <span class="math inline">\(24/36 = 48/72 = 72/108 = 2/3\)</span>. In terms of the AFT model <span class="math inline">\(T^{a=1}/T^{a=0} = \text{exp}{\left\{-\psi_1\right\}}\)</span>, this means <span class="math inline">\(\text{exp}{\left\{-\psi_1\right\}} = 2/3\)</span>, so <span class="math inline">\(\psi_1 = \log(3/2) \approx 0.41 &gt; 0\)</span>, a harmful effect.</p>
 <style type="text/css">
         span.MJX_Assistive_MathML {
           position:absolute!important;
@@ -741,10 +741,10 @@ Table&nbsp;1: Survival times (months) under treatment and no treatment for each 
 <p><strong>Technical Point 17.3: Artificial Censoring</strong></p>
 </div>
 <div class="callout-content">
-<p>Define <span class="math inline">\(K(\psi)\)</span> as the smallest untreated survival time compatible with a person who actually died at time <span class="math inline">\(K\)</span>. For a dichotomous treatment, <span class="math inline">\(K(\psi) = \inf\{K \text{exp}(\psi A)\}\)</span>, the infimum taken over the treatment values <span class="math inline">\(A \in \{0, 1\}\)</span>. Evaluating the two candidates <span class="math inline">\(K\text{exp}(\psi \times 0) = K\)</span> and <span class="math inline">\(K \text{exp}(\psi \times 1) = K\text{exp}(\psi)\)</span>:</p>
+<p>Define <span class="math inline">\(K(\psi)\)</span> as the smallest untreated survival time compatible with a person who actually died at time <span class="math inline">\(K\)</span>. For a dichotomous treatment, <span class="math inline">\(K(\psi) = \inf\{K \text{exp}{\left\{\psi A\right\}}\}\)</span>, the infimum taken over the treatment values <span class="math inline">\(A \in \{0, 1\}\)</span>. Evaluating the two candidates <span class="math inline">\(K\text{exp}{\left\{\psi \times 0\right\}} = K\)</span> and <span class="math inline">\(K \text{exp}{\left\{\psi \times 1\right\}} = K\text{exp}{\left\{\psi\right\}}\)</span>:</p>
 <ul>
-<li>if treatment contracts survival time (<span class="math inline">\(\psi &gt; 0\)</span>), <span class="math inline">\(K\text{exp}(\psi) &gt; K\)</span>, so <span class="math inline">\(K(\psi) = K\)</span>;</li>
-<li>if treatment expands survival time (<span class="math inline">\(\psi &lt; 0\)</span>), <span class="math inline">\(K\text{exp}(\psi) &lt; K\)</span>, so <span class="math inline">\(K(\psi) = K \text{exp}(\psi)\)</span>;</li>
+<li>if treatment contracts survival time (<span class="math inline">\(\psi &gt; 0\)</span>), <span class="math inline">\(K\text{exp}{\left\{\psi\right\}} &gt; K\)</span>, so <span class="math inline">\(K(\psi) = K\)</span>;</li>
+<li>if treatment expands survival time (<span class="math inline">\(\psi &lt; 0\)</span>), <span class="math inline">\(K\text{exp}{\left\{\psi\right\}} &lt; K\)</span>, so <span class="math inline">\(K(\psi) = K \text{exp}{\left\{\psi\right\}}\)</span>;</li>
 <li>if treatment has no effect (<span class="math inline">\(\psi = 0\)</span>), both candidates equal <span class="math inline">\(K\)</span>, so <span class="math inline">\(K(\psi) = K\)</span>.</li>
 </ul>
 <p>Every administratively censored person (<span class="math inline">\(T &gt; K\)</span>) gets <span class="math inline">\(\Delta(\psi) = 0\)</span>, since their survival time exceeds <span class="math inline">\(K\)</span> under the treatment they actually received, so <span class="math inline">\(H(\psi) \geq K(\psi)\)</span>. Some people with observed deaths (<span class="math inline">\(T \leq K\)</span>) also get <span class="math inline">\(\Delta(\psi) = 0\)</span>; they are the artificially censored, removed to prevent selection bias.</p>
@@ -756,7 +756,7 @@ Table&nbsp;1: Survival times (months) under treatment and no treatment for each 
 </section>
 <section id="nhefs-results-and-practical-obstacles" class="slide level2">
 <h2>NHEFS Results and Practical Obstacles</h2>
-<p>Applied to the NHEFS with the rank-preserving model <span class="math inline">\(T^{a=0}_i = T_i \text{exp}(\psi A_i)\)</span>, g-estimation gave <span class="math inline">\(\hat{\psi} = -0.047\)</span> (95% confidence interval: <span class="math inline">\(-0.223\)</span> to <span class="math inline">\(0.333\)</span>). The quantity <span class="math inline">\(\text{exp}(-\hat{\psi}) = \text{exp}(0.047) \approx 1.05\)</span> is the ratio of the median survival time had everyone received <span class="math inline">\(a = 1\)</span> to the median survival time had everyone received <span class="math inline">\(a = 0\)</span>, so quitting appears to have little effect on time to death.</p>
+<p>Applied to the NHEFS with the rank-preserving model <span class="math inline">\(T^{a=0}_i = T_i \text{exp}{\left\{\psi A_i\right\}}\)</span>, g-estimation gave <span class="math inline">\(\hat{\psi} = -0.047\)</span> (95% confidence interval: <span class="math inline">\(-0.223\)</span> to <span class="math inline">\(0.333\)</span>). The quantity <span class="math inline">\(\text{exp}{\left\{-\hat{\psi}\right\}} = \text{exp}{\left\{0.047\right\}} \approx 1.05\)</span> is the ratio of the median survival time had everyone received <span class="math inline">\(a = 1\)</span> to the median survival time had everyone received <span class="math inline">\(a = 0\)</span>, so quitting appears to have little effect on time to death.</p>
 <aside class="notes">
 <p>The point estimate of <span class="math inline">\(\psi\)</span> is where the estimating function of Technical Point 17.3 reaches its minimum, and the 95% confidence limits are where it equals 3.84, the 0.95 quantile of a <span class="math inline">\(\chi^2\)</span> distribution with one degree of freedom.</p>
 <p>Survival analysis with instrumental variables, described by Tchetgen Tchetgen et al.&nbsp;(2015) and Robins (1997b), runs into problems like the ones described here for structural nested models.</p>
@@ -801,7 +801,7 @@ Table&nbsp;1: Survival times (months) under treatment and no treatment for each 
 <li>Unadjusted: 76.2% survival among quitters vs.&nbsp;82.0% among non-quitters (confounded)</li>
 <li>IP weighting: 80.7% under cessation vs.&nbsp;80.5% under continued smoking; difference 0.2%</li>
 <li>Parametric g-formula: 80.4% under cessation vs.&nbsp;80.6% under continued smoking; difference <span class="math inline">\(-0.2\%\)</span> (reported in the book as 0.2%)</li>
-<li>G-estimation of a structural AFT model: <span class="math inline">\(\hat{\psi} = -0.047\)</span> (95% CI <span class="math inline">\(-0.223\)</span> to <span class="math inline">\(0.333\)</span>); survival time ratio <span class="math inline">\(\text{exp}(-\hat{\psi}) \approx 1.05\)</span></li>
+<li>G-estimation of a structural AFT model: <span class="math inline">\(\hat{\psi} = -0.047\)</span> (95% CI <span class="math inline">\(-0.223\)</span> to <span class="math inline">\(0.333\)</span>); survival time ratio <span class="math inline">\(\text{exp}{\left\{-\hat{\psi}\right\}} \approx 1.05\)</span></li>
 </ul>
 <p>None of the three adjusted analyses found much evidence that quitting smoking affects mortality.</p>
 <p><strong>Why not just use hazard ratios?</strong> (Fine Point 17.2):</p>

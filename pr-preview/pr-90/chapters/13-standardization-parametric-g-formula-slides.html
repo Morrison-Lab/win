@@ -369,7 +369,7 @@
 <p>We do <strong>not</strong> need to estimate <span class="math inline">\(\Pr[L = l]\)</span>. The standardized mean is a double expectation:</p>
 <p><span class="math display">\[\sum_l \text{E}{\left[Y \mid A = a, C = 0, L = l\right]} \Pr[L = l] = \text{E}{\left[\text{E}{\left[Y \mid A = a, C = 0, L\right]}\right]}\]</span></p>
 <p>so it can be estimated by averaging the model predictions over the <strong>empirical distribution</strong> of <span class="math inline">\(L\)</span>:</p>
-<p><span class="math display">\[\frac{1}{n} \sum_{i=1}^n \hat{\text{E}}{\left[Y \mid A = a, C = 0, L = L_i\right]}\]</span></p>
+<p><span class="math display">\[\frac{1}{n} \sum_{i=1}^n\hat{\text{E}}{\left[Y \mid A = a, C = 0, L = L_i\right]}\]</span></p>
 <p>where <span class="math inline">\(n\)</span> is the number of individuals in the study.</p>
 <aside class="notes">
 <p>The equality holds because the outer expectation is over the marginal distribution of <span class="math inline">\(L\)</span>: writing <span class="math inline">\(g(l) = \text{E}{\left[Y \mid A = a, C = 0, L = l\right]}\)</span>, we have <span class="math inline">\(\text{E}{\left[g(L)\right]} = \sum_l g(l) \Pr[L = l]\)</span> by the definition of expectation. Replacing <span class="math inline">\(g\)</span> by its estimate <span class="math inline">\(\hat g\)</span> and the distribution of <span class="math inline">\(L\)</span> by the empirical distribution (mass <span class="math inline">\(1/n\)</span> on each observed <span class="math inline">\(L_i\)</span>) gives <span class="math inline">\(\frac{1}{n}\sum_i \hat g(L_i)\)</span>.</p>
@@ -613,7 +613,7 @@
 </div>
 <div id="def-aipw" class="theorem definition">
 <p><span class="theorem-title"><strong>Definition 4 (Augmented IP weighted (AIPW) estimator)</strong></span> <span class="math display">\[
-\hat{\text{E}}{\left[Y^{a=1}\right]}_{DR} = \frac{1}{n} \sum_{i=1}^n \left[ \hat b(L_i) + \frac{A_i}{\hat\pi(L_i)} \left\{ Y_i - \hat b(L_i) \right\} \right]
+\hat{\text{E}}{\left[Y^{a=1}\right]}_{DR} = \frac{1}{n} \sum_{i=1}^n{\left[\hat b(L_i) + \frac{A_i}{\hat\pi(L_i)} {\left\{Y_i - \hat b(L_i)\right\}}\right]}
 \]</span></p>
 </div>
 <aside class="notes">
@@ -622,7 +622,7 @@
 \begin{aligned}
 \hat b(L_i) + \frac{A_i}{\hat\pi(L_i)}\{Y_i - \hat b(L_i)\}
 &amp;= \hat b(L_i) + \frac{A_i Y_i}{\hat\pi(L_i)} - \frac{A_i}{\hat\pi(L_i)} \hat b(L_i) &amp;&amp; \text{(distribute)} \\
-&amp;= \frac{A_i Y_i}{\hat\pi(L_i)} - \left( \frac{A_i}{\hat\pi(L_i)} - 1 \right) \hat b(L_i) &amp;&amp; \text{(collect the } \hat b(L_i) \text{ terms)}
+&amp;= \frac{A_i Y_i}{\hat\pi(L_i)} - {\left(\frac{A_i}{\hat\pi(L_i)} - 1\right)} \hat b(L_i) &amp;&amp; \text{(collect the } \hat b(L_i) \text{ terms)}
 \end{aligned}
 \]</span></p>
 <p>The first form is the outcome-model estimator plus an IP weighted correction; the second is the Horvitz-Thompson estimator plus an outcome-model correction (“augmentation”), hence the name.</p>
@@ -645,7 +645,7 @@
 
 <p>Let <span class="math inline">\(\pi^*\)</span> and <span class="math inline">\(b^*\)</span> be the probability limits of <span class="math inline">\(\hat\pi\)</span> and <span class="math inline">\(\hat b\)</span>. The estimator converges to <span class="math inline">\(\text{E}{\left[b^*(L) + A\{Y - b^*(L)\}/\pi^*(L)\right]}\)</span>, and its asymptotic bias is</p>
 <p><span class="math display">\[
-\text{E}{\left[\pi(L) \left( \frac{1}{\pi^*(L)} - \frac{1}{\pi(L)} \right) \left( b(L) - b^*(L) \right)\right]},
+\text{E}{\left[\pi(L) {\left(\frac{1}{\pi^*(L)} - \frac{1}{\pi(L)}\right)} {\left(b(L) - b^*(L)\right)}\right]},
 \]</span></p>
 <p>which is zero if <span class="math inline">\(\pi^* = \pi\)</span> (treatment model correct) <strong>or</strong> <span class="math inline">\(b^* = b\)</span> (outcome model correct).</p>
 <aside class="notes">
@@ -662,8 +662,8 @@
 \begin{aligned}
 \text{bias}
 &amp;= \text{E}{\left[b^*(L) - b(L) + \frac{\pi(L)}{\pi^*(L)}\{b(L) - b^*(L)\}\right]} &amp;&amp; \text{(law of total expectation)} \\
-&amp;= \text{E}{\left[\left( \frac{\pi(L)}{\pi^*(L)} - 1 \right) \{b(L) - b^*(L)\}\right]} &amp;&amp; \text{(factor out } b(L) - b^*(L)\text{)} \\
-&amp;= \text{E}{\left[\pi(L) \left( \frac{1}{\pi^*(L)} - \frac{1}{\pi(L)} \right) \{b(L) - b^*(L)\}\right]} &amp;&amp; \text{(factor out } \pi(L)\text{)}
+&amp;= \text{E}{\left[{\left(\frac{\pi(L)}{\pi^*(L)} - 1\right)} \{b(L) - b^*(L)\}\right]} &amp;&amp; \text{(factor out } b(L) - b^*(L)\text{)} \\
+&amp;= \text{E}{\left[\pi(L) {\left(\frac{1}{\pi^*(L)} - \frac{1}{\pi(L)}\right)} \{b(L) - b^*(L)\}\right]} &amp;&amp; \text{(factor out } \pi(L)\text{)}
 \end{aligned}
 \]</span></p>
 <p>The book <span class="citation" data-cites="hernan2020causal">(<a href="#/references" role="doc-biblioref" onclick="">Hernán and Robins 2020</a>, Technical Point 13.2, p.&nbsp;184)</span> displays this limit with the opposite sign, <span class="math inline">\((1/\pi(L) - 1/\pi^*(L))\)</span>; the derivation here gives the sign shown, which does not affect the conclusion.</p>

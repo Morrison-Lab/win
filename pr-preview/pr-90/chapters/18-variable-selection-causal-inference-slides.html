@@ -602,7 +602,7 @@ b(X) \stackrel{\text{def}}{=}\text{E}{\left[Y \mid A = 1, X\right]}, \qquad \pi(
 <h2>Why Split? The Full-Sample AIPW Estimator</h2>
 <p>The full-sample augmented IP weighted (AIPW) estimator of <span class="math inline">\(\text{E}{\left[Y^{a=1}\right]}\)</span> (Technical Point 13.2) is</p>
 <p><span class="math display">\[
-\frac{1}{n} \sum_{i=1}^{n} \left\{ \hat b(X_i) + \frac{A_i}{\hat\pi(X_i)} \left[ Y_i - \hat b(X_i) \right] \right\},
+\frac{1}{n} \sum_{i=1}^n{\left\{\hat b(X_i) + \frac{A_i}{\hat\pi(X_i)} {\left[Y_i - \hat b(X_i)\right]}\right\}},
 \]</span></p>
 <p>with <span class="math inline">\(\hat b\)</span> and <span class="math inline">\(\hat\pi\)</span> fit by machine learning on <strong>all</strong> <span class="math inline">\(n\)</span> individuals.</p>
 <ul>
@@ -636,7 +636,7 @@ b(X) \stackrel{\text{def}}{=}\text{E}{\left[Y \mid A = 1, X\right]}, \qquad \pi(
 <li>Randomly split the <span class="math inline">\(n\)</span> subjects into an estimation sample of size <span class="math inline">\(q\)</span> and a training sample of size <span class="math inline">\(n_{tr} = n - q\)</span>, with <span class="math inline">\(q/n \approx 1/2\)</span>.</li>
 <li>From the training sample, estimate <span class="math inline">\(b(x) = \text{E}{\left[Y \mid A = 1, X = x\right]}\)</span> and <span class="math inline">\(\pi(x) = \Pr[A = 1 \mid X = x]\)</span> by machine learning.</li>
 <li>In the estimation sample, compute <span class="math display">\[
-\hat\psi = \frac{1}{q} \sum_{i=1}^{q} \left\{ \hat b(X_i) + \frac{A_i}{\hat\pi(X_i)} \left[ Y_i - \hat b(X_i) \right] \right\}.
+\hat\psi = \frac{1}{q} \sum_{i=1}^{q} {\left\{\hat b(X_i) + \frac{A_i}{\hat\pi(X_i)} {\left[Y_i - \hat b(X_i)\right]}\right\}}.
 \]</span></li>
 <li>Compute <span class="math inline">\(\hat\psi_{\text{cross-fit}} = (\hat\psi + \tilde\psi)/2\)</span>, where <span class="math inline">\(\tilde\psi\)</span> is <span class="math inline">\(\hat\psi\)</span> with the training and estimation samples swapped.</li>
 </ol>
@@ -683,32 +683,32 @@ b(X) \stackrel{\text{def}}{=}\text{E}{\left[Y \mid A = 1, X\right]}, \qquad \pi(
 <div id="prp-conditional-bias" class="theorem proposition">
 <p><span class="theorem-title"><strong>Proposition 1 (Conditional Bias of the Split-Sample AIPW Estimator)</strong></span> Assume conditional exchangeability given <span class="math inline">\(X\)</span> and positivity, so <span class="math inline">\(\psi = \text{E}{\left[b(X)\right]}\)</span>. Then</p>
 <p><span class="math display">\[
-\text{E}{\left[\hat\psi - \psi \mid Tr\right]} = \text{E}{\left[\pi(X) \left( \frac{1}{\pi(X)} - \frac{1}{\hat\pi(X)} \right) \left( \hat b(X) - b(X) \right) \mid Tr\right]} .
+\text{E}{\left[\hat\psi - \psi \mid Tr\right]} = \text{E}{\left[\pi(X) {\left(\frac{1}{\pi(X)} - \frac{1}{\hat\pi(X)}\right)} {\left(\hat b(X) - b(X)\right)} \mid Tr\right]} .
 \]</span></p>
 </div>
 <div class="proof">
 <p><span class="proof-title"><em>Proof</em>. </span>Given <span class="math inline">\(Tr\)</span>, each term of <span class="math inline">\(\hat\psi\)</span> has the same mean, so <span class="math inline">\(\text{E}{\left[\hat\psi \mid Tr\right]}\)</span> is the mean of one term. Conditioning on <span class="math inline">\(X\)</span> first:</p>
 <p><span class="math display">\[
 \begin{aligned}
-\text{E}{\left[\frac{A}{\hat\pi(X)} \left[ Y - \hat b(X) \right] \mid X, Tr\right]}
+\text{E}{\left[\frac{A}{\hat\pi(X)} {\left[Y - \hat b(X)\right]} \mid X, Tr\right]}
 &amp;= \frac{\Pr[A = 1 \mid X]}{\hat\pi(X)} \text{E}{\left[Y - \hat b(X) \mid A = 1, X, Tr\right]} &amp;&amp; \text{(only } A = 1 \text{ contributes)} \\
-&amp;= \frac{\pi(X)}{\hat\pi(X)} \left( b(X) - \hat b(X) \right). &amp;&amp; (\text{estimation sample independent of } Tr)
+&amp;= \frac{\pi(X)}{\hat\pi(X)} {\left(b(X) - \hat b(X)\right)}. &amp;&amp; (\text{estimation sample independent of } Tr)
 \end{aligned}
 \]</span></p>
 <p>So</p>
 <p><span class="math display">\[
 \begin{aligned}
 \text{E}{\left[\hat\psi - \psi \mid Tr\right]}
-&amp;= \text{E}{\left[\hat b(X) + \frac{\pi(X)}{\hat\pi(X)} \left( b(X) - \hat b(X) \right) - b(X) \mid Tr\right]} &amp;&amp; (\psi = \text{E}{\left[b(X)\right]}) \\
-&amp;= \text{E}{\left[\left( \hat b(X) - b(X) \right) \left( 1 - \frac{\pi(X)}{\hat\pi(X)} \right) \mid Tr\right]} &amp;&amp; \text{(collect terms)} \\
-&amp;= \text{E}{\left[\pi(X) \left( \frac{1}{\pi(X)} - \frac{1}{\hat\pi(X)} \right) \left( \hat b(X) - b(X) \right) \mid Tr\right]} . &amp;&amp; \text{(factor out } \pi(X))
+&amp;= \text{E}{\left[\hat b(X) + \frac{\pi(X)}{\hat\pi(X)} {\left(b(X) - \hat b(X)\right)} - b(X) \mid Tr\right]} &amp;&amp; (\psi = \text{E}{\left[b(X)\right]}) \\
+&amp;= \text{E}{\left[{\left(\hat b(X) - b(X)\right)} {\left(1 - \frac{\pi(X)}{\hat\pi(X)}\right)} \mid Tr\right]} &amp;&amp; \text{(collect terms)} \\
+&amp;= \text{E}{\left[\pi(X) {\left(\frac{1}{\pi(X)} - \frac{1}{\hat\pi(X)}\right)} {\left(\hat b(X) - b(X)\right)} \mid Tr\right]} . &amp;&amp; \text{(factor out } \pi(X))
 \end{aligned}
 \]</span></p>
 </div>
 <aside class="notes">
-<p>The bias is a <strong>product</strong> of the two errors, the second-order property used in this section. (The book writes the same product with both factors negated, <span class="math inline">\(\text{E}{\left[\pi(X) \left( \frac{1}{\hat\pi(X)} - \frac{1}{\pi(X)} \right) \left( b(X) - \hat b(X) \right) \mid Tr\right]}\)</span>.)</p>
+<p>The bias is a <strong>product</strong> of the two errors, the second-order property used in this section. (The book writes the same product with both factors negated, <span class="math inline">\(\text{E}{\left[\pi(X) {\left(\frac{1}{\hat\pi(X)} - \frac{1}{\pi(X)}\right)} {\left(b(X) - \hat b(X)\right)} \mid Tr\right]}\)</span>.)</p>
 <p><strong>Rates</strong>: if <span class="math inline">\(1/\hat\pi(x) - 1/\pi(x)\)</span> converges at rate <span class="math inline">\(n^{-\alpha}\)</span> and <span class="math inline">\(\hat b(x) - b(x)\)</span> at rate <span class="math inline">\(n^{-\epsilon}\)</span>, the conditional bias is <span class="math inline">\(o(n^{-1/2})\)</span> when <span class="math inline">\(\alpha + \epsilon &gt; 1/2\)</span>. So <span class="math inline">\(\hat b\)</span> may converge more slowly than <span class="math inline">\(n^{-1/4}\)</span> if <span class="math inline">\(\hat\pi\)</span> converges fast enough, and vice versa <span class="citation" data-cites="hernan2020causal">(<a href="#/references" role="doc-biblioref" onclick="">Hernán and Robins 2020, 250</a>)</span>.</p>
-<p>The efficient standard error of <span class="math inline">\(\hat\psi_{\text{cross-fit}}\)</span> (scaled by <span class="math inline">\(n^{1/2}\)</span>) is <span class="math inline">\(\left\{ \text{Var}{\left(b(X) + \frac{A}{\pi(X)} \left[ Y - b(X) \right]\right)} \right\}^{1/2}\)</span>.</p>
+<p>The efficient standard error of <span class="math inline">\(\hat\psi_{\text{cross-fit}}\)</span> (scaled by <span class="math inline">\(n^{1/2}\)</span>) is <span class="math inline">\({\left\{\text{Var}{\left(b(X) + \frac{A}{\pi(X)} {\left[Y - b(X)\right]}\right)}\right\}}^{1/2}\)</span>.</p>
 <style type="text/css">
         span.MJX_Assistive_MathML {
           position:absolute!important;
