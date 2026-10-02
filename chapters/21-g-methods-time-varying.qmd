@@ -375,10 +375,10 @@ Suppose the marginal structural model of @def-msm-tv is correctly specified,
 and the identifiability conditions (sequential exchangeability, positivity, and consistency) hold.
 Let $\hat{\beta}_1$ be the coefficient of $\mathrm{cum}(\bar{A})$ in the fit of the model
 $\E{Y \mid \bar{A}} = \theta_0 + \theta_1 \, \mathrm{cum}(\bar{A})$
-by weighted least squares with weights $SW^{\bar{A}}$ or $W^{\bar{A}}$
+by weighted least squares with weights $SW^{\bar{A}}$ or $W^{\bar{A}}$ of @def-ipw-tv
 (known, or estimated from a correctly specified treatment model).
 Then $\hat{\beta}_1$ is consistent for the causal $\beta_1$,
-not for the associational $\theta_1$ of the unweighted data.
+which in general differs from the associational $\theta_1$ of the unweighted data.
 :::
 
 ::: {.notes}
@@ -414,7 +414,7 @@ by weighted least squares with $W^{\bar{A}}$ or, better,
 $SW^{\bar{A}}(V) = \prod_{k=0}^{K} f(A_k \mid \bar{A}_{k-1}, V) / f(A_k \mid \bar{A}_{k-1}, \bar{L}_k)$.
 :::
 
-If this marginal structural model and the model for the weights are both correctly specified,
+If this marginal structural model and the model for treatment in the weights' denominator are both correctly specified,
 and sequential exchangeability, positivity, and consistency hold,
 then the coefficients of $\mathrm{cum}(\bar{A})$ and $\mathrm{cum}(\bar{A}) V$ in the weighted fit
 are consistent for the causal $\beta_1$ and $\beta_3$.
@@ -424,7 +424,7 @@ are consistent for the causal $\beta_1$ and $\beta_3$.
 ::: {.callout-warning title="Only Baseline Variables as Effect Modifiers"}
 With treatment-confounder feedback, $V$ may include only baseline variables;
 if $V$ included any $L_k$ with $k > 0$,
-the weighted estimates of $\theta_1$ and $\theta_3$ could be non-null even though $\beta_1 = \beta_3 = 0$ under the null
+the weighted-fit coefficients of $\mathrm{cum}(\bar{A})$ and $\mathrm{cum}(\bar{A}) V$ could be non-null even though $\beta_1 = \beta_3 = 0$ under the null
 [@hernan2020causal, p. 285].
 :::
 :::
@@ -525,10 +525,11 @@ It is a targeted minimum loss-based estimator (TMLE) in the terminology of van d
 
 Suppose each sequential outcome model $b_m$ of @alg-dr-time-varying
 is fit by solving the score equations of a generalized linear model with a canonical link
-(logistic for a binary $Y$, linear for a continuous $Y$),
-that is, by quasi-likelihood, since for $m < K$ the response $\hat{B}_{m+1}$ is fractional,
-and that each $b_m$ includes the weight $\hat{W}^{\bar{1}_m}$ as a covariate.
-Suppose also that positivity holds for the strategy $\bar{a} = \bar{1}$.
+(logistic for a binary $Y$, linear for a continuous $Y$).
+For a binary $Y$ and $m < K$, the response $\hat{B}_{m+1}$ lies in $[0, 1]$ rather than $\{0, 1\}$,
+so the logistic fit is a quasi-likelihood fit.
+Suppose also that each $b_m$ includes the weight $\hat{W}^{\bar{1}_m}$ as a covariate.
+Suppose further that positivity holds for the strategy $\bar{a} = \bar{1}$.
 Then the estimator of @alg-dr-time-varying is consistent for the g-formula functional of @def-g-formula-tv
 at $\bar{a} = \bar{1}$ if
 (i) the outcome models $b_m$ are correct for all $m$, or
@@ -690,7 +691,7 @@ ranks are preserved among individuals with the same $a_0$ and $l_1$.
 ::: {.callout-warning title="Rank Preservation Is Implausible but Not Required"}
 Rank preservation is biologically implausible,
 but it is not needed.
-G-estimation, described later in this chapter, is consistent for the SNMM parameters $\beta$ of @def-snmm-tv
+G-estimation (the Chapter 14 method, extended here to time-varying treatment) is consistent for the SNMM parameters $\beta$ of @def-snmm-tv
 even if the rank-preserving model is wrong,
 provided the SNMM is correctly specified,
 sequential exchangeability for $Y$ and consistency hold,
@@ -818,7 +819,7 @@ a variance-bias trade-off.
 ::: {#alg-g-estimation-one-parameter}
 ## G-estimation of a one-parameter SNMM
 
-Take $\gamma_k(\bar{a}_{k-1}, \bar{l}_k, \beta) = \beta_1$, so $H_k(\psi^\dagger) = Y - \sum_{j=k}^{K} A_j \psi^\dagger$.
+Take $\gamma_k(\bar{a}_{k-1}, \bar{l}_k, \psi^\dagger) = \psi^\dagger$ (true value $\beta_1$), so $H_k(\psi^\dagger) = Y - \sum_{j=k}^{K} A_j \psi^\dagger$.
 
 1. For each $\psi^\dagger$ on a grid from $\psi_{low}$ to $\psi_{up}$ (e.g., steps of 0.1),
    compute $H_k(\psi^\dagger)$ for every person and time.
@@ -1018,8 +1019,11 @@ Correctly specified models give a mean close to 1
 [@hernan2020causal, p. 298],
 so for $SW^{\bar{C}}$ a mean well away from 1 suggests that the numerator or the denominator model is misspecified.
 The same check applies to $SW^{\bar{A}}$ with a narrower reading:
-a correct denominator model gives a mean of 1 for any proper numerator,
-so a mean away from 1 points only to the denominator (treatment) model.
+given a correct denominator $f_k$, taking iterated expectations over $a_k$ at each time $k$
+gives $\E{\prod_k n_k / f_k} = 1$ for any proper conditional numerator $n_k$,
+so for $SW^{\bar{A}}$ a mean away from 1 points to the denominator (treatment) model,
+or to extreme weights from near-violations of positivity,
+not to the numerator.
 :::
 
 ::: {.callout-warning title="Fact-Check: Stabilized Weights Keep Arrows from Past Treatment"}
