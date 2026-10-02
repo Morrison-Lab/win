@@ -166,10 +166,10 @@
 <!-- https://www.overleaf.com/learn/latex/Using_colors_in_LaTeX#Named_colors_provided_by_the_xcolor_package -->
 <!-- \def\or{\theta}  -->
 <!-- doesn't work for some reason -->
-<p>This chapter introduces <strong>instrumental variable (IV) estimation</strong>, a method for identifying causal effects when there is <strong>unmeasured confounding</strong>. Unlike the methods in previous chapters, IV estimation does not rely on conditional exchangeability. Instead, it uses a special variable (the instrument) that affects treatment but not the outcome directly.</p>
+<p>Every method in the previous chapters needs all the variables required to adjust for confounding and selection bias to be identified and measured correctly. <strong>Instrumental variable (IV) estimation</strong> replaces that untestable assumption with a different set of (also untestable) assumptions, built around a variable <span class="math inline">\(Z\)</span>, the <strong>instrument</strong>, that does not require measuring the confounders.</p>
 <aside class="notes">
-<p>This chapter is based on <span class="citation" data-cites="hernan2020causal">Hernán and Robins (<a href="#/references" role="doc-biblioref" onclick="">2020, chap. 16</a>, pp.&nbsp;227-246)</span>.</p>
-<p><strong>Key innovation</strong>: IV methods allow causal inference even with unmeasured confounding, but require strong assumptions about the instrument. The causal effect identified is often for a specific subgroup (compliers), not the entire population.</p>
+<p>This chapter is based on <span class="citation" data-cites="hernan2020causal">Hernán and Robins (<a href="#/references" role="doc-biblioref" onclick="">2020, chap. 16</a>, pp.&nbsp;209-225)</span>.</p>
+<p><strong>Key theme</strong>: an instrument alone identifies only bounds on the average causal effect. A point estimate needs a fourth, untestable condition: either some form of <strong>effect homogeneity</strong> (giving the average causal effect in the population) or <strong>monotonicity</strong> (giving the effect in the “compliers” only). And because the IV estimator divides by the instrument-treatment association, small violations of any condition can produce large biases.</p>
 <style type="text/css">
         span.MJX_Assistive_MathML {
           position:absolute!important;
@@ -183,40 +183,390 @@
       }</style></aside>
 </section>
 <section>
-<section id="the-three-instrumental-conditions-pp.-227-231" class="title-slide slide level1 center" data-number="1">
-<h1><span class="header-section-number">1</span> 16.1 The Three Instrumental Conditions (pp.&nbsp;227-231)</h1>
+<section id="the-three-instrumental-conditions-pp.-209-212" class="title-slide slide level1 center" data-number="1">
+<h1><span class="header-section-number">1</span> 16.1 The Three Instrumental Conditions (pp.&nbsp;209-212)</h1>
+
+</section>
+<section id="a-double-blind-randomized-trial" class="slide level2">
+<h2>A Double-Blind Randomized Trial</h2>
+<ul>
+<li><span class="math inline">\(Z\)</span>: randomization assignment (1: treatment, 0: placebo)</li>
+<li><span class="math inline">\(A\)</span>: treatment actually received (1: yes, 0: no); not everyone adheres</li>
+<li><span class="math inline">\(Y\)</span>: outcome</li>
+<li><span class="math inline">\(U\)</span>: factors, some unmeasured, that affect both adherence and the outcome</li>
+</ul>
+<p>In the book’s Figure 16.1, <span class="math inline">\(Z \rightarrow A \rightarrow Y\)</span>, with <span class="math inline">\(U\)</span> a common cause of <span class="math inline">\(A\)</span> and <span class="math inline">\(Y\)</span>.</p>
+<p>Adjustment methods (IP weighting, standardization, g-estimation, stratification, matching) need to block the backdoor path <span class="math inline">\(A \leftarrow U \rightarrow Y\)</span>, so they are biased if part of <span class="math inline">\(U\)</span> is unmeasured or mismeasured. IV methods may identify the effect of <span class="math inline">\(A\)</span> on <span class="math inline">\(Y\)</span> without measuring <span class="math inline">\(U\)</span>.</p>
+</section>
+<section class="slide level2">
+
+<div id="def-instrumental-conditions" class="theorem definition">
+<p><span class="theorem-title"><strong>Definition 1 (The Three Instrumental Conditions)</strong></span> A variable <span class="math inline">\(Z\)</span> is an <strong>instrument</strong> for the effect of <span class="math inline">\(A\)</span> on <span class="math inline">\(Y\)</span> if it meets three conditions <span class="citation" data-cites="hernan2020causal">(<a href="#/references" role="doc-biblioref" onclick="">Hernán and Robins 2020, 209</a>)</span>:</p>
+<ul>
+<li><strong>(i)</strong> <span class="math inline">\(Z\)</span> is associated with <span class="math inline">\(A\)</span>;</li>
+<li><strong>(ii)</strong> <span class="math inline">\(Z\)</span> does not affect <span class="math inline">\(Y\)</span> except through its potential effect on <span class="math inline">\(A\)</span>;</li>
+<li><strong>(iii)</strong> <span class="math inline">\(Z\)</span> and <span class="math inline">\(Y\)</span> do not share causes.</li>
+</ul>
+</div>
+<p>In the double-blind trial, <span class="math inline">\(Z\)</span> is an instrument: (i) holds because those assigned to treatment are more likely to take it, (ii) is expected from blinding, and (iii) is expected from random assignment.</p>
+<aside class="notes">
+<p>Condition (ii) would fail if, for example, side effects of treatment inadvertently unblinded participants <span class="citation" data-cites="hernan2020causal">(<a href="#/references" role="doc-biblioref" onclick="">Hernán and Robins 2020, 209</a>)</span>.</p>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside>
+</section>
+<section class="slide level2">
+
+<div title="Technical Point 16.1: The Instrumental Conditions, Formally">
+<div class="callout callout-note callout-titled callout-style-default">
+<div class="callout-body">
+<div class="callout-title">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<p><strong>Technical Point 16.1: The Instrumental Conditions, Formally</strong></p>
+</div>
+<div class="callout-content">
+<ul>
+<li><strong>(i) Relevance</strong>: <span class="math inline">\(Z\)</span> and <span class="math inline">\(A\)</span> are associated, i.e., <span class="math inline">\(Z \perp\!\!\!\perp A\)</span> does not hold.</li>
+<li><strong>(ii) Exclusion restriction</strong> (“no direct effect of <span class="math inline">\(Z\)</span> on <span class="math inline">\(Y\)</span>”): at the individual level, <span class="math inline">\(Y_i^{z,a} = Y_i^{z',a} = Y_i^{a}\)</span> for all <span class="math inline">\(z, z'\)</span>, all <span class="math inline">\(a\)</span>, and all individuals <span class="math inline">\(i\)</span>; some results only need the population-level version <span class="math inline">\(\text{E}{\left[Y^{z,a}\right]} = \text{E}{\left[Y^{z',a}\right]}\)</span>.</li>
+<li><strong>(iii)</strong> as <strong>marginal exchangeability</strong>, <span class="math inline">\(Y^{a,z} \perp\!\!\!\perp Z\)</span> for all <span class="math inline">\(a, z\)</span>; together with the individual-level (ii) it implies <span class="math inline">\(Y^a \perp\!\!\!\perp Z\)</span>. A stronger version is <strong>joint exchangeability</strong>, <span class="math inline">\(\{Y^{z,a};\ a \in \{0,1\},\ z \in \{0,1\}\} \perp\!\!\!\perp Z\)</span> (dichotomous <span class="math inline">\(A\)</span> and <span class="math inline">\(Z\)</span>).</li>
+</ul>
+<p>All of these are expected to hold in a double-blind randomized trial <span class="citation" data-cites="hernan2020causal">(<a href="#/references" role="doc-biblioref" onclick="">Hernán and Robins 2020, 210</a>)</span>.</p>
+</div>
+</div>
+</div>
+</div>
+</section>
+<section id="causal-and-surrogate-instruments" class="slide level2">
+<h2>Causal and Surrogate Instruments</h2>
+<ul>
+<li>A <strong>causal instrument</strong> has a causal effect on <span class="math inline">\(A\)</span> (Figure 16.1).</li>
+<li>A <strong>surrogate instrument</strong> <span class="math inline">\(Z\)</span> has no effect on <span class="math inline">\(A\)</span> but is associated with an unmeasured causal instrument <span class="math inline">\(U_Z\)</span> (Figure 16.2). Condition (i) then holds through the shared cause <span class="math inline">\(U_Z\)</span>, and (iii) becomes “<span class="math inline">\(Z\)</span> and <span class="math inline">\(Y\)</span> share no causes other than <span class="math inline">\(U_Z\)</span>.”</li>
+</ul>
+<p>In the book’s Figure 16.2, <span class="math inline">\(U_Z \rightarrow Z\)</span> and <span class="math inline">\(U_Z \rightarrow A \rightarrow Y\)</span>, with <span class="math inline">\(U\)</span> a common cause of <span class="math inline">\(A\)</span> and <span class="math inline">\(Y\)</span>.</p>
+<aside class="notes">
+<p>Both kinds of instrument can be used for IV estimation, with caveats discussed in Section 16.4. The book’s Figure 16.3 shows a more unusual surrogate instrument: <span class="math inline">\(Z\)</span> and <span class="math inline">\(U_Z\)</span> become associated because the analysis is restricted to a selected population, i.e., conditions on a common effect <span class="math inline">\(S\)</span> of <span class="math inline">\(Z\)</span> and <span class="math inline">\(U_Z\)</span> <span class="citation" data-cites="hernan2020causal">(<a href="#/references" role="doc-biblioref" onclick="">Hernán and Robins 2020, 210</a>)</span>.</p>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside>
+</section>
+<section id="a-candidate-instrument-in-nhefs" class="slide level2">
+<h2>A Candidate Instrument in NHEFS</h2>
+<p>To estimate the effect of smoking cessation <span class="math inline">\(A\)</span> on weight gain <span class="math inline">\(Y\)</span>, the book proposes <span class="math inline">\(Z = 1\)</span> if the average price of a pack of cigarettes in the individual’s U.S. state of birth was greater than $1.50, and <span class="math inline">\(Z = 0\)</span> otherwise <span class="citation" data-cites="hernan2020causal">(<a href="#/references" role="doc-biblioref" onclick="">Hernán and Robins 2020, 210</a>)</span>.</p>
+<ul>
+<li>Condition (i) is the only one that can be checked: <span class="math inline">\(\Pr[A = 1 \mid Z = 1] = 25.8\%\)</span> and <span class="math inline">\(\Pr[A = 1 \mid Z = 0] = 19.5\%\)</span>, a risk difference of about 6%. So <span class="math inline">\(Z\)</span> is a <strong>weak instrument</strong> (Section 16.5).</li>
+<li>Conditions (ii) and (iii) cannot be verified. Conditioning on <span class="math inline">\(A\)</span> does not help: <span class="math inline">\(A\)</span> is a collider on <span class="math inline">\(Z \leftarrow U_Z \rightarrow A \leftarrow U \rightarrow Y\)</span>.</li>
+</ul>
+<aside class="notes">
+<p>“Price in state of birth” would meet condition (i) through the unmeasured causal instrument <span class="math inline">\(U_Z\)</span> “price in place of residence”, so it is a surrogate instrument <span class="citation" data-cites="hernan2020causal">(<a href="#/references" role="doc-biblioref" onclick="">Hernán and Robins 2020, 210</a>)</span>.</p>
+<p>Because only (i) is checkable, the book calls <span class="math inline">\(Z\)</span> a <strong>proposed</strong> or <strong>candidate</strong> instrument: we argue for (ii) and (iii) with subject-matter knowledge, just as we argue for the identifying assumptions of other methods. Falsification tests exist that use data on <span class="math inline">\(Z\)</span>, <span class="math inline">\(A\)</span>, and <span class="math inline">\(Y\)</span>, but they can reject only a small subset of violations, and for most violations they have no power at any sample size <span class="citation" data-cites="hernan2020causal">(<a href="#/references" role="doc-biblioref" onclick="">Hernán and Robins 2020, 211</a>)</span>.</p>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside>
+</section>
+<section class="slide level2">
+
+<div title="Fine Point 16.1: Candidate Instruments in Observational Studies">
+<div class="callout callout-note callout-titled callout-style-default">
+<div class="callout-body">
+<div class="callout-title">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<p><strong>Fine Point 16.1: Candidate Instruments in Observational Studies</strong></p>
+</div>
+<div class="callout-content">
+<p>Three common categories <span class="citation" data-cites="hernan2020causal">(<a href="#/references" role="doc-biblioref" onclick="">Hernán and Robins 2020, 211</a>)</span>:</p>
+<ul>
+<li><strong>Genetic factors</strong>: a genetic variant associated with <span class="math inline">\(A\)</span> and assumed to affect <span class="math inline">\(Y\)</span> only through <span class="math inline">\(A\)</span>, e.g., a polymorphism affecting alcohol metabolism (such as ALDH2 in Asian populations) for the effect of alcohol on coronary heart disease. This is the framework of <strong>Mendelian randomization</strong>.</li>
+<li><strong>Preference</strong>: a physician’s preference for one treatment over another. Preference itself (<span class="math inline">\(U_Z\)</span>) is unmeasured, so a surrogate such as “last prescription the physician issued before the current one” is used.</li>
+<li><strong>Access</strong>: distance or travel time to a facility, calendar period when access changed over time, or the price of treatment (the book’s example).</li>
+</ul>
+</div>
+</div>
+</div>
+</div>
+</section>
+<section id="what-an-instrument-alone-buys-bounds" class="slide level2">
+<h2>What an Instrument Alone Buys: Bounds</h2>
+<p>Under conditions (i)-(iii) alone, the average causal effect is <strong>not</strong> point identified; only upper and lower bounds are, and they are typically wide and often include the null <span class="citation" data-cites="hernan2020causal">(<a href="#/references" role="doc-biblioref" onclick="">Hernán and Robins 2020, 212</a>)</span>. In the smoking example, the bounds would only say that quitting can cause weight gain, weight loss, or no change.</p>
+<div title="Technical Point 16.2: Partial Identification (Bounds)">
+<div class="callout callout-note callout-titled callout-style-default">
+<div class="callout-body">
+<div class="callout-title">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<p><strong>Technical Point 16.2: Partial Identification (Bounds)</strong></p>
+</div>
+<div class="callout-content">
+<p>For a dichotomous <span class="math inline">\(Y\)</span>, <span class="math inline">\(\Pr[Y^{a=1} = 1] - \Pr[Y^{a=0} = 1]\)</span> lies a priori in <span class="math inline">\((-1, 1)\)</span>, an interval of width 2.</p>
+<ul>
+<li><strong>Data alone</strong>: assigning each individual’s unobserved counterfactual its most extreme possible value halves the width, but the bounds still include 0.</li>
+<li><strong>Natural bounds</strong> (instrumental condition (ii) at the population level plus marginal exchangeability (iii)): width <span class="math inline">\(\Pr[A = 1 \mid Z = 0] + \Pr[A = 0 \mid Z = 1]\)</span>.</li>
+<li><strong>Sharp bounds</strong>: narrower still, under joint exchangeability.</li>
+</ul>
+<p>These bounds are often too wide to be informative. Sufficiently strong parametric assumptions about the effect of <span class="math inline">\(A\)</span> on <span class="math inline">\(Y\)</span> (Section 16.2 onward) collapse them to a single number <span class="citation" data-cites="hernan2020causal">(<a href="#/references" role="doc-biblioref" onclick="">Hernán and Robins 2020, 212</a>)</span>.</p>
+</div>
+</div>
+</div>
+</div>
+<aside class="notes">
+<p>Why the data alone halve the width: for a dichotomous <span class="math inline">\(Y\)</span>, each individual contributes one observed counterfactual, so only the unobserved half of each individual’s pair is unknown. For a continuous <span class="math inline">\(Y\)</span>, bounds require choosing a minimum and maximum possible outcome, and their width depends on that choice <span class="citation" data-cites="hernan2020causal">(<a href="#/references" role="doc-biblioref" onclick="">Hernán and Robins 2020, 212</a>)</span>.</p>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside>
+</section></section>
+<section>
+<section id="the-usual-iv-estimand-pp.-212-214" class="title-slide slide level1 center" data-number="2">
+<h1><span class="header-section-number">2</span> 16.2 The Usual IV Estimand (pp.&nbsp;212-214)</h1>
+
+</section>
+<section class="slide level2">
+
+<p>For a dichotomous instrument meeting (i)-(iii), plus a condition (iv) described in Section 16.3, the average causal effect <span class="math inline">\(\text{E}{\left[Y^{a=1}\right]} - \text{E}{\left[Y^{a=0}\right]}\)</span> is identified and equals the <strong>usual IV estimand</strong></p>
+<p><span class="math display">\[
+\frac{\text{E}{\left[Y \mid Z = 1\right]} - \text{E}{\left[Y \mid Z = 0\right]}}{\text{E}{\left[A \mid Z = 1\right]} - \text{E}{\left[A \mid Z = 0\right]}} .
+\]</span></p>
+<p>For a dichotomous treatment, <span class="math inline">\(\text{E}{\left[A \mid Z = z\right]} = \Pr[A = 1 \mid Z = z]\)</span>. For a continuous instrument, the usual IV estimand is <span class="math inline">\(\text{Cov}{\left(Y, Z\right)} / \text{Cov}{\left(A, Z\right)}\)</span> <span class="citation" data-cites="hernan2020causal">(<a href="#/references" role="doc-biblioref" onclick="">Hernán and Robins 2020, 213</a>)</span>.</p>
+</section>
+<section id="intuition-from-the-randomized-trial" class="slide level2">
+<h2>Intuition from the Randomized Trial</h2>
+<ul>
+<li><strong>Numerator</strong>: the effect of assignment <span class="math inline">\(Z\)</span> on <span class="math inline">\(Y\)</span>, the <strong>intention-to-treat effect</strong>.</li>
+<li><strong>Denominator</strong>: the effect of <span class="math inline">\(Z\)</span> on <span class="math inline">\(A\)</span>, a measure of <strong>adherence</strong>.</li>
+</ul>
+<p>Both can be estimated without adjustment because <span class="math inline">\(Z\)</span> is randomized. With perfect adherence the denominator is 1 and the IV estimand equals the intention-to-treat effect; as adherence worsens the denominator approaches 0 and the IV estimand is increasingly inflated relative to the intention-to-treat effect.</p>
+<aside class="notes">
+<p>So the IV estimand avoids adjusting for confounders by <strong>inflating</strong> the effect of assignment. In observational studies the denominator is the effect of a causal instrument on <span class="math inline">\(A\)</span> (Figure 16.1), or the noncausal association between a surrogate instrument and <span class="math inline">\(A\)</span> (Figures 16.2 and 16.3) <span class="citation" data-cites="hernan2020causal">(<a href="#/references" role="doc-biblioref" onclick="">Hernán and Robins 2020, 213</a>)</span>.</p>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside>
+</section>
+<section class="slide level2">
+
+<div id="exm-nhefs-iv" class="theorem example">
+<p><span class="theorem-title"><strong>Example 1 (Usual IV Estimate in NHEFS)</strong></span> With <span class="math inline">\(Z\)</span> = 1 for a state with high cigarette price <span class="citation" data-cites="hernan2020causal">(<a href="#/references" role="doc-biblioref" onclick="">Hernán and Robins 2020, 213</a>)</span>:</p>
+<p><span class="math display">\[
+\begin{aligned}
+\hat{\text{E}}{\left[Y \mid Z = 1\right]} - \hat{\text{E}}{\left[Y \mid Z = 0\right]} &amp;= 2.686 - 2.536 = 0.1503 \\
+\hat{\text{E}}{\left[A \mid Z = 1\right]} - \hat{\text{E}}{\left[A \mid Z = 0\right]} &amp;= 0.2578 - 0.1951 = 0.0627 \\
+\text{IV estimate} &amp;= \frac{0.1503}{0.0627} \approx 2.4 \text{ kg}.
+\end{aligned}
+\]</span></p>
+<p>Under (i)-(iv), this estimates the average causal effect of smoking cessation on weight gain.</p>
+</div>
+<aside class="notes">
+<p>The numerator difference is reported to four decimals (0.1503), presumably computed from unrounded means; the rounded means shown give <span class="math inline">\(2.686 - 2.536 = 0.150\)</span>. This ratio is also called the <strong>Wald estimator</strong>. The book excludes individuals with a missing outcome or instrument for simplicity; in practice IP weighting could adjust for the resulting selection bias <span class="citation" data-cites="hernan2020causal">(<a href="#/references" role="doc-biblioref" onclick="">Hernán and Robins 2020, 213</a>)</span>.</p>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside>
+</section>
+<section id="two-stage-least-squares" class="slide level2 scrollable">
+<h2>Two-Stage Least Squares</h2>
+<p>The same estimate can be computed with two saturated linear models, <span class="math inline">\(\text{E}{\left[A \mid Z\right]} = \alpha_0 + \alpha_1 Z\)</span> (denominator) and <span class="math inline">\(\text{E}{\left[Y \mid Z\right]} = \beta_0 + \beta_1 Z\)</span> (numerator), or by <strong>two-stage least squares</strong>:</p>
+<ol type="1">
+<li>Fit the first-stage treatment model <span class="math inline">\(\text{E}{\left[A \mid Z\right]} = \alpha_0 + \alpha_1 Z\)</span> and compute predicted values <span class="math inline">\(\hat{\text{E}}{\left[A \mid Z\right]}\)</span>.</li>
+<li>Fit the second-stage outcome model <span class="math inline">\(\text{E}{\left[Y \mid Z\right]} = \beta_0 + \beta_1 \hat{\text{E}}{\left[A \mid Z\right]}\)</span>.</li>
+</ol>
+<p><span class="math inline">\(\hat \beta_1\)</span> always equals the standard IV estimate: again 2.4 kg <span class="citation" data-cites="hernan2020causal">(<a href="#/references" role="doc-biblioref" onclick="">Hernán and Robins 2020, 213</a>)</span>.</p>
+</section>
+<section id="precision-and-weak-instruments" class="slide level2">
+<h2>Precision and Weak Instruments</h2>
+<ul>
+<li>95% confidence interval: <span class="math inline">\(-36.5\)</span> to <span class="math inline">\(41.3\)</span> kg.</li>
+<li>Rule of thumb: an instrument is <strong>weak</strong> if the first-stage F-statistic is below 10; here it was 0.8 <span class="citation" data-cites="hernan2020causal">(<a href="#/references" role="doc-biblioref" onclick="">Hernán and Robins 2020, 213–14</a>)</span>.</li>
+</ul>
+<aside class="notes">
+<p>The assumptions implicit in two-stage least squares can be made explicit with additive or multiplicative <strong>structural mean models</strong> (Technical Points 16.3 and 16.4), whose parameters can be estimated by g-estimation. When measured common causes <span class="math inline">\(L\)</span> of the instrument and the outcome must be adjusted for, choosing between two-stage least squares and structural mean models involves trade-offs similar to those between outcome regression and structural nested models (Chapters 14 and 15) <span class="citation" data-cites="hernan2020causal">(<a href="#/references" role="doc-biblioref" onclick="">Hernán and Robins 2020, 214</a>)</span>.</p>
+<p>All of these estimators estimate the average causal effect only if a fourth identifying condition holds.</p>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside>
+</section></section>
+<section>
+<section id="a-fourth-identifying-condition-homogeneity-pp.-214-217" class="title-slide slide level1 center" data-number="3">
+<h1><span class="header-section-number">3</span> 16.3 A Fourth Identifying Condition: Homogeneity (pp.&nbsp;214-217)</h1>
 
 </section>
 <section class="slide level2 scrollable">
 
-<p>An <strong>instrumental variable</strong> <span class="math inline">\(Z\)</span> must satisfy three conditions to identify causal effects.</p>
-<div id="def-instrumental-variable" class="theorem definition">
-<p><span class="theorem-title"><strong>Definition 1 (Instrumental Variable)</strong></span> A variable <span class="math inline">\(Z\)</span> is an <strong>instrumental variable</strong> for the effect of <span class="math inline">\(A\)</span> on <span class="math inline">\(Y\)</span> if:</p>
+<p>Conditions (i)-(iii) do not make the IV estimand equal the average causal effect. A fourth condition, <strong>effect homogeneity (iv)</strong>, is needed. The book describes four versions, in order of historical appearance <span class="citation" data-cites="hernan2020causal">(<a href="#/references" role="doc-biblioref" onclick="">Hernán and Robins 2020, 214–16</a>)</span>:</p>
 <ol type="1">
-<li><strong>Relevance</strong>: <span class="math inline">\(Z\)</span> is associated with <span class="math inline">\(A\)</span></li>
-<li><strong>Exchangeability</strong>: <span class="math inline">\(Z\)</span> is independent of unmeasured confounders <span class="math inline">\(U\)</span> (i.e., <span class="math inline">\(Y^{a,z} \perp\!\!\!\perp Z\)</span>)</li>
-<li><strong>Exclusion restriction</strong>: <span class="math inline">\(Z\)</span> affects <span class="math inline">\(Y\)</span> only through <span class="math inline">\(A\)</span> (i.e., <span class="math inline">\(Y^{a,z} = Y^a\)</span> for all <span class="math inline">\(a, z\)</span>)</li>
+<li><strong>Constant effect</strong> of <span class="math inline">\(A\)</span> on <span class="math inline">\(Y\)</span> for every individual (e.g., everyone gains exactly 2.4 kg). This is additive rank preservation (Section 14.4): implausible for most treatments and impossible for dichotomous outcomes except under the sharp null or universal harm (or benefit).</li>
+<li><strong>Equal average effect across levels of <span class="math inline">\(Z\)</span></strong> among the treated and among the untreated: <span class="math inline">\(\text{E}{\left[Y^{a=1} - Y^{a=0} \mid Z = 1, A = a\right]} = \text{E}{\left[Y^{a=1} - Y^{a=0} \mid Z = 0, A = a\right]}\)</span> for <span class="math inline">\(a = 0, 1\)</span>.</li>
+<li><strong>No additive effect modification by <span class="math inline">\(U\)</span></strong>: <span class="math inline">\(\text{E}{\left[Y^{a=1} \mid U\right]} - \text{E}{\left[Y^{a=0} \mid U\right]} = \text{E}{\left[Y^{a=1}\right]} - \text{E}{\left[Y^{a=0}\right]}\)</span>.</li>
+<li><strong>Constant <span class="math inline">\(Z\)</span>-<span class="math inline">\(A\)</span> association across <span class="math inline">\(U\)</span></strong>: <span class="math inline">\(\text{E}{\left[A \mid Z = 1, U\right]} - \text{E}{\left[A \mid Z = 0, U\right]} = \text{E}{\left[A \mid Z = 1\right]} - \text{E}{\left[A \mid Z = 0\right]}\)</span>.</li>
 </ol>
-<p>Where <span class="math inline">\(Y^{a,z}\)</span> denotes the potential outcome under treatment <span class="math inline">\(A = a\)</span> and instrument <span class="math inline">\(Z = z\)</span>.</p>
+<aside class="notes">
+<p>Version 1 was implicitly assumed in many early IV analyses that used two-stage least squares.</p>
+<p>Version 2 is the one used in Technical Point 16.3. It is not automatically implied by condition (iii): even when <span class="math inline">\(Y^a \perp\!\!\!\perp Z\)</span> holds, <span class="math inline">\(Y^a \perp\!\!\!\perp Z \mid A\)</span> generally does not, so the treatment effect may vary with <span class="math inline">\(Z\)</span> among the treated or the untreated <span class="citation" data-cites="hernan2020causal">(<a href="#/references" role="doc-biblioref" onclick="">Hernán and Robins 2020, 214</a>)</span>. It is also hard for subject-matter experts to argue for, which motivates versions stated in terms of the confounders <span class="math inline">\(U\)</span>.</p>
+<p>Version 3 is often implausible because some unmeasured confounders are likely effect modifiers too, e.g., weight gain after quitting may depend on prior smoking intensity, itself a likely unmeasured confounder. Hernán and Robins showed that if <span class="math inline">\(U\)</span> is an additive effect modifier, version 2 would not be a reasonable belief either <span class="citation" data-cites="hernan2020causal">(<a href="#/references" role="doc-biblioref" onclick="">Hernán and Robins 2020, 215</a>)</span>.</p>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside>
+</section>
+<section id="the-general-homogeneity-condition" class="slide level2">
+<h2>The General Homogeneity Condition</h2>
+<p>Define the effect modification by <span class="math inline">\(U\)</span> of the effect of <span class="math inline">\(A\)</span> on <span class="math inline">\(Y\)</span> and of the <span class="math inline">\(Z\)</span>-<span class="math inline">\(A\)</span> association:</p>
+<p><span class="math display">\[
+e(U) \stackrel{\text{def}}{=}\text{E}{\left[Y^{a=1} - Y^{a=0} \mid U\right]}, \qquad
+t(U) \stackrel{\text{def}}{=}\text{E}{\left[A \mid Z = 1, U\right]} - \text{E}{\left[A \mid Z = 0, U\right]}.
+\]</span></p>
+<div id="thm-general-homogeneity" class="theorem">
+<p><span class="theorem-title"><strong>Theorem 1 (General Homogeneity Condition)</strong></span> Under the causal diagram of Figure 16.1, if <span class="math inline">\(\text{Cov}{\left(e(U), t(U)\right)} = 0\)</span>, then</p>
+<p><span class="math display">\[
+\text{E}{\left[Y^{a=1} - Y^{a=0}\right]} = \frac{\text{E}{\left[Y \mid Z = 1\right]} - \text{E}{\left[Y \mid Z = 0\right]}}{\text{E}{\left[A \mid Z = 1\right]} - \text{E}{\left[A \mid Z = 0\right]}} .
+\]</span></p>
+</div>
+<p>Versions 3 and 4 are special cases: they say “<span class="math inline">\(e(U)\)</span> is constant” and “<span class="math inline">\(t(U)\)</span> is constant”, and the covariance of any variable with a constant is 0 <span class="citation" data-cites="hernan2020causal">(<a href="#/references" role="doc-biblioref" onclick="">Hernán and Robins 2020, 216</a>)</span>.</p>
+</section>
+<section class="slide level2">
+
+<div class="proof">
+<p><span class="proof-title"><em>Proof</em> (Proof (Technical Point 16.5)). </span>In Figure 16.1, <span class="math inline">\(Y^a \perp\!\!\!\perp(A, Z) \mid U\)</span> for each <span class="math inline">\(a\)</span> and <span class="math inline">\(U \perp\!\!\!\perp Z\)</span>.</p>
+<p><strong>Step 1: the denominator is <span class="math inline">\(\text{E}{\left[t(U)\right]}\)</span>.</strong> Because <span class="math inline">\(U \perp\!\!\!\perp Z\)</span>, <span class="math inline">\(f(u \mid z) = f(u)\)</span>, so</p>
+<p><span class="math display">\[
+\begin{aligned}
+\text{E}{\left[A \mid Z = z\right]} &amp;= \textstyle\sum_u \text{E}{\left[A \mid Z = z, U = u\right]} f(u \mid z) &amp;&amp; \text{(law of total expectation)} \\
+&amp;= \textstyle\sum_u \text{E}{\left[A \mid Z = z, U = u\right]} f(u) &amp;&amp; (U \perp\!\!\!\perp Z) \\
+\text{E}{\left[A \mid Z = 1\right]} - \text{E}{\left[A \mid Z = 0\right]} &amp;= \textstyle\sum_u t(u) f(u) = \text{E}{\left[t(U)\right]}. &amp;&amp; \text{(definition of } t)
+\end{aligned}
+\]</span></p>
+<p><strong>Step 2: the numerator is <span class="math inline">\(\text{E}{\left[e(U)\,t(U)\right]}\)</span>.</strong> By consistency, <span class="math inline">\(Y = A (Y^{a=1} - Y^{a=0}) + Y^{a=0}\)</span>. For each <span class="math inline">\(z\)</span> and <span class="math inline">\(u\)</span>,</p>
+<p><span class="math display">\[
+\begin{aligned}
+\text{E}{\left[A (Y^{a=1} - Y^{a=0}) \mid Z = z, U = u\right]}
+&amp;= \Pr(A = 1 \mid Z = z, U = u)\, \text{E}{\left[Y^{a=1} - Y^{a=0} \mid A = 1, Z = z, U = u\right]} \\
+&amp;= \Pr(A = 1 \mid Z = z, U = u)\, \text{E}{\left[Y^{a=1} - Y^{a=0} \mid U = u\right]} &amp;&amp; (Y^a \perp\!\!\!\perp(A, Z) \mid U) \\
+&amp;= \Pr(A = 1 \mid Z = z, U = u)\, e(u), \\
+\text{E}{\left[Y^{a=0} \mid Z = z, U = u\right]} &amp;= \text{E}{\left[Y^{a=0} \mid U = u\right]}. &amp;&amp; (Y^{a=0} \perp\!\!\!\perp Z \mid U)
+\end{aligned}
+\]</span></p>
+<p>Averaging over <span class="math inline">\(U\)</span> (with <span class="math inline">\(f(u \mid z) = f(u)\)</span>):</p>
+<p><span class="math display">\[
+\text{E}{\left[Y \mid Z = z\right]} = \textstyle\sum_u {\left\{e(u) \Pr(A = 1 \mid Z = z, U = u) + \text{E}{\left[Y^{a=0} \mid U = u\right]}\right\}} f(u),
+\]</span></p>
+<p>so the second term cancels in the difference and</p>
+<p><span class="math display">\[
+\text{E}{\left[Y \mid Z = 1\right]} - \text{E}{\left[Y \mid Z = 0\right]} = \textstyle\sum_u e(u)\, t(u)\, f(u) = \text{E}{\left[e(U)\, t(U)\right]} .
+\]</span></p>
+<p><strong>Step 3: use the zero covariance.</strong></p>
+<p><span class="math display">\[
+\begin{aligned}
+\text{E}{\left[e(U)\, t(U)\right]} &amp;= \text{Cov}{\left(e(U), t(U)\right)} + \text{E}{\left[e(U)\right]}\, \text{E}{\left[t(U)\right]} &amp;&amp; \text{(definition of covariance)} \\
+&amp;= \text{E}{\left[e(U)\right]}\, \text{E}{\left[t(U)\right]} &amp;&amp; (\text{Cov}{\left(e(U), t(U)\right)} = 0) \\
+&amp;= \text{E}{\left[Y^{a=1} - Y^{a=0}\right]} {\left(\text{E}{\left[A \mid Z = 1\right]} - \text{E}{\left[A \mid Z = 0\right]}\right)}. &amp;&amp; \text{(iterated expectations; Step 1)}
+\end{aligned}
+\]</span></p>
+<p>Dividing the numerator (Step 2) by the denominator (Step 1) gives the result.</p>
 </div>
 </section>
-<section id="condition-1-relevance" class="slide level2">
-<h2>Condition 1: Relevance</h2>
-<p><strong>Statement</strong>: <span class="math inline">\(Z\)</span> is associated with <span class="math inline">\(A\)</span></p>
-<p><strong>Meaning</strong>: The instrument must actually affect treatment assignment.</p>
-<p><strong>Example</strong>: Randomized encouragement</p>
-<ul>
-<li><span class="math inline">\(Z = 1\)</span> if encouraged to take treatment, <span class="math inline">\(Z = 0\)</span> if not encouraged</li>
-<li>Relevance requires that encouragement increases the probability of treatment</li>
-</ul>
-<p><strong>Testing</strong>: Relevance can be tested empirically by checking <span class="math inline">\(\Pr[A = 1 \mid Z = 1] \neq \Pr[A = 1 \mid Z = 0]\)</span></p>
+<section class="slide level2">
+
+<div title="Technical Point 16.3: Additive Structural Mean Models and IV Estimation">
+<div class="callout callout-note callout-titled callout-style-default">
+<div class="callout-body">
+<div class="callout-title">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<p><strong>Technical Point 16.3: Additive Structural Mean Models and IV Estimation</strong></p>
+</div>
+<div class="callout-content">
+<p>Saturated additive structural mean model for dichotomous <span class="math inline">\(A\)</span> and instrument <span class="math inline">\(Z\)</span>:</p>
+<p><span class="math display">\[
+\text{E}{\left[Y^{a=1} - Y^{a=0} \mid A = 1, Z\right]} = \beta_0 + \beta_1 Z,
+\quad\text{equivalently}\quad
+\text{E}{\left[Y - Y^{a=0} \mid A, Z\right]} = A (\beta_0 + \beta_1 Z).
+\]</span></p>
+<p><span class="math inline">\(\beta_0\)</span> is the effect in the treated with <span class="math inline">\(Z = 0\)</span>, <span class="math inline">\(\beta_0 + \beta_1\)</span> the effect in the treated with <span class="math inline">\(Z = 1\)</span>; <span class="math inline">\(\beta_1\)</span> measures additive effect modification by <span class="math inline">\(Z\)</span>. If we assume <span class="math inline">\(\beta_1 = 0\)</span>, then <span class="math inline">\(\beta_0\)</span> equals the usual IV estimand <span class="citation" data-cites="hernan2020causal">(<a href="#/references" role="doc-biblioref" onclick="">Hernán and Robins 2020, 215</a>)</span>.</p>
+</div>
+</div>
+</div>
+</div>
+<div class="proof">
+<p><span class="proof-title"><em>Proof</em>. </span>The instrumental conditions imply <span class="math inline">\(\text{E}{\left[Y^{a=0} \mid Z = 1\right]} = \text{E}{\left[Y^{a=0} \mid Z = 0\right]}\)</span>. From the model, <span class="math inline">\(\text{E}{\left[Y^{a=0} \mid A, Z\right]} = \text{E}{\left[Y \mid A, Z\right]} - A(\beta_0 + \beta_1 Z)\)</span>; averaging over <span class="math inline">\(A\)</span> given <span class="math inline">\(Z\)</span>,</p>
+<p><span class="math display">\[
+\text{E}{\left[Y^{a=0} \mid Z\right]} = \text{E}{\left[Y \mid Z\right]} - (\beta_0 + \beta_1 Z)\, \text{E}{\left[A \mid Z\right]}.
+\]</span></p>
+<p>Setting <span class="math inline">\(\beta_1 = 0\)</span> and equating the <span class="math inline">\(Z = 1\)</span> and <span class="math inline">\(Z = 0\)</span> values:</p>
+<p><span class="math display">\[
+\begin{aligned}
+\text{E}{\left[Y \mid Z = 1\right]} - \beta_0 \text{E}{\left[A \mid Z = 1\right]} &amp;= \text{E}{\left[Y \mid Z = 0\right]} - \beta_0 \text{E}{\left[A \mid Z = 0\right]} \\
+\text{E}{\left[Y \mid Z = 1\right]} - \text{E}{\left[Y \mid Z = 0\right]} &amp;= \beta_0 {\left(\text{E}{\left[A \mid Z = 1\right]} - \text{E}{\left[A \mid Z = 0\right]}\right)} \\
+\beta_0 &amp;= \frac{\text{E}{\left[Y \mid Z = 1\right]} - \text{E}{\left[Y \mid Z = 0\right]}}{\text{E}{\left[A \mid Z = 1\right]} - \text{E}{\left[A \mid Z = 0\right]}} .
+\end{aligned}
+\]</span></p>
+</div>
 <aside class="notes">
-<p><strong>Weak instruments</strong>: If the association between <span class="math inline">\(Z\)</span> and <span class="math inline">\(A\)</span> is very weak, the IV estimator will have:</p>
-<ul>
-<li>Large variance (imprecise estimates)</li>
-<li>Potential bias even in large samples</li>
-</ul>
-<p>Common rule of thumb: F-statistic &gt; 10 in first-stage regression (for continuous outcomes).</p>
+<p><strong>Why set <span class="math inline">\(\beta_1 = 0\)</span>?</strong> The instrumental conditions give one equation in two unknowns (<span class="math inline">\(\beta_0\)</span>, <span class="math inline">\(\beta_1\)</span>), and that equation exhausts the constraints they place on the data. A second constraint is needed and is necessarily untestable; <span class="math inline">\(\beta_1 = 0\)</span> is an arbitrary choice (one could as well pick <span class="math inline">\(\beta_1 = 2\)</span>). That is what “an instrument is insufficient to identify the average causal effect” means.</p>
+<p>Even with <span class="math inline">\(\beta_1 = 0\)</span>, <span class="math inline">\(\beta_0\)</span> is the effect <strong>in the treated</strong>. Interpreting it as the population effect <span class="math inline">\(\text{E}{\left[Y^{a=1}\right]} - \text{E}{\left[Y^{a=0}\right]}\)</span> needs the further untestable assumption that the effect is the same in the treated and the untreated, i.e., that the corresponding <span class="math inline">\(Z\)</span> parameter is also 0 in the model for <span class="math inline">\(A = 0\)</span> <span class="citation" data-cites="hernan2020causal">(<a href="#/references" role="doc-biblioref" onclick="">Hernán and Robins 2020, 215</a>)</span>.</p>
 <style type="text/css">
         span.MJX_Assistive_MathML {
           position:absolute!important;
@@ -229,34 +579,75 @@
           display:block!important;
       }</style></aside>
 </section>
-<section id="condition-2-exchangeability" class="slide level2">
-<h2>Condition 2: Exchangeability</h2>
-<p><strong>Statement</strong>: <span class="math inline">\(Y^{a,z} \perp\!\!\!\perp Z\)</span> (or <span class="math inline">\(Y^a \perp\!\!\!\perp Z\)</span> under exclusion)</p>
-<p><strong>Meaning</strong>: The instrument is “as good as randomly assigned” with respect to potential outcomes.</p>
-<p><strong>Example</strong>: Randomized encouragement</p>
-<ul>
-<li>If encouragement is randomized, exchangeability holds by design</li>
-<li><span class="math inline">\(Z \perp\!\!\!\perp U\)</span> where <span class="math inline">\(U\)</span> are unmeasured confounders</li>
-</ul>
-<p><strong>Testing</strong>: Exchangeability generally <strong>cannot</strong> be tested (involves unmeasured confounders)</p>
-</section>
-<section id="condition-3-exclusion-restriction" class="slide level2 scrollable">
-<h2>Condition 3: Exclusion Restriction</h2>
-<p><strong>Statement</strong>: <span class="math inline">\(Y^{a,z} = Y^a\)</span> for all <span class="math inline">\(a, z\)</span></p>
-<p><strong>Meaning</strong>: The instrument affects the outcome ONLY through its effect on treatment.</p>
-<p><strong>Example</strong>: Randomized encouragement</p>
-<ul>
-<li>Encouragement affects outcome only by changing treatment received</li>
-<li>NOT through psychological effects, information effects, etc.</li>
-</ul>
-<p><strong>Testing</strong>: Exclusion generally <strong>cannot</strong> be tested (untestable assumption)</p>
+<section class="slide level2">
+
+<div title="Technical Point 16.4: Multiplicative Structural Mean Models and IV Estimation">
+<div class="callout callout-note callout-titled callout-style-default">
+<div class="callout-body">
+<div class="callout-title">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<p><strong>Technical Point 16.4: Multiplicative Structural Mean Models and IV Estimation</strong></p>
+</div>
+<div class="callout-content">
+<p>Saturated multiplicative (log-linear) structural mean model:</p>
+<p><span class="math display">\[
+\frac{\text{E}{\left[Y^{a=1} \mid A = 1, Z\right]}}{\text{E}{\left[Y^{a=0} \mid A = 1, Z\right]}} = \text{exp}{\left\{\beta_0 + \beta_1 Z\right\}},
+\quad\text{equivalently}\quad
+\text{E}{\left[Y \mid A, Z\right]} = \text{E}{\left[Y^{a=0} \mid A, Z\right]} \text{exp}{\left\{A (\beta_0 + \beta_1 Z)\right\}}.
+\]</span></p>
+<p>Assuming <span class="math inline">\(\beta_1 = 0\)</span> and no multiplicative effect modification by <span class="math inline">\(Z\)</span> in the untreated either, the causal risk ratio is <span class="math inline">\(\text{exp}{\left\{\beta_0\right\}}\)</span> and</p>
+<p><span class="math display">\[
+\text{E}{\left[Y^{a=1}\right]} - \text{E}{\left[Y^{a=0}\right]} = \text{E}{\left[Y \mid A = 0\right]}(1 - \text{E}{\left[A\right]}){\left[\text{exp}{\left\{\beta_0\right\}} - 1\right]} + \text{E}{\left[Y \mid A = 1\right]}\, \text{E}{\left[A\right]} {\left[1 - \text{exp}{\left\{-\beta_0\right\}}\right]}.
+\]</span></p>
+<p>This is identified but is <strong>not</strong> the usual IV estimand <span class="citation" data-cites="hernan2020causal">(<a href="#/references" role="doc-biblioref" onclick="">Hernán and Robins 2020, 216</a>)</span>.</p>
+</div>
+</div>
+</div>
+</div>
 <aside class="notes">
-<p><strong>Common violations</strong>:</p>
+<p>So the estimate of the average causal effect depends on whether one assumes no additive or no multiplicative effect modification by <span class="math inline">\(Z\)</span>, and no amount of data can tell which (if either) is true, because the saturated models have more unknown parameters than equations <span class="citation" data-cites="hernan2020causal">(<a href="#/references" role="doc-biblioref" onclick="">Hernán and Robins 2020, 216</a>)</span>. The book refers to Robins (1989) and Hernán and Robins (2006b) for the proof of the formula.</p>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside>
+</section>
+<section id="bypassing-homogeneity" class="slide level2 scrollable">
+<h2>Bypassing Homogeneity</h2>
+<p>Because the homogeneity conditions are often implausible, the book describes two ways around them <span class="citation" data-cites="hernan2020causal">(<a href="#/references" role="doc-biblioref" onclick="">Hernán and Robins 2020, 216</a>)</span>:</p>
 <ol type="1">
-<li><strong>Direct effects</strong>: Instrument affects outcome through pathways other than treatment</li>
-<li><strong>Defiers</strong>: Some individuals do the opposite of what the instrument suggests (see Section 16.3)</li>
+<li><strong>Add baseline covariates</strong> to the IV models, preferably with structural mean models (fewer parametric assumptions than two-stage least squares). The effect in the treated may then vary with <span class="math inline">\(Z\)</span>, subject to constraints on how it varies within levels of the covariates.</li>
+<li><strong>Replace homogeneity by a different condition (iv)</strong>, monotonicity (Section 16.4), which gives the usual IV estimand a causal interpretation without identifying the population effect.</li>
 </ol>
-<p><strong>Critical importance</strong>: Exclusion is the most controversial IV assumption. Subject-matter knowledge is essential for justifying it.</p>
+<div title="Technical Point 16.6: More General Structural Mean Models">
+<div class="callout callout-note callout-titled callout-style-default">
+<div class="callout-body">
+<div class="callout-title">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<p><strong>Technical Point 16.6: More General Structural Mean Models</strong></p>
+</div>
+<div class="callout-content">
+<p>With possibly continuous or multivariate <span class="math inline">\(A\)</span> and <span class="math inline">\(Z\)</span> and pre-instrument covariates <span class="math inline">\(V\)</span>, an additive structural mean model is</p>
+<p><span class="math display">\[
+\text{E}{\left[Y - Y^{a=0} \mid Z, A, V\right]} = \gamma(Z, A, V; \beta),
+\]</span></p>
+<p>with <span class="math inline">\(\gamma\)</span> a known function, <span class="math inline">\(\beta\)</span> an unknown parameter, and <span class="math inline">\(\gamma(Z, A = 0, V; \beta) = 0\)</span>. It models the effect of the observed treatment level versus level 0 among those with that <span class="math inline">\(Z\)</span>, <span class="math inline">\(V\)</span>, and observed <span class="math inline">\(A\)</span>. Its parameters are identified by g-estimation under <span class="math inline">\(\text{E}{\left[Y^{a=0} \mid Z = 1, V\right]} = \text{E}{\left[Y^{a=0} \mid Z = 0, V\right]}\)</span>. The multiplicative analog is <span class="math inline">\(\text{E}{\left[Y \mid Z, A, V\right]} = \text{E}{\left[Y^{a=0} \mid Z, A, V\right]} \text{exp}{\left\{\gamma(Z, A, V; \beta)\right\}}\)</span> <span class="citation" data-cites="hernan2020causal">(<a href="#/references" role="doc-biblioref" onclick="">Hernán and Robins 2020, 218</a>)</span>.</p>
+</div>
+</div>
+</div>
+</div>
+<aside class="notes">
+<p>Models also allow several proposed instruments at once, continuous treatments, and causal risk ratios for dichotomous outcomes <span class="citation" data-cites="hernan2020causal">(<a href="#/references" role="doc-biblioref" onclick="">Hernán and Robins 2020, 216</a>)</span>. Nested versions of these structural mean models extend IV methods to time-varying treatments and confounders <span class="citation" data-cites="hernan2020causal">(<a href="#/references" role="doc-biblioref" onclick="">Hernán and Robins 2020, 218</a>)</span>.</p>
 <style type="text/css">
         span.MJX_Assistive_MathML {
           position:absolute!important;
@@ -270,340 +661,111 @@
       }</style></aside>
 </section></section>
 <section>
-<section id="the-usual-iv-estimand-pp.-231-234" class="title-slide slide level1 center" data-number="2">
-<h1><span class="header-section-number">2</span> 16.2 The Usual IV Estimand (pp.&nbsp;231-234)</h1>
+<section id="an-alternative-fourth-condition-monotonicity-pp.-217-220" class="title-slide slide level1 center" data-number="4">
+<h1><span class="header-section-number">4</span> 16.4 An Alternative Fourth Condition: Monotonicity (pp.&nbsp;217-220)</h1>
 
 </section>
-<section class="slide level2">
+<section class="slide level2 scrollable">
 
-<p>Under the three IV conditions, we can identify a causal effect.</p>
-</section>
-<section id="iv-estimand-for-binary-z-and-a" class="slide level2">
-<h2>IV Estimand for Binary <span class="math inline">\(Z\)</span> and <span class="math inline">\(A\)</span></h2>
-<p><strong>Setting</strong>: Binary instrument <span class="math inline">\(Z\)</span>, binary treatment <span class="math inline">\(A\)</span>, outcome <span class="math inline">\(Y\)</span></p>
-<p><strong>IV estimand</strong>:</p>
-<p><span class="math display">\[\frac{\text{E}{\left[Y \mid Z = 1\right]} - \text{E}{\left[Y \mid Z = 0\right]}}{\text{E}{\left[A \mid Z = 1\right]} - \text{E}{\left[A \mid Z = 0\right]}}\]</span></p>
-<p>This is the <strong>Wald estimator</strong> or <strong>ratio estimator</strong>.</p>
-<p><strong>Interpretation</strong>: The effect of <span class="math inline">\(Z\)</span> on <span class="math inline">\(Y\)</span>, divided by the effect of <span class="math inline">\(Z\)</span> on <span class="math inline">\(A\)</span>.</p>
-</section>
-<section id="why-this-works" class="slide level2 scrollable">
-<h2>Why This Works</h2>
-<p><strong>Numerator</strong>: <span class="math inline">\(\text{E}{\left[Y \mid Z = 1\right]} - \text{E}{\left[Y \mid Z = 0\right]}\)</span></p>
-<ul>
-<li>By exchangeability: equals <span class="math inline">\(\text{E}{\left[Y^{z=1}\right]} - \text{E}{\left[Y^{z=0}\right]}\)</span></li>
-<li>By exclusion: equals <span class="math inline">\(\text{E}{\left[Y^{A^{z=1}}\right]} - \text{E}{\left[Y^{A^{z=0}}\right]}\)</span></li>
-</ul>
-<p><strong>Denominator</strong>: <span class="math inline">\(\text{E}{\left[A \mid Z = 1\right]} - \text{E}{\left[A \mid Z = 0\right]}\)</span></p>
-<ul>
-<li>By exchangeability: equals <span class="math inline">\(\Pr[A^{z=1} = 1] - \Pr[A^{z=0} = 1]\)</span></li>
-</ul>
-<p><strong>Ratio</strong>: Under additional assumptions (see next section), this estimates the average causal effect in a specific subgroup.</p>
-<aside class="notes">
-<p><strong>Identification without conditional exchangeability</strong>:</p>
-<p>The key insight: Even if <span class="math inline">\(A\)</span> is confounded (unmeasured <span class="math inline">\(U\)</span> affects both <span class="math inline">\(A\)</span> and <span class="math inline">\(Y\)</span>), we can use <span class="math inline">\(Z\)</span> to identify causal effects because:</p>
-<ol type="1">
-<li><span class="math inline">\(Z\)</span> is randomized (or acts as if randomized)</li>
-<li><span class="math inline">\(Z\)</span> affects <span class="math inline">\(Y\)</span> only through <span class="math inline">\(A\)</span></li>
-</ol>
-<p>This allows us to isolate the causal pathway <span class="math inline">\(A \to Y\)</span> without measuring all confounders.</p>
-<style type="text/css">
-        span.MJX_Assistive_MathML {
-          position:absolute!important;
-          clip: rect(1px, 1px, 1px, 1px);
-          padding: 1px 0 0 0!important;
-          border: 0!important;
-          height: 1px!important;
-          width: 1px!important;
-          overflow: hidden!important;
-          display:block!important;
-      }</style></aside>
-</section>
-<section id="example-randomized-encouragement" class="slide level2">
-<h2>Example: Randomized Encouragement</h2>
-<p><strong>Design</strong>: Randomize individuals to receive encouragement to exercise (<span class="math inline">\(Z\)</span>)</p>
-<ul>
-<li>Not everyone encouraged will exercise (<span class="math inline">\(A = 1\)</span>)</li>
-<li>Some not encouraged will exercise anyway</li>
-</ul>
-<p><strong>IV estimate</strong>:</p>
-<p><span class="math display">\[\frac{\text{Mean health in encouraged} - \text{Mean health in not encouraged}}{\Pr[\text{Exercise} \mid \text{Encouraged}] - \Pr[\text{Exercise} \mid \text{Not encouraged}]}\]</span></p>
-<p>If 60% exercise when encouraged vs 30% when not, and mean health differs by 6 points:</p>
-<p><span class="math display">\[\frac{6}{0.60 - 0.30} = \frac{6}{0.30} = 20\]</span></p>
-<p>Effect of exercise on health (in a subgroup) is 20 points.</p>
-</section></section>
-<section>
-<section id="instrumental-variable-estimation-versus-randomized-experiments-pp.-234-237" class="title-slide slide level1 center" data-number="3">
-<h1><span class="header-section-number">3</span> 16.3 Instrumental Variable Estimation versus Randomized Experiments (pp.&nbsp;234-237)</h1>
-
-</section>
-<section class="slide level2">
-
-<p>IV estimation is like an imperfect randomized experiment.</p>
-</section>
-<section id="perfect-compliance" class="slide level2">
-<h2>Perfect Compliance</h2>
-<p>If everyone complied with their assigned treatment (<span class="math inline">\(A = Z\)</span>):</p>
-<ul>
-<li>IV estimand = average causal effect in the full population</li>
-<li>This is just a standard randomized experiment</li>
-</ul>
-</section>
-<section id="imperfect-compliance" class="slide level2">
-<h2>Imperfect Compliance</h2>
-<p>When <span class="math inline">\(A \neq Z\)</span> for some individuals:</p>
-<ul>
-<li>IV estimand estimates effect in a <strong>subgroup</strong> (compliers)</li>
-<li>Not the average effect in the full population</li>
-</ul>
-</section>
-<section id="compliance-types" class="slide level2 scrollable">
-<h2>Compliance Types</h2>
+<p>In the double-blind trial, let <span class="math inline">\(A^{z=1}\)</span> and <span class="math inline">\(A^{z=0}\)</span> be the treatment an individual would take if assigned to treatment or to no treatment.</p>
 <div id="def-compliance-types" class="theorem definition">
-<p><span class="theorem-title"><strong>Definition 2 (Principal Strata)</strong></span> Individuals can be classified into <strong>principal strata</strong> based on potential treatments <span class="math inline">\(A^{z=1}\)</span> and <span class="math inline">\(A^{z=0}\)</span>:</p>
+<p><span class="theorem-title"><strong>Definition 2 (Compliance Types (Principal Strata))</strong></span> &nbsp;</p>
 <ol type="1">
-<li><strong>Compliers</strong>: <span class="math inline">\(A^{z=1} = 1, A^{z=0} = 0\)</span> (take treatment if and only if <span class="math inline">\(Z = 1\)</span>)</li>
-<li><strong>Always-takers</strong>: <span class="math inline">\(A^{z=1} = 1, A^{z=0} = 1\)</span> (always take treatment)</li>
-<li><strong>Never-takers</strong>: <span class="math inline">\(A^{z=1} = 0, A^{z=0} = 0\)</span> (never take treatment)</li>
-<li><strong>Defiers</strong>: <span class="math inline">\(A^{z=1} = 0, A^{z=0} = 1\)</span> (do opposite of instrument)</li>
+<li><strong>Always-takers</strong>: <span class="math inline">\(A^{z=1} = 1\)</span> and <span class="math inline">\(A^{z=0} = 1\)</span>.</li>
+<li><strong>Never-takers</strong>: <span class="math inline">\(A^{z=1} = 0\)</span> and <span class="math inline">\(A^{z=0} = 0\)</span>.</li>
+<li><strong>Compliers</strong> (cooperative): <span class="math inline">\(A^{z=1} = 1\)</span> and <span class="math inline">\(A^{z=0} = 0\)</span>.</li>
+<li><strong>Defiers</strong> (contrarians): <span class="math inline">\(A^{z=1} = 0\)</span> and <span class="math inline">\(A^{z=0} = 1\)</span>.</li>
 </ol>
 </div>
-<p><strong>Monotonicity assumption</strong>: No defiers exist.</p>
-<aside class="notes">
-<p><strong>Why monotonicity</strong>:</p>
-<p>If defiers exist, the IV estimand can be severely biased. With monotonicity:</p>
-<ul>
-<li>Compliers: Instrument changes their treatment</li>
-<li>Always-takers: Get treatment regardless</li>
-<li>Never-takers: Never get treatment regardless</li>
-</ul>
-<p>The IV estimand identifies the causal effect in <strong>compliers only</strong> (LATE = local average treatment effect).</p>
-<style type="text/css">
-        span.MJX_Assistive_MathML {
-          position:absolute!important;
-          clip: rect(1px, 1px, 1px, 1px);
-          padding: 1px 0 0 0!important;
-          border: 0!important;
-          height: 1px!important;
-          width: 1px!important;
-          overflow: hidden!important;
-          display:block!important;
-      }</style></aside>
-</section>
-<section id="local-average-treatment-effect-late" class="slide level2">
-<h2>Local Average Treatment Effect (LATE)</h2>
-<p>Under IV conditions plus monotonicity:</p>
-<p><span class="math display">\[\text{IV estimand} = \text{E}{\left[Y^{a=1} - Y^{a=0} \mid \text{Complier}\right]}\]</span></p>
-<p>This is the <strong>average causal effect in compliers</strong>, not in the full population.</p>
-<p><strong>Interpretation</strong>: IV tells us the effect of treatment for those who would comply with the instrument.</p>
-<p><strong>Limitation</strong>: We don’t know who the compliers are (unobservable principal stratum).</p>
-</section></section>
-<section>
-<section id="two-stage-least-squares-estimation-pp.-237-240" class="title-slide slide level1 center" data-number="4">
-<h1><span class="header-section-number">4</span> 16.4 Two-Stage Least Squares Estimation (pp.&nbsp;237-240)</h1>
-
-</section>
-<section class="slide level2">
-
-<p><strong>Two-stage least squares (2SLS)</strong> is the most common IV method for continuous outcomes.</p>
-</section>
-<section id="sls-algorithm" class="slide level2">
-<h2>2SLS Algorithm</h2>
-<p><strong>Stage 1</strong>: Regress treatment on instrument (and covariates if present)</p>
-<p><span class="math display">\[A_i = \alpha_0 + \alpha_1 Z_i + \epsilon_i\]</span></p>
-<p>Obtain predicted treatment: <span class="math inline">\(\hat{A}_i = \hat{\alpha}_0 + \hat{\alpha}_1 Z_i\)</span></p>
-<p><strong>Stage 2</strong>: Regress outcome on predicted treatment</p>
-<p><span class="math display">\[Y_i = \beta_0 + \beta_1 \hat{A}_i + \eta_i\]</span></p>
-<p>The coefficient <span class="math inline">\(\hat{\beta}_1\)</span> is the 2SLS estimate of the causal effect.</p>
-</section>
-<section id="why-this-works-1" class="slide level2">
-<h2>Why This Works</h2>
-<p><strong>Intuition</strong>:</p>
-<ul>
-<li>Stage 1 extracts the variation in <span class="math inline">\(A\)</span> that is “caused by” <span class="math inline">\(Z\)</span></li>
-<li><span class="math inline">\(\hat{A}\)</span> is the part of <span class="math inline">\(A\)</span> that is free of confounding (because <span class="math inline">\(Z\)</span> is randomized)</li>
-<li>Stage 2 estimates the effect of this “clean” variation on <span class="math inline">\(Y\)</span></li>
-</ul>
-<p><strong>Mathematical equivalence</strong>: For binary <span class="math inline">\(Z\)</span> and <span class="math inline">\(A\)</span>, 2SLS equals the Wald estimator.</p>
-<aside class="notes">
-<p><strong>Important</strong>:</p>
-<ul>
-<li>Standard errors from Stage 2 are WRONG (they ignore Stage 1 uncertainty)</li>
-<li>Use specialized IV software or bootstrap for correct standard errors</li>
-<li>R packages: <code>ivreg</code>, <code>AER::ivreg</code></li>
-<li>Stata command: <code>ivregress 2sls</code></li>
-</ul>
-<style type="text/css">
-        span.MJX_Assistive_MathML {
-          position:absolute!important;
-          clip: rect(1px, 1px, 1px, 1px);
-          padding: 1px 0 0 0!important;
-          border: 0!important;
-          height: 1px!important;
-          width: 1px!important;
-          overflow: hidden!important;
-          display:block!important;
-      }</style></aside>
-</section>
-<section id="including-covariates" class="slide level2">
-<h2>Including Covariates</h2>
-<p><strong>With measured confounders</strong> <span class="math inline">\(L\)</span> that confound <span class="math inline">\(A \to Y\)</span> but not <span class="math inline">\(Z \to A\)</span>:</p>
-<p><strong>Stage 1</strong>: <span class="math display">\[A_i = \alpha_0 + \alpha_1 Z_i + \alpha_2^{\top} L_i + \epsilon_i\]</span></p>
-<p><strong>Stage 2</strong>: <span class="math display">\[Y_i = \beta_0 + \beta_1 \hat{A}_i + \beta_2^{\top} L_i + \eta_i\]</span></p>
-<p>Including <span class="math inline">\(L\)</span> can improve efficiency even if not necessary for identification.</p>
-</section></section>
-<section>
-<section id="instrumental-variable-estimation-with-measured-confounders-pp.-240-242" class="title-slide slide level1 center" data-number="5">
-<h1><span class="header-section-number">5</span> 16.5 Instrumental Variable Estimation with Measured Confounders (pp.&nbsp;240-242)</h1>
-
-</section>
-<section class="slide level2">
-
-<p>IV estimation can be combined with adjustment for measured confounders.</p>
-</section>
-<section id="two-scenarios" class="slide level2">
-<h2>Two Scenarios</h2>
-<p><strong>Scenario 1</strong>: Confounders of <span class="math inline">\(A \to Y\)</span> that don’t affect <span class="math inline">\(Z\)</span></p>
-<ul>
-<li>Adjust by including <span class="math inline">\(L\)</span> in both stages of 2SLS</li>
-<li>Improves efficiency but not necessary for identification</li>
-</ul>
-<p><strong>Scenario 2</strong>: Confounders of <span class="math inline">\(Z \to Y\)</span></p>
-<ul>
-<li>More problematic - threatens IV exchangeability assumption</li>
-<li>Need <span class="math inline">\(Y^a \perp\!\!\!\perp Z \mid L\)</span> (conditional exchangeability of instrument)</li>
-<li>Use conditional IV methods</li>
-</ul>
-</section>
-<section id="conditional-iv-estimation" class="slide level2 scrollable">
-<h2>Conditional IV Estimation</h2>
-<p><strong>Modified IV conditions</strong>:</p>
-<ol type="1">
-<li><strong>Conditional relevance</strong>: <span class="math inline">\(Z \not\perp\!\!\!\perp A \mid L\)</span></li>
-<li><strong>Conditional exchangeability</strong>: <span class="math inline">\(Y^a \perp\!\!\!\perp Z \mid L\)</span></li>
-<li><strong>Exclusion restriction</strong>: <span class="math inline">\(Y^{a,z} = Y^a\)</span> (still unconditional)</li>
-</ol>
-<p><strong>Estimation</strong>: Use 2SLS with <span class="math inline">\(L\)</span> as covariates, then standardize over <span class="math inline">\(L\)</span>.</p>
-<aside class="notes">
-<p><strong>When to adjust for <span class="math inline">\(L\)</span></strong>:</p>
-<ul>
-<li><strong>Include</strong> if <span class="math inline">\(L\)</span> confounds <span class="math inline">\(A \to Y\)</span> (for efficiency)</li>
-<li><strong>Include</strong> if <span class="math inline">\(L\)</span> confounds <span class="math inline">\(Z \to Y\)</span> (for identification)</li>
-<li><strong>Don’t include</strong> if <span class="math inline">\(L\)</span> is affected by <span class="math inline">\(Z\)</span> (would bias estimates)</li>
-</ul>
-<p>Subject-matter knowledge is crucial for deciding which covariates to include.</p>
-<style type="text/css">
-        span.MJX_Assistive_MathML {
-          position:absolute!important;
-          clip: rect(1px, 1px, 1px, 1px);
-          padding: 1px 0 0 0!important;
-          border: 0!important;
-          height: 1px!important;
-          width: 1px!important;
-          overflow: hidden!important;
-          display:block!important;
-      }</style></aside>
-</section></section>
-<section>
-<section id="instrumental-variable-estimation-versus-regression-pp.-242-244" class="title-slide slide level1 center" data-number="6">
-<h1><span class="header-section-number">6</span> 16.6 Instrumental Variable Estimation versus Regression (pp.&nbsp;242-244)</h1>
-
-</section>
-<section class="slide level2">
-
-<p>How do IV estimates compare to regression-based estimates?</p>
-</section>
-<section id="comparison" class="slide level2">
-<h2>Comparison</h2>
-<p><strong>Regression</strong> (e.g., outcome regression or IP weighting):</p>
-<ul>
-<li>Assumes no unmeasured confounding: <span class="math inline">\(Y^a \perp\!\!\!\perp A \mid L\)</span></li>
-<li>Identifies average causal effect: <span class="math inline">\(\text{E}{\left[Y^{a=1}\right]} - \text{E}{\left[Y^{a=0}\right]}\)</span></li>
-<li>Efficient when assumptions hold</li>
-</ul>
-<p><strong>IV estimation</strong>:</p>
-<ul>
-<li>Allows unmeasured confounding of <span class="math inline">\(A \to Y\)</span></li>
-<li>Assumes valid instrument with IV conditions</li>
-<li>Identifies LATE: <span class="math inline">\(\text{E}{\left[Y^{a=1} - Y^{a=0} \mid \text{Complier}\right]}\)</span></li>
-<li>Less efficient (larger standard errors)</li>
-</ul>
-</section>
-<section id="when-estimates-differ" class="slide level2 scrollable">
-<h2>When Estimates Differ</h2>
-<p>If IV and regression give different estimates:</p>
-<ol type="1">
-<li><strong>Unmeasured confounding</strong>: Regression is biased, IV may be valid</li>
-<li><strong>Effect heterogeneity</strong>: IV estimates LATE, regression estimates ATE</li>
-<li><strong>IV violations</strong>: IV assumptions may be violated</li>
-<li><strong>Both wrong</strong>: Both methods could have issues</li>
-</ol>
-<p><strong>Interpretation</strong>: Differences suggest either unmeasured confounding or effect heterogeneity (or both).</p>
-<aside class="notes">
-<p><strong>Practical dilemma</strong>:</p>
-<ul>
-<li>If estimates agree: Reassuring (though both could be wrong)</li>
-<li>If estimates disagree: Difficult to know which to trust</li>
-</ul>
-<p><strong>Recommendation</strong>:</p>
-<ol type="1">
-<li>Carefully assess IV assumptions (especially exclusion)</li>
-<li>Consider who the compliers are and whether LATE is the estimand of interest</li>
-<li>Conduct sensitivity analyses</li>
-<li>Report both estimates with clear statements about assumptions</li>
-</ol>
-<style type="text/css">
-        span.MJX_Assistive_MathML {
-          position:absolute!important;
-          clip: rect(1px, 1px, 1px, 1px);
-          padding: 1px 0 0 0!important;
-          border: 0!important;
-          height: 1px!important;
-          width: 1px!important;
-          overflow: hidden!important;
-          display:block!important;
-      }</style></aside>
-</section></section>
-<section>
-<section id="the-survivor-average-causal-effect-pp.-244-246" class="title-slide slide level1 center" data-number="7">
-<h1><span class="header-section-number">7</span> 16.7 The Survivor Average Causal Effect (pp.&nbsp;244-246)</h1>
-
-</section>
-<section class="slide level2">
-
-<p>IV methods can be extended to handle <strong>survival outcomes</strong> and <strong>time-to-event data</strong>.</p>
-</section>
-<section id="challenges-with-survival-outcomes" class="slide level2">
-<h2>Challenges with Survival Outcomes</h2>
-<p><strong>Issue</strong>: With time-to-event outcomes, some individuals are censored before the event.</p>
-<p><strong>Question</strong>: How do we interpret IV estimates when the outcome is survival time?</p>
-</section>
-<section id="survivor-average-causal-effect-sace" class="slide level2">
-<h2>Survivor Average Causal Effect (SACE)</h2>
-<div id="def-sace" class="theorem definition">
-<p><span class="theorem-title"><strong>Definition 3 (Survivor Average Causal Effect)</strong></span> The <strong>survivor average causal effect (SACE)</strong> is:</p>
-<p><span class="math display">\[\text{E}{\left[Y^{a=1} - Y^{a=0} \mid S^{a=1} = 1, S^{a=0} = 1\right]}\]</span></p>
-<p>where <span class="math inline">\(S^a\)</span> is an indicator for surviving (or remaining uncensored) under treatment <span class="math inline">\(a\)</span>.</p>
-<p>This is the effect in <strong>always-survivors</strong> - those who would survive under both treatment and control.</p>
+<p>These strata are not identified: someone with <span class="math inline">\(Z = 1\)</span> and <span class="math inline">\(A = 1\)</span> may be a complier or an always-taker; someone with <span class="math inline">\(Z = 1\)</span> and <span class="math inline">\(A = 0\)</span> may be a defier or a never-taker.</p>
+<div id="def-monotonicity" class="theorem definition">
+<p><span class="theorem-title"><strong>Definition 3 (Monotonicity)</strong></span> <strong>Monotonicity</strong> holds when there are no defiers, i.e., <span class="math inline">\(A^{z=1} \ge A^{z=0}\)</span> for all individuals.</p>
 </div>
 </section>
-<section id="identification" class="slide level2 scrollable">
-<h2>Identification</h2>
-<p><strong>Setting</strong>: Survival <span class="math inline">\(S\)</span> is affected by treatment <span class="math inline">\(A\)</span>, and outcome <span class="math inline">\(Y\)</span> is only observed if <span class="math inline">\(S = 1\)</span>.</p>
-<p><strong>IV approach</strong>: Under IV conditions plus additional assumptions (monotonicity for survival), IV can identify SACE.</p>
-<p><strong>Interpretation</strong>: Effect of treatment on the outcome for those who would survive regardless of treatment.</p>
+<section class="slide level2">
+
+<div id="thm-late" class="theorem">
+<p><span class="theorem-title"><strong>Theorem 2 (IV Estimand under Monotonicity)</strong></span> Under instrumental conditions (i)-(iii) with a dichotomous causal instrument that is randomly assigned, and monotonicity as condition (iv), the usual IV estimand equals the average causal effect in the compliers,</p>
+<p><span class="math display">\[
+\text{E}{\left[Y^{a=1} - Y^{a=0} \mid A^{z=1} = 1, A^{z=0} = 0\right]},
+\]</span></p>
+<p>not the average causal effect in the population <span class="citation" data-cites="hernan2020causal">(<a href="#/references" role="doc-biblioref" onclick="">Hernán and Robins 2020, 218</a>)</span>.</p>
+</div>
+<p>Sketch: the intention-to-treat effect is a weighted average over the four strata; it is zero in always-takers and never-takers (their <span class="math inline">\(A\)</span> does not change with <span class="math inline">\(Z\)</span>, and <span class="math inline">\(Z\)</span> acts only through <span class="math inline">\(A\)</span>), and there are no defiers. So the numerator is the effect in compliers times the proportion of compliers, which is the denominator.</p>
 <aside class="notes">
-<p><strong>SACE vs LATE</strong>:</p>
+<p>The book’s main text refers to “Technical Point 16.6” for this proof; the proof is in Technical Point 16.7 <span class="citation" data-cites="hernan2020causal">(<a href="#/references" role="doc-biblioref" onclick="">Hernán and Robins 2020, 218, 224</a>)</span>.</p>
+<p>This estimand is often called the <strong>complier average causal effect (CACE)</strong> or <strong>local average treatment effect (LATE)</strong>: an effect in a subpopulation, not the population average. Greenland calls compliers “cooperative” and defiers “non-cooperative” to avoid confusion with observed compliance in trials <span class="citation" data-cites="hernan2020causal">(<a href="#/references" role="doc-biblioref" onclick="">Hernán and Robins 2020, 219</a>)</span>.</p>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside>
+</section>
+<section class="slide level2">
+
+<div class="proof">
+<p><span class="proof-title"><em>Proof</em> (Proof (Technical Point 16.7)). </span>Write the intention-to-treat effect as a weighted average over the strata (AT: always-takers, NT: never-takers, C: compliers, D: defiers):</p>
+<p><span class="math display">\[
+\text{E}{\left[Y^{z=1} - Y^{z=0}\right]} = \textstyle\sum_{s \in \{AT, NT, C, D\}} \text{E}{\left[Y^{z=1} - Y^{z=0} \mid s\right]}\, \Pr[s].
+\]</span></p>
 <ul>
-<li><strong>LATE</strong>: Effect in compliers (those whose treatment is affected by instrument)</li>
-<li><strong>SACE</strong>: Effect in always-survivors (those who survive under both treatments)</li>
+<li>In AT and NT, <span class="math inline">\(Z\)</span> does not change <span class="math inline">\(A\)</span>, and by the individual-level exclusion restriction <span class="math inline">\(Z\)</span> has no other effect on <span class="math inline">\(Y\)</span>, so <span class="math inline">\(\text{E}{\left[Y^{z=1} - Y^{z=0} \mid AT\right]} = \text{E}{\left[Y^{z=1} - Y^{z=0} \mid NT\right]} = 0\)</span>.</li>
+<li>Under monotonicity, <span class="math inline">\(\Pr[D] = 0\)</span>.</li>
 </ul>
-<p>Both are <strong>principal stratification</strong> approaches - effects in specific latent subgroups.</p>
-<p><strong>Challenge</strong>: SACE requires strong assumptions:</p>
+<p>Hence <span class="math inline">\(\text{E}{\left[Y^{z=1} - Y^{z=0}\right]} = \text{E}{\left[Y^{z=1} - Y^{z=0} \mid C\right]}\, \Pr[C]\)</span>. In compliers <span class="math inline">\(A = Z\)</span>, so the effect of <span class="math inline">\(Z\)</span> equals the effect of <span class="math inline">\(A\)</span>: <span class="math inline">\(\text{E}{\left[Y^{z=1} - Y^{z=0} \mid C\right]} = \text{E}{\left[Y^{a=1} - Y^{a=0} \mid C\right]}\)</span>, and</p>
+<p><span class="math display">\[
+\text{E}{\left[Y^{a=1} - Y^{a=0} \mid C\right]} = \frac{\text{E}{\left[Y^{z=1} - Y^{z=0}\right]}}{\Pr[C]} .
+\]</span></p>
+<p>Random assignment implies <span class="math inline">\(Z \perp\!\!\!\perp\{Y^{a,z}, A^z;\ z = 0,1;\ a = 0,1\}\)</span>, so with consistency the numerator equals <span class="math inline">\(\text{E}{\left[Y \mid Z = 1\right]} - \text{E}{\left[Y \mid Z = 0\right]}\)</span>. For the denominator, <span class="math inline">\(\Pr[AT] = \Pr[A^{z=0} = 1] = \Pr[A = 1 \mid Z = 0]\)</span> and <span class="math inline">\(\Pr[NT] = \Pr[A^{z=1} = 0] = \Pr[A = 0 \mid Z = 1]\)</span>; with no defiers,</p>
+<p><span class="math display">\[
+\begin{aligned}
+\Pr[C] &amp;= 1 - \Pr[AT] - \Pr[NT] \\
+&amp;= 1 - \Pr[A = 1 \mid Z = 0] - {\left(1 - \Pr[A = 1 \mid Z = 1]\right)} \\
+&amp;= \Pr[A = 1 \mid Z = 1] - \Pr[A = 1 \mid Z = 0].
+\end{aligned}
+\]</span></p>
+</div>
+<aside class="notes">
+<p>The result is due to Imbens and Angrist (1994); Baker and Lindeman (1994) had a related proof for a binary outcome <span class="citation" data-cites="hernan2020causal">(<a href="#/references" role="doc-biblioref" onclick="">Hernán and Robins 2020, 224</a>)</span>. For a surrogate instrument <span class="math inline">\(Z\)</span>, Hernán and Robins (2006b) showed that the usual IV estimator still identifies the effect in the compliers (defined by <span class="math inline">\(U_Z\)</span>), but only if <span class="math inline">\(Z\)</span> is independent of <span class="math inline">\(A\)</span> and <span class="math inline">\(Y\)</span> given <span class="math inline">\(U_Z\)</span> and <span class="math inline">\(U_Z\)</span> is binary, and that independence is rarely plausible unless <span class="math inline">\(U_Z\)</span> is continuous <span class="citation" data-cites="hernan2020causal">(<a href="#/references" role="doc-biblioref" onclick="">Hernán and Robins 2020, 224</a>)</span>.</p>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside>
+</section>
+<section id="compliers-in-an-observational-study" class="slide level2">
+<h2>Compliers in an Observational Study</h2>
+<p>There is no assignment, but “compliers” still means <span class="math inline">\((A^{z=1} = 1, A^{z=0} = 0)\)</span>: in NHEFS, people who would quit smoking in a high-price state and not in a low-price state. If there are no defiers and the causal instrument is dichotomous, 2.4 kg estimates the effect in the compliers <span class="citation" data-cites="hernan2020causal">(<a href="#/references" role="doc-biblioref" onclick="">Hernán and Robins 2020, 218–19</a>)</span>.</p>
+</section>
+<section id="criticisms-of-the-complier-effect" class="slide level2 scrollable">
+<h2>Criticisms of the Complier Effect</h2>
+<p>Monotonicity was welcomed in the mid-1990s as the salvation of IV methods, but the book raises four problems <span class="citation" data-cites="hernan2020causal">(<a href="#/references" role="doc-biblioref" onclick="">Hernán and Robins 2020, 219–20</a>)</span>:</p>
 <ol type="1">
-<li>Monotonicity for survival (treatment doesn’t hurt anyone’s survival)</li>
-<li>Exclusion restriction for both survival and outcome</li>
+<li><strong>Relevance</strong>: compliers cannot be identified, and their proportion (the denominator, about 6% in NHEFS) varies across instruments and studies, so the effect is hard to use for decisions.</li>
+<li><strong>Monotonicity may fail in observational studies</strong>, especially when treatment decisions weigh several criteria.</li>
+<li><strong>Surrogate instruments</strong>: if the causal instrument <span class="math inline">\(U_Z\)</span> is continuous, a dichotomous surrogate’s IV estimand is a weighted average of effects over everyone, not the effect in a subpopulation of compliers.</li>
+<li><strong>Principal strata may be ill-defined</strong>.</li>
 </ol>
-<p>These are often hard to justify.</p>
+<aside class="notes">
+<ol type="1">
+<li>A mitigating factor: under strong assumptions, the distribution of observed variables among compliers can be characterized. Deaton (2010) likened focusing on the complier effect to choosing where the light falls and then claiming that whatever it illuminates is what we were looking for <span class="citation" data-cites="hernan2020causal">(<a href="#/references" role="doc-biblioref" onclick="">Hernán and Robins 2020, 219</a>)</span>.</li>
+<li>Monotonicity is safe in trials (participants are unlikely to consent in order to do the opposite of what they are asked), and it holds by design when those assigned to no treatment cannot get it (no always-takers or defiers); the effect in the compliers is then the effect in the treated. Example (Swanson and Hernán 2014): in a clinic, one physician usually prescribes the treatment except for patients with diabetes; the other usually does not, except for physically active patients. A physically active patient with diabetes is treated contrary to both physicians’ preferences, i.e., is a defier.</li>
+<li>For a continuous <span class="math inline">\(U_Z\)</span>, monotonicity means <span class="math inline">\(A^{u_z}\)</span> is non-decreasing in <span class="math inline">\(u_z\)</span>.</li>
+<li>A stable partition requires, e.g., all physicians with the same preference level who could have seen a patient to treat the patient identically; it also requires deterministic counterfactuals, no interference, and stability across settings and instruments <span class="citation" data-cites="hernan2020causal">(<a href="#/references" role="doc-biblioref" onclick="">Hernán and Robins 2020, 220</a>)</span>.</li>
+</ol>
+<p><strong>Bottom line</strong>: if the complier effect is of interest, monotonicity is most promising in double-blind two-arm trials with all-or-nothing compliance, especially when one arm has full adherence by design; more caution is needed in complex settings and observational studies <span class="citation" data-cites="hernan2020causal">(<a href="#/references" role="doc-biblioref" onclick="">Hernán and Robins 2020, 220</a>)</span>.</p>
 <style type="text/css">
         span.MJX_Assistive_MathML {
           position:absolute!important;
@@ -617,119 +779,184 @@
       }</style></aside>
 </section></section>
 <section>
-<section id="summary" class="title-slide slide level1 center" data-number="8">
-<h1><span class="header-section-number">8</span> Summary</h1>
+<section id="the-three-instrumental-conditions-revisited-pp.-220-222" class="title-slide slide level1 center" data-number="5">
+<h1><span class="header-section-number">5</span> 16.5 The Three Instrumental Conditions Revisited (pp.&nbsp;220-222)</h1>
+
+</section>
+<section class="slide level2">
+
+<p>A proposed instrument may violate (ii) or (iii), or barely meet (i). Then IV estimation may be badly biased even if condition (iv) holds perfectly.</p>
+</section>
+<section id="condition-i-weak-instruments" class="slide level2 scrollable">
+<h2>Condition (i): Weak Instruments</h2>
+<div title="Fine Point 16.2: Defining Weak Instruments">
+<div class="callout callout-note callout-titled callout-style-default">
+<div class="callout-body">
+<div class="callout-title">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<p><strong>Fine Point 16.2: Defining Weak Instruments</strong></p>
+</div>
+<div class="callout-content">
+<ol type="1">
+<li><strong>Substantively weak</strong>: the true <span class="math inline">\(Z\)</span>-<span class="math inline">\(A\)</span> association (the denominator) is small.</li>
+<li><strong>Statistically weak</strong>: the F-statistic for the observed <span class="math inline">\(Z\)</span>-<span class="math inline">\(A\)</span> association is small, typically below 10.</li>
+</ol>
+<p>The NHEFS instrument is weak by both: risk difference about 6%, F-statistic 0.8 <span class="citation" data-cites="hernan2020causal">(<a href="#/references" role="doc-biblioref" onclick="">Hernán and Robins 2020, 221</a>)</span>.</p>
+</div>
+</div>
+</div>
+</div>
+<p>Three problems <span class="citation" data-cites="hernan2020causal">(<a href="#/references" role="doc-biblioref" onclick="">Hernán and Robins 2020, 220–21</a>)</span>:</p>
+<ol type="1">
+<li><strong>Wide confidence intervals</strong> (NHEFS: <span class="math inline">\(-36.5\)</span> to <span class="math inline">\(41.3\)</span> kg).</li>
+<li><strong>Bias amplification</strong>: any bias in the numerator (from a violation of (ii) or (iii)) is divided by the small denominator. In NHEFS it is multiplied by about <span class="math inline">\(1/0.0627 \approx 15.9\)</span>.</li>
+<li><strong>Finite-sample bias</strong> even with a valid instrument and a large sample.</li>
+</ol>
+<aside class="notes">
+<p>Definition 1 links to problem 2 (it holds even in an infinite sample); definition 2 links to problem 3.</p>
+<p>In linear models, strong confounding guarantees a weak instrument: a strong <span class="math inline">\(A\)</span>-<span class="math inline">\(U\)</span> association leaves little room for a strong <span class="math inline">\(A\)</span>-<span class="math inline">\(Z\)</span> association (Martens et al.&nbsp;2006) <span class="citation" data-cites="hernan2020causal">(<a href="#/references" role="doc-biblioref" onclick="">Hernán and Robins 2020, 220</a>)</span>.</p>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside>
+</section>
+<section id="why-weak-instruments-are-biased-in-finite-samples" class="slide level2">
+<h2>Why Weak Instruments Are Biased in Finite Samples</h2>
+<p>A randomly generated <span class="math inline">\(Z\)</span> has, in an infinite population, zero association with <span class="math inline">\(A\)</span>, so the IV estimand is undefined. In a finite sample, chance creates a small <span class="math inline">\(Z\)</span>-<span class="math inline">\(U\)</span>, and hence <span class="math inline">\(Z\)</span>-<span class="math inline">\(A\)</span>, association, so the denominator is small but not zero and the estimate can be wildly inflated.</p>
+<div id="exm-nhefs-thresholds" class="theorem example">
+<p><span class="theorem-title"><strong>Example 2 (The NHEFS Instrument Behaves Like Noise)</strong></span> Redefining <span class="math inline">\(Z\)</span> as price above $1.60, $1.70, $1.80, or $1.90 gives IV estimates of 41.3, <span class="math inline">\(-40.9\)</span>, <span class="math inline">\(-21.1\)</span>, and <span class="math inline">\(-12.8\)</span> kg, each with a huge confidence interval <span class="citation" data-cites="hernan2020causal">(<a href="#/references" role="doc-biblioref" onclick="">Hernán and Robins 2020, 221</a>)</span>.</p>
+</div>
+<aside class="notes">
+<p>Given the bias and variability weak instruments create, a strong proposed instrument that slightly violates (ii) or (iii) may be preferable to a weaker but less invalid one <span class="citation" data-cites="hernan2020causal">(<a href="#/references" role="doc-biblioref" onclick="">Hernán and Robins 2020, 221</a>)</span>. Bound, Jaeger and Baker (1995) documented this bias.</p>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside>
+</section>
+<section id="condition-ii-direct-effects-of-the-instrument" class="slide level2">
+<h2>Condition (ii): Direct Effects of the Instrument</h2>
+<ul>
+<li>A direct arrow <span class="math inline">\(Z \rightarrow Y\)</span> (Figure 16.8) adds to the numerator, and the denominator inflates it as if it were an effect of <span class="math inline">\(A\)</span>.</li>
+<li><strong>Coarsening the treatment</strong> can create a violation: if a continuous or multi-valued <span class="math inline">\(A\)</span> is replaced by a dichotomized <span class="math inline">\(A^*\)</span>, the path <span class="math inline">\(Z \rightarrow A \rightarrow Y\)</span> is a direct effect of <span class="math inline">\(Z\)</span> not mediated by <span class="math inline">\(A^*\)</span> (Figure 16.9). Coarsening is a problem for IV estimation but not necessarily for the methods of earlier chapters <span class="citation" data-cites="hernan2020causal">(<a href="#/references" role="doc-biblioref" onclick="">Hernán and Robins 2020, 221–22</a>)</span>.</li>
+</ul>
+</section>
+<section id="condition-iii-confounding-and-selection-bias" class="slide level2">
+<h2>Condition (iii): Confounding and Selection Bias</h2>
+<ul>
+<li>Common causes of <span class="math inline">\(Z\)</span> and <span class="math inline">\(Y\)</span> (which may or may not also cause <span class="math inline">\(A\)</span>; Figure 16.10) bias the numerator, and the bias is inflated by the denominator. In observational studies this possibility always exists.</li>
+<li><strong>Adjusting for measured pre-instrument covariates <span class="math inline">\(V\)</span></strong>: assume no unmeasured confounding of <span class="math inline">\(Z\)</span>-<span class="math inline">\(Y\)</span> within levels of <span class="math inline">\(V\)</span>, then do IV estimation within strata of <span class="math inline">\(V\)</span> and pool (assuming the effect is constant across <span class="math inline">\(V\)</span>), or include <span class="math inline">\(V\)</span> in the two-stage models. In NHEFS this reduced the effect estimate and widened its 95% confidence interval <span class="citation" data-cites="hernan2020causal">(<a href="#/references" role="doc-biblioref" onclick="">Hernán and Robins 2020, 222</a>)</span>.</li>
+<li><strong>Checking balance</strong> of measured confounders across levels of <span class="math inline">\(Z\)</span> can give false security: small imbalances can cause large biases through amplification.</li>
+<li><strong>Selection bias</strong>: excluding individuals with some treatment levels (e.g., keeping only <span class="math inline">\(A = 1\)</span> or <span class="math inline">\(A = 2\)</span> when <span class="math inline">\(A \in \{0, 1, 2\}\)</span>) can give a non-null IV estimate under the null, although it does not bias a non-IV comparison of <span class="math inline">\(A = 1\)</span> versus <span class="math inline">\(A = 2\)</span>.</li>
+</ul>
+<aside class="notes">
+<p>All these problems get worse when several proposed instruments are used together to compensate for weakness: the more proposed instruments, the more likely that some of them violate a condition <span class="citation" data-cites="hernan2020causal">(<a href="#/references" role="doc-biblioref" onclick="">Hernán and Robins 2020, 222</a>)</span>.</p>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside>
+</section></section>
+<section>
+<section id="instrumental-variable-estimation-versus-other-methods-pp.-223-225" class="title-slide slide level1 center" data-number="6">
+<h1><span class="header-section-number">6</span> 16.6 Instrumental Variable Estimation versus Other Methods (pp.&nbsp;223-225)</h1>
+
+</section>
+<section class="slide level2 scrollable">
+
+<p>IV estimation differs from the earlier methods in at least three ways <span class="citation" data-cites="hernan2020causal">(<a href="#/references" role="doc-biblioref" onclick="">Hernán and Robins 2020, 223</a>)</span>:</p>
+<ol type="1">
+<li><strong>Different assumptions</strong>: it replaces conditional exchangeability of treated and untreated with conditions (i)-(iv). The choice depends on whether it is easier to measure the confounders or to find an instrument and expect monotonicity or no relevant effect heterogeneity.</li>
+<li><strong>Sensitivity to violations</strong>: because the denominator blows up the numerator, small violations or a weak instrument can cause large bias in either direction, possibly larger than an unadjusted estimate. Slight violations of the conditions for IP weighting or standardization tend to give only slight bias.</li>
+<li><strong>Narrower applicability</strong>: standard IV estimation suits settings with lots of unmeasured confounding, a truly dichotomous time-fixed treatment, a strong (causal) instrument, and either effect homogeneity or (if the complier effect is of interest) monotonicity. So it is mostly used for point interventions and plays a small role in Part III (time-varying treatments).</li>
+</ol>
+<aside class="notes">
+<p>Because it rests on different assumptions, IV estimation is useful for <strong>triangulation</strong>, but the wide confidence intervals typical of IV estimates often limit its added value, and the counterintuitive direction and size of its biases need special attention. Sensitivity analyses and transparent reporting are important <span class="citation" data-cites="hernan2020causal">(<a href="#/references" role="doc-biblioref" onclick="">Hernán and Robins 2020, 223</a>)</span>. Regression discontinuity (Fine Point 16.3) and difference-in-differences (Technical Point 7.3) also identify effects without conditional exchangeability.</p>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside>
+</section>
+<section class="slide level2">
+
+<div title="Fine Point 16.3: Regression Discontinuity Design">
+<div class="callout callout-note callout-titled callout-style-default">
+<div class="callout-body">
+<div class="callout-title">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<p><strong>Fine Point 16.3: Regression Discontinuity Design</strong></p>
+</div>
+<div class="callout-content">
+<p>Example: an antiviral <span class="math inline">\(A\)</span> for COVID-19 is given to everyone aged 65 or older (<span class="math inline">\(L \ge 65\)</span>) and to no one younger, so <span class="math inline">\(\Pr[A = 1 \mid L &lt; 65] = 0\)</span> and <span class="math inline">\(\Pr[A = 1 \mid L \ge 65] = 1\)</span>. There is no positivity.</p>
+<ul>
+<li><strong>Continuity assumption</strong>: <span class="math inline">\(\text{E}{\left[Y^{a=1} \mid L\right]}\)</span> and <span class="math inline">\(\text{E}{\left[Y^{a=0} \mid L\right]}\)</span> are continuous in <span class="math inline">\(L\)</span> (at least around the threshold), and individuals just on either side are exchangeable.</li>
+<li>Then a jump in the observed <span class="math inline">\(\text{E}{\left[Y \mid L\right]}\)</span> at <span class="math inline">\(L = 65\)</span> estimates the effect of <span class="math inline">\(A\)</span> <strong>among those with <span class="math inline">\(L\)</span> near the threshold</strong>, e.g., by comparing mean outcomes within a chosen bandwidth, typically with regression models fit on each side.</li>
+<li>The bandwidth trades precision against bias; data-adaptive procedures such as cross-validation can help choose it.</li>
+</ul>
+<p>This is a <strong>sharp</strong> design; a <strong>fuzzy</strong> design, where the treatment probability jumps but not from 0 to 1, relies on monotonicity and estimates the effect in the compliers near the threshold <span class="citation" data-cites="hernan2020causal">(<a href="#/references" role="doc-biblioref" onclick="">Hernán and Robins 2020, 225</a>)</span>.</p>
+</div>
+</div>
+</div>
+</div>
+<aside class="notes">
+<p>The design is biased if other treatments also change at the threshold (e.g., intensive care restricted to those 65 and older), or if people manipulate the running variable (e.g., falsify their age). The near-threshold effect can differ from the population effect if <span class="math inline">\(L\)</span> is an effect modifier <span class="citation" data-cites="hernan2020causal">(<a href="#/references" role="doc-biblioref" onclick="">Hernán and Robins 2020, 225</a>)</span>.</p>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside>
+</section></section>
+<section>
+<section id="summary" class="title-slide slide level1 center" data-number="7">
+<h1><span class="header-section-number">7</span> Summary</h1>
 
 </section>
 <section class="slide level2 smaller scrollable" id="references">
 
-<p><strong>Key concepts</strong>:</p>
-<ol type="1">
-<li><strong>Instrumental variable</strong>: A variable <span class="math inline">\(Z\)</span> that affects treatment but not the outcome directly</li>
-<li><strong>IV conditions</strong>: Relevance, exchangeability, exclusion restriction</li>
-<li><strong>Wald estimator</strong>: <span class="math inline">\(\frac{\text{E}{\left[Y \mid Z=1\right]} - \text{E}{\left[Y \mid Z=0\right]}}{\text{E}{\left[A \mid Z=1\right]} - \text{E}{\left[A \mid Z=0\right]}}\)</span> for binary <span class="math inline">\(Z, A\)</span></li>
-<li><strong>Principal strata</strong>: Compliers, always-takers, never-takers, defiers</li>
-<li><strong>LATE</strong>: Local average treatment effect in compliers</li>
-<li><strong>2SLS</strong>: Two-stage least squares for continuous outcomes</li>
-<li><strong>SACE</strong>: Survivor average causal effect for survival outcomes</li>
-</ol>
-<p><strong>When to use IV methods</strong>:</p>
 <ul>
-<li><strong>Unmeasured confounding</strong> is a concern</li>
-<li><strong>Valid instrument</strong> is available (strong assumptions)</li>
-<li><strong>LATE</strong> is a meaningful estimand (compliers are of interest)</li>
-<li><strong>Efficiency loss</strong> is acceptable (IV estimates have larger SEs)</li>
+<li>An <strong>instrument</strong> meets (i) association with <span class="math inline">\(A\)</span>, (ii) no effect on <span class="math inline">\(Y\)</span> except through <span class="math inline">\(A\)</span>, (iii) no shared causes with <span class="math inline">\(Y\)</span>; only (i) is testable.</li>
+<li>Alone, an instrument identifies only (usually wide) <strong>bounds</strong>.</li>
+<li><strong>Usual IV estimand</strong>: <span class="math inline">\(\dfrac{\text{E}{\left[Y \mid Z=1\right]} - \text{E}{\left[Y \mid Z=0\right]}}{\text{E}{\left[A \mid Z=1\right]} - \text{E}{\left[A \mid Z=0\right]}}\)</span>, computed directly or by two-stage least squares.</li>
+<li>Adding <strong>homogeneity</strong> (iv) makes it the population average causal effect; adding <strong>monotonicity</strong> (iv) instead makes it the effect in the <strong>compliers</strong>.</li>
+<li><strong>NHEFS</strong>: estimate 2.4 kg (95% CI <span class="math inline">\(-36.5\)</span> to <span class="math inline">\(41.3\)</span>) from a weak instrument (risk difference 6%, F = 0.8).</li>
+<li>Weak instruments widen intervals, amplify bias, and are biased in finite samples; violations of (ii) and (iii) are inflated by the small denominator.</li>
 </ul>
-<p><strong>Common instruments</strong>:</p>
-<table class="caption-top">
-<colgroup>
-<col style="width: 22%">
-<col style="width: 27%">
-<col style="width: 27%">
-<col style="width: 22%">
-</colgroup>
-<thead>
-<tr class="header">
-<th>Setting</th>
-<th>Instrument</th>
-<th>Treatment</th>
-<th>Outcome</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td>Randomized encouragement</td>
-<td>Encouragement</td>
-<td>Behavior change</td>
-<td>Health</td>
-</tr>
-<tr class="even">
-<td>Geographic variation</td>
-<td>Distance to facility</td>
-<td>Healthcare use</td>
-<td>Health</td>
-</tr>
-<tr class="odd">
-<td>Mendelian randomization</td>
-<td>Genetic variant</td>
-<td>Biomarker</td>
-<td>Disease</td>
-</tr>
-<tr class="even">
-<td>Draft lottery</td>
-<td>Lottery number</td>
-<td>Military service</td>
-<td>Earnings</td>
-</tr>
-<tr class="odd">
-<td>Physician preference</td>
-<td>Physician tendency</td>
-<td>Treatment choice</td>
-<td>Outcome</td>
-</tr>
-</tbody>
-</table>
-<p><strong>Assumptions to check</strong>:</p>
-<ol type="1">
-<li><strong>Relevance</strong>: Test empirically (<span class="math inline">\(Z\)</span> associated with <span class="math inline">\(A\)</span>)</li>
-<li><strong>Exchangeability</strong>: Justify by design or argue plausibility</li>
-<li><strong>Exclusion</strong>: Requires subject-matter knowledge (cannot be tested)</li>
-<li><strong>Monotonicity</strong>: No defiers (often plausible, sometimes testable)</li>
-</ol>
-<p><strong>Advantages</strong>:</p>
-<ul>
-<li>Allows causal inference with unmeasured confounding</li>
-<li>Uses only treatment variation “caused by” instrument</li>
-<li>Provides a different estimand than regression methods</li>
-</ul>
-<p><strong>Limitations</strong>:</p>
-<ul>
-<li>Strong, untestable assumptions (especially exclusion)</li>
-<li>Estimates LATE, not ATE (interpretation challenge)</li>
-<li>Less efficient than regression (when regression assumptions hold)</li>
-<li>Weak instruments lead to bias and large variance</li>
-</ul>
-<aside class="notes">
-<p><strong>Practical advice</strong>:</p>
-<ol type="1">
-<li><strong>Think hard about exclusion</strong>: Is it plausible the instrument only affects outcome through treatment?</li>
-<li><strong>Check instrument strength</strong>: Weak instruments are worse than no instrument</li>
-<li><strong>Understand LATE</strong>: Who are the compliers? Is their effect of interest?</li>
-<li><strong>Sensitivity analyses</strong>: Try different instruments if available</li>
-<li><strong>Compare with regression</strong>: Large differences suggest unmeasured confounding or heterogeneity</li>
-</ol>
-<p><strong>Looking ahead</strong>: Part III extends these methods to time-varying treatments, where IV ideas play a role in dealing with time-varying confounding and selection bias.</p>
-<style type="text/css">
-        span.MJX_Assistive_MathML {
-          position:absolute!important;
-          clip: rect(1px, 1px, 1px, 1px);
-          padding: 1px 0 0 0!important;
-          border: 0!important;
-          height: 1px!important;
-          width: 1px!important;
-          overflow: hidden!important;
-          display:block!important;
-      }</style></aside>
 
 
 <script>

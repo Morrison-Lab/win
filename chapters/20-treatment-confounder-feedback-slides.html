@@ -166,10 +166,10 @@
 <!-- https://www.overleaf.com/learn/latex/Using_colors_in_LaTeX#Named_colors_provided_by_the_xcolor_package -->
 <!-- \def\or{\theta}  -->
 <!-- doesn't work for some reason -->
-<p>Chapter 19 introduced the concept of time-varying confounders: covariates that change over time, are causally influenced by past treatment, and simultaneously predict future treatment and the outcome. This chapter shows exactly <strong>why</strong> this creates a problem for standard analytic methods — and why that problem cannot be fixed by any simple modification of those methods. Understanding this failure is the intellectual motivation for the g-methods presented in Chapter 21.</p>
+<p>Chapter 19 identified sequential exchangeability as a key condition for identifying the causal effects of time-varying treatments. Suppose a study satisfies the strongest form of sequential exchangeability, so the measured time-varying confounders suffice to estimate the effect of any treatment strategy. Which confounding adjustment method should we then use? The answer exposes a central problem for time-varying treatments: <strong>treatment-confounder feedback</strong>. When it is present, traditional adjustment methods can be biased even though all the information needed for valid estimation is available. This chapter describes the structure of treatment-confounder feedback and explains why traditional methods fail.</p>
 <aside class="notes">
-<p>This chapter is based on <span class="citation" data-cites="hernan2020causal">Hernán and Robins (<a href="#/references" role="doc-biblioref" onclick="">2020, chap. 20</a>, pp.&nbsp;267–275)</span>.</p>
-<p><strong>Key insight</strong>: When treatment-confounder feedback is present, any analytic approach that conditions on the time-varying confounder (e.g., standard regression, stratification, propensity score adjustment) simultaneously over-adjusts for the causal effect of past treatment and under-controls for confounding of future treatment. There is no allocation of weight to these two errors that corrects both simultaneously.</p>
+<p>This chapter is based on <span class="citation" data-cites="hernan2020causal">Hernán and Robins (<a href="#/references" role="doc-biblioref" onclick="">2020, chap. 20</a>, pp.&nbsp;267-275)</span>.</p>
+<p><strong>Key insight</strong>: with treatment-confounder feedback, a time-varying confounder <span class="math inline">\(L_1\)</span> is also affected by (or shares causes with) earlier treatment <span class="math inline">\(A_0\)</span>. Stratifying on <span class="math inline">\(L_1\)</span> removes confounding for the later treatment <span class="math inline">\(A_1\)</span> but opens a collider path that creates selection bias for <span class="math inline">\(A_0\)</span>. Not adjusting for <span class="math inline">\(L_1\)</span> leaves <span class="math inline">\(A_1\)</span> confounded. Either way the estimate of a treatment-strategy effect is biased; g-methods (Chapter 21) avoid both problems.</p>
 <style type="text/css">
         span.MJX_Assistive_MathML {
           position:absolute!important;
@@ -183,80 +183,24 @@
       }</style></aside>
 </section>
 <section>
-<section id="the-elements-of-treatment-confounder-feedback-p.-267" class="title-slide slide level1 center" data-number="1">
-<h1><span class="header-section-number">1</span> 20.1 The Elements of Treatment-Confounder Feedback (p.&nbsp;267)</h1>
+<section id="the-elements-of-treatment-confounder-feedback-pp.-267-269" class="title-slide slide level1 center" data-number="1">
+<h1><span class="header-section-number">1</span> 20.1 The Elements of Treatment-Confounder Feedback (pp.&nbsp;267-269)</h1>
 
 </section>
-<section class="slide level2 scrollable">
+<section class="slide level2">
 
-<p><strong>Treatment-confounder feedback</strong> arises whenever a time-varying covariate <span class="math inline">\(L_k\)</span> satisfies all of the following:</p>
-<ol type="1">
-<li><strong><span class="math inline">\(L_k\)</span> is a confounder</strong>: <span class="math inline">\(L_k\)</span> is an independent predictor of both future treatment <span class="math inline">\(A_k\)</span> and the outcome <span class="math inline">\(Y\)</span>, creating a backdoor path <span class="math inline">\(A_k \leftarrow L_k \to Y\)</span>.</li>
-<li><strong><span class="math inline">\(L_k\)</span> is affected by prior treatment</strong>: past treatment <span class="math inline">\(A_{k-1}\)</span> (or any <span class="math inline">\(A_j\)</span> with <span class="math inline">\(j &lt; k\)</span>) is a cause of <span class="math inline">\(L_k\)</span>, so <span class="math inline">\(A_{k-1} \to L_k\)</span> is a causal arrow in the DAG.</li>
-<li><strong>Feedback continues</strong>: the adjusted value of <span class="math inline">\(L_k\)</span> can influence the next treatment decision <span class="math inline">\(A_k\)</span>, which in turn affects <span class="math inline">\(L_{k+1}\)</span>, and so on.</li>
-</ol>
-<p>The causal diagram capturing two time points of feedback is:</p>
-<p><span class="math display">\[A_0 \to L_1 \to A_1 \to Y, \quad A_0 \to Y, \quad L_0 \to A_0, \quad L_0 \to Y, \quad L_1 \to Y.\]</span></p>
-<p>The arrow <span class="math inline">\(A_0 \to L_1\)</span> is the feedback arrow: prior treatment changes the confounder.</p>
-<div id="exm-hiv-feedback" class="theorem example">
-<p><span class="theorem-title"><strong>Example 1 (HIV Treatment and CD4 Counts)</strong></span> In an HIV cohort study, let <span class="math inline">\(A_k\)</span> be antiretroviral therapy (ART) at time <span class="math inline">\(k\)</span>, <span class="math inline">\(L_k\)</span> be the CD4 T-cell count at time <span class="math inline">\(k\)</span>, and <span class="math inline">\(Y\)</span> be death within five years.</p>
+<p>Return to the sequentially randomized HIV trial of Chapter 19:</p>
 <ul>
-<li>Physicians initiate or intensify ART when CD4 drops (<span class="math inline">\(L_k\)</span> predicts <span class="math inline">\(A_k\)</span>).</li>
-<li>ART partially restores immune function, raising future CD4 counts (<span class="math inline">\(A_k\)</span> causes <span class="math inline">\(L_{k+1}\)</span>).</li>
-<li>CD4 count is an independent predictor of mortality (<span class="math inline">\(L_k\)</span> causes <span class="math inline">\(Y\)</span>).</li>
+<li>treatment <span class="math inline">\(A_k\)</span> (1: treated, 0: untreated) at each month <span class="math inline">\(k = 0, 1, \ldots, K\)</span>;</li>
+<li>covariates <span class="math inline">\(L_k\)</span> (CD4 cell count) at each month;</li>
+<li>an outcome <span class="math inline">\(Y\)</span> measuring health status at month <span class="math inline">\(K + 1\)</span>.</li>
 </ul>
-<p>All three conditions above are satisfied: <span class="math inline">\(L_k\)</span> is a time-varying confounder with treatment feedback.</p>
+<p>The time-varying covariates <span class="math inline">\(L_k\)</span> are time-varying confounders: CD4 count <span class="math inline">\(L_k\)</span> affects treatment <span class="math inline">\(A_k\)</span>. In addition, treatment <span class="math inline">\(A_{k-1}\)</span> raises future CD4 count <span class="math inline">\(L_k\)</span>.</p>
+<div id="def-treatment-confounder-feedback" class="theorem definition">
+<p><span class="theorem-title"><strong>Definition 1 (Treatment-Confounder Feedback)</strong></span> There is <strong>treatment-confounder feedback</strong> when the time-varying confounder affects treatment (<span class="math inline">\(L_k \to A_k\)</span>) <em>and</em> earlier treatment affects the confounder (<span class="math inline">\(A_{k-1} \to L_k\)</span>): “the confounder affects the treatment and the treatment affects the confounder” <span class="citation" data-cites="hernan2020causal">(<a href="#/references" role="doc-biblioref" onclick="">Hernán and Robins 2020, 267</a>)</span>.</p>
 </div>
-</section>
-<section id="the-role-of-unmeasured-common-causes" class="slide level2">
-<h2>The Role of Unmeasured Common Causes</h2>
-<p>To appreciate why conditioning on <span class="math inline">\(L_k\)</span> is problematic, it helps to introduce an unmeasured common cause <span class="math inline">\(U\)</span> of <span class="math inline">\(L_k\)</span> and <span class="math inline">\(Y\)</span>. For example, <span class="math inline">\(U\)</span> might be an unmeasured aspect of immune function that affects both CD4 count (and hence <span class="math inline">\(L_k\)</span>) and mortality (and hence <span class="math inline">\(Y\)</span>).</p>
-<p>The extended DAG then contains the path</p>
-<p><span class="math display">\[A_{k-1} \to L_k \leftarrow U \to Y.\]</span></p>
-<p>Here, <span class="math inline">\(L_k\)</span> is a <strong>collider</strong> on the path <span class="math inline">\(A_{k-1} \to L_k \leftarrow U \to Y\)</span>. As discussed in Chapter 6, conditioning on a collider opens a previously blocked path, inducing a spurious association between <span class="math inline">\(A_{k-1}\)</span> and <span class="math inline">\(Y\)</span> through <span class="math inline">\(U\)</span>.</p>
 <aside class="notes">
-<p><strong>Why the unmeasured <span class="math inline">\(U\)</span> matters even if we don’t know it exists</strong>:</p>
-<p>Every causal diagram should be understood as containing all relevant common causes, measured or not. When we say “condition on <span class="math inline">\(L_k\)</span>”, we open the collider path through <span class="math inline">\(U\)</span> regardless of whether <span class="math inline">\(U\)</span> is in our dataset. The collider bias induced by conditioning on <span class="math inline">\(L_k\)</span> is a structural feature of the problem, not a statistical artifact that can be resolved by collecting more data (unless we measure <span class="math inline">\(U\)</span> itself).</p>
-<style type="text/css">
-        span.MJX_Assistive_MathML {
-          position:absolute!important;
-          clip: rect(1px, 1px, 1px, 1px);
-          padding: 1px 0 0 0!important;
-          border: 0!important;
-          height: 1px!important;
-          width: 1px!important;
-          overflow: hidden!important;
-          display:block!important;
-      }</style></aside>
-</section></section>
-<section>
-<section id="the-bias-of-traditional-methods-p.-269" class="title-slide slide level1 center" data-number="2">
-<h1><span class="header-section-number">2</span> 20.2 The Bias of Traditional Methods (p.&nbsp;269)</h1>
-
-</section>
-<section class="slide level2">
-
-<p><strong>Traditional methods</strong> for confounding adjustment include:</p>
-<ul>
-<li>Stratification (comparing treated and untreated within levels of <span class="math inline">\(\bar{L}_k\)</span>).</li>
-<li>Multivariable regression of <span class="math inline">\(Y\)</span> on <span class="math inline">\(\bar{A}_K\)</span> and <span class="math inline">\(\bar{L}_K\)</span>.</li>
-<li>Propensity score adjustment conditioning on <span class="math inline">\(\bar{L}_k\)</span>.</li>
-</ul>
-<p>All of these approaches <strong>condition on the time-varying confounder</strong> <span class="math inline">\(L_k\)</span>. We now show that this conditioning introduces bias in the presence of treatment-confounder feedback.</p>
-</section>
-<section id="a-numerical-example" class="slide level2 scrollable">
-<h2>A Numerical Example</h2>
-<p>Consider a two-time-point study (<span class="math inline">\(k = 0, 1\)</span>) with binary treatment and binary confounder, and suppose the true causal effect of the treatment strategy “always treat” (<span class="math inline">\(\bar{a} = (1,1)\)</span>) versus “never treat” (<span class="math inline">\(\bar{a} = (0,0)\)</span>) on <span class="math inline">\(Y\)</span> is zero.</p>
-<p>If we stratify on <span class="math inline">\(L_1\)</span> (the time-varying confounder), we find a non-zero association between <span class="math inline">\(A_0\)</span> and <span class="math inline">\(Y\)</span> within strata of <span class="math inline">\(L_1\)</span>. This spurious association arises because conditioning on <span class="math inline">\(L_1\)</span> opens the backdoor path <span class="math inline">\(A_0 \to L_1 \leftarrow U \to Y\)</span>.</p>
-<p>Conversely, if we do <em>not</em> stratify on <span class="math inline">\(L_1\)</span>, we fail to control for the confounding path <span class="math inline">\(A_1 \leftarrow L_1 \to Y\)</span>, also introducing bias. There is no strategy within the traditional regression paradigm that avoids both forms of bias simultaneously.</p>
-<aside class="notes">
-<p><strong>Why both errors occur simultaneously</strong>:</p>
-<p>Let us be precise. Traditional adjustment for <span class="math inline">\(\bar{L}_K = (L_0, L_1)\)</span> causes:</p>
-<ol type="1">
-<li><p><strong>Collider bias from conditioning on <span class="math inline">\(L_1\)</span></strong>: Since <span class="math inline">\(A_0 \to L_1\)</span> and <span class="math inline">\(L_1 \leftarrow U \to Y\)</span>, conditioning on <span class="math inline">\(L_1\)</span> opens the noncausal path <span class="math inline">\(A_0 \to L_1 \leftarrow U \to Y\)</span>, creating a spurious association between <span class="math inline">\(A_0\)</span> and <span class="math inline">\(Y\)</span>.</p></li>
-<li><p><strong>Incomplete confounding control from not conditioning on <span class="math inline">\(L_1\)</span> for <span class="math inline">\(A_1\)</span></strong>: If we do not condition on <span class="math inline">\(L_1\)</span>, the backdoor path <span class="math inline">\(A_1 \leftarrow L_1 \to Y\)</span> remains open, creating confounding of the <span class="math inline">\(A_1 \to Y\)</span> effect.</p></li>
-</ol>
-<p>A traditional analyst might try to fix (2) while ignoring (1) by conditioning on <span class="math inline">\(L_1\)</span>, thereby simultaneously creating the problem described in (1). Or they might try to avoid (1) by not conditioning on <span class="math inline">\(L_1\)</span>, thereby failing to fix (2). The two problems are structurally inseparable.</p>
+<p>The book’s Figure 20.1 (the same diagram as Figure 19.2) shows the first two months of the trial. As in Chapter 19, the example has no censoring, so we can focus on confounding.</p>
 <style type="text/css">
         span.MJX_Assistive_MathML {
           position:absolute!important;
@@ -269,160 +213,432 @@
           display:block!important;
       }</style></aside>
 </section>
-<section id="direction-of-the-bias" class="slide level2">
-<h2>Direction of the Bias</h2>
-<p>The <strong>direction</strong> of the bias introduced by traditional methods depends on the signs of the associations in the feedback loop. Without additional information, the bias can be in either direction — traditional methods can either underestimate or overestimate the treatment effect.</p>
-<p>This unpredictability is particularly concerning: a naive analyst who uses traditional regression may not only miss the true effect but may estimate an effect of the wrong sign.</p>
-</section></section>
-<section>
-<section id="why-traditional-methods-fail-p.-271" class="title-slide slide level1 center" data-number="3">
-<h1><span class="header-section-number">3</span> 20.3 Why Traditional Methods Fail (p.&nbsp;271)</h1>
-
-</section>
-<section class="slide level2">
-
-<p>The fundamental reason traditional methods fail is that <strong>they cannot simultaneously adjust for time-varying confounding and preserve the causal effect of prior treatment</strong>.</p>
-<p>To estimate the total effect of the strategy “always treat” versus “never treat”, we need to include the causal path <span class="math inline">\(A_0 \to L_1 \to A_1 \to Y\)</span> — that is, the effect of <span class="math inline">\(A_0\)</span> working through <span class="math inline">\(L_1\)</span> on <span class="math inline">\(A_1\)</span> and then on <span class="math inline">\(Y\)</span>. But to control confounding of the <span class="math inline">\(A_1 \to Y\)</span> relationship, we feel compelled to condition on <span class="math inline">\(L_1\)</span>, which blocks the path <span class="math inline">\(A_0 \to L_1 \to \cdots \to Y\)</span> and introduces collider bias.</p>
-<div id="prp-traditional-fails" class="theorem proposition">
-<p><span class="theorem-title"><strong>Proposition 1 (Traditional Methods Fail under Treatment-Confounder Feedback)</strong></span> Let the causal DAG contain the path <span class="math inline">\(A_0 \to L_1 \leftarrow U \to Y\)</span> and the confounding path <span class="math inline">\(A_1 \leftarrow L_1 \to Y\)</span>. Then no estimator that conditions on <span class="math inline">\(L_1\)</span> as a standard covariate (in a regression or stratification) can consistently estimate <span class="math inline">\(\text{E}{\left[Y^{\bar{a}=\bar{1}}\right]} - \text{E}{\left[Y^{\bar{a}=\bar{0}}\right]}\)</span>.</p>
-</div>
-</section>
-<section id="a-dag-based-explanation" class="slide level2">
-<h2>A DAG-Based Explanation</h2>
-<p>The failure can be visualized on the causal DAG. Suppose the full DAG (including unmeasured <span class="math inline">\(U\)</span>) is:</p>
-<p><span class="math display">\[L_0 \to A_0 \to L_1 \leftarrow U \to Y, \quad L_1 \to A_1 \to Y, \quad A_0 \to Y, \quad L_0 \to Y.\]</span></p>
-<p>The treatment effect of interest is mediated through multiple paths: <span class="math inline">\(A_0 \to Y\)</span> (direct) and <span class="math inline">\(A_0 \to A_1 \to Y\)</span> (through its effect on <span class="math inline">\(A_1\)</span> via <span class="math inline">\(L_1\)</span>).</p>
-<p>Now consider what happens when we condition on <span class="math inline">\(L_1\)</span> in a regression:</p>
-<ul>
-<li>We block the path <span class="math inline">\(A_0 \to L_1 \to A_1 \to Y\)</span> (over-adjustment).</li>
-<li>We open the path <span class="math inline">\(A_0 \to L_1 \leftarrow U \to Y\)</span> (collider bias).</li>
-</ul>
-<p>Both effects distort the estimated association between <span class="math inline">\(A_0\)</span> and <span class="math inline">\(Y\)</span>. The g-methods of Chapter 21 avoid this by not conditioning on <span class="math inline">\(L_1\)</span> as a standard covariate, but instead using it in a more structured way that respects the feedback.</p>
-<aside class="notes">
-<p><strong>Historical note</strong>: The problem of time-varying confounders was first formally analyzed by James Robins in the 1980s. He showed that the standard methods produce inconsistent estimates and developed the g-computation formula (g-formula) as a solution. The term “g” stands for “generalized” — the g-formula generalizes the standard adjustment formula to the longitudinal setting with feedback.</p>
-<style type="text/css">
-        span.MJX_Assistive_MathML {
-          position:absolute!important;
-          clip: rect(1px, 1px, 1px, 1px);
-          padding: 1px 0 0 0!important;
-          border: 0!important;
-          height: 1px!important;
-          width: 1px!important;
-          overflow: hidden!important;
-          display:block!important;
-      }</style></aside>
-</section></section>
-<section>
-<section id="why-traditional-methods-cannot-be-fixed-p.-273" class="title-slide slide level1 center" data-number="4">
-<h1><span class="header-section-number">4</span> 20.4 Why Traditional Methods Cannot Be Fixed (p.&nbsp;273)</h1>
-
-</section>
-<section class="slide level2">
-
-<p>One might hope that a more sophisticated version of traditional regression — perhaps including interaction terms, polynomial terms, or machine learning — could solve the time-varying confounding problem. This hope is misguided.</p>
-<p>The failure of traditional methods is not due to model misspecification or insufficient flexibility. It is a <strong>structural</strong> failure: the data cannot be analyzed correctly using any approach that conditions on <span class="math inline">\(L_k\)</span> as a standard covariate.</p>
-</section>
-<section id="attempts-to-fix-traditional-regression" class="slide level2">
-<h2>Attempts to Fix Traditional Regression</h2>
-<p>Several “fixes” have been proposed and shown to be inadequate:</p>
-<p><strong>Adding lagged treatments</strong>: Including <span class="math inline">\(A_0, A_1\)</span> and <span class="math inline">\(L_0, L_1\)</span> in the same regression of <span class="math inline">\(Y\)</span> does not solve the problem because it still conditions on <span class="math inline">\(L_1\)</span> simultaneously with <span class="math inline">\(A_0\)</span> and <span class="math inline">\(A_1\)</span>, blocking the causal path and opening the collider.</p>
-<p><strong>Marginal models without adjustment</strong>: Fitting a marginal regression of <span class="math inline">\(Y\)</span> on <span class="math inline">\(A_0\)</span> and <span class="math inline">\(A_1\)</span> without adjusting for <span class="math inline">\(L_k\)</span> fails to control confounding, since <span class="math inline">\(L_k\)</span> is a confounder for <span class="math inline">\(A_k\)</span>.</p>
-<p><strong>Fixed-effects panel models</strong>: These control for time-invariant unmeasured confounders but do not address time-varying confounders that are affected by past treatment.</p>
-<p><strong>Instrumental variable methods</strong>: Require instruments that are hard to find and do not directly address the structural issue with treatment-confounder feedback.</p>
-<div title="Fine Point 20.1: The Structural Problem Is Not About Sample Size">
+<section id="time-varying-confounding-without-feedback" class="slide level2">
+<h2>Time-Varying Confounding Without Feedback</h2>
+<p>Time-varying confounding can occur <em>without</em> treatment-confounder feedback. In the book’s Figure 20.2, the arrows from <span class="math inline">\(A_{k-1}\)</span> to <span class="math inline">\(L_k\)</span> and to <span class="math inline">\(U_k\)</span> are deleted: <span class="math inline">\(L_k\)</span> still confounds the effect of <span class="math inline">\(A_k\)</span>, but it is not affected by prior treatment. There is time-varying confounding but no feedback.</p>
+<div title="Fine Point 20.1: Representing Feedback Cycles with Acyclic Graphs">
 <div class="callout callout-note callout-titled callout-style-default">
 <div class="callout-body">
 <div class="callout-title">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
-<p><strong>Fine Point 20.1: The Structural Problem Is Not About Sample Size</strong></p>
+<p><strong>Fine Point 20.1: Representing Feedback Cycles with Acyclic Graphs</strong></p>
 </div>
 <div class="callout-content">
-<p>A common misconception is that the bias of traditional methods in the presence of treatment-confounder feedback is a finite-sample problem that disappears with large enough datasets. This is incorrect. The bias is present even in infinite samples because it arises from the structural relationship between variables in the DAG, not from estimation error. Doubling the sample size doubles our precision in estimating the wrong quantity. The only remedy is to use an estimation strategy that is structurally correct — the g-methods of Chapter 21.</p>
+<p>A feedback loop between treatment and confounder can be drawn on an acyclic graph by unrolling it in time: <span class="math inline">\(A_{k-1} \to L_k \to A_k \to L_{k+1} \to \cdots\)</span>. This representation requires discrete time: treatment and covariates may change during each interval <span class="math inline">\([k, k+1)\)</span>, without specifying when within the interval. In practice the intervals can be made as short as the data’s granularity requires (months in the HIV example, where patients see their doctors at most monthly), and time is usually recorded in discrete units anyway <span class="citation" data-cites="hernan2020causal">(<a href="#/references" role="doc-biblioref" onclick="">Hernán and Robins 2020</a>, Fine Point 20.1, p.&nbsp;268)</span>.</p>
 </div>
 </div>
 </div>
 </div>
 </section>
-<section id="what-would-a-correct-method-need-to-do" class="slide level2 scrollable">
-<h2>What Would a Correct Method Need to Do?</h2>
-<p>A method that correctly handles treatment-confounder feedback must:</p>
-<ol type="1">
-<li><strong>Use <span class="math inline">\(L_k\)</span> to adjust for confounding of <span class="math inline">\(A_k\)</span></strong> — so <span class="math inline">\(L_k\)</span> cannot simply be ignored.</li>
-<li><strong>Not condition on <span class="math inline">\(L_k\)</span> as a standard covariate in estimating the effect of <span class="math inline">\(A_{k-1}\)</span></strong> — to avoid blocking the causal path and opening the collider.</li>
-<li><strong>Account for the entire treatment and covariate history</strong> — through a model that respects the sequential, recursive nature of the data-generating process.</li>
-</ol>
-<p>The g-formula, IP weighting with marginal structural models, and g-estimation each accomplish these goals through different mechanisms, as described in Chapter 21.</p>
+<section id="the-simplest-case-figure-20.3" class="slide level2">
+<h2>The Simplest Case: Figure 20.3</h2>
+<p>The smallest diagram that shows treatment-confounder feedback in a two-time-point sequentially randomized trial is the book’s Figure 20.3. Its arrows include, among others,</p>
+<p><span class="math display">\[A_0 \to L_1, \qquad L_1 \to A_1, \qquad U_1 \to L_1, \qquad U_1 \to Y.\]</span></p>
+<p>It makes four simplifications relative to Figure 20.1:</p>
+<ul>
+<li>no baseline node <span class="math inline">\(L_0\)</span>: <span class="math inline">\(A_0\)</span> is marginally randomized and <span class="math inline">\(A_1\)</span> is randomized conditional on <span class="math inline">\(L_1\)</span>;</li>
+<li>no unmeasured <span class="math inline">\(U_0\)</span>;</li>
+<li>no arrow <span class="math inline">\(A_0 \to A_1\)</span>: treatment at time 1 is assigned using <span class="math inline">\(L_1\)</span> only;</li>
+<li>no arrows from <span class="math inline">\(A_0\)</span>, <span class="math inline">\(L_1\)</span>, or <span class="math inline">\(A_1\)</span> into <span class="math inline">\(Y\)</span>: the <strong>sharp null</strong> holds.</li>
+</ul>
+<aside class="notes">
+<p>None of these simplifications affects the arguments of the chapter; a larger diagram would add no conceptual insight and would only be harder to read.</p>
+<p>Because Figure 20.3 has no forward-directed path from <span class="math inline">\(A_0\)</span> or <span class="math inline">\(A_1\)</span> to <span class="math inline">\(Y\)</span>, the true average causal effect of “always treat” versus “never treat” is zero:</p>
+<p><span class="math display">\[\text{E}{\left[Y^{a_0=1, a_1=1}\right]} - \text{E}{\left[Y^{a_0=0, a_1=0}\right]} = 0.\]</span></p>
+<p>There are no arrows from the unmeasured <span class="math inline">\(U_1\)</span> into the treatments, so Figure 20.3 can represent a sequentially randomized trial (or an observational study with no unmeasured confounding), and Chapter 19’s results say the observed data on <span class="math inline">\((A_0, L_1, A_1, Y)\)</span> should identify this effect as 0.</p>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside>
+</section>
+<section id="feedback-through-shared-causes-figure-20.4" class="slide level2">
+<h2>Feedback Through Shared Causes: Figure 20.4</h2>
+<p>The same problem arises when the time-varying confounder is not affected by prior treatment but <strong>shares a cause</strong> <span class="math inline">\(W_0\)</span> with it (the book’s Figure 20.4, a subset of Figure 19.4). Its arrows include, among others,</p>
+<p><span class="math display">\[W_0 \to A_0, \qquad W_0 \to L_1, \qquad L_1 \to A_1, \qquad U_1 \to L_1, \qquad U_1 \to Y.\]</span></p>
+<p>Figure 20.4 represents an observational study. The book refers to both Figures 20.3 and 20.4 (and 19.2 and 19.4) as examples of treatment-confounder feedback.</p>
+<div id="rem-traditional-vs-g" class="proof remark">
+<p><span class="proof-title"><em>Remark 1</em> (The Claim of This Chapter). </span>With time-varying confounders and treatment-confounder feedback, traditional methods (stratification, outcome regression, matching) cannot correctly adjust for the confounders, even when the data suffice for sequential exchangeability. G-methods adjust correctly even in the presence of feedback.</p>
+</div>
 </section></section>
 <section>
-<section id="adjusting-for-past-treatment-p.-274" class="title-slide slide level1 center" data-number="5">
-<h1><span class="header-section-number">5</span> 20.5 Adjusting for Past Treatment (p.&nbsp;274)</h1>
+<section id="the-bias-of-traditional-methods-pp.-269-271" class="title-slide slide level1 center" data-number="2">
+<h1><span class="header-section-number">2</span> 20.2 The Bias of Traditional Methods (pp.&nbsp;269-271)</h1>
 
 </section>
 <section class="slide level2">
 
-<p>A specific manifestation of the problem is the question of whether and how to include <strong>past treatment</strong> in a regression model for the outcome.</p>
-<p>Consider a regression of <span class="math inline">\(Y\)</span> on <span class="math inline">\((A_0, A_1, L_0, L_1)\)</span>. This model adjusts for both time points of treatment and both time points of the covariate. Is this a valid approach?</p>
-<div id="rem-past-treatment-regression" class="proof remark">
-<p><span class="proof-title"><em>Remark 1</em> (Adjusting for Past Treatment in Regression). </span>Including <span class="math inline">\(A_0\)</span> in a regression model for <span class="math inline">\(Y\)</span> that also includes <span class="math inline">\(L_1\)</span> creates the following problem:</p>
+<p>A hypothetical sequentially randomized trial with 32,000 individuals with HIV and two time points <span class="math inline">\(k = 0, 1\)</span> (full adherence, no loss to follow-up):</p>
 <ul>
-<li><span class="math inline">\(L_1\)</span> is a descendant of <span class="math inline">\(A_0\)</span>.</li>
-<li>Conditioning on <span class="math inline">\(L_1\)</span> therefore partitions the effect of <span class="math inline">\(A_0\)</span> into a component that acts “through <span class="math inline">\(L_1\)</span>” and a component that acts “not through <span class="math inline">\(L_1\)</span>.”</li>
-<li>The regression coefficient on <span class="math inline">\(A_0\)</span> estimates a <strong>controlled direct effect</strong> of <span class="math inline">\(A_0\)</span>, not the total causal effect.</li>
-<li>This controlled direct effect is not the estimand of interest when the goal is to compare treatment strategies.</li>
+<li><span class="math inline">\(A_0 = 1\)</span> is randomly assigned at baseline with probability 0.5;</li>
+<li><span class="math inline">\(A_1\)</span> is randomly assigned at month 1 with probability 0.4 if <span class="math inline">\(L_1 = 0\)</span> (high CD4) and 0.8 if <span class="math inline">\(L_1 = 1\)</span> (low CD4);</li>
+<li>the outcome <span class="math inline">\(Y\)</span>, measured at the end of follow-up, is a health score (higher is better).</li>
 </ul>
-</div>
-</section>
-<section id="when-adjusting-for-past-treatment-is-appropriate" class="slide level2">
-<h2>When Adjusting for Past Treatment Is Appropriate</h2>
-<p>Adjusting for past treatment <em>is</em> appropriate in specific circumstances:</p>
-<ul>
-<li>When the research question is about the <strong>incremental effect</strong> of a single time point’s treatment, holding all other time points constant. For example, “what is the effect of adding treatment at time 1 among individuals who received treatment at time 0?” This is a different (and more limited) causal question than comparing strategies.</li>
-<li>When all time-varying covariates are independent of past treatment (i.e., there is no feedback), a standard regression with <span class="math inline">\((\bar{A}_{K-1}, \bar{L}_K)\)</span> can yield valid estimates of direct effects. But this assumption is rarely plausible.</li>
-</ul>
-</section>
-<section id="the-way-forward" class="slide level2">
-<h2>The Way Forward</h2>
-<p>The fundamental lesson of Chapter 20 is that standard analytic tools, designed for cross-sectional or time-fixed settings, are not equipped to handle the recursive causal structure of longitudinal data with treatment-confounder feedback.</p>
-<p>The solution — g-methods — are designed from the ground up with the sequential nature of the data in mind. They correctly separate the roles of <span class="math inline">\(L_k\)</span>: using it to remove confounding of <span class="math inline">\(A_k\)</span> while preserving the causal path <span class="math inline">\(A_{k-1} \to L_k \to Y\)</span>.</p>
-<aside class="notes">
-<p><strong>Summary of why each traditional approach fails</strong>:</p>
+<div id="exm-table-20-1" class="theorem example">
+<p><span class="theorem-title"><strong>Example 1 (Table 20.1)</strong></span> &nbsp;</p>
 <table class="caption-top">
-<colgroup>
-<col style="width: 38%">
-<col style="width: 61%">
-</colgroup>
 <thead>
 <tr class="header">
-<th>Method</th>
-<th>Why it fails</th>
+<th style="text-align: right;"><span class="math inline">\(N\)</span></th>
+<th style="text-align: center;"><span class="math inline">\(A_0\)</span></th>
+<th style="text-align: center;"><span class="math inline">\(L_1\)</span></th>
+<th style="text-align: center;"><span class="math inline">\(A_1\)</span></th>
+<th style="text-align: right;">Mean <span class="math inline">\(Y\)</span></th>
 </tr>
 </thead>
 <tbody>
 <tr class="odd">
-<td>Stratification on <span class="math inline">\(\bar{L}_K\)</span></td>
-<td>Opens collider paths via <span class="math inline">\(A_{k-1} \to L_k \leftarrow U\)</span></td>
+<td style="text-align: right;">2400</td>
+<td style="text-align: center;">0</td>
+<td style="text-align: center;">0</td>
+<td style="text-align: center;">0</td>
+<td style="text-align: right;">84</td>
 </tr>
 <tr class="even">
-<td>Regression on <span class="math inline">\((\bar{A}_K, \bar{L}_K)\)</span></td>
-<td>Same as stratification; estimates controlled direct effects, not total effects</td>
+<td style="text-align: right;">1600</td>
+<td style="text-align: center;">0</td>
+<td style="text-align: center;">0</td>
+<td style="text-align: center;">1</td>
+<td style="text-align: right;">84</td>
 </tr>
 <tr class="odd">
-<td>Marginal regression (no <span class="math inline">\(L\)</span> adjustment)</td>
-<td>Does not control confounding of <span class="math inline">\(A_k\)</span> by <span class="math inline">\(L_k\)</span></td>
+<td style="text-align: right;">2400</td>
+<td style="text-align: center;">0</td>
+<td style="text-align: center;">1</td>
+<td style="text-align: center;">0</td>
+<td style="text-align: right;">52</td>
 </tr>
 <tr class="even">
-<td>Fixed-effects models</td>
-<td>Address time-invariant confounders only</td>
+<td style="text-align: right;">9600</td>
+<td style="text-align: center;">0</td>
+<td style="text-align: center;">1</td>
+<td style="text-align: center;">1</td>
+<td style="text-align: right;">52</td>
 </tr>
 <tr class="odd">
-<td>Lagged-variable models</td>
-<td>Still condition on descendants of past treatment</td>
+<td style="text-align: right;">4800</td>
+<td style="text-align: center;">1</td>
+<td style="text-align: center;">0</td>
+<td style="text-align: center;">0</td>
+<td style="text-align: right;">76</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">3200</td>
+<td style="text-align: center;">1</td>
+<td style="text-align: center;">0</td>
+<td style="text-align: center;">1</td>
+<td style="text-align: right;">76</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">1600</td>
+<td style="text-align: center;">1</td>
+<td style="text-align: center;">1</td>
+<td style="text-align: center;">0</td>
+<td style="text-align: right;">44</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">6400</td>
+<td style="text-align: center;">1</td>
+<td style="text-align: center;">1</td>
+<td style="text-align: center;">1</td>
+<td style="text-align: right;">44</td>
 </tr>
 </tbody>
 </table>
-<p><strong>The g-methods</strong> break out of this table by using a different conceptual approach: the g-formula uses standardization that respects the temporal ordering; IP weighting creates a pseudo-population where treatment is independent of confounders; g-estimation models the treatment-free counterfactual directly. All three are discussed in Chapter 21.</p>
+<p>Source: <span class="citation" data-cites="hernan2020causal">Hernán and Robins (<a href="#/references" role="doc-biblioref" onclick="">2020</a>, Table 20.1, p.&nbsp;269)</span>. Each row is a combination of <span class="math inline">\((A_0, L_1, A_1)\)</span>, with its number of individuals <span class="math inline">\(N\)</span> and <span class="math inline">\(\text{E}{\left[Y \mid A_0, L_1, A_1\right]}\)</span>.</p>
+</div>
+<aside class="notes">
+<p>The design probabilities can be read back from the table. Within <span class="math inline">\(L_1 = 0\)</span>: <span class="math inline">\(1600 / (2400 + 1600) = 0.4\)</span> and <span class="math inline">\(3200 / (4800 + 3200) = 0.4\)</span>. Within <span class="math inline">\(L_1 = 1\)</span>: <span class="math inline">\(9600 / (2400 + 9600) = 0.8\)</span> and <span class="math inline">\(6400 / (1600 + 6400) = 0.8\)</span>. Also, <span class="math inline">\(16{,}000\)</span> of the <span class="math inline">\(32{,}000\)</span> individuals have <span class="math inline">\(A_0 = 1\)</span>, matching probability 0.5.</p>
+<p>The identifiability conditions hold by design: there are no confounders for <span class="math inline">\(A_0\)</span>, <span class="math inline">\(L_1\)</span> is the only confounder for <span class="math inline">\(A_1\)</span> (so sequential exchangeability holds given <span class="math inline">\(L_1\)</span>), and positivity holds because no row of the table is empty. If treatment at later times <span class="math inline">\(k\)</span> were also affected by <span class="math inline">\(L_k\)</span>, then <span class="math inline">\(L_k\)</span> would be a time-varying confounder too. Random variability is ignored throughout.</p>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside>
+</section>
+<section id="each-treatment-taken-separately-has-no-effect" class="slide level2">
+<h2>Each Treatment, Taken Separately, Has No Effect</h2>
+<p><strong>Effect of <span class="math inline">\(A_1\)</span>.</strong> In every stratum of <span class="math inline">\((A_0, L_1)\)</span>, the mean outcome is the same for <span class="math inline">\(A_1 = 1\)</span> and <span class="math inline">\(A_1 = 0\)</span> (rows 1 vs 2, 3 vs 4, 5 vs 6, 7 vs 8). For example,</p>
+<p><span class="math display">\[\text{E}{\left[Y \mid A_0 = 0, L_1 = 0, A_1 = 1\right]} - \text{E}{\left[Y \mid A_0 = 0, L_1 = 0, A_1 = 0\right]} = 84 - 84 = 0,\]</span></p>
+<p>and because the identifiability conditions hold this equals <span class="math inline">\(\text{E}{\left[Y^{a_1=1} \mid A_0 = 0, L_1 = 0\right]} - \text{E}{\left[Y^{a_1=0} \mid A_0 = 0, L_1 = 0\right]}\)</span>.</p>
+</section>
+<section class="slide level2">
+
+<p><strong>Effect of <span class="math inline">\(A_0\)</span>.</strong> Because <span class="math inline">\(A_0\)</span> is randomized, <span class="math inline">\(\text{E}{\left[Y \mid A_0 = 1\right]} - \text{E}{\left[Y \mid A_0 = 0\right]}\)</span> estimates <span class="math inline">\(\text{E}{\left[Y^{a_0=1}\right]} - \text{E}{\left[Y^{a_0=0}\right]}\)</span>. Averaging rows 1-4 (16,000 individuals with <span class="math inline">\(A_0 = 0\)</span>):</p>
+<p><span class="math display">\[
+\begin{aligned}
+\text{E}{\left[Y \mid A_0 = 0\right]}
+&amp;= \frac{2400 \times 84 + 1600 \times 84 + 2400 \times 52 + 9600 \times 52}{16000} \\
+&amp;= \frac{4000 \times 84 + 12000 \times 52}{16000}
+= \frac{336000 + 624000}{16000} = 60.
+\end{aligned}
+\]</span></p>
+<p>Averaging rows 5-8 (16,000 individuals with <span class="math inline">\(A_0 = 1\)</span>):</p>
+<p><span class="math display">\[
+\begin{aligned}
+\text{E}{\left[Y \mid A_0 = 1\right]}
+&amp;= \frac{4800 \times 76 + 3200 \times 76 + 1600 \times 44 + 6400 \times 44}{16000} \\
+&amp;= \frac{8000 \times 76 + 8000 \times 44}{16000}
+= \frac{608000 + 352000}{16000} = 60.
+\end{aligned}
+\]</span></p>
+<p>So the average causal effect of <span class="math inline">\(A_0\)</span> is <span class="math inline">\(60 - 60 = 0\)</span>.</p>
+<div title="Technical Point 20.1: G-Null Test">
+<div class="callout callout-note callout-titled callout-style-default">
+<div class="callout-body">
+<div class="callout-title">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<p><strong>Technical Point 20.1: G-Null Test</strong></p>
+</div>
+<div class="callout-content">
+<p>Under the sharp null, every counterfactual outcome <span class="math inline">\(Y^g\)</span> equals the observed <span class="math inline">\(Y\)</span>. With two time points, sequential exchangeability for all <span class="math inline">\(Y^g\)</span> then reads <span class="math inline">\(Y \perp\!\!\!\perp A_0 \mid L_0\)</span> and <span class="math inline">\(Y \perp\!\!\!\perp A_1 \mid A_0, L_0, L_1\)</span> (using the fact that for any <span class="math inline">\(a_0\)</span> and <span class="math inline">\(l_0\)</span> some strategy <span class="math inline">\(g\)</span> has <span class="math inline">\(a_0 = g(l_0)\)</span>). Under sequential exchangeability, testing these conditional independencies is a test of the sharp null: the <strong>g-null test</strong> (Robins 1986). The first independence says <span class="math inline">\(A_0\)</span> has no effect within strata of <span class="math inline">\(L_0\)</span>; the second says <span class="math inline">\(A_1\)</span> has no effect within strata of <span class="math inline">\((A_0, L_1)\)</span>.</p>
+<p>More generally, the <strong>g-null theorem</strong> (Robins 1986) states that, under sequential randomization for all <span class="math inline">\(g\)</span>, these two independencies hold if and only if the distribution of <span class="math inline">\(Y^g\)</span> (and therefore <span class="math inline">\(\text{E}{\left[Y^g\right]}\)</span>) is the same for all <span class="math inline">\(g\)</span> and equal to the distribution (and mean) of the observed <span class="math inline">\(Y\)</span> <span class="citation" data-cites="hernan2020causal">(<a href="#/references" role="doc-biblioref" onclick="">Hernán and Robins 2020</a>, Technical Point 20.1, p.&nbsp;270)</span>.</p>
+</div>
+</div>
+</div>
+</div>
+</section>
+<section id="analyzing-the-joint-treatment" class="slide level2">
+<h2>Analyzing the Joint Treatment</h2>
+<p>Since the effects of <span class="math inline">\(A_0\)</span> and <span class="math inline">\(A_1\)</span> are each null, the g-null theorem implies <span class="math inline">\(\text{E}{\left[Y^{a_0=1, a_1=1}\right]} - \text{E}{\left[Y^{a_0=0, a_1=0}\right]} = 0\)</span>. Do conventional analyses recover this?</p>
+<p><strong>Analysis 1: no adjustment for <span class="math inline">\(L_1\)</span>.</strong> Compare the 9600 individuals treated at both times (rows 6 and 8) with the 4800 untreated at both times (rows 1 and 3):</p>
+<p><span class="math display">\[
+\begin{aligned}
+\text{E}{\left[Y \mid A_0 = 1, A_1 = 1\right]} &amp;= \frac{3200 \times 76 + 6400 \times 44}{9600}
+  = \frac{243200 + 281600}{9600} \approx 54.7, \\
+\text{E}{\left[Y \mid A_0 = 0, A_1 = 0\right]} &amp;= \frac{2400 \times 84 + 2400 \times 52}{4800}
+  = \frac{201600 + 124800}{4800} = 68.0.
+\end{aligned}
+\]</span></p>
+<p>The difference <span class="math inline">\(54.7 - 68 = -13.3\)</span> is non-null, because <span class="math inline">\(\text{E}{\left[Y \mid A_0 = a_0, A_1 = a_1\right]}\)</span> is not a valid estimator of <span class="math inline">\(\text{E}{\left[Y^{a_0, a_1}\right]}\)</span>: adjustment for the confounder <span class="math inline">\(L_1\)</span> is needed.</p>
+</section>
+<section class="slide level2">
+
+<p><strong>Analysis 2: stratification on <span class="math inline">\(L_1\)</span>.</strong> Within <span class="math inline">\(L_1 = 0\)</span>, compare treated at both times (row 6) with untreated at both times (row 1):</p>
+<p><span class="math display">\[\text{E}{\left[Y \mid A_0 = 1, L_1 = 0, A_1 = 1\right]} - \text{E}{\left[Y \mid A_0 = 0, L_1 = 0, A_1 = 0\right]} = 76 - 84 = -8.\]</span></p>
+<p>Within <span class="math inline">\(L_1 = 1\)</span> (rows 8 and 3): <span class="math inline">\(44 - 52 = -8\)</span>.</p>
+<p>The analysis adjusted for the confounder also gives the wrong answer.</p>
+<aside class="notes">
+<p>Because the stratum-specific difference is <span class="math inline">\(-8\)</span> in <em>both</em> strata of <span class="math inline">\(L_1\)</span>, no weighted average of the stratum-specific differences can equal the correct value 0. This estimate reflects the bias of traditional methods when there is treatment-confounder feedback <span class="citation" data-cites="hernan2020causal">(<a href="#/references" role="doc-biblioref" onclick="">Hernán and Robins 2020, 271</a>)</span>.</p>
+<p><strong>Preview of Chapter 21.</strong> The correct answer can be recovered from the same table by the g-formula, which standardizes over the distribution of <span class="math inline">\(L_1\)</span> <em>given</em> <span class="math inline">\(A_0\)</span> rather than conditioning on <span class="math inline">\(L_1\)</span>. From Table 20.1, <span class="math inline">\(\Pr[L_1 = 0 \mid A_0 = 1] = 8000/16000 = 0.5\)</span> and <span class="math inline">\(\Pr[L_1 = 0 \mid A_0 = 0] = 4000/16000 = 0.25\)</span>, so</p>
+<p><span class="math display">\[
+\begin{aligned}
+\text{E}{\left[Y^{a_0=1, a_1=1}\right]} &amp;= 76 \times 0.5 + 44 \times 0.5 = 38 + 22 = 60, \\
+\text{E}{\left[Y^{a_0=0, a_1=0}\right]} &amp;= 84 \times 0.25 + 52 \times 0.75 = 21 + 39 = 60,
+\end{aligned}
+\]</span></p>
+<p>and the difference is <span class="math inline">\(60 - 60 = 0\)</span>, as it should be. Chapter 21 develops this computation.</p>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside>
+</section></section>
+<section>
+<section id="why-traditional-methods-fail-pp.-271-273" class="title-slide slide level1 center" data-number="3">
+<h1><span class="header-section-number">3</span> 20.3 Why Traditional Methods Fail (pp.&nbsp;271-273)</h1>
+
+</section>
+<section class="slide level2">
+
+<p>All three identifiability conditions hold in Table 20.1; the unmeasured <span class="math inline">\(U_1\)</span> (immunosuppression level) is not needed because we have data on <span class="math inline">\(L_1\)</span>. Yet neither analysis gave the correct answer. The problem is the <strong>adjustment method</strong>: stratification cannot handle treatment-confounder feedback.</p>
+</section>
+<section id="stratification-opens-a-collider-path" class="slide level2">
+<h2>Stratification Opens a Collider Path</h2>
+<p>Stratifying on <span class="math inline">\(L_1\)</span> means estimating the treatment-outcome association separately in the subsets <span class="math inline">\(L_1 = 0\)</span> (high CD4) and <span class="math inline">\(L_1 = 1\)</span> (low CD4). But <span class="math inline">\(L_1\)</span> is affected by prior treatment <span class="math inline">\(A_0\)</span>, so it is a <strong>collider</strong> on the path</p>
+<p><span class="math display">\[A_0 \to L_1 \leftarrow U_1 \to Y\]</span></p>
+<p>(the book’s Figure 20.5: Figure 20.3 with <span class="math inline">\(L_1\)</span> conditioned on). Conditioning on <span class="math inline">\(L_1\)</span> opens this path and induces a noncausal association between <span class="math inline">\(A_0\)</span> and <span class="math inline">\(U_1\)</span>, and hence between <span class="math inline">\(A_0\)</span> and <span class="math inline">\(Y\)</span>, within levels of <span class="math inline">\(L_1\)</span>.</p>
+<aside class="notes">
+<p>Intuition: among those with low CD4 count (<span class="math inline">\(L_1 = 1\)</span>), being on treatment (<span class="math inline">\(A_0 = 1\)</span>) marks severe immunosuppression (high <span class="math inline">\(U_1\)</span>), since treatment would otherwise have raised their CD4. Among those with high CD4 count (<span class="math inline">\(L_1 = 0\)</span>), being off treatment (<span class="math inline">\(A_0 = 0\)</span>) marks milder immunosuppression (low <span class="math inline">\(U_1\)</span>).</p>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside>
+<div id="rem-confounding-for-selection-bias" class="proof remark">
+<p><span class="proof-title"><em>Remark 2</em> (Trading Confounding for Selection Bias). </span>Stratification eliminates confounding for <span class="math inline">\(A_1\)</span> at the cost of introducing selection bias for <span class="math inline">\(A_0\)</span>. The associational differences</p>
+<p><span class="math display">\[\text{E}{\left[Y \mid A_0 = 1, L_1 = l, A_1 = 1\right]} - \text{E}{\left[Y \mid A_0 = 0, L_1 = l, A_1 = 0\right]}\]</span></p>
+<p>may be non-zero even when treatment has no effect on anyone’s outcome at any time. The net bias depends on the relative sizes of the confounding removed and the selection bias created.</p>
+</div>
+</section>
+<section id="feedback-through-shared-causes" class="slide level2">
+<h2>Feedback Through Shared Causes</h2>
+<p>The same bias arises when the confounder shares an unmeasured cause <span class="math inline">\(W_0\)</span> with prior treatment (an observational study, the book’s Figure 20.6): conditioning on the collider <span class="math inline">\(L_1\)</span> opens</p>
+<p><span class="math display">\[A_0 \leftarrow W_0 \to L_1 \leftarrow U_1 \to Y.\]</span></p>
+<p>The settings of Figures 20.3 and 20.4 cannot be distinguished using the observed data, which is why both are called treatment-confounder feedback.</p>
+</section>
+<section id="beyond-the-null-and-beyond-two-time-points" class="slide level2">
+<h2>Beyond the Null and Beyond Two Time Points</h2>
+<ul>
+<li>The bias is not limited to the sharp null. With a non-null effect (the book’s Figure 20.7, where <span class="math inline">\(A_0 \to L_1 \to Y\)</span>), arrows from <span class="math inline">\(A_0\)</span>, <span class="math inline">\(A_1\)</span>, or <span class="math inline">\(L_1\)</span> into <span class="math inline">\(Y\)</span> do not change the fact that conditioning on <span class="math inline">\(L_1\)</span> creates a noncausal association between <span class="math inline">\(A_0\)</span> and <span class="math inline">\(Y\)</span>.</li>
+<li>With many time points and variables, the bias still arises; confounders affected by prior treatment at multiple times increase the possibility of a large bias.</li>
+<li>Valid estimation of a treatment-strategy effect requires estimating the joint effect of all treatment components <span class="math inline">\(A_k\)</span> simultaneously and without bias, which stratification may be unable to do even with data on all time-varying confounders.</li>
+</ul>
+<div title="Fine Point 20.2: Confounders on the Causal Pathway">
+<div class="callout callout-note callout-titled callout-style-default">
+<div class="callout-body">
+<div class="callout-title">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<p><strong>Fine Point 20.2: Confounders on the Causal Pathway</strong></p>
+</div>
+<div class="callout-content">
+<p>Conditioning on a confounder <span class="math inline">\(L_1\)</span> affected by prior treatment can create selection bias even when <span class="math inline">\(L_1\)</span> is not on a causal pathway from treatment to outcome (no such pathway exists in Figures 20.5 and 20.6).</p>
+<p>In Figure 20.7, by contrast, <span class="math inline">\(L_1\)</span> is a confounder for <span class="math inline">\(A_1\)</span> <em>and</em> lies on the causal pathway <span class="math inline">\(A_0 \to L_1 \to Y\)</span>. Even if <span class="math inline">\(U_1\)</span> were not a common cause of <span class="math inline">\(L_1\)</span> and <span class="math inline">\(Y\)</span> (no selection bias), the <span class="math inline">\(A\)</span>-<span class="math inline">\(Y\)</span> associations within strata of <span class="math inline">\(L_1\)</span> would estimate only the direct effect of <span class="math inline">\(A_0\)</span> not through <span class="math inline">\(L_1\)</span>, not the overall effect of <span class="math inline">\(\bar{A}\)</span> on <span class="math inline">\(Y\)</span>.</p>
+<p>The common rule that variables on a causal pathway cannot be confounders is inaccurate for time-varying treatments: a confounder for later treatment <span class="math inline">\(A_1\)</span> can lie on a pathway from earlier treatment <span class="math inline">\(A_0\)</span> to <span class="math inline">\(Y\)</span>. Whether adjusting for it induces bias depends on the method: stratification does; g-methods do not <span class="citation" data-cites="hernan2020causal">(<a href="#/references" role="doc-biblioref" onclick="">Hernán and Robins 2020</a>, Fine Point 20.2, p.&nbsp;272)</span>.</p>
+</div>
+</div>
+</div>
+</div>
+</section></section>
+<section>
+<section id="why-traditional-methods-cannot-be-fixed-pp.-273-274" class="title-slide slide level1 center" data-number="4">
+<h1><span class="header-section-number">4</span> 20.4 Why Traditional Methods Cannot Be Fixed (pp.&nbsp;273-274)</h1>
+
+</section>
+<section class="slide level2">
+
+<p>Could parametric <strong>outcome regression</strong> succeed where nonparametric stratification failed? The question matters most with high-dimensional data, where a simple stratified analysis is impossible.</p>
+<ul>
+<li>With two time points there are <span class="math inline">\(2^2 = 4\)</span> static strategies <span class="math inline">\(\bar{a}\)</span>.</li>
+<li>With <span class="math inline">\(K\)</span> of the order of 100 (not unusual in practice), there are <span class="math inline">\(2^{100}\)</span> static strategies, far more than the sample size of any study, and even more once dynamic strategies are considered.</li>
+</ul>
+<aside class="notes">
+<p>The number of combinations of the <em>data</em> is larger still, because several confounders <span class="math inline">\(L_k\)</span> are measured at each time point.</p>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside>
+</section>
+<section id="modeling-is-needed-but-does-not-help" class="slide level2">
+<h2>Modeling Is Needed, but Does Not Help</h2>
+<p>As argued since Chapter 11, many possible strategies require <strong>modeling</strong>: a dose-response function for the effect of treatment history <span class="math inline">\(\bar{a}\)</span> on the mean outcome. For example, assume the effect is linear in <strong>cumulative treatment</strong>, so every strategy with exactly three months of treatment has the same effect, whenever those three months occur. The price is a new threat to validity: misspecification of the dose-response model.</p>
+<p>Paying that price buys no protection. Regression <strong>is</strong> a conventional stratification-based method, so it cannot remove the bias of stratification under treatment-confounder feedback.</p>
+</section>
+<section id="example-a-cumulative-treatment-regression" class="slide level2">
+<h2>Example: A Cumulative-Treatment Regression</h2>
+<p>For data generated under Figure 20.5, define <span class="math inline">\(\text{cum}(\bar{A}) = A_0 + A_1 \in \{0, 1, 2\}\)</span>. “Always treat” is <span class="math inline">\(\text{cum}(\bar{a}) = 2\)</span> and “never treat” is <span class="math inline">\(\text{cum}(\bar{a}) = 0\)</span>; the target is <span class="math inline">\(\text{E}{\left[Y^{\text{cum}(\bar{a})=2}\right]} - \text{E}{\left[Y^{\text{cum}(\bar{a})=0}\right]}\)</span>, whose true value is 0.</p>
+<p>Fit the outcome regression model</p>
+<p><span class="math display">\[\text{E}{\left[Y \mid \bar{A}, L_1\right]} = \theta_0 + \theta_1 \, \text{cum}(\bar{A}) + \theta_2 L_1.\]</span></p>
+<p>Within either level <span class="math inline">\(l\)</span> of <span class="math inline">\(L_1\)</span>,</p>
+<p><span class="math display">\[
+\begin{aligned}
+&amp;\text{E}{\left[Y \mid \text{cum}(\bar{A}) = 2, L_1 = l\right]} - \text{E}{\left[Y \mid \text{cum}(\bar{A}) = 0, L_1 = l\right]} \\
+&amp;\quad = (\theta_0 + 2\theta_1 + \theta_2 l) - (\theta_0 + 0 \cdot \theta_1 + \theta_2 l)
+= 2\theta_1 .
+\end{aligned}
+\]</span></p>
+<p>It is tempting to read <span class="math inline">\(2\theta_1\)</span> as the effect of “always treat” versus “never treat” within levels of <span class="math inline">\(L_1\)</span>. But conditioning on <span class="math inline">\(L_1\)</span> induces an association between <span class="math inline">\(A_0\)</span> (a component of <span class="math inline">\(\text{cum}(\bar{A})\)</span>) and <span class="math inline">\(Y\)</span>, so <span class="math inline">\(\theta_1 \neq 0\)</span> even though the true effect is zero <span class="citation" data-cites="hernan2020causal">(<a href="#/references" role="doc-biblioref" onclick="">Hernán and Robins 2020, 274</a>)</span>. The bias comes from conditioning on the collider <span class="math inline">\(L_1\)</span>, not from the form of the model or from the sample size: it would persist with unlimited data.</p>
+<aside class="notes">
+<p>A similar argument applies to <strong>matching</strong>. G-methods are needed to adjust appropriately for time-varying confounders in the presence of treatment-confounder feedback <span class="citation" data-cites="hernan2020causal">(<a href="#/references" role="doc-biblioref" onclick="">Hernán and Robins 2020, 274</a>)</span>.</p>
+<p>The book states that <span class="math inline">\(\theta_1\)</span> is non-zero “even if the true causal effect is zero and the regression model for <span class="math inline">\(\text{E}{\left[Y \mid \bar{A}, L_1\right]}\)</span> is correct” <span class="citation" data-cites="hernan2020causal">(<a href="#/references" role="doc-biblioref" onclick="">Hernán and Robins 2020, 274</a>)</span>. Under Figure 20.5, the cumulative-treatment model itself cannot be the correct one. <span class="math inline">\(Y\)</span> is independent of <span class="math inline">\(A_1\)</span> given <span class="math inline">\((A_0, L_1)\)</span>, so a correct model for <span class="math inline">\(\text{E}{\left[Y \mid A_0, A_1, L_1\right]}\)</span> has no <span class="math inline">\(A_1\)</span> term, whereas <span class="math inline">\(\text{cum}(\bar{A})\)</span> forces <span class="math inline">\(A_0\)</span> and <span class="math inline">\(A_1\)</span> to share the coefficient <span class="math inline">\(\theta_1\)</span>. The data in Table 20.1 illustrate this. Their cell means depend on <span class="math inline">\((A_0, L_1)\)</span> only, and they are fit exactly by</p>
+<p><span class="math display">\[\text{E}{\left[Y \mid A_0, A_1, L_1\right]} = 84 - 8 A_0 + 0 \cdot A_1 - 32 L_1,\]</span></p>
+<p>which reproduces all four distinct cell means:</p>
+<ul>
+<li><span class="math inline">\(A_0 = 0, L_1 = 0\)</span>: <span class="math inline">\(84\)</span>;</li>
+<li><span class="math inline">\(A_0 = 0, L_1 = 1\)</span>: <span class="math inline">\(84 - 32 = 52\)</span>;</li>
+<li><span class="math inline">\(A_0 = 1, L_1 = 0\)</span>: <span class="math inline">\(84 - 8 = 76\)</span>;</li>
+<li><span class="math inline">\(A_0 = 1, L_1 = 1\)</span>: <span class="math inline">\(84 - 8 - 32 = 44\)</span>.</li>
+</ul>
+<p>The conclusion is unchanged: even this correctly specified model gives <span class="math inline">\(A_0\)</span> a non-zero coefficient (<span class="math inline">\(-8\)</span>) although the true effect of <span class="math inline">\(A_0\)</span> is zero, because the model conditions on the collider <span class="math inline">\(L_1\)</span>.</p>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside>
+</section></section>
+<section>
+<section id="adjusting-for-past-treatment-pp.-274-275" class="title-slide slide level1 center" data-number="5">
+<h1><span class="header-section-number">5</span> 20.5 Adjusting for Past Treatment (pp.&nbsp;274-275)</h1>
+
+</section>
+<section class="slide level2">
+
+<p>So far the diagrams had no arrow <span class="math inline">\(A_0 \to A_1\)</span>. Now suppose doctors use past treatment history <span class="math inline">\(\bar{A}_{k-1}\)</span> when deciding on treatment <span class="math inline">\(A_k\)</span>. Adding <span class="math inline">\(A_0 \to A_1\)</span> to Figures 20.3 and 20.4 gives the book’s Figures 20.8 and 20.9.</p>
+<p>With treatment-confounder feedback, conditioning on <span class="math inline">\(L_1\)</span> alone no longer blocks all backdoor paths between <span class="math inline">\(A_1\)</span> and <span class="math inline">\(Y\)</span>; it opens</p>
+<p><span class="math display">\[
+\begin{aligned}
+&amp;A_1 \leftarrow A_0 \to L_1 \leftarrow U_1 \to Y &amp;&amp; \text{(Figure 20.8)}, \\
+&amp;A_1 \leftarrow A_0 \leftarrow W_0 \to L_1 \leftarrow U_1 \to Y &amp;&amp; \text{(Figure 20.9)}.
+\end{aligned}
+\]</span></p>
+<p>And whenever past treatment affects the outcome (Figure 20.10), <span class="math inline">\(A_0\)</span> is a confounder for the effect of <span class="math inline">\(A_1\)</span>, feedback or not.</p>
+<div id="rem-condition-on-treatment-history" class="proof remark">
+<p><span class="proof-title"><em>Remark 3</em> (Sequential Exchangeability Conditions on Treatment History). </span>Sequential exchangeability at time <span class="math inline">\(k\)</span> generally requires conditioning on the treatment history <span class="math inline">\(\bar{A}_{k-1}\)</span> as well as on the covariates; conditioning only on <span class="math inline">\(L\)</span> is not enough. That is why every sequential exchangeability statement in Chapters 19 and 20 conditions on treatment history.</p>
+</div>
+</section>
+<section id="past-treatment-and-time-fixed-treatments" class="slide level2">
+<h2>Past Treatment and Time-Fixed Treatments</h2>
+<p>Suppose the target is the effect of the time-fixed treatment <span class="math inline">\(A_1\)</span> alone on <span class="math inline">\(Y\)</span> (sometimes called the <strong>short-term effect</strong> of <span class="math inline">\(\bar{A}\)</span>). Without adjustment for <span class="math inline">\(A_0\)</span>:</p>
+<ul>
+<li>with treatment-confounder feedback, there is selection bias;</li>
+<li>if <span class="math inline">\(A_0\)</span> affects <span class="math inline">\(Y\)</span> directly, there is confounding.</li>
+</ul>
+<p>So <span class="math inline">\(\text{E}{\left[Y \mid A_1 = 1, L_1\right]} - \text{E}{\left[Y \mid A_1 = 0, L_1\right]}\)</span> need not be zero even if <span class="math inline">\(A_1\)</span> has no effect on anyone’s outcome (Figures 20.8-20.10).</p>
+<aside class="notes">
+<p>In practice, this bias can arise in analyses comparing current users (<span class="math inline">\(A_1 = 1\)</span>) with nonusers (<span class="math inline">\(A_1 = 0\)</span>) of a time-fixed treatment. It can be avoided by adjusting for prior treatment history or by restricting to individuals with a particular treatment history. This restriction is the idea behind <strong>new-user designs</strong>: restrict the analysis to individuals with no past use of the treatment. If past treatment could be correctly adjusted for, the restriction to new users would be unnecessary.</p>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside>
+</section>
+<section id="mismeasured-past-treatment" class="slide level2">
+<h2>Mismeasured Past Treatment</h2>
+<p>The need to adjust for past treatment matters when past treatment is <strong>mismeasured</strong>. As in Section 9.3, adjusting for a mismeasured confounder can leave bias in either direction.</p>
+<div id="exm-mismeasured-a0" class="theorem example">
+<p><span class="theorem-title"><strong>Example 2 (Self-Reported Treatment History)</strong></span> Suppose HIV investigators lack medical records and ascertain prior treatment by questionnaire, so they observe a mismeasured <span class="math inline">\(A_0^*\)</span> rather than <span class="math inline">\(A_0\)</span>. Adding the arrow <span class="math inline">\(A_0 \to A_0^*\)</span> to Figures 20.8-20.10 shows that conditioning on <span class="math inline">\(A_0^*\)</span> cannot block the biasing paths between <span class="math inline">\(A_1\)</span> and <span class="math inline">\(Y\)</span> that pass through <span class="math inline">\(A_0\)</span>. Investigators would find an association between <span class="math inline">\(A_1\)</span> and <span class="math inline">\(Y\)</span> even after adjusting for <span class="math inline">\(A_0^*\)</span> and <span class="math inline">\(L_1\)</span>, although <span class="math inline">\(A_1\)</span> has no effect on <span class="math inline">\(Y\)</span>.</p>
+</div>
+<aside class="notes">
+<p>Contrary to a widespread belief, mismeasurement of a time-varying treatment (even independent, non-differential measurement error) <strong>may cause bias under the null</strong>, because past treatment confounds the effect of later treatment even when past treatment has no effect on the outcome. Under the alternative, the imperfect adjustment may exaggerate the effect estimate. Robins (1987) showed that randomly mismeasured treatment may lead to bias away from the null <span class="citation" data-cites="hernan2020causal">(<a href="#/references" role="doc-biblioref" onclick="">Hernán and Robins 2020, 275</a>)</span>.</p>
 <style type="text/css">
         span.MJX_Assistive_MathML {
           position:absolute!important;
@@ -443,12 +659,12 @@
 <section class="slide level2">
 
 <ul>
-<li><strong>Treatment-confounder feedback</strong> exists when <span class="math inline">\(L_k\)</span> is simultaneously a cause of <span class="math inline">\(A_k\)</span> (confounding) and a descendant of <span class="math inline">\(A_{k-1}\)</span> (feedback).</li>
-<li>When <span class="math inline">\(L_k\)</span> is also affected by unmeasured <span class="math inline">\(U\)</span>, conditioning on <span class="math inline">\(L_k\)</span> opens the collider path <span class="math inline">\(A_{k-1} \to L_k \leftarrow U \to Y\)</span>, introducing bias.</li>
-<li><strong>Traditional methods</strong> (stratification, regression, propensity score adjustment) all condition on <span class="math inline">\(\bar{L}_K\)</span> as a standard covariate, making them structurally unable to produce consistent estimates of strategy effects.</li>
-<li>This failure is <strong>structural</strong>, not statistical: it persists in large samples and cannot be fixed by adding flexibility or interactions to a traditional regression model.</li>
-<li><strong>Adjusting for past treatment</strong> in a regression that also adjusts for future covariates estimates a controlled direct effect, not the total causal effect of a strategy.</li>
-<li>The solution is to use <strong>g-methods</strong> (Chapter 21), which are specifically designed to respect the recursive causal structure of longitudinal data with feedback.</li>
+<li><strong>Treatment-confounder feedback</strong>: a time-varying confounder <span class="math inline">\(L_k\)</span> affects later treatment <span class="math inline">\(A_k\)</span> and is affected by (or shares causes with) earlier treatment.</li>
+<li>In Table 20.1 the true effect of “always treat” vs.&nbsp;“never treat” is 0, yet the unadjusted analysis gives <span class="math inline">\(-13.3\)</span> and stratification on <span class="math inline">\(L_1\)</span> gives <span class="math inline">\(-8\)</span>.</li>
+<li>Stratification on <span class="math inline">\(L_1\)</span> removes confounding for <span class="math inline">\(A_1\)</span> but opens the collider path <span class="math inline">\(A_0 \to L_1 \leftarrow U_1 \to Y\)</span>, creating selection bias for <span class="math inline">\(A_0\)</span>.</li>
+<li>Outcome regression and matching are stratification-based too, so they are biased even when the regression model is correct.</li>
+<li>Sequential exchangeability generally requires conditioning on past treatment; mismeasured past treatment can bias estimates even under the null.</li>
+<li>G-methods (Chapter 21) handle treatment-confounder feedback correctly.</li>
 </ul>
 </section></section>
 <section>

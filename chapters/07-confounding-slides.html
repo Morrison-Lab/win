@@ -164,8 +164,9 @@
 <div class="quarto-title-authors">
 </div>
 
-</section><section class="slide level2"><!-- https://www.overleaf.com/learn/latex/Using_colors_in_LaTeX#Named_colors_provided_by_the_xcolor_package --><!-- \def\or{\theta}  --><!-- doesn't work for some reason --><p>In Chapter 6 we described causal diagrams and showed how to read independence relations from them using d-separation. We also identified three structural sources of bias—confounding, selection bias, and measurement bias—and introduced the backdoor criterion as the graphical condition for eliminating confounding. This chapter examines confounding in greater depth. We show that confounding is equivalent to the absence of marginal exchangeability, characterize it through the structure of the causal diagram, and relate the structural (graphical) definition to the traditional epidemiological criteria for identifying confounders. We close with an introduction to Single-World Intervention Graphs (SWIGs), which embed counterfactual variables directly in a causal diagram.</p>
-<aside class="notes"><p>This chapter is based on <span class="citation" data-cites="hernan2020causal">Hernán and Robins (<a href="#/references" role="doc-biblioref" onclick="">2020, chap. 7</a>, pp.&nbsp;77–92)</span>.</p>
+</section><section class="slide level2"><!-- https://www.overleaf.com/learn/latex/Using_colors_in_LaTeX#Named_colors_provided_by_the_xcolor_package --><!-- \def\or{\theta}  --><!-- doesn't work for some reason --><p>Suppose an investigator observes that when one pedestrian looks up at the sky, a second pedestrian tends to look up too. She also notices that pedestrians look up when they hear a thunderous noise overhead, so she cannot tell whether the second pedestrian looked up because of the first one or because of the noise: the effect of one person’s looking up is <em>confounded</em> by the noise. In a randomized experiment treatment is assigned by a coin flip, but in an observational study treatment may be determined by factors that also affect the outcome. The effects of those factors then become entangled with the effect of treatment. This chapter defines confounding structurally, links it to exchangeability, contrasts the structural definition with the traditional definition of a confounder, introduces single-world intervention graphs (SWIGs), and reviews methods to adjust for confounding.</p>
+<aside class="notes"><p>This chapter is based on <span class="citation" data-cites="hernan2020causal">Hernán and Robins (<a href="#/references" role="doc-biblioref" onclick="">2020, chap. 7</a>, pp.&nbsp;91-107)</span>.</p>
+<p>The book describes confounding as “just a form of lack of exchangeability between the treated and the untreated” <span class="citation" data-cites="hernan2020causal">(<a href="#/references" role="doc-biblioref" onclick="">Hernán and Robins 2020, 91</a>)</span>. In the presence of confounding, “association is not causation” holds no matter how large the study population is.</p>
 <style type="text/css">
         span.MJX_Assistive_MathML {
           position:absolute!important;
@@ -176,72 +177,141 @@
           width: 1px!important;
           overflow: hidden!important;
           display:block!important;
-      }</style></aside></section><section><section id="the-structure-of-confounding-pp.-7780" class="title-slide slide level1 center" data-number="1"><h1>
-<span class="header-section-number">1</span> 7.1 The Structure of Confounding (pp.&nbsp;77–80)</h1>
+      }</style></aside></section><section><section id="the-structure-of-confounding-pp.-91-93" class="title-slide slide level1 center" data-number="1"><h1>
+<span class="header-section-number">1</span> 7.1 The Structure of Confounding (pp.&nbsp;91-93)</h1>
 
-</section><section class="slide level2"><p>In a marginally randomized experiment (Chapter 2), the treated and untreated groups have the same distribution of potential outcomes because treatment was assigned independently of any pre-existing characteristics. As a result, the crude association between treatment <span class="math inline">\(A\)</span> and outcome <span class="math inline">\(Y\)</span> equals the average causal effect:</p>
-<p><span class="math display">\[\Pr[Y = 1 \mid A = 1] - \Pr[Y = 1 \mid A = 0] = \Pr[Y^{a=1} = 1] - \Pr[Y^{a=0} = 1]\]</span></p>
-<p>In an observational study, however, the distribution of pre-existing characteristics typically differs between the treated and untreated. If some of those characteristics affect the outcome, the crude association will not equal the causal effect. This discrepancy is <strong>confounding</strong>.</p>
-</section><section id="a-hypothetical-example" class="slide level2"><h2>A Hypothetical Example</h2>
-<p>Consider a hypothetical observational study of the causal effect of a cholesterol-lowering drug (<span class="math inline">\(A\)</span>: 1 = treated, 0 = untreated) on 5-year mortality (<span class="math inline">\(Y\)</span>: 1 = died, 0 = survived), where sex (<span class="math inline">\(L\)</span>: 1 = male, 0 = female) affects both treatment assignment and mortality. The hypothetical data for 20 individuals are shown below.</p>
+</section><section class="slide level2"><p><strong>Confounding</strong> is the bias due to common causes of treatment and outcome.</p>
 <div class="cell">
-<div id="tbl-ch7-data" class="cell quarto-float quarto-figure quarto-figure-center">
-<figure class="quarto-float quarto-float-tbl"><figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-ch7-data-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Table&nbsp;1: Table 7.1. Hypothetical data from 20 individuals. A: treatment; L: sex (1=male); Y: mortality (1=died).
-</figcaption><div aria-describedby="tbl-ch7-data-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 <div class="cell-output-display">
-<table class="cell caption-top">
+<div class="quarto-figure quarto-figure-center">
+<figure><figcaption>Figure 7.1 (same as Figure 6.1). L is a common cause of treatment A and outcome Y.</figcaption><p><a href="07-confounding_files/figure-html/dag-ch7-1-1.png" class="lightbox" data-gallery="quarto-lightbox-gallery-1" title="Figure 7.1 (same as Figure 6.1). L is a common cause of treatment A and outcome Y."><img data-src="07-confounding_files/figure-html/dag-ch7-1-1.png" width="384" alt="Figure 7.1 (same as Figure 6.1). L is a common cause of treatment A and outcome Y."></a></p>
+</figure>
+</div>
+</div>
+</div>
+<p>In Figure 7.1 there are two sources of association between <span class="math inline">\(A\)</span> and <span class="math inline">\(Y\)</span>:</p>
+<ul>
+<li>the causal path <span class="math inline">\(A \rightarrow Y\)</span>;</li>
+<li>the path <span class="math inline">\(A \leftarrow L \rightarrow Y\)</span> through the common cause <span class="math inline">\(L\)</span>.</li>
+</ul>
+<p>The second path is a <strong>backdoor path</strong>.</p>
+<div id="def-backdoor-path-ch7" class="theorem definition">
+<p><span class="theorem-title"><strong>Definition 1 (Backdoor Path)</strong></span> In a causal DAG, a <strong>backdoor path</strong> is a noncausal path between treatment and outcome that remains even if all arrows pointing from treatment to other variables (the descendants of treatment) are removed. That is, the path has an arrow pointing into treatment <span class="citation" data-cites="hernan2020causal">(<a href="#/references" role="doc-biblioref" onclick="">Hernán and Robins 2020, 91</a>)</span>.</p>
+</div>
+<p>If <span class="math inline">\(L\)</span> did not exist, all the association between <span class="math inline">\(A\)</span> and <span class="math inline">\(Y\)</span> would be causal, and the associational risk ratio <span class="math inline">\(\Pr[Y = 1 \mid A = 1] / \Pr[Y = 1 \mid A = 0]\)</span> would equal the causal risk ratio <span class="math inline">\(\Pr[Y^{a=1} = 1] / \Pr[Y^{a=0} = 1]\)</span>. The common cause <span class="math inline">\(L\)</span> adds a second source of association, which is <strong>confounding</strong> for the effect of <span class="math inline">\(A\)</span> on <span class="math inline">\(Y\)</span>.</p>
+</section><section id="examples-of-confounding" class="slide level2"><h2>Examples of Confounding</h2>
+</section><section class="slide level2"><div class="cell">
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure><figcaption>Left: Figure 7.2, in which L causes A, and L and Y share the unmeasured cause U. Right: Figure 7.3, in which L causes Y, and L and A share the unmeasured cause U. Unmeasured nodes are gray.</figcaption><p><a href="07-confounding_files/figure-html/dag-ch7-2-3-1.png" class="lightbox" data-gallery="quarto-lightbox-gallery-2" title="Left: Figure 7.2, in which L causes A, and L and Y share the unmeasured cause U. Right: Figure 7.3, in which L causes Y, and L and A share the unmeasured cause U. Unmeasured nodes are gray."><img data-src="07-confounding_files/figure-html/dag-ch7-2-3-1.png" width="768" alt="Left: Figure 7.2, in which L causes A, and L and Y share the unmeasured cause U. Right: Figure 7.3, in which L causes Y, and L and A share the unmeasured cause U. Unmeasured nodes are gray."></a></p>
+</figure>
+</div>
+</div>
+</div>
+<ul>
+<li>
+<strong>Occupational factors</strong> (Figure 7.1): physical fitness <span class="math inline">\(L\)</span> causes both working as a firefighter <span class="math inline">\(A\)</span> and lower mortality <span class="math inline">\(Y\)</span> (<strong>healthy worker bias</strong>).</li>
+<li>
+<strong>Clinical decisions</strong> (Figure 7.1 or 7.2): heart disease <span class="math inline">\(L\)</span> is an indication for aspirin <span class="math inline">\(A\)</span> and a risk factor for stroke <span class="math inline">\(Y\)</span>, either directly or through unmeasured atherosclerosis <span class="math inline">\(U\)</span> (<strong>confounding by indication</strong> or <strong>channeling</strong>).</li>
+<li>
+<strong>Lifestyle</strong> (Figure 7.3): personality and social factors <span class="math inline">\(U\)</span> lead to both lack of exercise <span class="math inline">\(A\)</span> and smoking <span class="math inline">\(L\)</span>, which affects death <span class="math inline">\(Y\)</span>.</li>
+<li>
+<strong>Genetic factors</strong> (Figure 7.3): a DNA sequence <span class="math inline">\(L\)</span> that affects trait <span class="math inline">\(Y\)</span> is more frequent among carriers of sequence <span class="math inline">\(A\)</span> (<strong>linkage disequilibrium</strong> or <strong>population stratification</strong>).</li>
+<li>
+<strong>Social factors</strong> (Figure 7.1): disability at age 55 <span class="math inline">\(L\)</span> affects income at age 65 <span class="math inline">\(A\)</span> and disability at age 75 <span class="math inline">\(Y\)</span>.</li>
+<li>
+<strong>Environmental exposures</strong> (Figure 7.3): weather <span class="math inline">\(U\)</span> affects levels of particulate matter <span class="math inline">\(A\)</span> and of other pollutants <span class="math inline">\(L\)</span> that cause coronary heart disease <span class="math inline">\(Y\)</span>.</li>
+</ul>
+<aside class="notes"><p><strong>Terminology in the examples:</strong></p>
+<ul>
+<li>“Channeling” is often reserved for bias created by patient-specific risk factors <span class="math inline">\(L\)</span> that encourage doctors to prescribe a particular drug <span class="math inline">\(A\)</span> within a class of drugs.</li>
+<li>When subclinical disease <span class="math inline">\(U\)</span> causes both lack of exercise <span class="math inline">\(A\)</span> and clinical disease <span class="math inline">\(Y\)</span>, and <span class="math inline">\(L\)</span> is unknown, this form of confounding is often called <strong>reverse causation</strong>.</li>
+<li>“Population stratification” is often reserved for bias from studying a mixture of individuals of different ethnic groups, so <span class="math inline">\(U\)</span> can stand for ethnicity.</li>
+<li>Some authors replace an unmeasured common cause <span class="math inline">\(U\)</span> and its two arrows with a bidirected edge between the measured variables that <span class="math inline">\(U\)</span> causes.</li>
+</ul>
+<p><strong>A historical note</strong> <span class="citation" data-cites="hernan2020causal">(<a href="#/references" role="doc-biblioref" onclick="">Hernán and Robins 2020, 92</a>)</span>: early statistical descriptions of confounding were given by Yule (1903) for discrete variables and by Pearson et al.&nbsp;(1899) for continuous variables, who called these associations “fictitious”, “illusory”, “apparent”, or “spurious”. But associations due to common causes are real associations; they simply cannot be interpreted as treatment effects.</p>
+<p><strong>Common structure:</strong> in every example the bias is due to a cause (<span class="math inline">\(L\)</span> or <span class="math inline">\(U\)</span>) shared by treatment and outcome, which opens a backdoor path between <span class="math inline">\(A\)</span> and <span class="math inline">\(Y\)</span>. The book reserves the term <em>confounding</em> for this structure and uses other names for biases with other structures. Throughout the chapter it assumes positivity and consistency, perfectly measured nodes, no selection nodes, and no random variability (Chapters 8, 9, and 10 relax these assumptions).</p>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside></section></section><section><section id="confounding-and-exchangeability-pp.-93-95" class="title-slide slide level1 center" data-number="2"><h1>
+<span class="header-section-number">2</span> 7.2 Confounding and Exchangeability (pp.&nbsp;93-95)</h1>
+
+</section><section class="slide level2"><p>When <strong>marginal exchangeability</strong> <span class="math inline">\(Y^a \perp\!\!\!\perp A\)</span> holds, as in a marginally randomized experiment, the average causal effect is identified without adjustment:</p>
+<p><span class="math display">\[\text{E}{\left[Y^{a=1}\right]} - \text{E}{\left[Y^{a=0}\right]} = \text{E}{\left[Y \mid A = 1\right]} - \text{E}{\left[Y \mid A = 0\right]}\]</span></p>
+<p>When only <strong>conditional exchangeability</strong> <span class="math inline">\(Y^a \perp\!\!\!\perp A \mid L\)</span> holds, as in a conditionally randomized experiment, the average causal effect is identified by adjusting for <span class="math inline">\(L\)</span> via standardization or IP weighting, and the conditional effects <span class="math inline">\(\text{E}{\left[Y^{a=1} \mid L = l\right]} - \text{E}{\left[Y^{a=0} \mid L = l\right]}\)</span> are identified by stratification.</p>
+<div id="thm-standardization-ch7" class="theorem">
+<p><span class="theorem-title"><strong>Theorem 1 (Standardization Under Conditional Exchangeability)</strong></span> Under conditional exchangeability <span class="math inline">\(Y^a \perp\!\!\!\perp A \mid L\)</span>, positivity, and consistency,</p>
+<p><span class="math display">\[\text{E}{\left[Y^a\right]} = \sum_l \text{E}{\left[Y \mid L = l, A = a\right]} \Pr[L = l]\]</span></p>
+</div>
+<div class="proof">
+<p><span class="proof-title"><em>Proof</em>. </span><span class="math display">\[\begin{align}
+\text{E}{\left[Y^a\right]}
+&amp;= \sum_l \text{E}{\left[Y^a \mid L = l\right]} \Pr[L = l]
+&amp;&amp; \text{(law of total expectation)} \\
+&amp;= \sum_l \text{E}{\left[Y^a \mid L = l, A = a\right]} \Pr[L = l]
+&amp;&amp; \text{(conditional exchangeability; positivity)} \\
+&amp;= \sum_l \text{E}{\left[Y \mid L = l, A = a\right]} \Pr[L = l]
+&amp;&amp; \text{(consistency)}
+\end{align}\]</span></p>
+<p>Positivity, <span class="math inline">\(\Pr[A = a \mid L = l] &gt; 0\)</span> for all <span class="math inline">\(l\)</span> with <span class="math inline">\(\Pr[L = l] &gt; 0\)</span>, ensures that the conditional mean in the second line is defined.</p>
+</div>
+</section><section id="supplement-a-numerical-example" class="slide level2"><h2>Supplement: A Numerical Example</h2>
+</section><section class="slide level2"><p>This hypothetical example is not from the book. Twenty individuals receive a drug <span class="math inline">\(A\)</span>; <span class="math inline">\(L = 1\)</span> indicates a high-risk group; <span class="math inline">\(Y = 1\)</span> indicates death.</p>
+<table class="caption-top">
 <thead><tr class="header">
-<th style="text-align: left;">L</th>
-<th style="text-align: left;">A</th>
-<th style="text-align: right;">n</th>
-<th style="text-align: right;">Deaths (Y=1)</th>
-<th style="text-align: right;">Pr[Y=1 | A, L]</th>
+<th style="text-align: center;"><span class="math inline">\(L\)</span></th>
+<th style="text-align: center;"><span class="math inline">\(A\)</span></th>
+<th style="text-align: center;"><span class="math inline">\(n\)</span></th>
+<th style="text-align: center;">Deaths</th>
+<th style="text-align: center;"><span class="math inline">\(\Pr[Y = 1 \mid A, L]\)</span></th>
 </tr></thead>
 <tbody>
 <tr class="odd">
-<td style="text-align: left;">0 (female)</td>
-<td style="text-align: left;">0 (untreated)</td>
-<td style="text-align: right;">8</td>
-<td style="text-align: right;">0</td>
-<td style="text-align: right;">0.0</td>
+<td style="text-align: center;">1</td>
+<td style="text-align: center;">1</td>
+<td style="text-align: center;">8</td>
+<td style="text-align: center;">4</td>
+<td style="text-align: center;">0.50</td>
 </tr>
 <tr class="even">
-<td style="text-align: left;">1 (male)</td>
-<td style="text-align: left;">0 (untreated)</td>
-<td style="text-align: right;">2</td>
-<td style="text-align: right;">1</td>
-<td style="text-align: right;">0.5</td>
+<td style="text-align: center;">1</td>
+<td style="text-align: center;">0</td>
+<td style="text-align: center;">2</td>
+<td style="text-align: center;">1</td>
+<td style="text-align: center;">0.50</td>
 </tr>
 <tr class="odd">
-<td style="text-align: left;">0 (female)</td>
-<td style="text-align: left;">1 (treated)</td>
-<td style="text-align: right;">2</td>
-<td style="text-align: right;">0</td>
-<td style="text-align: right;">0.0</td>
+<td style="text-align: center;">0</td>
+<td style="text-align: center;">1</td>
+<td style="text-align: center;">2</td>
+<td style="text-align: center;">0</td>
+<td style="text-align: center;">0.00</td>
 </tr>
 <tr class="even">
-<td style="text-align: left;">1 (male)</td>
-<td style="text-align: left;">1 (treated)</td>
-<td style="text-align: right;">8</td>
-<td style="text-align: right;">4</td>
-<td style="text-align: right;">0.5</td>
+<td style="text-align: center;">0</td>
+<td style="text-align: center;">0</td>
+<td style="text-align: center;">8</td>
+<td style="text-align: center;">0</td>
+<td style="text-align: center;">0.00</td>
 </tr>
 </tbody>
 </table>
-</div>
-</div>
-</figure>
-</div>
-</div>
-<p>Within each sex stratum, the mortality rate is the same for treated and untreated individuals:</p>
-<p><span class="math display">\[\Pr[Y = 1 \mid A = 1, L = 1] = \Pr[Y = 1 \mid A = 0, L = 1] = 0.50\]</span> <span class="math display">\[\Pr[Y = 1 \mid A = 1, L = 0] = \Pr[Y = 1 \mid A = 0, L = 0] = 0.00\]</span></p>
-<p>Within strata of <span class="math inline">\(L\)</span>, the association equals the causal effect (null). But the crude (marginal) association is non-null:</p>
-<p><span class="math display">\[\Pr[Y = 1 \mid A = 1] = \tfrac{4}{10} = 0.40 \neq \Pr[Y = 1 \mid A = 0] = \tfrac{1}{10} = 0.10\]</span></p>
-<p>The crude risk difference of <span class="math inline">\(0.30\)</span> is entirely due to confounding: males are more frequently treated (<span class="math inline">\(8/10\)</span>) and have higher baseline mortality (<span class="math inline">\(0.50\)</span>) than females.</p>
-<aside class="notes"><p><strong>Why confounding arises here:</strong></p>
-<p>Males (<span class="math inline">\(L = 1\)</span>) are more likely to receive treatment (80%) and have higher mortality (50%), while females (<span class="math inline">\(L = 0\)</span>) are less likely to receive treatment (20%) and have lower mortality (0%). Within each sex, treatment has no effect. But marginally, treated individuals have higher mortality than untreated individuals—not because of any causal effect of treatment, but because the treated group is disproportionately male.</p>
-<p>The crude risk difference of 0.30 is entirely confounding bias; the true average causal effect is zero.</p>
+<p>Crude risks: <span class="math inline">\(\Pr[Y = 1 \mid A = 1] = (4 + 0) / (8 + 2) = 0.40\)</span> and <span class="math inline">\(\Pr[Y = 1 \mid A = 0] = (1 + 0) / (2 + 8) = 0.10\)</span>.</p>
+<p>With <span class="math inline">\(\Pr[L = 1] = 10/20 = 0.50\)</span>, standardization (<a href="#/thm-standardization-ch7" class="quarto-xref">Theorem&nbsp;1</a>) gives</p>
+<p><span class="math display">\[\begin{align}
+\Pr[Y^{a=1} = 1] &amp;= 0.50 \times 0.50 + 0.00 \times 0.50 = 0.25 \\
+\Pr[Y^{a=0} = 1] &amp;= 0.50 \times 0.50 + 0.00 \times 0.50 = 0.25
+\end{align}\]</span></p>
+<p>so the standardized risk difference is <span class="math inline">\(0\)</span>, while the crude risk difference is <span class="math inline">\(0.40 - 0.10 = 0.30\)</span>.</p>
+<aside class="notes"><p>The high-risk group (<span class="math inline">\(L = 1\)</span>) is treated more often (<span class="math inline">\(8/10\)</span> versus <span class="math inline">\(2/10\)</span>) and dies more often (<span class="math inline">\(0.50\)</span> versus <span class="math inline">\(0.00\)</span>). Within each level of <span class="math inline">\(L\)</span> the treated and untreated have the same risk, so the whole crude risk difference of <span class="math inline">\(0.30\)</span> is confounding, assuming <span class="math inline">\(L\)</span> is the only common cause of <span class="math inline">\(A\)</span> and <span class="math inline">\(Y\)</span>.</p>
 <style type="text/css">
         span.MJX_Assistive_MathML {
           position:absolute!important;
@@ -252,142 +322,320 @@ Table&nbsp;1: Table 7.1. Hypothetical data from 20 individuals. A: treatment; L:
           width: 1px!important;
           overflow: hidden!important;
           display:block!important;
-      }</style></aside></section><section id="the-structural-definition" class="slide level2"><h2>The Structural Definition</h2>
-<p>In the causal diagram framework, confounding arises when there is an open backdoor path from <span class="math inline">\(A\)</span> to <span class="math inline">\(Y\)</span>. In the example above, sex <span class="math inline">\(L\)</span> is a common cause of treatment <span class="math inline">\(A\)</span> and mortality <span class="math inline">\(Y\)</span>:</p>
-<div class="cell">
+      }</style></aside></section><section id="the-backdoor-criterion" class="slide level2"><h2>The Backdoor Criterion</h2>
+</section><section class="slide level2 scrollable"><p>If we know the true causal DAG, how can we tell whether some set <span class="math inline">\(L\)</span> yields conditional exchangeability? The book gives two approaches: the <strong>backdoor criterion</strong> (Pearl 1995) and the transformation of the DAG into a <strong>SWIG</strong> (Section 7.5).</p>
+<div id="def-backdoor-criterion-ch7" class="theorem definition">
+<p><span class="theorem-title"><strong>Definition 2 (Backdoor Criterion)</strong></span> A set of covariates <span class="math inline">\(L\)</span> satisfies the <strong>backdoor criterion</strong> if</p>
+<ol type="1">
+<li>all backdoor paths between <span class="math inline">\(A\)</span> and <span class="math inline">\(Y\)</span> are blocked by conditioning on <span class="math inline">\(L\)</span>, and</li>
+<li>
+<span class="math inline">\(L\)</span> contains no variables that are descendants of treatment <span class="math inline">\(A\)</span>.</li>
+</ol>
+</div>
+<p>Under faithfulness (and the causal model discussed in Technical Point 7.1), conditional exchangeability <span class="math inline">\(Y^a \perp\!\!\!\perp A \mid L\)</span> holds <strong>if and only if</strong> <span class="math inline">\(L\)</span> satisfies the backdoor criterion. Checking every subset of measured non-descendants of <span class="math inline">\(A\)</span> therefore tells us whether any of them achieves conditional exchangeability.</p>
+<div title="Technical Point 7.1: Does Conditional Exchangeability Imply the Backdoor Criterion?">
+<div class="callout callout-note callout-titled callout-style-default">
+<div class="callout-body">
+<div class="callout-title">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<p><strong>Technical Point 7.1: Does Conditional Exchangeability Imply the Backdoor Criterion?</strong></p>
+</div>
+<div class="callout-content">
+<p>That <span class="math inline">\(L\)</span> satisfies the backdoor criterion always implies conditional exchangeability given <span class="math inline">\(L\)</span>, even without faithfulness. The converse (given faithfulness) holds under an FFRCISTG model (Technical Point 6.3). Under an NPSEM-IE model, conditional exchangeability can hold without the backdoor criterion, for example in the DAG with nodes <span class="math inline">\(A, L, Y\)</span> and arrows <span class="math inline">\(A \rightarrow L\)</span>, <span class="math inline">\(A \rightarrow Y\)</span>.</p>
+<p>The difference arises because the NPSEM-IE assumes cross-world independencies between counterfactuals, which no randomized experiment could ever verify; for that reason Robins did not assume them in the FFRCISTG model. The book assumes an FFRCISTG model and faithfulness unless stated otherwise <span class="citation" data-cites="hernan2020causal">(<a href="#/references" role="doc-biblioref" onclick="">Hernán and Robins 2020, 94</a>)</span>.</p>
+</div>
+</div>
+</div>
+</div>
+</section><section id="two-settings-in-which-the-backdoor-criterion-holds" class="slide level2"><h2>Two Settings in Which the Backdoor Criterion Holds</h2>
+</section><section class="slide level2 scrollable"><ol type="1">
+<li>
+<strong>No common causes of treatment and outcome</strong> (e.g., Figure 6.2): there are no backdoor paths, the empty set satisfies the criterion, and there is <strong>no confounding</strong>. This is a marginally randomized experiment; marginal exchangeability is equivalent to no common causes of treatment and outcome.</li>
+<li>
+<strong>Common causes, but a set <span class="math inline">\(L\)</span> of measured non-descendants of <span class="math inline">\(A\)</span> blocks all backdoor paths</strong> (e.g., Figure 7.1): there is confounding, but <strong>no unmeasured confounding</strong>. This is a conditionally randomized experiment, with an arrow <span class="math inline">\(L \rightarrow A\)</span> by design.</li>
+</ol>
+<div id="def-sufficient-set" class="theorem definition">
+<p><span class="theorem-title"><strong>Definition 3 (Sufficient Set for Confounding Adjustment)</strong></span> A set <span class="math inline">\(L\)</span> of measured non-descendants of <span class="math inline">\(A\)</span> is a <strong>sufficient set for confounding adjustment</strong> when conditioning on <span class="math inline">\(L\)</span> blocks all backdoor paths, that is, when the treated and the untreated are exchangeable within levels of <span class="math inline">\(L\)</span>.</p>
+</div>
+<aside class="notes"><p><strong>The heart transplant study</strong> (Chapter 2) is an example of the second setting. The treated had a higher frequency of severe heart disease <span class="math inline">\(L\)</span>, a common cause of <span class="math inline">\(A\)</span> and <span class="math inline">\(Y\)</span>, so had they remained untreated their risk of death would have been higher than that of the untreated. They are not marginally exchangeable, but they are conditionally exchangeable given <span class="math inline">\(L\)</span>. The second setting is also what investigators hope for in observational studies that measure many variables <span class="math inline">\(L\)</span>.</p>
+<p><strong>Magnitude and direction:</strong> the backdoor criterion says nothing about the size or direction of confounding. Some unblocked backdoor paths may be weak, and strong backdoor paths may induce biases in opposite directions that partly cancel. Unmeasured confounding is not “all or nothing”, so investigators should consider its expected direction and magnitude (Fine Point 7.1). The book refers to Greenland and Robins (1986, 2009) for a detailed discussion of the relations between confounding and exchangeability.</p>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside></section></section><section><section id="confounding-and-the-backdoor-criterion-pp.-95-98" class="title-slide slide level1 center" data-number="3"><h1>
+<span class="header-section-number">3</span> 7.3 Confounding and the Backdoor Criterion (pp.&nbsp;95-98)</h1>
+
+</section><section class="slide level2"><p>Applying the backdoor criterion to Figures 7.1-7.3:</p>
+<ul>
+<li>
+<strong>Figure 7.1</strong>: the backdoor path <span class="math inline">\(A \leftarrow L \rightarrow Y\)</span> is blocked by conditioning on <span class="math inline">\(L\)</span>.</li>
+<li>
+<strong>Figure 7.2</strong>: the backdoor path <span class="math inline">\(A \leftarrow L \leftarrow U \rightarrow Y\)</span> could be blocked by <span class="math inline">\(U\)</span>, which is unmeasured, but it is also blocked by <span class="math inline">\(L\)</span>.</li>
+<li>
+<strong>Figure 7.3</strong>: the backdoor path <span class="math inline">\(A \leftarrow U \rightarrow L \rightarrow Y\)</span> is also blocked by <span class="math inline">\(L\)</span>.</li>
+</ul>
+<p>In all three there is confounding, but <strong>no unmeasured confounding given <span class="math inline">\(L\)</span></strong>.</p>
+</section><section id="m-bias-figure-7.4" class="slide level2"><h2>M-bias: Figure 7.4</h2>
+</section><section class="slide level2"><div class="cell">
 <div class="cell-output-display">
 <div class="quarto-figure quarto-figure-center">
-<figure><figcaption>Figure 7.1. Causal diagram for the cholesterol-lowering drug example. Sex (L) is a common cause of treatment (A) and outcome (Y), creating a backdoor path A ← L → Y.</figcaption><p><a href="07-confounding_files/figure-html/unnamed-chunk-1-1.png" class="lightbox" data-gallery="quarto-lightbox-gallery-1" title="Figure 7.1. Causal diagram for the cholesterol-lowering drug example. Sex (L) is a common cause of treatment (A) and outcome (Y), creating a backdoor path A ← L → Y."><img data-src="07-confounding_files/figure-html/unnamed-chunk-1-1.png" width="384" alt="Figure 7.1. Causal diagram for the cholesterol-lowering drug example. Sex (L) is a common cause of treatment (A) and outcome (Y), creating a backdoor path A ← L → Y."></a></p>
+<figure><figcaption>Left: Figure 7.4, in which L is a collider on the path A &lt;- U2 -&gt; L &lt;- U1 -&gt; Y. Right: Figure 7.5, which adds the arrow L -&gt; A.</figcaption><p><a href="07-confounding_files/figure-html/dag-ch7-4-5-1.png" class="lightbox" data-gallery="quarto-lightbox-gallery-3" title="Left: Figure 7.4, in which L is a collider on the path A <- U2 -> L <- U1 -> Y. Right: Figure 7.5, which adds the arrow L -> A."><img data-src="07-confounding_files/figure-html/dag-ch7-4-5-1.png" width="768" alt="Left: Figure 7.4, in which L is a collider on the path A <- U2 -> L <- U1 -> Y. Right: Figure 7.5, which adds the arrow L -> A."></a></p>
 </figure>
 </div>
 </div>
 </div>
-<p>The path <span class="math inline">\(A \leftarrow L \rightarrow Y\)</span> is a backdoor path from <span class="math inline">\(A\)</span> to <span class="math inline">\(Y\)</span>. Because <span class="math inline">\(L\)</span> is a non-collider on this path and has not been conditioned on, the path is open. Confounding bias exists whenever at least one backdoor path from <span class="math inline">\(A\)</span> to <span class="math inline">\(Y\)</span> is open.</p>
-<div id="def-confounding" class="theorem definition">
-<p><span class="theorem-title"><strong>Definition 1 (Confounding (Structural Definition))</strong></span> <strong>Confounding</strong> of the effect of <span class="math inline">\(A\)</span> on <span class="math inline">\(Y\)</span> is present when the observed (crude) association between <span class="math inline">\(A\)</span> and <span class="math inline">\(Y\)</span> differs from the causal effect of <span class="math inline">\(A\)</span> on <span class="math inline">\(Y\)</span>:</p>
-<p><span class="math display">\[\Pr[Y = 1 \mid A = 1] - \Pr[Y = 1 \mid A = 0] \neq \Pr[Y^{a=1} = 1] - \Pr[Y^{a=0} = 1]\]</span></p>
-<p>In structural terms, confounding exists when there is at least one open backdoor path from <span class="math inline">\(A\)</span> to <span class="math inline">\(Y\)</span> in the causal diagram.</p>
+<p>In Figure 7.4 <span class="math inline">\(A\)</span> and <span class="math inline">\(Y\)</span> share no common cause, so there is <strong>no confounding</strong>: the backdoor path <span class="math inline">\(A \leftarrow U_2 \rightarrow L \leftarrow U_1 \rightarrow Y\)</span> is blocked by the collider <span class="math inline">\(L\)</span>, and <span class="math inline">\(\Pr[Y^a = 1] = \Pr[Y = 1 \mid A = a]\)</span>.</p>
+<div id="exm-pap-smear" class="theorem example">
+<p><span class="theorem-title"><strong>Example 1 (Physical Activity and Cervical Cancer)</strong></span> Let <span class="math inline">\(A\)</span> be physical activity, <span class="math inline">\(Y\)</span> cervical cancer, <span class="math inline">\(U_1\)</span> a pre-cancer lesion, <span class="math inline">\(L\)</span> a Pap smear (a diagnostic test for pre-cancer), and <span class="math inline">\(U_2\)</span> a health-conscious personality that leads to more physical activity and more doctor visits. Under Figure 7.4 the effect of <span class="math inline">\(A\)</span> on <span class="math inline">\(Y\)</span> is unconfounded, and there is no need to adjust for <span class="math inline">\(L\)</span> to compute <span class="math inline">\(\Pr[Y^{a=1} = 1]\)</span> or <span class="math inline">\(\Pr[Y^{a=0} = 1]\)</span> <span class="citation" data-cites="hernan2020causal">(<a href="#/references" role="doc-biblioref" onclick="">Hernán and Robins 2020, 95</a>)</span>.</p>
 </div>
-<aside class="notes"><p><strong>Confounding can operate in any direction:</strong></p>
+<p>Adjusting for <span class="math inline">\(L\)</span> in Figure 7.4 would <strong>create</strong> bias, because conditioning on the collider <span class="math inline">\(L\)</span> opens the path <span class="math inline">\(A \leftarrow U_2 \rightarrow L \leftarrow U_1 \rightarrow Y\)</span>. Here unconditional exchangeability holds but conditional exchangeability given <span class="math inline">\(L\)</span> does not: the average causal effect is identified, but the effects within levels of <span class="math inline">\(L\)</span> generally are not. The book calls the resulting bias <strong>selection bias</strong> (Chapter 8); it is also known as <strong>M-bias</strong>.</p>
+<aside class="notes"><p><strong>Why “M-bias”:</strong> the structure was described by Greenland, Pearl, and Robins (1999) and named M-bias by Greenland (2003), because <span class="math inline">\(U_2\)</span>, <span class="math inline">\(L\)</span>, <span class="math inline">\(U_1\)</span> resemble an M lying on its side <span class="citation" data-cites="hernan2020causal">(<a href="#/references" role="doc-biblioref" onclick="">Hernán and Robins 2020, 97</a>)</span>. That unconditional effects can be identified while conditional effects are not was shown non-graphically by Greenland and Robins (1986).</p>
+<p>If <span class="math inline">\(U_1\)</span> caused <span class="math inline">\(U_2\)</span>, <span class="math inline">\(U_2\)</span> caused <span class="math inline">\(U_1\)</span>, or an unmeasured <span class="math inline">\(U_3\)</span> caused both, <span class="math inline">\(A\)</span> and <span class="math inline">\(Y\)</span> would have a common cause, and there would be neither unconditional nor conditional exchangeability given <span class="math inline">\(L\)</span>.</p>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside></section><section id="intractable-bias-figure-7.5" class="slide level2"><h2>Intractable Bias: Figure 7.5</h2>
+</section><section class="slide level2"><p>Figure 7.5 adds the arrow <span class="math inline">\(L \rightarrow A\)</span>, which creates the open backdoor path <span class="math inline">\(A \leftarrow L \leftarrow U_1 \rightarrow Y\)</span>: there is confounding.</p>
 <ul>
-<li>
-<strong>Positive confounding</strong>: the crude estimate overstates the causal effect (or makes a harmful treatment look beneficial, or a beneficial treatment look even more beneficial)</li>
-<li>
-<strong>Negative confounding</strong>: the crude estimate understates the causal effect (or makes a beneficial treatment look harmful)</li>
-<li>The direction depends on the signs of the associations <span class="math inline">\(L \to A\)</span> and <span class="math inline">\(L \to Y\)</span>
+<li>Conditioning on <span class="math inline">\(L\)</span> blocks <span class="math inline">\(A \leftarrow L \leftarrow U_1 \rightarrow Y\)</span>,</li>
+<li>but opens <span class="math inline">\(A \leftarrow U_2 \rightarrow L \leftarrow U_1 \rightarrow Y\)</span>, on which <span class="math inline">\(L\)</span> is a collider.</li>
+</ul>
+<p>There is neither unconditional exchangeability nor conditional exchangeability given <span class="math inline">\(L\)</span>. The definition of collider is path-specific: <span class="math inline">\(L\)</span> is a collider on the second path but not on the first.</p>
+<p>A solution is to measure either a variable <span class="math inline">\(L_1\)</span> between <span class="math inline">\(U_1\)</span> and <span class="math inline">\(A\)</span> or <span class="math inline">\(Y\)</span>, which yields conditional exchangeability given <span class="math inline">\(L_1\)</span>, or a variable <span class="math inline">\(L_2\)</span> between <span class="math inline">\(U_2\)</span> and <span class="math inline">\(A\)</span> or <span class="math inline">\(L\)</span>, which yields conditional exchangeability given <span class="math inline">\(\{L_2, L\}\)</span>. Figure 7.6 adds <span class="math inline">\(L_1\)</span> between <span class="math inline">\(U_1\)</span> and <span class="math inline">\(Y\)</span> and <span class="math inline">\(L_2\)</span> between <span class="math inline">\(U_2\)</span> and <span class="math inline">\(A\)</span>.</p>
+<div title="Fine Point 7.1: The Strength and Direction of Confounding Bias">
+<div class="callout callout-note callout-titled callout-style-default">
+<div class="callout-body">
+<div class="callout-title">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<p><strong>Fine Point 7.1: The Strength and Direction of Confounding Bias</strong></p>
+</div>
+<div class="callout-content">
+<p>Suppose a study of heart transplant <span class="math inline">\(A\)</span> on death <span class="math inline">\(Y\)</span> finds a risk ratio of 0.6, and a critic suspects confounding by smoking <span class="math inline">\(L\)</span>. Smokers are less likely to receive a transplant and more likely to die. Because the transplant group has fewer smokers, it would have lower mortality even under the null, so adjusting for smoking moves the estimate upward (the book’s illustration: from 0.6 to 0.7). Failing to adjust exaggerates the apparent benefit.</p>
+<p><strong>Signed causal diagrams.</strong> With dichotomous <span class="math inline">\(L\)</span>, <span class="math inline">\(A\)</span>, <span class="math inline">\(Y\)</span> in Figure 7.1, put a <span class="math inline">\(+\)</span> on the arrow <span class="math inline">\(L \rightarrow A\)</span> if <span class="math inline">\(L\)</span> has a positive average causal effect on <span class="math inline">\(A\)</span>, otherwise a <span class="math inline">\(-\)</span>; likewise for <span class="math inline">\(L \rightarrow Y\)</span>.</p>
+<ul>
+<li>Both signs equal: <strong>positive</strong> confounding; the unadjusted estimate is biased upward.</li>
+<li>Signs differ: <strong>negative</strong> confounding; the unadjusted estimate is biased downward.</li>
+</ul>
+<p>In the smoking example, <span class="math inline">\(L \rightarrow A\)</span> is <span class="math inline">\(-\)</span> and <span class="math inline">\(L \rightarrow Y\)</span> is <span class="math inline">\(+\)</span>, so the confounding is negative, consistent with the unadjusted 0.6 lying below the adjusted 0.7. This simple rule may fail in more complex diagrams or with non-dichotomous variables (VanderWeele, Hernán, and Robins 2008).</p>
+<p><strong>Magnitude.</strong> A large confounding bias requires a strong confounder-treatment association and a strong confounder-outcome association (conditional on treatment); for discrete confounders it also depends on the confounder’s prevalence. For unknown confounders, sensitivity analyses can organize educated guesses about the size of the bias <span class="citation" data-cites="hernan2020causal">(<a href="#/references" role="doc-biblioref" onclick="">Hernán and Robins 2020, 96</a>)</span>.</p>
+</div>
+</div>
+</div>
+</div>
+</section><section id="confounders-and-non-confounders" class="slide level2"><h2>Confounders and Non-confounders</h2>
+</section><section class="slide level2"><p>Suppose data on <span class="math inline">\(L\)</span>, <span class="math inline">\(A\)</span>, and <span class="math inline">\(Y\)</span> suffice to identify the causal effect, as in Figures 7.1-7.4.</p>
+<div id="def-confounder-ch7" class="theorem definition">
+<p><span class="theorem-title"><strong>Definition 4 (Confounder (Given Data on L, A, Y))</strong></span> <span class="math inline">\(L\)</span> is a <strong>confounder</strong> if data on <span class="math inline">\(A\)</span> and <span class="math inline">\(Y\)</span> alone do not suffice for identification, that is, if there is conditional exchangeability given <span class="math inline">\(L\)</span> but not unconditional exchangeability (structural confounding). <span class="math inline">\(L\)</span> is a <strong>non-confounder</strong> if data on <span class="math inline">\(A\)</span> and <span class="math inline">\(Y\)</span> alone suffice, that is, if there is unconditional exchangeability <span class="citation" data-cites="hernan2020causal">(<a href="#/references" role="doc-biblioref" onclick="">Hernán and Robins 2020, 96</a>)</span>.</p>
+</div>
+<ul>
+<li>In Figures 7.1-7.3, <span class="math inline">\(L\)</span> is a confounder: <span class="math inline">\(\Pr[Y^a = 1]\)</span> is identified by the standardized risk <span class="math inline">\(\sum_l \Pr[Y = 1 \mid A = a, L = l] \Pr[L = l]\)</span>. In Figures 7.2 and 7.3, <span class="math inline">\(L\)</span> is not a common cause of <span class="math inline">\(A\)</span> and <span class="math inline">\(Y\)</span>, yet it is a confounder because it is needed to block the backdoor path through <span class="math inline">\(U\)</span>.</li>
+<li>In Figure 7.4, <span class="math inline">\(L\)</span> is a non-confounder, and <span class="math inline">\(\Pr[Y^a = 1] = \Pr[Y = 1 \mid A = a]\)</span>. Standardizing by <span class="math inline">\(L\)</span> would be biased.</li>
+</ul>
+<aside class="notes"><p>An informal definition for Figures 7.1 to 7.4 is “a confounder is any variable that can be used to adjust for confounding.” This definition is not circular, because confounding was defined first, just as “a musician is a person who plays music” is not circular once music has been defined <span class="citation" data-cites="hernan2020causal">(<a href="#/references" role="doc-biblioref" onclick="">Hernán and Robins 2020, 96</a>)</span>.</p>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside></section><section id="two-definitions-of-confounding" class="slide level2"><h2>Two Definitions of Confounding</h2>
+</section><section class="slide level2"><p>The causal diagrams of this section show two structural sources of lack of exchangeability through open backdoor paths:</p>
+<ul>
+<li>common causes of treatment and outcome, which the book calls <strong>confounding</strong>;</li>
+<li>conditioning on a common effect, which the book calls <strong>selection bias</strong>.</li>
+</ul>
+<p>An alternative definition calls confounding any “bias due to an open backdoor path between <span class="math inline">\(A\)</span> and <span class="math inline">\(Y\)</span>”, equivalently “any systematic bias that would be eliminated by randomized assignment of <span class="math inline">\(A\)</span>”. It differs only in labeling the bias from conditioning on <span class="math inline">\(L\)</span> in Figure 7.4 as confounding.</p>
+<aside class="notes"><p><strong>Why randomization would eliminate the Figure 7.4 bias:</strong> random assignment of <span class="math inline">\(A\)</span> rules out an unmeasured common cause <span class="math inline">\(U_2\)</span> of <span class="math inline">\(A\)</span> and <span class="math inline">\(L\)</span>, so conditioning on <span class="math inline">\(L\)</span> would no longer open a backdoor path.</p>
+<p><strong>A difference between the two definitions:</strong> under the structural definition, whether confounding exists is a fact about the population, independent of the analysis. Under the “eliminated by randomization” definition it depends on the analysis: in Figure 7.4 there is no confounding if we do not adjust for <span class="math inline">\(L\)</span>, but there is if we do. The choice is a matter of taste with no practical implications, because identifiability depends only on whether conditional or unconditional exchangeability holds <span class="citation" data-cites="hernan2020causal">(<a href="#/references" role="doc-biblioref" onclick="">Hernán and Robins 2020, 98</a>)</span>.</p>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside><div title="Fine Point 7.2: Identification of Conditional and Unconditional Effects">
+<div class="callout callout-note callout-titled callout-style-default">
+<div class="callout-body">
+<div class="callout-title">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<p><strong>Fine Point 7.2: Identification of Conditional and Unconditional Effects</strong></p>
+</div>
+<div class="callout-content">
+<p>Which effects can be identified depends on which variables are measured. In Figure 7.6:</p>
+<ul>
+<li>Measuring only <span class="math inline">\(L_2\)</span>: no exchangeability given <span class="math inline">\(L_2\)</span>; no causal effects are identified.</li>
+<li>Measuring <span class="math inline">\(L_2\)</span> and <span class="math inline">\(L\)</span>: conditional exchangeability given <span class="math inline">\(\{L_2, L\}\)</span> (but not given either alone). Identified are:
+<ul>
+<li>effects within joint strata of <span class="math inline">\(L\)</span> and <span class="math inline">\(L_2\)</span>, via <span class="math inline">\(\text{E}{\left[Y \mid A = a, L = l, L_2 = l_2\right]}\)</span>;</li>
+<li>the unconditional effect, via <span class="math inline">\(\sum_{l, l_2} \text{E}{\left[Y \mid A = a, L = l, L_2 = l_2\right]} \Pr[L = l, L_2 = l_2]\)</span>;</li>
+<li>effects within strata of <span class="math inline">\(L\)</span>, via <span class="math inline">\(\sum_{l_2} \text{E}{\left[Y \mid A = a, L = l, L_2 = l_2\right]} \Pr[L_2 = l_2 \mid L = l]\)</span>;</li>
+<li>effects within strata of <span class="math inline">\(L_2\)</span>, via <span class="math inline">\(\sum_{l} \text{E}{\left[Y \mid A = a, L = l, L_2 = l_2\right]} \Pr[L = l \mid L_2 = l_2]\)</span>.</li>
+</ul>
 </li>
+<li>Measuring only <span class="math inline">\(L_1\)</span>: effects within strata of <span class="math inline">\(L_1\)</span> and the unconditional effect.</li>
+<li>Measuring <span class="math inline">\(L_1\)</span> and <span class="math inline">\(L\)</span>: additionally, effects within joint strata of <span class="math inline">\(L_1\)</span> and <span class="math inline">\(L\)</span>, and within strata of <span class="math inline">\(L\)</span>.</li>
+<li>Measuring <span class="math inline">\(L\)</span>, <span class="math inline">\(L_1\)</span>, and <span class="math inline">\(L_2\)</span>: additionally, effects within joint strata of all three <span class="citation" data-cites="hernan2020causal">(<a href="#/references" role="doc-biblioref" onclick="">Hernán and Robins 2020, 98</a>)</span>.</li>
 </ul>
-<p>In the drug example above, sicker patients (males) were more likely to receive treatment and had worse outcomes, so the drug appears harmful even though it has no effect. This is <strong>confounding by indication</strong> or <strong>channeling bias</strong>—the indication for treatment (higher disease severity) is itself a risk factor for the outcome.</p>
-<style type="text/css">
-        span.MJX_Assistive_MathML {
-          position:absolute!important;
-          clip: rect(1px, 1px, 1px, 1px);
-          padding: 1px 0 0 0!important;
-          border: 0!important;
-          height: 1px!important;
-          width: 1px!important;
-          overflow: hidden!important;
-          display:block!important;
-      }</style></aside></section></section><section><section id="confounding-and-exchangeability-pp.-8082" class="title-slide slide level1 center" data-number="2"><h1>
-<span class="header-section-number">2</span> 7.2 Confounding and Exchangeability (pp.&nbsp;80–82)</h1>
+</div>
+</div>
+</div>
+</div>
+</section></section><section><section id="confounding-and-confounders-pp.-98-101" class="title-slide slide level1 center" data-number="4"><h1>
+<span class="header-section-number">4</span> 7.4 Confounding and Confounders (pp.&nbsp;98-101)</h1>
 
-</section><section class="slide level2"><p>Confounding is mathematically equivalent to the failure of <strong>marginal exchangeability</strong>. Recall from Chapter 2 that marginal exchangeability holds when:</p>
-<p><span class="math display">\[Y^a \perp\!\!\!\perp A \quad \text{for all } a\]</span></p>
-<p>This means the treated and untreated groups have the same distribution of potential outcomes: <span class="math inline">\(\Pr[Y^a = 1 \mid A = 1] = \Pr[Y^a = 1 \mid A = 0] = \Pr[Y^a = 1]\)</span>.</p>
-<p>When marginal exchangeability holds, association equals causation:</p>
-<p><span class="math display">\[\Pr[Y = 1 \mid A = 1] - \Pr[Y = 1 \mid A = 0] = \Pr[Y^{a=1} = 1] - \Pr[Y^{a=0} = 1]\]</span></p>
-<p><strong>No confounding is equivalent to marginal exchangeability.</strong> When confounding is present, marginal exchangeability fails: <span class="math inline">\(Y^a \not\perp\!\!\!\perp A\)</span>, and the treated and untreated differ in their potential outcomes.</p>
-</section><section id="eliminating-confounding-via-conditioning" class="slide level2"><h2>Eliminating Confounding via Conditioning</h2>
-<p>Even when marginal exchangeability fails, we can often achieve <strong>conditional exchangeability</strong> by adjusting for the measured confounders <span class="math inline">\(L\)</span>:</p>
-<p><span class="math display">\[Y^a \perp\!\!\!\perp A \mid L \quad \text{for all } a\]</span></p>
-<p>This means that within each stratum of <span class="math inline">\(L\)</span>, the treated and untreated are exchangeable. In the drug example:</p>
-<ul>
-<li>Within males (<span class="math inline">\(L = 1\)</span>): <span class="math inline">\(\Pr[Y^{a} = 1 \mid A = 1, L = 1] = \Pr[Y^{a} = 1 \mid A = 0, L = 1]\)</span> ✓</li>
-<li>Within females (<span class="math inline">\(L = 0\)</span>): <span class="math inline">\(\Pr[Y^{a} = 1 \mid A = 1, L = 0] = \Pr[Y^{a} = 1 \mid A = 0, L = 0]\)</span> ✓</li>
-</ul>
-<p>Under conditional exchangeability and positivity, the standardization (g-formula) identifies the causal effect:</p>
-<p><span class="math display">\[\Pr[Y^{a} = 1] = \sum_l \Pr[Y = 1 \mid A = a, L = l] \, \Pr[L = l]\]</span></p>
-<p>Applying standardization to the data in Table 7.1:</p>
-<p><span class="math display">\[\Pr[Y^{a=1} = 1] = 0.50 \times 0.50 + 0.00 \times 0.50 = 0.25\]</span> <span class="math display">\[\Pr[Y^{a=0} = 1] = 0.50 \times 0.50 + 0.00 \times 0.50 = 0.25\]</span></p>
-<p>The standardized risk difference is zero, correctly recovering the null causal effect.</p>
-<aside class="notes"><p><strong>Marginal vs.&nbsp;conditional exchangeability:</strong></p>
-<ul>
-<li>
-<strong>Marginal exchangeability</strong> (<span class="math inline">\(Y^a \perp\!\!\!\perp A\)</span>): holds in marginally randomized experiments; association equals causation without any adjustment.</li>
-<li>
-<strong>Conditional exchangeability</strong> (<span class="math inline">\(Y^a \perp\!\!\!\perp A \mid L\)</span>): holds in conditionally randomized experiments and (by assumption) in observational studies after adjusting for all confounders <span class="math inline">\(L\)</span>.</li>
-</ul>
-<p>In practice, we can never verify from data alone that conditional exchangeability holds. We must rely on subject-matter knowledge to argue that the measured <span class="math inline">\(L\)</span> captures all common causes of <span class="math inline">\(A\)</span> and <span class="math inline">\(Y\)</span>.</p>
-<p><strong>The no-unmeasured-confounding assumption:</strong></p>
-<p>Conditional exchangeability given <span class="math inline">\(L\)</span> is sometimes called the <strong>no-unmeasured-confounding assumption</strong> or <strong>ignorability</strong>. It is the key assumption required for identification of causal effects in observational studies.</p>
-<style type="text/css">
-        span.MJX_Assistive_MathML {
-          position:absolute!important;
-          clip: rect(1px, 1px, 1px, 1px);
-          padding: 1px 0 0 0!important;
-          border: 0!important;
-          height: 1px!important;
-          width: 1px!important;
-          overflow: hidden!important;
-          display:block!important;
-      }</style></aside></section></section><section><section id="confounding-and-the-backdoor-criterion-pp.-8285" class="title-slide slide level1 center" data-number="3"><h1>
-<span class="header-section-number">3</span> 7.3 Confounding and the Backdoor Criterion (pp.&nbsp;82–85)</h1>
-
-</section><section class="slide level2 scrollable"><p>The <strong>backdoor criterion</strong> (Chapter 6) provides a graphical condition for identifying sets of variables <span class="math inline">\(L\)</span> that suffice to eliminate confounding by adjustment.</p>
-<div id="def-backdoor-criterion-ch7" class="theorem definition">
-<p><span class="theorem-title"><strong>Definition 2 (Backdoor Criterion)</strong></span> A set of variables <span class="math inline">\(L\)</span> satisfies the <strong>backdoor criterion</strong> for the effect of <span class="math inline">\(A\)</span> on <span class="math inline">\(Y\)</span> in a causal diagram if:</p>
+</section><section class="slide level2 scrollable"><p>The structural approach needs prior knowledge of the causal DAG, including all shared causes (measured or not) of <span class="math inline">\(A\)</span> and <span class="math inline">\(Y\)</span>; the backdoor criterion then says what to adjust for. The <strong>traditional approach</strong> instead labels as confounders the variables meeting mostly associational conditions, mandates adjusting for them, and declares confounding when adjusted and unadjusted estimates differ.</p>
+<div id="def-traditional-confounder" class="theorem definition">
+<p><span class="theorem-title"><strong>Definition 5 (Traditional Definition of Confounder)</strong></span> A variable is a <strong>confounder</strong> under the traditional approach if it</p>
 <ol type="1">
-<li>No variable in <span class="math inline">\(L\)</span> is a descendant of <span class="math inline">\(A\)</span>
-</li>
+<li>is associated with the treatment,</li>
+<li>is associated with the outcome conditional on the treatment (often replaced by “in the untreated”), and</li>
+<li>does not lie on a causal pathway between treatment and outcome.</li>
+</ol>
+</div>
+</section><section id="where-the-traditional-approach-agrees-and-disagrees" class="slide level2"><h2>Where the Traditional Approach Agrees and Disagrees</h2>
+</section><section class="slide level2"><ul>
 <li>
-<span class="math inline">\(L\)</span> blocks every backdoor path from <span class="math inline">\(A\)</span> to <span class="math inline">\(Y\)</span>
+<strong>Figures 7.1-7.3</strong>: <span class="math inline">\(L\)</span> meets all three conditions, matching the backdoor criterion.</li>
+<li>
+<strong>Figure 7.4</strong>: <span class="math inline">\(L\)</span> meets all three conditions (it shares <span class="math inline">\(U_2\)</span> with <span class="math inline">\(A\)</span> and <span class="math inline">\(U_1\)</span> with <span class="math inline">\(Y\)</span>, and is not on the causal pathway), so the traditional approach says to adjust for it, although there is no confounding and adjusting causes selection bias.</li>
+<li>
+<strong>Figure 7.7</strong> is a second example in which the traditional approach leads to harmful adjustment for <span class="math inline">\(L\)</span>.</li>
+</ul>
+<p>Replacing condition 2 by the structural condition “it is a cause of the outcome” fixes Figure 7.4, but then <span class="math inline">\(L\)</span> in Figure 7.2 would no longer count as a confounder, although it must be adjusted for (Technical Point 7.2).</p>
+<aside class="notes"><p><strong>Associational criteria are insufficient to characterize confounding.</strong> A definition of confounder that relies almost exclusively on statistical considerations can advise adjusting for a “confounder” even when structural confounding does not exist.</p>
+<p><strong>Change in estimate is not a criterion for confounding.</strong> Adjusted and unadjusted estimates can differ for reasons other than confounding, including selection bias from adjusting for non-confounders (Chapter 8) and the noncollapsibility of some effect measures (Fine Point 4.3). Attempts to define confounding by change in estimates were abandoned long ago because of these problems <span class="citation" data-cites="hernan2020causal">(<a href="#/references" role="doc-biblioref" onclick="">Hernán and Robins 2020, 100</a>)</span>.</p>
+<p>Technically, investigators do not need full structural knowledge; they only need to know a set of variables that guarantees conditional exchangeability.</p>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside></section><section id="confounding-is-absolute-confounder-is-relative" class="slide level2"><h2>Confounding Is Absolute; Confounder Is Relative</h2>
+</section><section class="slide level2 scrollable"><p>The structural approach first identifies the sources of confounding (the common causes of treatment and outcome) and then a sufficient adjustment set. Whether a variable belongs to a sufficient set depends on the other variables in it. In Figures 7.2 and 7.3, <span class="math inline">\(L\)</span> is needed only because <span class="math inline">\(U\)</span> is unmeasured; given <span class="math inline">\(U\)</span>, <span class="math inline">\(L\)</span> would not be a confounder. Given a causal DAG, <strong>confounding is an absolute concept, whereas confounder is a relative one</strong> <span class="citation" data-cites="hernan2020causal">(<a href="#/references" role="doc-biblioref" onclick="">Hernán and Robins 2020, 100</a>)</span>.</p>
+<p>The structural approach has two advantages:</p>
+<ol type="1">
+<li>it prevents inconsistencies between beliefs and actions (if you believe Figure 7.4, you will not adjust for <span class="math inline">\(L\)</span>, whatever a non-structural definition says);</li>
+<li>it makes the researchers’ assumptions explicit, so others can criticize them.</li>
+</ol>
+<aside class="notes"><p>VanderWeele and Shpitser (2013) also proposed a formal definition of confounder. No approach guarantees that the researchers’ DAG is correct, so a chosen adjustment set may still fail to remove confounding or may introduce selection bias.</p>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside><div class="cell">
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure><figcaption>Figure 7.8. L is a surrogate (proxy) for the unmeasured common cause U of A and Y.</figcaption><p><a href="07-confounding_files/figure-html/dag-ch7-8-1.png" class="lightbox" data-gallery="quarto-lightbox-gallery-4" title="Figure 7.8. L is a surrogate (proxy) for the unmeasured common cause U of A and Y."><img data-src="07-confounding_files/figure-html/dag-ch7-8-1.png" width="384" alt="Figure 7.8. L is a surrogate (proxy) for the unmeasured common cause U of A and Y."></a></p>
+</figure>
+</div>
+</div>
+</div>
+<div title="Fine Point 7.3: Surrogate Confounders">
+<div class="callout callout-note callout-titled callout-style-default">
+<div class="callout-body">
+<div class="callout-title">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<p><strong>Fine Point 7.3: Surrogate Confounders</strong></p>
+</div>
+<div class="callout-content">
+<p>In Figure 7.8 the unmeasured <span class="math inline">\(U\)</span> (e.g., socioeconomic status) confounds the effect of physical activity <span class="math inline">\(A\)</span> on cardiovascular disease <span class="math inline">\(Y\)</span>, and the measured <span class="math inline">\(L\)</span> (e.g., income) is a proxy for <span class="math inline">\(U\)</span>. <span class="math inline">\(L\)</span> is not on a backdoor path, but adjusting for it may remove some of the confounding by <span class="math inline">\(U\)</span>; if <span class="math inline">\(L\)</span> were perfectly correlated with <span class="math inline">\(U\)</span>, conditioning on <span class="math inline">\(L\)</span> would be the same as conditioning on <span class="math inline">\(U\)</span>. If <span class="math inline">\(L\)</span> is a binary, nondifferentially misclassified version of <span class="math inline">\(U\)</span>, conditioning on <span class="math inline">\(L\)</span> partially blocks <span class="math inline">\(A \leftarrow U \rightarrow Y\)</span> under some weak conditions (Greenland 1980; Ogburn and VanderWeele 2012). So one typically prefers to adjust for <span class="math inline">\(L\)</span>.</p>
+<p>Variables that can reduce, but never completely eliminate, confounding bias without lying on a backdoor path are <strong>surrogate confounders</strong> <span class="citation" data-cites="hernan2020causal">(<a href="#/references" role="doc-biblioref" onclick="">Hernán and Robins 2020, 100</a>)</span>. One strategy is to measure and adjust for as many surrogate confounders as possible (see Chapter 18).</p>
+</div>
+</div>
+</div>
+</div>
+<div title="Technical Point 7.2: Fixing the Traditional Definition of Confounder">
+<div class="callout callout-note callout-titled callout-style-default">
+<div class="callout-body">
+<div class="callout-title">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<p><strong>Technical Point 7.2: Fixing the Traditional Definition of Confounder</strong></p>
+</div>
+<div class="callout-content">
+<p>The traditional definition relies on two incorrect statistical criteria (conditions 1 and 2) and one incorrect causal criterion (condition 3). To fix it:</p>
+<ol type="1">
+<li>Replace condition 3 by: there exist variables <span class="math inline">\(L\)</span> and <span class="math inline">\(U\)</span> such that <span class="math inline">\(Y^a \perp\!\!\!\perp A \mid L, U\)</span>. This implies that <span class="math inline">\(L\)</span> is not on a causal pathway from <span class="math inline">\(A\)</span> to <span class="math inline">\(Y\)</span> and that <span class="math inline">\(\text{E}{\left[Y^a \mid L = l, U = u\right]}\)</span> is identified by <span class="math inline">\(\text{E}{\left[Y \mid L = l, U = u, A = a\right]}\)</span>.</li>
+<li>Replace conditions 1 and 2 by: <span class="math inline">\(U\)</span> can be split into disjoint subsets <span class="math inline">\(U_1\)</span> and <span class="math inline">\(U_2\)</span> (<span class="math inline">\(U = U_1 \cup U_2\)</span>, <span class="math inline">\(U_1 \cap U_2 = \emptyset\)</span>) such that
+<ol type="i">
+<li>
+<span class="math inline">\(U_1\)</span> and <span class="math inline">\(A\)</span> are not associated within strata of <span class="math inline">\(L\)</span>, and</li>
+<li>
+<span class="math inline">\(U_2\)</span> and <span class="math inline">\(Y\)</span> are not associated within joint strata of <span class="math inline">\(A\)</span>, <span class="math inline">\(L\)</span>, and <span class="math inline">\(U_1\)</span>.</li>
+</ol>
 </li>
 </ol>
-<p>When <span class="math inline">\(L\)</span> satisfies the backdoor criterion, adjusting for <span class="math inline">\(L\)</span> (via standardization, IP weighting, or regression) eliminates confounding and identifies the average causal effect.</p>
-</div>
-</section><section id="multiple-dag-structures" class="slide level2"><h2>Multiple DAG Structures</h2>
-<p>Different causal structures imply different sets of variables that satisfy the backdoor criterion.</p>
-<div class="cell">
-<div class="cell-output-display">
-<div class="quarto-figure quarto-figure-center">
-<figure><figcaption>Figure 7.2. Three causal structures. Left: L is the only confounder; adjust for L. Middle: U is unmeasured but all backdoor paths pass through L (U causes Y only via L and directly); adjusting for L blocks both paths. Right: U has a direct arrow into A bypassing L; adjusting for L alone leaves residual confounding through U.</figcaption><p><a href="07-confounding_files/figure-html/unnamed-chunk-2-1.png" class="lightbox" data-gallery="quarto-lightbox-gallery-2" title="Figure 7.2. Three causal structures. Left: L is the only confounder; adjust for L. Middle: U is unmeasured but all backdoor paths pass through L (U causes Y only via L and directly); adjusting for L blocks both paths. Right: U has a direct arrow into A bypassing L; adjusting for L alone leaves residual confounding through U."><img data-src="07-confounding_files/figure-html/unnamed-chunk-2-1.png" width="1152" alt="Figure 7.2. Three causal structures. Left: L is the only confounder; adjust for L. Middle: U is unmeasured but all backdoor paths pass through L (U causes Y only via L and directly); adjusting for L blocks both paths. Right: U has a direct arrow into A bypassing L; adjusting for L alone leaves residual confounding through U."></a></p>
-</figure>
+<p>If both conditions hold, <span class="math inline">\(U\)</span> is a <strong>non-confounder given data on <span class="math inline">\(L\)</span></strong>. These conditions were proposed by Robins (1997, Theorem 4.3) and discussed by Greenland, Pearl, and Robins (1999), who used them to show there is no confounding in Figure 7.4 <span class="citation" data-cites="hernan2020causal">(<a href="#/references" role="doc-biblioref" onclick="">Hernán and Robins 2020, 101</a>)</span>.</p>
 </div>
 </div>
 </div>
-<p><strong>Structure I</strong> (<span class="math inline">\(L \to A\)</span>, <span class="math inline">\(L \to Y\)</span>, <span class="math inline">\(A \to Y\)</span>):</p>
+</div>
+</section></section><section><section id="single-world-intervention-graphs-pp.-101-102" class="title-slide slide level1 center" data-number="5"><h1>
+<span class="header-section-number">5</span> 7.5 Single-World Intervention Graphs (pp.&nbsp;101-102)</h1>
+
+</section><section class="slide level2"><p>The equivalence between exchangeability and the backdoor criterion seems “rather magical” because counterfactuals do not appear on causal diagrams. <strong>Single-world intervention graphs (SWIGs)</strong> put the counterfactual variables on the graph, so that exchangeability can be read off directly by d-separation.</p>
+<div id="def-swig" class="theorem definition">
+<p><span class="theorem-title"><strong>Definition 6 (Single-World Intervention Graph (SWIG))</strong></span> A <strong>SWIG</strong> depicts the variables and causal relations that would be observed in a hypothetical world in which all individuals received treatment level <span class="math inline">\(a\)</span>, a counterfactual world created by a single intervention. It is obtained from a causal DAG as follows:</p>
 <ul>
-<li>Backdoor path: <span class="math inline">\(A \leftarrow L \to Y\)</span>
-</li>
-<li>
-<span class="math inline">\(\{L\}\)</span> satisfies the backdoor criterion: <span class="math inline">\(L\)</span> is not a descendant of <span class="math inline">\(A\)</span> and blocks the only backdoor path.</li>
-<li>Adjustment for <span class="math inline">\(L\)</span> suffices.</li>
+<li>Split the treatment node into a left side <span class="math inline">\(A\)</span> (the <strong>natural value</strong> of treatment, the value that would have been observed without intervention), which keeps all arrows into <span class="math inline">\(A\)</span>, and a right side <span class="math inline">\(a\)</span> (the intervention value), which inherits all arrows out of <span class="math inline">\(A\)</span>. There is no arrow from <span class="math inline">\(A\)</span> to <span class="math inline">\(a\)</span>, because <span class="math inline">\(a\)</span> is a constant.</li>
+<li>Replace each descendant of treatment by its counterfactual, e.g., <span class="math inline">\(Y\)</span> by <span class="math inline">\(Y^a\)</span>. Non-descendants of <span class="math inline">\(A\)</span> keep their factual labels, because treatment does not affect them.</li>
 </ul>
-<p><strong>Structure II</strong> (<span class="math inline">\(U \to L \to A\)</span>, <span class="math inline">\(U \to Y\)</span>, <span class="math inline">\(L \to Y\)</span>, <span class="math inline">\(A \to Y\)</span>, <span class="math inline">\(U\)</span> unmeasured):</p>
+</div>
+<div id="exm-swig-7-9" class="theorem example">
+<p><span class="theorem-title"><strong>Example 2 (SWIGs for Figures 7.2 and 7.4)</strong></span> &nbsp;</p>
 <ul>
-<li>Backdoor paths: <span class="math inline">\(A \leftarrow L \to Y\)</span> and <span class="math inline">\(A \leftarrow L \leftarrow U \to Y\)</span>
-</li>
 <li>
-<span class="math inline">\(L\)</span> is a non-collider on both paths; conditioning on <span class="math inline">\(L\)</span> blocks them both.</li>
+<strong>Figure 7.9</strong> is the SWIG of Figure 7.2: <span class="math inline">\(U \rightarrow L \rightarrow A\)</span>, <span class="math inline">\(U \rightarrow Y^a\)</span>, <span class="math inline">\(a \rightarrow Y^a\)</span>. Every path between <span class="math inline">\(Y^a\)</span> and <span class="math inline">\(A\)</span> is blocked by conditioning on <span class="math inline">\(L\)</span>, so <span class="math inline">\(Y^a \perp\!\!\!\perp A \mid L\)</span>.</li>
 <li>
-<span class="math inline">\(\{L\}\)</span> satisfies the backdoor criterion: adjustment for <span class="math inline">\(L\)</span> suffices even though <span class="math inline">\(U\)</span> is unmeasured.</li>
+<strong>Figure 7.10</strong> is the SWIG of Figure 7.4: <span class="math inline">\(U_2 \rightarrow A\)</span>, <span class="math inline">\(U_2 \rightarrow L \leftarrow U_1 \rightarrow Y^a\)</span>, <span class="math inline">\(a \rightarrow Y^a\)</span>. Without conditioning, the path through the collider <span class="math inline">\(L\)</span> is blocked, so <span class="math inline">\(Y^a \perp\!\!\!\perp A\)</span>. Conditioning on <span class="math inline">\(L\)</span> opens <span class="math inline">\(Y^a \leftarrow U_1 \rightarrow L \leftarrow U_2 \rightarrow A\)</span>, so <span class="math inline">\(Y^a \perp\!\!\!\perp A \mid L\)</span> fails.</li>
 </ul>
-<p><strong>Structure III</strong> (<span class="math inline">\(U \to A\)</span>, <span class="math inline">\(U \to Y\)</span>, <span class="math inline">\(L \to A\)</span>, <span class="math inline">\(L \to Y\)</span>, <span class="math inline">\(A \to Y\)</span>, <span class="math inline">\(U\)</span> unmeasured):</p>
-<ul>
-<li>Backdoor paths: <span class="math inline">\(A \leftarrow L \to Y\)</span> <strong>and</strong> <span class="math inline">\(A \leftarrow U \to Y\)</span>
-</li>
-<li>Conditioning on <span class="math inline">\(L\)</span> blocks <span class="math inline">\(A \leftarrow L \to Y\)</span>, but the path <span class="math inline">\(A \leftarrow U \to Y\)</span> does <strong>not</strong> pass through <span class="math inline">\(L\)</span>—conditioning on <span class="math inline">\(L\)</span> leaves it open.</li>
-<li>
-<span class="math inline">\(\{L\}\)</span> does <strong>not</strong> satisfy the backdoor criterion because not all backdoor paths are blocked.</li>
-<li>Since <span class="math inline">\(U\)</span> is unmeasured, no measured adjustment set can block <span class="math inline">\(A \leftarrow U \to Y\)</span>. The causal effect is not identified by adjustment alone.</li>
-</ul>
-<aside class="notes"><p><strong>Sufficient adjustment sets:</strong></p>
-<p>In Structure II, adjusting for <span class="math inline">\(L\)</span> alone suffices even though <span class="math inline">\(U\)</span> is unmeasured, because every backdoor path from <span class="math inline">\(A\)</span> to <span class="math inline">\(Y\)</span> passes through <span class="math inline">\(L\)</span>. This illustrates an important point: we do not need to measure all common causes; we only need to measure variables sufficient to block all backdoor paths.</p>
-<p>In Structure III, the unmeasured <span class="math inline">\(U\)</span> bypasses <span class="math inline">\(L\)</span> entirely (direct arrow <span class="math inline">\(U \to A\)</span>), so there is no measured set that can block the path <span class="math inline">\(A \leftarrow U \to Y\)</span>. This is <strong>unmeasured confounding</strong> that cannot be handled by standard adjustment methods.</p>
-<p><strong>Minimal sufficient adjustment sets:</strong></p>
-<p>Multiple different sets of variables may satisfy the backdoor criterion. A <strong>minimal sufficient adjustment set</strong> is one from which no variable can be removed while still blocking all backdoor paths. The R package <code>dagitty</code> can enumerate all minimal sufficient adjustment sets automatically.</p>
-<p><strong>Necessary conditions for a valid adjustment set:</strong></p>
-<p>The backdoor criterion is a sufficient condition but not always necessary. Other identification strategies (instrumental variables, front-door criterion, etc.) can sometimes identify causal effects when no set satisfies the backdoor criterion.</p>
+</div>
+<p>On the SWIG, <span class="math inline">\(Y^a\)</span> is d-separated from <span class="math inline">\(A\)</span> given <span class="math inline">\(L\)</span> <strong>if and only if</strong> <span class="math inline">\(L\)</span> is a non-descendant of <span class="math inline">\(A\)</span> that blocks all backdoor paths from <span class="math inline">\(A\)</span> to <span class="math inline">\(Y\)</span>. This is the simple SWIG-based argument for the equivalence stated in Section 7.2.</p>
+<aside class="notes"><p><strong>Origins:</strong> Richardson and Robins (2013) showed that SWIGs overcome some shortcomings of the twin causal diagrams previously proposed by Balke and Pearl (1994) <span class="citation" data-cites="hernan2020causal">(<a href="#/references" role="doc-biblioref" onclick="">Hernán and Robins 2020, 101</a>)</span>. Under an FFRCISTG model, d-separation on the SWIG also implies statistical independence.</p>
+<p><strong>Is the natural value measurable?</strong> The book assumes the natural value <span class="math inline">\(A\)</span> is well defined even though it is generally not observed under intervention <span class="math inline">\(a\)</span>. It notes experiments suggesting that electroencephalogram recordings can detect a choice up to 1/2 second before people become conscious of it, which in principle would allow measuring <span class="math inline">\(A\)</span> and still intervening.</p>
+<p><strong>Arrows from <span class="math inline">\(a\)</span>:</strong> in the single-intervention world <span class="math inline">\(a\)</span> is a constant and cannot affect other variables; SWIGs nonetheless draw arrows from <span class="math inline">\(a\)</span> to keep track of the variables directly affected by <span class="math inline">\(A\)</span> in the original DAG.</p>
 <style type="text/css">
         span.MJX_Assistive_MathML {
           position:absolute!important;
@@ -398,28 +646,172 @@ Table&nbsp;1: Table 7.1. Hypothetical data from 20 individuals. A: treatment; L:
           width: 1px!important;
           overflow: hidden!important;
           display:block!important;
-      }</style></aside></section><section id="when-no-sufficient-adjustment-set-exists" class="slide level2 scrollable"><h2>When No Sufficient Adjustment Set Exists</h2>
-<div class="cell">
+      }</style></aside></section></section><section><section id="confounding-adjustment-pp.-102-107" class="title-slide slide level1 center" data-number="6"><h1>
+<span class="header-section-number">6</span> 7.6 Confounding Adjustment (pp.&nbsp;102-107)</h1>
+
+</section><section class="slide level2"><p>Without randomization, causal inference relies on the uncheckable assumption that the measured <span class="math inline">\(L\)</span> is a sufficient set for confounding adjustment. Under that assumption, methods that adjust for <span class="math inline">\(L\)</span> fall into two categories:</p>
+<ul>
+<li>
+<strong>G-methods</strong> (“g” for generalized): standardization, IP weighting, and g-estimation. They estimate the causal effect in the whole population or in any subset. The heart transplant study used standardization (Section 2.4) and IP weighting (Section 2.5); Part II covers the parametric g-formula, IP weighting of marginal structural models, and g-estimation of structural nested models.</li>
+<li>
+<strong>Conventional stratification-based methods</strong>: stratification (including restriction) and matching. They estimate the association between <span class="math inline">\(A\)</span> and <span class="math inline">\(Y\)</span> within subsets defined by <span class="math inline">\(L\)</span> (Sections 4.4 and 4.5); Part II covers their model-based extension, outcome regression.</li>
+</ul>
+<aside class="notes"><p><strong>“Deleting” versus conditioning.</strong> Standardization and IP weighting simulate the <span class="math inline">\(A\)</span>-<span class="math inline">\(Y\)</span> association in the population if the backdoor paths through <span class="math inline">\(L\)</span> did not exist; IP weighting, for example, creates a pseudo-population in which <span class="math inline">\(A\)</span> is independent of <span class="math inline">\(L\)</span>, “deleting” the arrow <span class="math inline">\(L \rightarrow A\)</span>. Stratification does not delete that arrow but computes the effect in a subset, represented by a selection box. Part III explains why deleting the arrow is advantageous with time-varying treatments, why g-estimation is the only generally valid stratification-based method, and why conventional stratification-based methods can cause selection bias with time-varying confounders (Chapter 20).</p>
+<p>A common variation of stratification and matching replaces <span class="math inline">\(L\)</span> by the estimated probability of treatment <span class="math inline">\(\Pr[A = 1 \mid L]\)</span>, the <strong>propensity score</strong> (Rosenbaum and Rubin 1983; Chapter 15).</p>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside><div title="Fine Point 7.4: Confounders Cannot Be Descendants of Treatment, but Can Be in the Future of Treatment">
+<div class="callout callout-note callout-titled callout-style-default">
+<div class="callout-body">
+<div class="callout-title">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<p><strong>Fine Point 7.4: Confounders Cannot Be Descendants of Treatment, but Can Be in the Future of Treatment</strong></p>
+</div>
+<div class="callout-content">
+<p>In Figure 7.11, <span class="math inline">\(L\)</span> is a descendant of <span class="math inline">\(A\)</span> that blocks all backdoor paths, and the effect of <span class="math inline">\(A\)</span> on <span class="math inline">\(Y\)</span> is entirely through <span class="math inline">\(L\)</span>. Conditioning on <span class="math inline">\(L\)</span> opens no collider path, but it blocks the causal pathway, so adjusting for <span class="math inline">\(L\)</span> does not remove bias. Hence conditional exchangeability <span class="math inline">\(Y^a \perp\!\!\!\perp A \mid L\)</span> must fail. On the SWIG (Figure 7.12) <span class="math inline">\(L\)</span> is replaced by the counterfactual <span class="math inline">\(L^a\)</span>, and we can read off <span class="math inline">\(Y^a \perp\!\!\!\perp A \mid L^a\)</span> but not <span class="math inline">\(Y^a \perp\!\!\!\perp A \mid L\)</span>, since <span class="math inline">\(L\)</span> is not on the graph. (Under an FFRCISTG model, an independence that cannot be read off the SWIG cannot be assumed to hold.)</p>
+<p>The problem is that <span class="math inline">\(L\)</span> is a <strong>descendant</strong> of <span class="math inline">\(A\)</span>, not that <span class="math inline">\(L\)</span> occurs <strong>after</strong> <span class="math inline">\(A\)</span>. Without the arrow <span class="math inline">\(A \rightarrow L\)</span>, <span class="math inline">\(L\)</span> would be a non-descendant that blocks all backdoor paths, and adjusting for it would remove all bias even if <span class="math inline">\(L\)</span> were measured after <span class="math inline">\(A\)</span>. What matters is the topology of the causal diagram, not the time order of the nodes <span class="citation" data-cites="hernan2020causal">(<a href="#/references" role="doc-biblioref" onclick="">Hernán and Robins 2020, 103</a>)</span>.</p>
+</div>
+</div>
+</div>
+</div>
+</section><section id="methods-that-do-not-require-conditional-exchangeability" class="slide level2"><h2>Methods That Do Not Require Conditional Exchangeability</h2>
+</section><section class="slide level2"><p>Some methods handle confounding without conditional exchangeability:</p>
+<ul>
+<li>difference-in-differences and negative outcome controls (Technical Point 7.3);</li>
+<li>proximal inference (Technical Point 7.3);</li>
+<li>the front door criterion (Technical Point 7.4);</li>
+<li>instrumental variable estimation (Chapter 16).</li>
+</ul>
+<p>They replace conditional exchangeability with other assumptions that are just as unverifiable, so the choice of method depends on which unverifiable assumptions are more plausible in a given setting.</p>
+</section><section id="expert-knowledge-and-the-critic" class="slide level2"><h2>Expert Knowledge and the Critic</h2>
+</section><section class="slide level2 scrollable"><p>Conditional exchangeability may be unrealistic, but expert knowledge about the causal structure helps get close to it:</p>
+<ul>
+<li>measure many non-descendants <span class="math inline">\(L\)</span> of treatment in the hope of blocking all backdoor paths;</li>
+<li>avoid adjusting for variables affected by treatment or by the outcome;</li>
+<li>when several causal structures are plausible, analyze under each and state the assumptions each requires.</li>
+</ul>
+<p>A critic who says only “your observational study may be confounded” makes a logical, not a scientific, statement: it is true of every observational study. A scientific criticism names a source, such as “confounding due to cigarette smoking, a common cause through which a backdoor path may remain open”. That gives a testable challenge: adjust for smoking or, if smoking was not measured, conduct a sensitivity analysis <span class="citation" data-cites="hernan2020causal">(<a href="#/references" role="doc-biblioref" onclick="">Hernán and Robins 2020, 104–5</a>)</span>.</p>
+<aside class="notes"><p>Hernán et al.&nbsp;(2002) give a practical example of using expert knowledge of the causal structure to evaluate confounding. One can never be certain that the causal structures considered include the true one; this uncertainty is unavoidable with observational data.</p>
+<p>Valid causal inference from observational data also requires the absence of selection and measurement biases, which, unlike confounding, can arise in randomized experiments too. Chapter 8 turns to selection bias.</p>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside><div class="cell">
 <div class="cell-output-display">
 <div class="quarto-figure quarto-figure-center">
-<figure><figcaption>Figure 7.3. Unmeasured confounding: U is an unmeasured common cause of A and Y with no measured common cause on the backdoor path. No measured set satisfies the backdoor criterion.</figcaption><p><a href="07-confounding_files/figure-html/unnamed-chunk-3-1.png" class="lightbox" data-gallery="quarto-lightbox-gallery-3" title="Figure 7.3. Unmeasured confounding: U is an unmeasured common cause of A and Y with no measured common cause on the backdoor path. No measured set satisfies the backdoor criterion."><img data-src="07-confounding_files/figure-html/unnamed-chunk-3-1.png" width="480" alt="Figure 7.3. Unmeasured confounding: U is an unmeasured common cause of A and Y with no measured common cause on the backdoor path. No measured set satisfies the backdoor criterion."></a></p>
+<figure><figcaption>Left: Figure 7.13, with negative outcome control C (the pre-treatment outcome). Right: Figure 7.14, in which M fully mediates the effect of A on Y. U is unmeasured.</figcaption><p><a href="07-confounding_files/figure-html/dag-ch7-13-14-1.png" class="lightbox" data-gallery="quarto-lightbox-gallery-5" title="Left: Figure 7.13, with negative outcome control C (the pre-treatment outcome). Right: Figure 7.14, in which M fully mediates the effect of A on Y. U is unmeasured."><img data-src="07-confounding_files/figure-html/dag-ch7-13-14-1.png" width="768" alt="Left: Figure 7.13, with negative outcome control C (the pre-treatment outcome). Right: Figure 7.14, in which M fully mediates the effect of A on Y. U is unmeasured."></a></p>
 </figure>
 </div>
 </div>
 </div>
-<p>When the only common cause of <span class="math inline">\(A\)</span> and <span class="math inline">\(Y\)</span> is an unmeasured variable <span class="math inline">\(U\)</span> (shown in gray), there is no measured set that satisfies the backdoor criterion. Standard adjustment methods cannot identify the causal effect without additional assumptions (e.g., instrumental variables, Chapter 16).</p>
-<aside class="notes"><p><strong>Unmeasured confounding:</strong></p>
-<p>Unmeasured confounding is the central challenge in observational causal inference. The assumption of “no unmeasured confounders” (conditional exchangeability given measured <span class="math inline">\(L\)</span>) is untestable from observed data alone.</p>
-<p>Strategies to address unmeasured confounding include:</p>
+<div title="Technical Point 7.3: Difference-in-Differences and Negative Outcome Controls">
+<div class="callout callout-note callout-titled callout-style-default">
+<div class="callout-body">
+<div class="callout-title">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<p><strong>Technical Point 7.3: Difference-in-Differences and Negative Outcome Controls</strong></p>
+</div>
+<div class="callout-content">
+<p>Suppose unmeasured <span class="math inline">\(U\)</span> (e.g., history of heart disease) confounds the effect of aspirin <span class="math inline">\(A\)</span> on blood pressure <span class="math inline">\(Y\)</span>, and we also measured the outcome just before treatment, <span class="math inline">\(C\)</span>, a <strong>negative outcome control</strong> (Figure 7.13). <span class="math inline">\(A\)</span> cannot cause <span class="math inline">\(C\)</span>, so <span class="math inline">\(\text{E}{\left[C \mid A = 1\right]} - \text{E}{\left[C \mid A = 0\right]}\)</span> measures additive confounding for the effect of <span class="math inline">\(A\)</span> on <span class="math inline">\(C\)</span>.</p>
+<p>Under <strong>additive equi-confounding</strong>, <span class="math inline">\(\text{E}{\left[Y^0 \mid A = 1\right]} - \text{E}{\left[Y^0 \mid A = 0\right]} = \text{E}{\left[C \mid A = 1\right]} - \text{E}{\left[C \mid A = 0\right]}\)</span>, the effect in the treated is identified:</p>
+<p><span class="math display">\[\begin{align}
+\text{E}{\left[Y^1 - Y^0 \mid A = 1\right]}
+&amp;= \text{E}{\left[Y^1 \mid A = 1\right]} - \text{E}{\left[Y^0 \mid A = 1\right]}
+&amp;&amp; \text{(linearity)} \\
+&amp;= \text{E}{\left[Y \mid A = 1\right]} - \text{E}{\left[Y^0 \mid A = 1\right]}
+&amp;&amp; \text{(consistency)} \\
+&amp;= \text{E}{\left[Y \mid A = 1\right]} - \text{E}{\left[Y^0 \mid A = 0\right]} - {\left(\text{E}{\left[Y^0 \mid A = 1\right]} - \text{E}{\left[Y^0 \mid A = 0\right]}\right)}
+&amp;&amp; \text{(add and subtract } \text{E}{\left[Y^0 \mid A = 0\right]}\text{)} \\
+&amp;= \text{E}{\left[Y \mid A = 1\right]} - \text{E}{\left[Y \mid A = 0\right]} - {\left(\text{E}{\left[Y^0 \mid A = 1\right]} - \text{E}{\left[Y^0 \mid A = 0\right]}\right)}
+&amp;&amp; \text{(consistency)} \\
+&amp;= {\left(\text{E}{\left[Y \mid A = 1\right]} - \text{E}{\left[Y \mid A = 0\right]}\right)} - {\left(\text{E}{\left[C \mid A = 1\right]} - \text{E}{\left[C \mid A = 0\right]}\right)}
+&amp;&amp; \text{(equi-confounding)}
+\end{align}\]</span></p>
+<p>The association of <span class="math inline">\(A\)</span> with <span class="math inline">\(Y\)</span> (effect plus confounding) minus the confounding measured through <span class="math inline">\(C\)</span>. The arrow <span class="math inline">\(C \rightarrow Y\)</span> is not necessary for <span class="math inline">\(C\)</span> to be a negative outcome control. This is <strong>difference-in-differences</strong> (Card 1990; Meyer 1995; Angrist and Krueger 1999). It is a somewhat restrictive use of negative outcome controls: it needs <span class="math inline">\(Y\)</span> and <span class="math inline">\(C\)</span> on the same scale and additive equi-confounding; Sofer et al.&nbsp;(2016) describe more general methods.</p>
+<p>With both a negative outcome control <span class="math inline">\(C\)</span> and a negative treatment control <span class="math inline">\(Z\)</span>, the effect can be identified nonparametrically despite unmeasured <span class="math inline">\(U\)</span> under additional assumptions; for discrete <span class="math inline">\(U\)</span>, <span class="math inline">\(C\)</span>, <span class="math inline">\(Z\)</span> with <span class="math inline">\(C\)</span> and <span class="math inline">\(Z\)</span> having at least as many levels as <span class="math inline">\(U\)</span>, identification holds quite generally (Miao et al.&nbsp;2018). This is <strong>proximal causal inference</strong> (Cui et al.&nbsp;2024); Figure 7.15 is an example <span class="citation" data-cites="hernan2020causal">(<a href="#/references" role="doc-biblioref" onclick="">Hernán and Robins 2020, 106</a>)</span>.</p>
+</div>
+</div>
+</div>
+</div>
+<div title="Technical Point 7.4: The Front Door Criterion">
+<div class="callout callout-note callout-titled callout-style-default">
+<div class="callout-body">
+<div class="callout-title">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<p><strong>Technical Point 7.4: The Front Door Criterion</strong></p>
+</div>
+<div class="callout-content">
+<p>In Figure 7.14, unmeasured <span class="math inline">\(U\)</span> confounds <span class="math inline">\(A\)</span> and <span class="math inline">\(Y\)</span>, and <span class="math inline">\(M\)</span> fully mediates the effect of <span class="math inline">\(A\)</span> on <span class="math inline">\(Y\)</span> and shares no unmeasured causes with <span class="math inline">\(A\)</span> or <span class="math inline">\(Y\)</span>. Standardization and IP weighting cannot be used because <span class="math inline">\(U\)</span> is unavailable, but Pearl (1995) showed that <span class="math inline">\(\Pr[Y^a = 1]\)</span> is identified by the <strong>front door formula</strong></p>
+<p><span class="math display">\[\Pr[Y^a = 1] = \sum_m \Pr[M = m \mid A = a] \sum_{a'} \Pr[Y = 1 \mid M = m, A = a'] \Pr[A = a']\]</span></p>
+<p>(Pearl’s “backdoor formula” is what the book calls standardization or the point-treatment g-formula.)</p>
+<p><em>Proof.</em></p>
+<ol type="1">
+<li>By the law of total probability, <span class="math inline">\(\Pr[Y^a = 1] = \sum_m \Pr[M^a = m] \Pr[Y^a = 1 \mid M^a = m]\)</span>.</li>
+<li>
+<span class="math inline">\(\Pr[M^a = m] = \Pr[M = m \mid A = a]\)</span>, because there is no confounding for the effect of <span class="math inline">\(A\)</span> on <span class="math inline">\(M\)</span> (<span class="math inline">\(M^a \perp\!\!\!\perp A\)</span>).</li>
+<li>
+<span class="math inline">\(\Pr[Y^a = 1 \mid M^a = m] = \Pr[Y^m = 1]\)</span>, because
+<ol type="i">
+<li>
+<span class="math inline">\(Y^a = Y^m\)</span> when <span class="math inline">\(M^a = m\)</span> (<span class="math inline">\(A\)</span> affects <span class="math inline">\(Y\)</span> only through <span class="math inline">\(M\)</span>), and</li>
+<li>
+<span class="math inline">\(Y^m \perp\!\!\!\perp M^a\)</span> by d-separation on the SWIG for the joint intervention setting <span class="math inline">\(M\)</span> to <span class="math inline">\(m\)</span> and <span class="math inline">\(A\)</span> to <span class="math inline">\(a\)</span>.</li>
+</ol>
+</li>
+<li>
+<span class="math inline">\(\Pr[Y^m = 1] = \sum_{a'} \Pr[Y = 1 \mid M = m, A = a'] \Pr[A = a']\)</span>, by conditional exchangeability <span class="math inline">\(Y^m \perp\!\!\!\perp M \mid A\)</span> on the SWIG intervening on <span class="math inline">\(M\)</span> alone (standardization over <span class="math inline">\(A\)</span>).</li>
+<li>Substituting steps 2-4 into step 1 gives the front door formula.</li>
+</ol>
+<p>This proof requires well-defined counterfactuals <span class="math inline">\(Y^m\)</span>; Technical Points 21.11 and 21.12 give proofs without that condition <span class="citation" data-cites="hernan2020causal">(<a href="#/references" role="doc-biblioref" onclick="">Hernán and Robins 2020, 107</a>)</span>.</p>
+</div>
+</div>
+</div>
+</div>
+</section></section><section><section id="summary" class="title-slide slide level1 center" data-number="7"><h1>
+<span class="header-section-number">7</span> Summary</h1>
+
+</section><section class="slide level2 scrollable"><ol type="1">
+<li>
+<strong>Confounding</strong> is the bias due to common causes of treatment and outcome, which create open backdoor paths.</li>
+<li>
+<strong>No confounding is equivalent to marginal exchangeability</strong>; with confounding, a sufficient set <span class="math inline">\(L\)</span> of measured non-descendants of <span class="math inline">\(A\)</span> gives conditional exchangeability, and standardization or IP weighting identifies the average causal effect.</li>
+<li>Under faithfulness and an FFRCISTG model, <span class="math inline">\(Y^a \perp\!\!\!\perp A \mid L\)</span> holds <strong>if and only if</strong> <span class="math inline">\(L\)</span> satisfies the <strong>backdoor criterion</strong>.</li>
+<li>Adjusting for a collider such as <span class="math inline">\(L\)</span> in Figure 7.4 (M-bias) creates selection bias; in Figure 7.5 no adjustment set based on <span class="math inline">\(L\)</span> alone works.</li>
+<li>The <strong>traditional</strong> associational definition of confounder can recommend harmful adjustment; confounding is absolute, but “confounder” is relative to the other adjustment variables.</li>
+<li>
+<strong>SWIGs</strong> split the treatment node and show exchangeability directly via d-separation.</li>
+<li>
+<strong>G-methods</strong> and conventional stratification-based methods both require conditional exchangeability; difference-in-differences, proximal inference, the front door criterion, and instrumental variables rely on other unverifiable assumptions.</li>
+</ol>
+<aside class="notes"><p><strong>Looking ahead:</strong></p>
 <ul>
 <li>
-<strong>Sensitivity analysis</strong>: quantify how much an unmeasured confounder would need to change conclusions</li>
+<strong>Chapter 8</strong>: selection bias, the other structural source of lack of exchangeability through open paths.</li>
 <li>
-<strong>Negative controls</strong>: use outcome or exposure controls to detect unmeasured confounders</li>
+<strong>Chapter 9</strong>: measurement bias.</li>
 <li>
-<strong>Instrumental variable methods</strong> (Chapter 16): exploit exogenous variation in treatment assignment</li>
-<li>
-<strong>Difference-in-differences and fixed effects</strong> (Chapter 21): exploit longitudinal data structure</li>
+<strong>Chapters 12-15</strong>: IP weighting, standardization, g-estimation, and outcome regression in practice.</li>
 </ul><style type="text/css">
         span.MJX_Assistive_MathML {
           position:absolute!important;
@@ -430,193 +822,8 @@ Table&nbsp;1: Table 7.1. Hypothetical data from 20 individuals. A: treatment; L:
           width: 1px!important;
           overflow: hidden!important;
           display:block!important;
-      }</style></aside><div title="Fine Point 7.1: Do Not Adjust for Descendants of Treatment">
-<div class="callout callout-note callout-titled callout-style-default">
-<div class="callout-body">
-<div class="callout-title">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<p><strong>Fine Point 7.1: Do Not Adjust for Descendants of Treatment</strong></p>
-</div>
-<div class="callout-content">
-<p>A fundamental rule for constructing valid adjustment sets is: <strong>never include a descendant of treatment <span class="math inline">\(A\)</span> in the adjustment set</strong>.</p>
-<p><strong>Why not?</strong> There are two distinct ways that adjusting for a post-treatment variable <span class="math inline">\(C\)</span> (a descendant of <span class="math inline">\(A\)</span>) can introduce bias:</p>
-<ol type="1">
-<li><p><strong>Blocking part of the causal effect</strong>: If <span class="math inline">\(A \to C \to Y\)</span> (so <span class="math inline">\(C\)</span> is a mediator), conditioning on <span class="math inline">\(C\)</span> removes part of the causal effect we are trying to estimate. We would estimate only the direct effect <span class="math inline">\(A \to Y\)</span>, not the total effect through <span class="math inline">\(C\)</span>.</p></li>
-<li><p><strong>Collider stratification bias</strong>: If <span class="math inline">\(A \to C \leftarrow U\)</span> and <span class="math inline">\(U \to Y\)</span> (so <span class="math inline">\(C\)</span> is a collider on the path <span class="math inline">\(A \to C \leftarrow U \to Y\)</span>), conditioning on <span class="math inline">\(C\)</span> <strong>opens</strong> this previously blocked path and introduces a spurious association between <span class="math inline">\(A\)</span> and <span class="math inline">\(Y\)</span> via <span class="math inline">\(U\)</span>, even if <span class="math inline">\(U\)</span> is unmeasured.</p></li>
-</ol>
-<p>The second scenario is particularly insidious because the bias may not be obvious without drawing the causal diagram. The practical implication: when selecting variables to include in the adjustment set, first verify using the causal diagram that no candidate variable is a descendant of <span class="math inline">\(A\)</span>.</p>
-</div>
-</div>
-</div>
-</div>
-</section></section><section><section id="confounding-and-confounders-pp.-8587" class="title-slide slide level1 center" data-number="4"><h1>
-<span class="header-section-number">4</span> 7.4 Confounding and Confounders (pp.&nbsp;85–87)</h1>
-
-</section><section class="slide level2"><p>The term <strong>confounder</strong> is commonly used in epidemiology to refer to a variable that should be adjusted for to eliminate confounding. However, the traditional criteria used to identify confounders differ from the structural (DAG-based) definition—and the two do not always agree.</p>
-</section><section id="the-traditional-epidemiological-criteria" class="slide level2 scrollable"><h2>The Traditional Epidemiological Criteria</h2>
-<p>In the traditional approach, a variable <span class="math inline">\(C\)</span> is labeled a confounder of the <span class="math inline">\(A\)</span>–<span class="math inline">\(Y\)</span> association if it satisfies three criteria:</p>
-<ol type="1">
-<li>
-<span class="math inline">\(C\)</span> is associated with treatment <span class="math inline">\(A\)</span>
-</li>
-<li>
-<span class="math inline">\(C\)</span> is a risk factor for outcome <span class="math inline">\(Y\)</span> among the unexposed (<span class="math inline">\(A = 0\)</span>)</li>
-<li>
-<span class="math inline">\(C\)</span> is not on the causal pathway from <span class="math inline">\(A\)</span> to <span class="math inline">\(Y\)</span> (i.e., <span class="math inline">\(C\)</span> is not a mediator)</li>
-</ol>
-<p>These criteria are assessed from the data (criteria 1 and 2) and from prior knowledge (criterion 3).</p>
-</section><section id="limitations-of-the-traditional-criteria" class="slide level2 scrollable"><h2>Limitations of the Traditional Criteria</h2>
-<p>The traditional criteria have two important limitations:</p>
-<p><strong>Problem 1: A variable can satisfy all three criteria without being a structural confounder.</strong></p>
-<p>If <span class="math inline">\(C\)</span> is a <strong>collider</strong> on a non-causal path between <span class="math inline">\(A\)</span> and <span class="math inline">\(Y\)</span> (e.g., <span class="math inline">\(A \to C \leftarrow Y\)</span>), then <span class="math inline">\(C\)</span> may be associated with both <span class="math inline">\(A\)</span> and <span class="math inline">\(Y\)</span> in some data sets yet is not on any backdoor path. Including <span class="math inline">\(C\)</span> in the adjustment set could introduce <strong>collider stratification bias</strong> rather than removing confounding.</p>
-<p><strong>Problem 2: A structural confounder may fail one of the traditional criteria.</strong></p>
-<p>A variable <span class="math inline">\(L\)</span> that opens a backdoor path from <span class="math inline">\(A\)</span> to <span class="math inline">\(Y\)</span> might fail criterion 1 (not associated with <span class="math inline">\(A\)</span> in the data) if its effects on <span class="math inline">\(A\)</span> and <span class="math inline">\(Y\)</span> cancel in a specific population. In that population, adjusting for <span class="math inline">\(L\)</span> is still required to eliminate structural confounding, but the traditional criteria would not flag it as a confounder.</p>
-<div class="cell">
-<div class="cell-output-display">
-<div class="quarto-figure quarto-figure-center">
-<figure><figcaption>Figure 7.4. Left: C is a collider (A → C ← Y); it satisfies traditional criteria 1 and 2 but adjusting for C introduces bias. Right: L is a structural confounder (opens backdoor path) but may not satisfy traditional criteria if its effects on A and Y cancel.</figcaption><p><a href="07-confounding_files/figure-html/unnamed-chunk-4-1.png" class="lightbox" data-gallery="quarto-lightbox-gallery-4" title="Figure 7.4. Left: C is a collider (A → C ← Y); it satisfies traditional criteria 1 and 2 but adjusting for C introduces bias. Right: L is a structural confounder (opens backdoor path) but may not satisfy traditional criteria if its effects on A and Y cancel."><img data-src="07-confounding_files/figure-html/unnamed-chunk-4-1.png" width="768" alt="Figure 7.4. Left: C is a collider (A → C ← Y); it satisfies traditional criteria 1 and 2 but adjusting for C introduces bias. Right: L is a structural confounder (opens backdoor path) but may not satisfy traditional criteria if its effects on A and Y cancel."></a></p>
-</figure>
-</div>
-</div>
-</div>
-<div id="def-structural-confounder" class="theorem definition">
-<p><span class="theorem-title"><strong>Definition 3 (Structural Confounder vs.&nbsp;Traditional Confounder)</strong></span> A variable <span class="math inline">\(L\)</span> is a <strong>structural confounder</strong> of the effect of <span class="math inline">\(A\)</span> on <span class="math inline">\(Y\)</span> if it opens at least one backdoor path from <span class="math inline">\(A\)</span> to <span class="math inline">\(Y\)</span> in the causal diagram. The structural definition depends on the causal structure, not on observed associations.</p>
-<p>The traditional epidemiological definition of confounder depends on observed associations (criteria 1 and 2) and may disagree with the structural definition in specific populations.</p>
-<p><strong>Best practice</strong>: Use the causal diagram (DAG) to identify the structural confounders and the appropriate adjustment set via the backdoor criterion.</p>
-</div>
-<aside class="notes"><p><strong>Why the discrepancy matters:</strong></p>
-<p>The traditional approach of testing whether <span class="math inline">\(C\)</span> is associated with <span class="math inline">\(A\)</span> and <span class="math inline">\(Y\)</span> and then deciding whether to adjust can lead to:</p>
-<ol type="1">
-<li>
-<strong>Over-adjustment</strong>: Adjusting for colliders or mediators because they are associated with both <span class="math inline">\(A\)</span> and <span class="math inline">\(Y\)</span>
-</li>
-<li>
-<strong>Under-adjustment</strong>: Failing to adjust for structural confounders whose effects happen to cancel in the observed data</li>
-<li>
-<strong>Selection bias through collider adjustment</strong>: Stratifying on <span class="math inline">\(C = c\)</span> when <span class="math inline">\(C\)</span> is a collider opens the backdoor path and introduces bias</li>
-</ol>
-<p>The DAG-based approach avoids these pitfalls by relying on causal structure rather than associations.</p>
-<style type="text/css">
-        span.MJX_Assistive_MathML {
-          position:absolute!important;
-          clip: rect(1px, 1px, 1px, 1px);
-          padding: 1px 0 0 0!important;
-          border: 0!important;
-          height: 1px!important;
-          width: 1px!important;
-          overflow: hidden!important;
-          display:block!important;
-      }</style></aside><div title="Fine Point 7.2: Limitations of Association-Based Confounder Criteria">
-<div class="callout callout-note callout-titled callout-style-default">
-<div class="callout-body">
-<div class="callout-title">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<p><strong>Fine Point 7.2: Limitations of Association-Based Confounder Criteria</strong></p>
-</div>
-<div class="callout-content">
-<p>The traditional association-based criteria for confounding are <strong>population-dependent</strong>: a variable <span class="math inline">\(L\)</span> may satisfy criteria 1 and 2 in one population but not in another, even though the causal structure is identical. This means the decision about whether <span class="math inline">\(L\)</span> is a “confounder” depends on the study population, not on the underlying causal mechanism.</p>
-<p>In contrast, the structural (DAG-based) definition is <strong>population-independent</strong>: if <span class="math inline">\(L\)</span> opens a backdoor path in the causal diagram, it is a structural confounder regardless of the population distribution.</p>
-<p>This distinction has practical implications. When planning a study, one should identify the structural confounders using subject-matter knowledge and causal diagrams—not by testing associations in the current dataset. Adjusting for structural confounders is necessary to eliminate confounding bias across all populations satisfying the assumed causal structure.</p>
-</div>
-</div>
-</div>
-</div>
-</section></section><section><section id="single-world-intervention-graphs-pp.-8789" class="title-slide slide level1 center" data-number="5"><h1>
-<span class="header-section-number">5</span> 7.5 Single-World Intervention Graphs (pp.&nbsp;87–89)</h1>
-
-</section><section class="slide level2"><p>The causal diagrams introduced in Chapter 6 represent relationships among <strong>observed</strong> variables (<span class="math inline">\(A\)</span>, <span class="math inline">\(L\)</span>, <span class="math inline">\(Y\)</span>, etc.). They do not directly represent counterfactual variables (<span class="math inline">\(Y^a\)</span>, <span class="math inline">\(L^a\)</span>, etc.). <strong>Single-World Intervention Graphs (SWIGs)</strong>, developed by Richardson and Robins (2014), extend causal diagrams to include counterfactual variables explicitly.</p>
-</section><section id="constructing-a-swig" class="slide level2"><h2>Constructing a SWIG</h2>
-<p>A SWIG for the intervention <span class="math inline">\(A = a\)</span> is obtained from the original causal diagram by the following operation:</p>
-<ul>
-<li>
-<strong>Split each treatment node <span class="math inline">\(A\)</span></strong> into two parts:
-<ul>
-<li>The <strong>fixed intervention value</strong> <span class="math inline">\(a\)</span> (the value to which <span class="math inline">\(A\)</span> is set by the intervention)</li>
-<li>The <strong>natural value</strong> <span class="math inline">\(A\)</span> (the random variable representing what treatment the individual would have received in the absence of intervention)</li>
-</ul>
-</li>
-<li>All arrows into <span class="math inline">\(A\)</span> now point to the natural value <span class="math inline">\(A\)</span>; all arrows out of <span class="math inline">\(A\)</span> now originate from the fixed value <span class="math inline">\(a\)</span>.</li>
-<li>Each child of <span class="math inline">\(A\)</span> in the original DAG becomes a counterfactual variable (e.g., <span class="math inline">\(Y\)</span> becomes <span class="math inline">\(Y^a\)</span>).</li>
-</ul>
-<p>The key result is that in the SWIG, <strong>counterfactual independence can be read off using d-separation</strong>, just as ordinary independence is read from a standard DAG.</p>
-<div id="exm-swig" class="theorem example">
-<p><span class="theorem-title"><strong>Example 1 (SWIG for the Standard Confounding Structure)</strong></span> Consider the original DAG: <span class="math inline">\(L \to A \to Y\)</span>, <span class="math inline">\(L \to Y\)</span>.</p>
-<p>The SWIG for the intervention <span class="math inline">\(do(A = a)\)</span> has nodes <span class="math inline">\(\{L,\; a \mid A,\; Y^a\}\)</span>:</p>
-<ul>
-<li>
-<span class="math inline">\(L \to A\)</span> (the natural value of <span class="math inline">\(A\)</span> is caused by <span class="math inline">\(L\)</span>; incoming arrows stay on the natural-value half)</li>
-<li>
-<span class="math inline">\(a \to Y^a\)</span> (the fixed intervention value <span class="math inline">\(a\)</span> causes the counterfactual outcome <span class="math inline">\(Y^a\)</span>; outgoing arrows leave from the fixed-value half)</li>
-<li>
-<span class="math inline">\(L \to Y^a\)</span> (the confounder <span class="math inline">\(L\)</span> also directly causes <span class="math inline">\(Y^a\)</span>)</li>
-</ul>
-<p>In the SWIG, the counterfactual <span class="math inline">\(Y^a\)</span> is <strong>d-separated</strong> from the natural value <span class="math inline">\(A\)</span> given <span class="math inline">\(L\)</span>, because the only path from <span class="math inline">\(A\)</span> to <span class="math inline">\(Y^a\)</span> would go through <span class="math inline">\(a\)</span>, but <span class="math inline">\(A\)</span> and <span class="math inline">\(a\)</span> are split. This d-separation corresponds directly to the conditional exchangeability condition:</p>
-<p><span class="math display">\[Y^a \perp\!\!\!\perp A \mid L\]</span></p>
-<p>SWIGs thus provide a graphical proof of conditional exchangeability whenever <span class="math inline">\(L\)</span> satisfies the backdoor criterion.</p>
-</div>
-</section><section id="what-swigs-add" class="slide level2"><h2>What SWIGs Add</h2>
-<p>Standard DAGs allow us to determine which variables to adjust for (via the backdoor criterion) but cannot directly show that <span class="math inline">\(Y^a \perp\!\!\!\perp A \mid L\)</span>, because <span class="math inline">\(Y^a\)</span> is not a node in the DAG. SWIGs resolve this by making counterfactual variables explicit:</p>
-<ul>
-<li>The d-separation statement <span class="math inline">\(Y^a \perp\!\!\!\perp A \mid L\)</span> in the SWIG directly implies conditional exchangeability</li>
-<li>This equivalence provides a graphical justification for identification by standardization</li>
-</ul>
-<aside class="notes"><p><strong>Historical note:</strong></p>
-<p>SWIGs were introduced by Richardson and Robins (2014) as a formal framework for representing counterfactuals in causal diagrams. They unify the potential outcomes framework (Chapters 1–5) with the causal diagrams framework (Chapter 6) by constructing a single graph in which both observed and counterfactual variables appear.</p>
-<p><strong>Notation:</strong></p>
-<p>In SWIG notation, each treatment node <span class="math inline">\(A\)</span> is written as <span class="math inline">\(a \mid A\)</span> (read: “intervention value <span class="math inline">\(a\)</span> given natural value <span class="math inline">\(A\)</span>”). The counterfactual <span class="math inline">\(Y^a\)</span> is written simply as <span class="math inline">\(Y^a\)</span> or sometimes <span class="math inline">\(Y(a)\)</span>.</p>
-<p><strong>Beyond exchangeability:</strong></p>
-<p>SWIGs also provide a graphical representation of more complex counterfactual independence conditions, including those arising in time-varying treatment settings (Part III of the textbook). For example, in longitudinal settings, SWIGs can be used to represent the sequential exchangeability conditions needed to identify dynamic treatment regimes.</p>
-<p>For most purposes in this textbook, standard DAGs combined with the backdoor criterion are sufficient. SWIGs provide an additional layer of rigor for readers interested in the formal connections between the potential outcomes framework and the graphical framework.</p>
-<style type="text/css">
-        span.MJX_Assistive_MathML {
-          position:absolute!important;
-          clip: rect(1px, 1px, 1px, 1px);
-          padding: 1px 0 0 0!important;
-          border: 0!important;
-          height: 1px!important;
-          width: 1px!important;
-          overflow: hidden!important;
-          display:block!important;
-      }</style></aside></section></section><section><section id="summary" class="title-slide slide level1 center" data-number="6"><h1>
-<span class="header-section-number">6</span> Summary</h1>
-
-</section><section class="slide level2 scrollable"><p>This chapter examined <strong>confounding</strong> in depth, providing both an intuitive numerical example and a formal structural definition.</p>
-<p><strong>Key concepts:</strong></p>
-<ol type="1">
-<li><p><strong>Confounding</strong> is present when the crude (marginal) association between <span class="math inline">\(A\)</span> and <span class="math inline">\(Y\)</span> differs from the average causal effect. Structurally, confounding exists when at least one backdoor path from <span class="math inline">\(A\)</span> to <span class="math inline">\(Y\)</span> is open.</p></li>
-<li><p><strong>Confounding = lack of marginal exchangeability</strong>: <span class="math inline">\(Y^a \not\perp\!\!\!\perp A\)</span>. The treated and untreated groups have different distributions of potential outcomes.</p></li>
-<li><p><strong>Conditional exchangeability</strong> (<span class="math inline">\(Y^a \perp\!\!\!\perp A \mid L\)</span>) can restore identifiability when <span class="math inline">\(L\)</span> satisfies the backdoor criterion. Under conditional exchangeability and positivity, the causal effect is identified by standardization.</p></li>
-<li><p><strong>The backdoor criterion</strong> provides a graphical sufficient condition for valid adjustment. A set <span class="math inline">\(L\)</span> satisfies the criterion if it (i) contains no descendants of <span class="math inline">\(A\)</span> and (ii) blocks all backdoor paths from <span class="math inline">\(A\)</span> to <span class="math inline">\(Y\)</span>.</p></li>
-<li><p><strong>Structural vs.&nbsp;traditional confounders</strong>: The traditional association-based criteria for confounders can disagree with the structural (DAG-based) definition—either flagging colliders as confounders (causing harm from adjustment) or missing structural confounders. The DAG approach is preferred.</p></li>
-<li><p><strong>SWIGs</strong> embed counterfactual variables in a causal diagram and provide a graphical proof of conditional exchangeability whenever the backdoor criterion is satisfied.</p></li>
-</ol>
-<aside class="notes"><p><strong>Looking ahead:</strong></p>
-<ul>
-<li>
-<strong>Chapter 8</strong> examines selection bias—another structural source of bias arising from conditioning on colliders (or their descendants)</li>
-<li>
-<strong>Chapter 9</strong> examines measurement bias—bias arising from imperfect measurement of <span class="math inline">\(A\)</span>, <span class="math inline">\(Y\)</span>, or <span class="math inline">\(L\)</span>
-</li>
-<li>
-<strong>Chapters 12–15</strong> present methods for adjusting for confounding: IP weighting, standardization, g-estimation, and outcome regression</li>
-</ul>
-<p>Confounding bias is the central challenge in observational causal inference. This chapter has provided the structural tools needed to identify which variables to adjust for (the backdoor criterion) and the formal justification for why that adjustment works (conditional exchangeability, proved graphically via SWIGs).</p>
-<style type="text/css">
-        span.MJX_Assistive_MathML {
-          position:absolute!important;
-          clip: rect(1px, 1px, 1px, 1px);
-          padding: 1px 0 0 0!important;
-          border: 0!important;
-          height: 1px!important;
-          width: 1px!important;
-          overflow: hidden!important;
-          display:block!important;
-      }</style></aside></section></section><section><section id="references" class="title-slide slide level1 center" data-number="7"><h1>
-<span class="header-section-number">7</span> References</h1>
+      }</style></aside></section></section><section><section id="references" class="title-slide slide level1 center" data-number="8"><h1>
+<span class="header-section-number">8</span> References</h1>
 
 </section><section class="slide level2 smaller scrollable" id="references"><div id="refs" class="references csl-bib-body hanging-indent" role="list">
 <div id="ref-hernan2020causal" class="csl-entry" role="listitem">

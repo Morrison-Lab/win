@@ -166,10 +166,10 @@
 <!-- https://www.overleaf.com/learn/latex/Using_colors_in_LaTeX#Named_colors_provided_by_the_xcolor_package -->
 <!-- \def\or{\theta}  -->
 <!-- doesn't work for some reason -->
-<p>Part I of this book was mostly conceptual, with calculations kept to a minimum. In contrast, Part II requires the use of computers to fit regression models. This chapter describes the differences between the <strong>nonparametric estimators</strong> used in Part I and the <strong>parametric (model-based) estimators</strong> used in Part II. It reviews the concept of smoothing and the bias-variance trade-off in modeling decisions, motivating the need for models in data analysis regardless of whether the goal is causal inference or prediction.</p>
+<p>Part I of the book was mostly conceptual, with calculations simple enough to do by hand. Part II requires computers to fit regression models such as linear and logistic models. This chapter contrasts the <strong>nonparametric estimators</strong> used in Part I with the <strong>parametric (model-based) estimators</strong> used in Part II, reviews <strong>smoothing</strong>, and briefly introduces the <strong>bias-variance trade-off</strong> behind every modeling decision. The need for models arises whether the goal is causal inference or, say, prediction, so the chapter sets causal considerations aside until Chapter 12.</p>
 <aside class="notes">
-<p>This chapter is based on <span class="citation" data-cites="hernan2020causal">Hernán and Robins (<a href="#/references" role="doc-biblioref" onclick="">2020, chap. 11</a>, pp.&nbsp;147-156)</span>.</p>
-<p><strong>Important context</strong>: Part II uses real data that can be downloaded from the book’s website. The analyses require regression techniques (linear and logistic models), and the book provides code in R, SAS, Stata, and Python.</p>
+<p>This chapter is based on <span class="citation" data-cites="hernan2020causal">Hernán and Robins (<a href="#/references" role="doc-biblioref" onclick="">2020, chap. 11</a>, pp.&nbsp;153-161)</span>.</p>
+<p><strong>Important context</strong>: Most examples in Part II use real data that can be downloaded from the book’s website, together with code in R, SAS, Stata, and Python. The book assumes a working knowledge of linear and logistic regression; the “code” margin notes point to the program (e.g., Program 11.1) that reproduces each analysis.</p>
 <style type="text/css">
         span.MJX_Assistive_MathML {
           position:absolute!important;
@@ -183,36 +183,27 @@
       }</style></aside>
 </section>
 <section>
-<section id="data-cannot-speak-for-themselves-pp.-147-150" class="title-slide slide level1 center" data-number="1">
-<h1><span class="header-section-number">1</span> 11.1 Data Cannot Speak for Themselves (pp.&nbsp;147-150)</h1>
+<section id="data-cannot-speak-for-themselves-pp.-153-155" class="title-slide slide level1 center" data-number="1">
+<h1><span class="header-section-number">1</span> 11.1 Data Cannot Speak for Themselves (pp.&nbsp;153-155)</h1>
 
 </section>
-<section class="slide level2">
-
-<p>Even the simple task of estimating a population mean requires modeling assumptions when data become sparse.</p>
-</section>
-<section id="example-hiv-treatment-and-cd4-count" class="slide level2">
+<section id="example-hiv-treatment-and-cd4-count" class="slide level2 scrollable">
 <h2>Example: HIV Treatment and CD4 Count</h2>
-<p>Consider a study of 16 HIV-positive individuals randomly sampled from a super-population. Each receives treatment <span class="math inline">\(A\)</span> (antiretroviral therapy), and we measure outcome <span class="math inline">\(Y\)</span> (CD4 cell count, cells/mm³).</p>
-<p><strong>Goal</strong>: Estimate the population mean <span class="math inline">\(\text{E}{\left[Y|A = a\right]}\)</span> for each treatment level <span class="math inline">\(a\)</span>.</p>
-</section>
-<section id="scenario-1-binary-treatment" class="slide level2">
-<h2>Scenario 1: Binary Treatment</h2>
-<p>Treatment <span class="math inline">\(A \in \{0, 1\}\)</span> with 8 individuals in each group.</p>
-<p><strong>Estimator</strong>: Sample average within each group</p>
+<p>Consider 16 individuals infected with HIV, randomly sampled from a large, possibly hypothetical <strong>super-population</strong> (the target population). Unlike in Part I, they are not viewed as representatives of a billion identical individuals.</p>
 <ul>
-<li>Estimate for <span class="math inline">\(A = 0\)</span>: <span class="math inline">\(\bar{Y}_{A=0} = 67.50\)</span></li>
-<li>Estimate for <span class="math inline">\(A = 1\)</span>: <span class="math inline">\(\bar{Y}_{A=1} = 146.25\)</span></li>
+<li>Treatment <span class="math inline">\(A\)</span>: antiretroviral therapy, assigned at baseline and maintained</li>
+<li>Outcome <span class="math inline">\(Y\)</span>: CD4 cell count (cells/mm³) at the end of the study</li>
 </ul>
-<p>This <strong>nonparametric estimator</strong> (sample mean) is consistent and unbiased.</p>
+<p><strong>Estimand</strong>: the population parameter <span class="math inline">\(\text{E}{\left[Y|A = a\right]}\)</span>.</p>
 <aside class="notes">
-<p><strong>Why this works</strong>:</p>
-<ul>
-<li>8 observations per group provides reasonable precision</li>
-<li>No modeling assumptions needed</li>
-<li>Sample mean is the maximum likelihood estimator under minimal assumptions</li>
-</ul>
-<p><strong>Confidence intervals</strong>: With 8 observations, we can compute valid confidence intervals around each mean.</p>
+<p>As in Chapter 10, an <strong>estimator</strong> <span class="math inline">\(\hat{\text{E}}{\left[Y|A = a\right]}\)</span> is a function of the data used to estimate <span class="math inline">\(\text{E}{\left[Y|A = a\right]}\)</span>, and an <strong>estimate</strong> is the number obtained by applying the estimator to a particular data set.</p>
+<p>Informally, a <strong>consistent</strong> estimator is one for which “the larger the sample size, the closer the estimate to the population value.”</p>
+<p>Two candidate estimators of <span class="math inline">\(\text{E}{\left[Y|A = a\right]}\)</span>:</p>
+<ol type="1">
+<li>the sample average of <span class="math inline">\(Y\)</span> among individuals with <span class="math inline">\(A = a\)</span> (consistent);</li>
+<li>the value of <span class="math inline">\(Y\)</span> for the first individual in the data set with <span class="math inline">\(A = a\)</span> (not consistent).</li>
+</ol>
+<p>We require consistency, so we use the sample average.</p>
 <style type="text/css">
         span.MJX_Assistive_MathML {
           position:absolute!important;
@@ -225,31 +216,47 @@
           display:block!important;
       }</style></aside>
 </section>
-<section id="scenario-2-four-treatment-levels" class="slide level2">
-<h2>Scenario 2: Four Treatment Levels</h2>
-<p>Treatment <span class="math inline">\(A \in \{1, 2, 3, 4\}\)</span> (none, low-dose, medium-dose, high-dose) with 4 individuals per group.</p>
-<p><strong>Estimates</strong>: 70.0, 80.0, 117.5, 195.0 for <span class="math inline">\(A = 1, 2, 3, 4\)</span> respectively.</p>
-<p><strong>Issue</strong>: With only 4 individuals per category:</p>
+<section id="dichotomous-treatment-figure-11.1" class="slide level2">
+<h2>Dichotomous Treatment (Figure 11.1)</h2>
+<p><span class="math inline">\(A \in \{0, 1\}\)</span>, with 8 individuals in each group.</p>
 <ul>
-<li>Sample averages are still unbiased</li>
-<li>But estimates are less precise (wider confidence intervals)</li>
-<li>More variability in estimates across categories</li>
+<li>Estimated mean in the treated: <span class="math inline">\(\hat{\text{E}}{\left[Y|A = 1\right]} = 146.25\)</span></li>
+<li>Estimated mean in the untreated: <span class="math inline">\(\hat{\text{E}}{\left[Y|A = 0\right]} = 67.50\)</span></li>
 </ul>
-</section>
-<section id="scenario-3-continuous-treatment" class="slide level2">
-<h2>Scenario 3: Continuous Treatment</h2>
-<p>Treatment <span class="math inline">\(A\)</span> is dose in mg/day, taking integer values from 0 to 100 mg.</p>
-<p><strong>Problem</strong>: With 16 individuals and 101 possible treatment values:</p>
-<ul>
-<li>Many treatment levels have zero observations</li>
-<li>Cannot compute sample average for unobserved treatment levels</li>
-<li><strong>The nonparametric estimator is undefined</strong> for <span class="math inline">\(A\)</span> values with no data</li>
-</ul>
-<p><strong>Question</strong>: How do we estimate <span class="math inline">\(\text{E}{\left[Y|A = 90\right]}\)</span> when no one received dose 90?</p>
 <aside class="notes">
-<p><strong>This is the fundamental motivation for modeling</strong>:</p>
-<p>When data are sparse relative to the dimension of covariates, nonparametric estimation fails or becomes imprecise. We need to <strong>borrow strength</strong> across treatment levels by making assumptions about the relationship between treatment and outcome.</p>
-<p><strong>The curse of dimensionality returns</strong>: As the number of treatment levels (or combinations of confounders) increases, we have fewer observations per cell, requiring parametric assumptions.</p>
+<p>Under exchangeability of the treated and the untreated, the difference <span class="math inline">\(146.25 - 67.50 = 78.75\)</span> could be interpreted as an estimate of the average causal effect of <span class="math inline">\(A\)</span> on <span class="math inline">\(Y\)</span> in the target population. This chapter, however, is not about causal inference: the goal is only to motivate models for estimating population quantities such as <span class="math inline">\(\text{E}{\left[Y|A = a\right]}\)</span>, whether or not they have a causal interpretation.</p>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside>
+</section>
+<section id="polytomous-treatment-figure-11.2" class="slide level2">
+<h2>Polytomous Treatment (Figure 11.2)</h2>
+<p><span class="math inline">\(A \in \{1, 2, 3, 4\}\)</span> (none, low dose, medium dose, high dose), with 4 individuals per level.</p>
+<ul>
+<li>Sample averages: 70.0, 80.0, 117.5, and 195.0 for <span class="math inline">\(A = 1, 2, 3, 4\)</span></li>
+</ul>
+<p>With fewer individuals per category, each sample average is still <strong>exactly unbiased</strong>, but it is less likely to be close to the population mean: the 95% confidence intervals are wider than in Figure 11.1.</p>
+</section>
+<section id="treatment-dose-figure-11.3" class="slide level2">
+<h2>Treatment Dose (Figure 11.3)</h2>
+<p><span class="math inline">\(A\)</span> is a dose in mg/day taking integer values from 0 to 100.</p>
+<ul>
+<li>There are 101 possible treatment values but only 16 individuals</li>
+<li>Nobody in the study received, for example, <span class="math inline">\(A = 90\)</span></li>
+<li>The treatment-specific sample average is <strong>undefined</strong> for every dose that nobody received</li>
+</ul>
+<p><strong>Question</strong>: How can we estimate <span class="math inline">\(\text{E}{\left[Y|A = 90\right]}\)</span>?</p>
+<aside class="notes">
+<p>If <span class="math inline">\(A\)</span> were truly continuous, the sample average would be undefined for nearly all treatment levels: a continuous variable can be viewed as a categorical variable with uncountably many categories.</p>
+<p>The lesson is that we cannot always let the data “speak for themselves” to obtain a meaningful estimate. We often need to supplement the data with a model.</p>
 <style type="text/css">
         span.MJX_Assistive_MathML {
           position:absolute!important;
@@ -263,43 +270,54 @@
       }</style></aside>
 </section></section>
 <section>
-<section id="parametric-estimators-of-the-conditional-mean-pp.-150-152" class="title-slide slide level1 center" data-number="2">
-<h1><span class="header-section-number">2</span> 11.2 Parametric Estimators of the Conditional Mean (pp.&nbsp;150-152)</h1>
+<section id="parametric-estimators-of-the-conditional-mean-pp.-155-156" class="title-slide slide level1 center" data-number="2">
+<h1><span class="header-section-number">2</span> 11.2 Parametric Estimators of the Conditional Mean (pp.&nbsp;155-156)</h1>
 
 </section>
 <section class="slide level2">
 
-<p><strong>Parametric models</strong> make assumptions about the functional form relating treatment to outcome, allowing estimation even with sparse data.</p>
-</section>
-<section id="linear-regression-model" class="slide level2 scrollable">
-<h2>Linear Regression Model</h2>
-<p>Assume the conditional mean follows a linear function:</p>
-<p><span class="math display">\[\text{E}{\left[Y|A = a\right]} = \beta_0 + \beta_1 a\]</span></p>
-<p><strong>Parameters</strong>: <span class="math inline">\((\beta_0, \beta_1)\)</span> define the line.</p>
-<p><strong>Estimation</strong>: Fit the model using least squares to estimate <span class="math inline">\((\hat{\beta}_0, \hat{\beta}_1)\)</span>.</p>
-<p><strong>Prediction</strong>: For any value <span class="math inline">\(a\)</span>, estimate <span class="math inline">\(\text{E}{\left[Y|A = a\right]} = \hat{\beta}_0 + \hat{\beta}_1 a\)</span>.</p>
-<div id="exm-linear-model" class="theorem example">
-<p><span class="theorem-title"><strong>Example 1 (Linear Model for Continuous Treatment)</strong></span> With the HIV data and continuous treatment dose:</p>
+<p>Suppose we knew that <span class="math inline">\(\text{E}{\left[Y|A\right]}\)</span> changes linearly with <span class="math inline">\(A\)</span>: it starts at some value <span class="math inline">\(\theta_0\)</span> when <span class="math inline">\(A = 0\)</span> and changes by <span class="math inline">\(\theta_1\)</span> units per unit of <span class="math inline">\(A\)</span>:</p>
+<p><span class="math display">\[\text{E}{\left[Y|A\right]} = \theta_0 + \theta_1 A\]</span></p>
 <ul>
-<li>Fit: <span class="math inline">\(\text{E}{\left[Y|A\right]} = \beta_0 + \beta_1 A\)</span></li>
-<li>Obtain estimates: <span class="math inline">\(\hat{\beta}_0 = 70\)</span>, <span class="math inline">\(\hat{\beta}_1 = 1.25\)</span></li>
-<li>Predict for <span class="math inline">\(A = 90\)</span>: <span class="math inline">\(\hat{\text{E}}{\left[Y|A = 90\right]} = 70 + 1.25(90) = 182.5\)</span></li>
+<li>This restriction on the shape of <span class="math inline">\(\text{E}{\left[Y|A\right]}\)</span> is a <strong>linear mean model</strong></li>
+<li><span class="math inline">\(\theta_0\)</span> (intercept) and <span class="math inline">\(\theta_1\)</span> (slope) are the <strong>parameters</strong> of the model</li>
+<li>A model that describes the conditional mean with a finite number of parameters is a <strong>parametric conditional mean model</strong></li>
 </ul>
-<p>Even though no one received dose 90, the model provides an estimate by <strong>interpolation</strong> from observed doses.</p>
+<aside class="notes">
+<p>The restriction on the shape of the relation is known as the <strong>functional form</strong>. Some authors call it the “dose-response curve”; the book avoids that term because it suggests that the dose causally affects the response, which could be false in the presence of confounding.</p>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside>
+</section>
+<section id="estimation-by-ordinary-least-squares" class="slide level2 scrollable">
+<h2>Estimation by Ordinary Least Squares</h2>
+<ol type="1">
+<li>Estimate <span class="math inline">\(\theta_0\)</span> and <span class="math inline">\(\theta_1\)</span> by ordinary least squares (OLS): among all candidate lines, choose the one minimizing the sum of the 16 squared <strong>residuals</strong> (vertical distances from each point to the line).</li>
+<li>Use the estimates to compute the <strong>predicted value</strong> <span class="math inline">\(\hat{\text{E}}{\left[Y|A = a\right]} = \hat\theta_0 + \hat\theta_1 a\)</span> for any <span class="math inline">\(a\)</span>.</li>
+</ol>
+<div id="exm-linear-model" class="theorem example">
+<p><span class="theorem-title"><strong>Example 1 (Linear Model for the Dose Data (Figure 11.4))</strong></span> The OLS estimates are <span class="math inline">\(\hat\theta_0 = 24.55\)</span> and <span class="math inline">\(\hat\theta_1 = 2.14\)</span> (Program 11.2). The predicted mean at <span class="math inline">\(A = 90\)</span> is</p>
+<p><span class="math display">\[
+\begin{aligned}
+\hat{\text{E}}{\left[Y|A = 90\right]}
+&amp;= \hat\theta_0 + 90 \hat\theta_1 \\
+&amp;= 24.55 + 90 \times 2.14 \\
+&amp;= 216.9
+\end{aligned}
+\]</span></p>
+<p>Wald 95% confidence intervals, assuming homoscedastic residuals: <span class="math inline">\((-21.2, 70.3)\)</span> for <span class="math inline">\(\theta_0\)</span>, <span class="math inline">\((1.28, 2.99)\)</span> for <span class="math inline">\(\theta_1\)</span>, and <span class="math inline">\((172.1, 261.6)\)</span> for <span class="math inline">\(\text{E}{\left[Y|A = 90\right]}\)</span>.</p>
 </div>
 <aside class="notes">
-<p><strong>Advantages of parametric models</strong>:</p>
-<ol type="1">
-<li><strong>Handle sparse data</strong>: Estimate for all treatment levels, not just observed ones</li>
-<li><strong>Precision</strong>: Borrow strength across observations, smaller standard errors</li>
-<li><strong>Smoothness</strong>: Avoid choppiness from sample means in small groups</li>
-</ol>
-<p><strong>Disadvantages</strong>:</p>
-<ol type="1">
-<li><strong>Model misspecification</strong>: If true relationship isn’t linear, estimates are biased</li>
-<li><strong>Bias-variance trade-off</strong>: Reduce variance at the cost of potential bias</li>
-</ol>
-<p><strong>Key assumption</strong>: The linear functional form is correct (or close enough).</p>
+<p>Multiplying out the rounded estimates gives <span class="math inline">\(24.55 + 192.6 = 217.15\)</span>; the book’s 216.9 is consistent with the unrounded estimates.</p>
+<p>Because OLS uses all data points to find the best line, <span class="math inline">\(\text{E}{\left[Y|A = 90\right]}\)</span> is estimated by <strong>borrowing information</strong> from individuals whose treatment value is not 90.</p>
 <style type="text/css">
         span.MJX_Assistive_MathML {
           position:absolute!important;
@@ -312,120 +330,18 @@
           display:block!important;
       }</style></aside>
 </section>
-<section id="other-parametric-models" class="slide level2">
-<h2>Other Parametric Models</h2>
-<p><strong>Quadratic model</strong>: <span class="math display">\[\text{E}{\left[Y|A = a\right]} = \beta_0 + \beta_1 a + \beta_2 a^2\]</span></p>
-<p><strong>Logarithmic model</strong>: <span class="math display">\[\text{E}{\left[Y|A = a\right]} = \beta_0 + \beta_1 \log(a)\]</span></p>
-<p><strong>Piecewise linear (splines)</strong>: Different linear relationships in different ranges of <span class="math inline">\(A\)</span>.</p>
-<p>Each model makes different assumptions about the shape of the dose-response curve.</p>
-</section></section>
-<section>
-<section id="smoothing-pp.-152-153" class="title-slide slide level1 center" data-number="3">
-<h1><span class="header-section-number">3</span> 11.3 Smoothing (pp.&nbsp;152-153)</h1>
-
-</section>
-<section class="slide level2">
-
-<p><strong>Smoothing</strong> refers to techniques that estimate the conditional mean as a smooth function, balancing between nonparametric flexibility and parametric smoothness.</p>
-</section>
-<section id="the-smoothing-spectrum" class="slide level2">
-<h2>The Smoothing Spectrum</h2>
-<p><strong>Nonparametric</strong> (no smoothing): - Sample means within groups - No assumptions about functional form - High variance when data are sparse</p>
-<p><strong>Parametric</strong> (maximum smoothing): - Linear, quadratic, etc. models - Strong assumptions about functional form - Low variance but potential bias</p>
-<p><strong>Semiparametric</strong> (intermediate smoothing): - Methods that smooth but make weaker assumptions - Examples: kernel smoothing, local regression, splines - Balance bias and variance</p>
-<aside class="notes">
-<p><strong>Smoothing intuition</strong>:</p>
-<p>When estimating <span class="math inline">\(\text{E}{\left[Y|A = 90\right]}\)</span> with no observations at <span class="math inline">\(A = 90\)</span>:</p>
+<section id="what-is-a-model" class="slide level2">
+<h2>What Is a Model?</h2>
+<blockquote>
+<p>A model is “an a priori restriction on the joint distribution of the data” <span class="citation" data-cites="hernan2020causal">(<a href="#/references" role="doc-biblioref" onclick="">Hernán and Robins 2020, 155</a>)</span>.</p>
+</blockquote>
 <ul>
-<li><strong>No smoothing</strong>: Cannot estimate (undefined)</li>
-<li><strong>Weak smoothing</strong>: Use nearby observations (e.g., <span class="math inline">\(A = 85, 95\)</span>) with weights decreasing by distance</li>
-<li><strong>Strong smoothing</strong>: Use all data, assuming a global functional form (e.g., linear)</li>
-</ul>
-<p><strong>The bias-variance trade-off</strong>:</p>
-<ul>
-<li>More smoothing → Less variance, more potential bias</li>
-<li>Less smoothing → More variance, less bias</li>
-<li>Optimal smoothing depends on the true (unknown) relationship and sample size</li>
-</ul>
-<style type="text/css">
-        span.MJX_Assistive_MathML {
-          position:absolute!important;
-          clip: rect(1px, 1px, 1px, 1px);
-          padding: 1px 0 0 0!important;
-          border: 0!important;
-          height: 1px!important;
-          width: 1px!important;
-          overflow: hidden!important;
-          display:block!important;
-      }</style></aside>
-</section>
-<section id="kernel-smoothing" class="slide level2">
-<h2>Kernel Smoothing</h2>
-<p><strong>Idea</strong>: Estimate <span class="math inline">\(\text{E}{\left[Y|A = a\right]}\)</span> using a weighted average of nearby observations.</p>
-<p><span class="math display">\[\hat{\text{E}}{\left[Y|A = a\right]} = \frac{\sum_i K\left(\frac{A_i - a}{h}\right) Y_i}{\sum_i K\left(\frac{A_i - a}{h}\right)}\]</span></p>
-<p>where:</p>
-<ul>
-<li><span class="math inline">\(K(\cdot)\)</span> is a <strong>kernel function</strong> (e.g., Gaussian)</li>
-<li><span class="math inline">\(h\)</span> is the <strong>bandwidth</strong> (controls amount of smoothing)</li>
-</ul>
-<p><strong>Bandwidth selection</strong>:</p>
-<ul>
-<li>Large <span class="math inline">\(h\)</span>: More smoothing, use distant observations</li>
-<li>Small <span class="math inline">\(h\)</span>: Less smoothing, use only nearby observations</li>
-</ul>
-</section></section>
-<section>
-<section id="the-bias-variance-trade-off-pp.-153-155" class="title-slide slide level1 center" data-number="4">
-<h1><span class="header-section-number">4</span> 11.4 The Bias-Variance Trade-Off (pp.&nbsp;153-155)</h1>
-
-</section>
-<section class="slide level2">
-
-<p>Every statistical estimator involves a trade-off between <strong>bias</strong> and <strong>variance</strong>.</p>
-</section>
-<section id="definitions" class="slide level2">
-<h2>Definitions</h2>
-<p><strong>Bias</strong>: Systematic error, the difference between the expected value of the estimator and the true parameter.</p>
-<p><span class="math display">\[\text{Bias}(\hat{\theta}) = \text{E}{\left[\hat{\theta}\right]} - \theta\]</span></p>
-<p><strong>Variance</strong>: Random error, the variability of the estimator across repeated samples.</p>
-<p><span class="math display">\[\text{Var}(\hat{\theta}) = \text{E}{\left[(\hat{\theta} - \text{E}{\left[\hat{\theta}\right]})^2\right]}\]</span></p>
-<p><strong>Mean squared error (MSE)</strong>: Combines both sources of error.</p>
-<p><span class="math display">\[MSE(\hat{\theta}) = \text{Bias}^2(\hat{\theta}) + \text{Var}(\hat{\theta})\]</span></p>
-</section>
-<section id="the-trade-off" class="slide level2 scrollable">
-<h2>The Trade-Off</h2>
-<p><strong>Nonparametric estimators</strong> (e.g., sample means):</p>
-<ul>
-<li>Bias: Low (if sufficient data in each cell)</li>
-<li>Variance: High (when data are sparse)</li>
-<li>Works well with dense data, fails with sparse data</li>
-</ul>
-<p><strong>Parametric estimators</strong> (e.g., linear regression):</p>
-<ul>
-<li>Bias: Potentially high (if model is misspecified)</li>
-<li>Variance: Low (uses all data efficiently)</li>
-<li>Works with sparse data, but relies on correct specification</li>
+<li>The linear model restricts <span class="math inline">\(\text{E}{\left[Y|A\right]}\)</span> to be a straight line, so, for example, <span class="math inline">\(\text{E}{\left[Y|A = 90\right]}\)</span> must lie between <span class="math inline">\(\text{E}{\left[Y|A = 80\right]}\)</span> and <span class="math inline">\(\text{E}{\left[Y|A = 100\right]}\)</span></li>
+<li>Through its a priori restrictions, the model adds information to compensate for the lack of information in the data</li>
 </ul>
 <aside class="notes">
-<p><strong>Example: Estimating <span class="math inline">\(\text{E}{\left[Y|A = 90\right]}\)</span></strong></p>
-<p><strong>Nonparametric</strong> (sample mean of individuals with <span class="math inline">\(A = 90\)</span>):</p>
-<ul>
-<li>If <span class="math inline">\(n_{A=90} = 0\)</span>: Undefined (infinite variance)</li>
-<li>If <span class="math inline">\(n_{A=90} = 1\)</span>: Unbiased but very high variance</li>
-<li>If <span class="math inline">\(n_{A=90} = 100\)</span>: Unbiased and low variance</li>
-</ul>
-<p><strong>Linear model</strong> (<span class="math inline">\(\text{E}{\left[Y|A\right]} = \beta_0 + \beta_1 A\)</span>):</p>
-<ul>
-<li>Uses all 16 observations to estimate 2 parameters</li>
-<li>Low variance estimate for any <span class="math inline">\(A\)</span></li>
-<li>Biased if true relationship is not linear</li>
-</ul>
-<p><strong>Practical implications</strong>:</p>
-<ol type="1">
-<li>With small samples and sparse data, we must accept some bias to reduce variance</li>
-<li>The “best” estimator minimizes MSE, balancing bias and variance</li>
-<li>Model selection involves choosing the level of smoothing that optimizes this trade-off</li>
-</ol>
+<p><strong>No free lunch</strong>: parametric estimators let us estimate quantities that cannot be estimated otherwise (e.g., <span class="math inline">\(\text{E}{\left[Y|A = 90\right]}\)</span> when nobody received <span class="math inline">\(A = 90\)</span>), but the inferences are correct only if the model’s restrictions are correct, i.e., if the model is <strong>correctly specified</strong>.</p>
+<p>Much of the remainder of the book uses model-based causal inference, which relies on (approximately) no model misspecification. Since parametric models are rarely if ever perfectly specified, some misspecification is almost always expected; nonparametric estimators can partially address it.</p>
 <style type="text/css">
         span.MJX_Assistive_MathML {
           position:absolute!important;
@@ -439,58 +355,72 @@
       }</style></aside>
 </section></section>
 <section>
-<section id="the-bias-variance-trade-off-in-action-pp.-155-156" class="title-slide slide level1 center" data-number="5">
-<h1><span class="header-section-number">5</span> 11.5 The Bias-Variance Trade-Off in Action (pp.&nbsp;155-156)</h1>
+<section id="nonparametric-estimators-of-the-conditional-mean-pp.-156-157" class="title-slide slide level1 center" data-number="3">
+<h1><span class="header-section-number">3</span> 11.3 Nonparametric Estimators of the Conditional Mean (pp.&nbsp;156-157)</h1>
 
 </section>
 <section class="slide level2">
 
-<p>Simulation studies can illustrate the bias-variance trade-off across different sample sizes.</p>
+<p>Return to the dichotomous treatment of Figure 11.1 and fit the same linear model <span class="math inline">\(\text{E}{\left[Y|A\right]} = \theta_0 + \theta_1 A\)</span>:</p>
+<p><span class="math display">\[
+\begin{aligned}
+\text{E}{\left[Y|A = 0\right]} &amp;= \theta_0 + 0 \times \theta_1 = \theta_0 \\
+\text{E}{\left[Y|A = 1\right]} &amp;= \theta_0 + 1 \times \theta_1 = \theta_0 + \theta_1
+\end{aligned}
+\]</span></p>
+<p>OLS gives <span class="math inline">\(\hat\theta_0 = 67.5\)</span> and <span class="math inline">\(\hat\theta_1 = 78.75\)</span>, so</p>
+<p><span class="math display">\[
+\begin{aligned}
+\hat{\text{E}}{\left[Y|A = 0\right]} &amp;= \hat\theta_0 = 67.5 \\
+\hat{\text{E}}{\left[Y|A = 1\right]} &amp;= \hat\theta_0 + \hat\theta_1 = 67.5 + 78.75 = 146.25
+\end{aligned}
+\]</span></p>
+<p>These are exactly the sample averages from Section 11.1, as expected.</p>
 </section>
-<section id="simulation-setup" class="slide level2 scrollable">
-<h2>Simulation Setup</h2>
-<ol type="1">
-<li>Specify a true data-generating process (e.g., <span class="math inline">\(\text{E}{\left[Y|A\right]} = \beta_0 + \beta_1 A + \beta_2 A^2\)</span>)</li>
-<li>Generate many datasets of size <span class="math inline">\(n\)</span> from this process</li>
-<li>Fit different models to each dataset</li>
-<li>Compute bias, variance, and MSE of each estimator</li>
-</ol>
-</section>
-<section id="typical-results" class="slide level2 scrollable">
-<h2>Typical Results</h2>
-<p><strong>Small sample size (<span class="math inline">\(n = 16\)</span>)</strong>:</p>
+<section id="saturated-models" class="slide level2">
+<h2>Saturated Models</h2>
+<p>Rewrite the model as <span class="math inline">\(\text{E}{\left[Y|A = 1\right]} = \text{E}{\left[Y|A = 0\right]} + \theta_1\)</span>. Since <span class="math inline">\(\theta_1\)</span> can be any number, this statement is always true: the “model” imposes <strong>no restriction</strong> on the two means.</p>
+<div id="def-saturated-model" class="theorem definition">
+<p><span class="theorem-title"><strong>Definition 1 (Saturated Model)</strong></span> A conditional mean “model” is <strong>saturated</strong> when it imposes no restrictions on the distribution of the data. This occurs whenever the number of parameters equals the number of unknown conditional means in the population (“the same number of unknowns on both sides of the equal sign”).</p>
+</div>
+<div id="exm-saturated" class="theorem example">
+<p><span class="theorem-title"><strong>Example 2 (Saturated vs.&nbsp;Parsimonious)</strong></span> &nbsp;</p>
 <ul>
-<li>Nonparametric: High variance, low bias (where defined)</li>
-<li>Simple parametric (linear): Low variance, moderate bias</li>
-<li>Flexible parametric (quadratic): Moderate variance, low bias</li>
-<li><strong>Winner</strong>: Simple or moderately flexible model (minimizes MSE)</li>
+<li><span class="math inline">\(\text{E}{\left[Y|A\right]} = \theta_0 + \theta_1 A\)</span> with dichotomous <span class="math inline">\(A\)</span>: 2 parameters, 2 unknown means. <strong>Saturated.</strong></li>
+<li>The same model with <span class="math inline">\(A \in \{0, 1, \ldots, 100\}\)</span>: 2 parameters, 101 unknown means <span class="math inline">\(\text{E}{\left[Y|A = 0\right]}, \ldots, \text{E}{\left[Y|A = 100\right]}\)</span>. It is unbiased only if all 101 means happen to lie on a straight line.</li>
 </ul>
-<p><strong>Large sample size (<span class="math inline">\(n = 1000\)</span>)</strong>:</p>
+</div>
+<p>A model with few parameters used to estimate many population quantities is <strong>parsimonious</strong>.</p>
+<aside class="notes">
+<p>Strictly, a saturated “model” is not a model under the book’s definition, because it lets the data speak for themselves just as the sample average does. Because saturated models look like models, they are still ordinarily called models. Part I was titled “Causal inference without models” because it only used saturated models.</p>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside>
+</section>
+<section id="nonparametric-estimators" class="slide level2">
+<h2>Nonparametric Estimators</h2>
+<div id="def-nonparametric-estimator" class="theorem definition">
+<p><span class="theorem-title"><strong>Definition 2 (Nonparametric Estimator)</strong></span> A <strong>nonparametric estimator</strong> of the conditional mean function produces estimates from the data <strong>without any a priori restrictions</strong> on that function.</p>
+</div>
 <ul>
-<li>Nonparametric: Low variance, low bias</li>
-<li>Simple parametric (linear): Low variance, high bias (if misspecified)</li>
-<li>Flexible parametric: Low variance, low bias</li>
-<li><strong>Winner</strong>: Flexible models or nonparametric (both work well)</li>
+<li>Example: the sample average (equivalently, the saturated model) for a dichotomous treatment</li>
+<li>If <span class="math inline">\(A\)</span> has 101 levels and nobody has <span class="math inline">\(A = 90\)</span>, <strong>no nonparametric estimator</strong> of <span class="math inline">\(\text{E}{\left[Y|A = 90\right]}\)</span> exists</li>
+<li>Standardization, IP weighting, stratification, and matching in Part I were nonparametric estimators under a saturated model</li>
+<li>Most methods in Part II use estimators that are parametric for <strong>some part</strong> of the distribution of the data</li>
 </ul>
 <aside class="notes">
-<p><strong>Key lessons</strong>:</p>
-<ol type="1">
-<li><p><strong>Small samples require strong assumptions</strong>: With limited data, we need parametric models</p></li>
-<li><p><strong>Large samples allow flexibility</strong>: With abundant data, we can use flexible or nonparametric approaches</p></li>
-<li><p><strong>No free lunch</strong>: Every estimator makes trade-offs; the “best” depends on:</p>
+<p><strong>Identifiability vs.&nbsp;modeling assumptions</strong> (margin note, p.&nbsp;157):</p>
 <ul>
-<li>Sample size</li>
-<li>True underlying relationship</li>
-<li>Sparsity of data</li>
-</ul></li>
-<li><p><strong>Model selection matters</strong>: Choose models that balance the bias-variance trade-off appropriately for your data</p></li>
-</ol>
-<p><strong>Practical strategy</strong>:</p>
-<ul>
-<li>Start with simple models</li>
-<li>Add complexity as sample size permits</li>
-<li>Use cross-validation or information criteria to select model complexity</li>
-<li>Conduct sensitivity analyses with different models</li>
+<li><strong>Identifiability assumptions</strong> are needed to compute the parameter even with an infinite amount of data; formally, they make the parameter a unique function of the joint distribution of the observed data.</li>
+<li><strong>Modeling assumptions</strong> are the additional assumptions needed to <em>estimate</em> the parameter because we do not have an infinite amount of data.</li>
 </ul>
 <style type="text/css">
         span.MJX_Assistive_MathML {
@@ -503,6 +433,221 @@
           overflow: hidden!important;
           display:block!important;
       }</style></aside>
+<div title="Fine Point 11.1: Fisher Consistency">
+<div class="callout callout-note callout-titled callout-style-default">
+<div class="callout-body">
+<div class="callout-title">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<p><strong>Fine Point 11.1: Fisher Consistency</strong></p>
+</div>
+<div class="callout-content">
+<p>The book’s nonparametric estimators coincide with what statistics calls <strong>Fisher consistent</strong> estimators <span class="citation" data-cites="hernan2020causal">(<a href="#/references" role="doc-biblioref" onclick="">Hernán and Robins 2020, 157</a>)</span>: estimators that, computed on the entire population instead of a sample, return the true value of the population parameter.</p>
+<ul>
+<li>A Fisher consistent estimator lacks any model restrictions, but may not exist for many population quantities.</li>
+<li>When they exist, Fisher consistent estimators are the nonparametric maximum likelihood estimators under a saturated model.</li>
+<li>In the wider statistical literature, “nonparametric” sometimes also refers to estimators that are not Fisher consistent but impose only weak restrictions, such as kernel regression (see Technical Point 11.1 in <a href="#/sec-bias-variance" class="quarto-xref">Section&nbsp;5</a>).</li>
+</ul>
+</div>
+</div>
+</div>
+</div>
+</section></section>
+<section>
+<section id="smoothing-pp.-157-159" class="title-slide slide level1 center" data-number="4">
+<h1><span class="header-section-number">4</span> 11.4 Smoothing (pp.&nbsp;157-159)</h1>
+
+</section>
+<section class="slide level2">
+
+<p>In <span class="math inline">\(\text{E}{\left[Y|A\right]} = \theta_0 + \theta_1 A\)</span>, the single number <span class="math inline">\(\theta_1\)</span> forces the change in mean outcome per unit of dose to be the same over the whole range of <span class="math inline">\(A\)</span>.</p>
+<p>But the effect of one more unit could be larger at low doses and smaller at high doses. Linear models can be made more flexible:</p>
+<p><span class="math display">\[\text{E}{\left[Y|A\right]} = \theta_0 + \theta_1 A + \theta_2 A^2\]</span></p>
+<aside class="notes">
+<p><strong>Two meanings of “linear”</strong>: a model is <em>linear</em> when the mean is a linear combination of parameters and functions of the covariates, even if those functions are nonlinear (powers, logarithms). So the model with <span class="math inline">\(A^2\)</span> is still a linear model, even though, whenever <span class="math inline">\(\theta_2 \neq 0\)</span>, <span class="math inline">\((\theta_0, \theta_1, \theta_2)\)</span> define a parabola rather than a straight line. <span class="math inline">\(\theta_1\)</span> is the parameter for the linear term <span class="math inline">\(A\)</span> and <span class="math inline">\(\theta_2\)</span> the parameter for the quadratic term <span class="math inline">\(A^2\)</span>.</p>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside>
+<div id="exm-quadratic-model" class="theorem example">
+<p><span class="theorem-title"><strong>Example 3 (Quadratic Model for the Dose Data (Figure 11.5))</strong></span> OLS estimates (Program 11.3): <span class="math inline">\(\hat\theta_0 = -7.41\)</span>, <span class="math inline">\(\hat\theta_1 = 4.11\)</span>, <span class="math inline">\(\hat\theta_2 = -0.02\)</span>. The predicted mean at <span class="math inline">\(A = 90\)</span> is</p>
+<p><span class="math display">\[
+\begin{aligned}
+\hat{\text{E}}{\left[Y|A = 90\right]}
+&amp;= \hat\theta_0 + 90 \hat\theta_1 + 90 \times 90 \, \hat\theta_2 \\
+&amp;= 197.1
+\end{aligned}
+\]</span></p>
+<p>with Wald 95% confidence interval <span class="math inline">\((142.8, 251.5)\)</span> under homoscedasticity.</p>
+</div>
+<aside class="notes">
+<p>The estimate 197.1 uses the unrounded coefficients. Plugging in the rounded values gives <span class="math inline">\(-7.41 + 369.9 - 162 = 200.49\)</span>; the discrepancy comes from rounding <span class="math inline">\(\hat\theta_2\)</span>, which is multiplied by <span class="math inline">\(8100\)</span>.</p>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside>
+</section>
+<section id="more-parameters-less-smoothness" class="slide level2">
+<h2>More Parameters, Less Smoothness</h2>
+<ul>
+<li>Adding cubic, quartic, …, up to a 15th-degree term gives 16 parameters, as many as data points</li>
+<li>In general, more parameters means more inflection points: the curve becomes more “wiggly”</li>
+<li>The 2-parameter straight line is the <strong>smoothest</strong> model</li>
+<li>A model with as many parameters as data points is the <strong>least smooth</strong>: it <strong>interpolates</strong> the data, so every data point lies on the estimated curve</li>
+</ul>
+</section>
+<section id="smoothing-as-borrowing-information" class="slide level2">
+<h2>Smoothing as Borrowing Information</h2>
+<p><strong>Smoothing</strong> results from estimating <span class="math inline">\(\text{E}{\left[Y|A = a\right]}\)</span> by borrowing information from individuals with <span class="math inline">\(A \neq a\)</span>. All parametric estimators smooth to some degree.</p>
+<ul>
+<li>The 2-parameter model borrows information from all 16 individuals to estimate <span class="math inline">\(\text{E}{\left[Y|A = 90\right]}\)</span></li>
+<li>A model with as many parameters as individuals borrows no information at the observed values of <span class="math inline">\(A\)</span> (but does borrow, by interpolation, at unobserved values)</li>
+<li>Intermediate smoothing: use an intermediate number of parameters, or restrict which individuals contribute (e.g., fit the straight line only to individuals with doses 80 to 100; the wider the window, the more smoothing)</li>
+</ul>
+<aside class="notes">
+<p>With many covariates, the fitted “curves” are hyperdimensional surfaces, but the principle is the same: the fewer parameters in the model, the smoother the prediction (response) surface.</p>
+<p>The same reasoning applies to models for dichotomous outcomes, such as logistic models (Technical Point 11.1 in <a href="#/sec-bias-variance" class="quarto-xref">Section&nbsp;5</a>).</p>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside>
+</section></section>
+<section>
+<section id="sec-bias-variance" class="title-slide slide level1 center" data-number="5">
+<h1><span class="header-section-number">5</span> 11.5 The Bias-Variance Trade-Off (pp.&nbsp;159-160)</h1>
+
+</section>
+<section class="slide level2">
+
+<p>The two models give different estimates of <span class="math inline">\(\text{E}{\left[Y|A = 90\right]}\)</span>:</p>
+<table class="caption-top">
+<thead>
+<tr class="header">
+<th>Model</th>
+<th>Estimate</th>
+<th>95% CI</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><span class="math inline">\(\theta_0 + \theta_1 A\)</span></td>
+<td>216.9</td>
+<td>(172.1, 261.6)</td>
+</tr>
+<tr class="even">
+<td><span class="math inline">\(\theta_0 + \theta_1 A + \theta_2 A^2\)</span></td>
+<td>197.1</td>
+<td>(142.8, 251.5)</td>
+</tr>
+</tbody>
+</table>
+<p>Which is closer to the population mean?</p>
+</section>
+<section id="bias" class="slide level2">
+<h2>Bias</h2>
+<ul>
+<li>If the true relation is curvilinear, the 2-parameter model is misspecified, so its estimate is <strong>biased</strong></li>
+<li>If the true relation is a straight line, <strong>both</strong> models are correctly specified (the 3-parameter model with <span class="math inline">\(\theta_2 = 0\)</span>)</li>
+<li>So the 3-parameter model is less likely to be biased: the more parameters, the fewer restrictions, and the more protection against bias from model misspecification</li>
+</ul>
+</section>
+<section id="variance" class="slide level2">
+<h2>Variance</h2>
+<ul>
+<li>Less smooth models have larger <strong>variance</strong>: here, the 95% CI from the 3-parameter model is much wider</li>
+<li>But when the 2-parameter estimate is biased, its nominal 95% CI is <strong>not calibrated</strong>: it does not cover <span class="math inline">\(\text{E}{\left[Y|A = 90\right]}\)</span> 95% of the time</li>
+</ul>
+<aside class="notes">
+<p><strong>The bias-variance trade-off</strong>: investigators must decide whether added protection against bias (e.g., more parameters) is worth the cost in variance. Formal procedures exist, but in practice models are often chosen by tradition, interpretability of the parameters, and software availability.</p>
+<p><strong>The book’s working convention</strong>: it usually assumes parametric models are correctly specified. This assumption is unrealistic, but it lets the book focus on problems specific to causal analysis; misspecification can affect any data analysis. Careful investigators question their models and run alternative analyses under model specifications compatible with expert knowledge, to assess the sensitivity of their estimates to model specification.</p>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside>
+</section>
+<section class="slide level2">
+
+<div title="Fine Point 11.2: Model Dimensionality and Frequentist vs. Bayesian Intervals">
+<div class="callout callout-note callout-titled callout-style-default">
+<div class="callout-body">
+<div class="callout-title">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<p><strong>Fine Point 11.2: Model Dimensionality and Frequentist vs.&nbsp;Bayesian Intervals</strong></p>
+</div>
+<div class="callout-content">
+<ul>
+<li>Frequentist inference defines probability as frequency; Bayesian inference defines it as degree of belief.</li>
+<li>A Bayesian 95% <strong>credible interval</strong> means that, given the observed data, there is a 95% probability that the estimand lies in the interval. Partly because it requires specifying a prior, Bayesian inference is less commonly used.</li>
+<li>In <strong>low-dimensional</strong> parametric models with large samples, 95% credible intervals are also 95% confidence intervals: the data swamp reasonable priors.</li>
+<li>In <strong>high-dimensional</strong> or nonparametric models, a 95% credible interval may trap the estimand much less than 95% of the time: if the true parameter values are unlikely under the prior, the interval is pulled toward values the prior favors.</li>
+</ul>
+</div>
+</div>
+</div>
+</div>
+</section>
+<section class="slide level2">
+
+<div title="Technical Point 11.1: A Taxonomy of Commonly Used Models">
+<div class="callout callout-note callout-titled callout-style-default">
+<div class="callout-body">
+<div class="callout-title">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<p><strong>Technical Point 11.1: A Taxonomy of Commonly Used Models</strong></p>
+</div>
+<div class="callout-content">
+<p><strong>Conditional mean models</strong> (generalized linear models) have a linear predictor <span class="math inline">\(\sum_{i=0}^{p} \theta_i X_i\)</span> (with <span class="math inline">\(X_0 = 1\)</span>) and a <strong>link function</strong> <span class="math inline">\(g\{\cdot\}\)</span>:</p>
+<p><span class="math display">\[g\{\text{E}{\left[Y|X\right]}\} = \sum_{i=0}^{p} \theta_i X_i\]</span></p>
+<ul>
+<li><strong>Identity link</strong>: the linear models of this chapter</li>
+<li><strong>Log link</strong> (strictly positive outcomes, e.g., counts): <span class="math inline">\(\text{E}{\left[Y|X\right]} = \text{exp}{\left\{\sum_{i=0}^{p} \theta_i X_i\right\}} &gt; 0\)</span></li>
+<li><strong>Logit link</strong> (dichotomous outcomes; logistic regression): <span class="math inline">\(\text{E}{\left[Y|X\right]} = \text{expit}{\left\{\sum_{i=0}^{p} \theta_i X_i\right\}} \in (0, 1)\)</span></li>
+</ul>
+<p>For these canonical links, <span class="math inline">\(\theta\)</span> can be estimated by maximum likelihood under a normal, Poisson, or logistic working model, respectively; the estimates are consistent as long as the model for <span class="math inline">\(\text{E}{\left[Y|X\right]}\)</span> is correct. GEE models for repeated measures are another example <span class="citation" data-cites="hernan2020causal">(<a href="#/references" role="doc-biblioref" onclick="">Hernán and Robins 2020, 161</a>)</span>.</p>
+<p>A conditional mean model leaves the rest of the distribution of <span class="math inline">\(Y \mid X\)</span> and the distribution of <span class="math inline">\(X\)</span> unrestricted, so with continuous <span class="math inline">\(X\)</span> or <span class="math inline">\(Y\)</span> it is a <strong>semiparametric</strong> model for the joint distribution of <span class="math inline">\((X, Y)\)</span>.</p>
+<p>Relaxing the parametric form:</p>
+<ul>
+<li><strong>Kernel regression</strong> estimates <span class="math inline">\(\text{E}{\left[Y|X = x\right]}\)</span> by <span class="math inline">\(\sum_{i=1}^nw_h(x - X_i) Y_i \big/ \sum_{i=1}^nw_h(x - X_i)\)</span>, where the kernel <span class="math inline">\(w_h(z)\)</span> is positive, maximal at <span class="math inline">\(z = 0\)</span>, and decreases to 0 as <span class="math inline">\(|z|\)</span> grows, at a rate set by the <strong>bandwidth</strong> <span class="math inline">\(h\)</span></li>
+<li><strong>Generalized additive models</strong> replace <span class="math inline">\(\sum_i \theta_i X_i\)</span> by a sum of smooth functions <span class="math inline">\(\sum_i f_i(X_i)\)</span>, fitted by backfitting</li>
+</ul>
+<p>Kernel regression borrows information only from values of <span class="math inline">\(X\)</span> <strong>near</strong> <span class="math inline">\(x\)</span>, so it is “nonparametric” in a different sense from this chapter’s nonparametric estimators, which used only individuals with <span class="math inline">\(X\)</span> exactly equal to <span class="math inline">\(x\)</span>.</p>
+</div>
+</div>
+</div>
+</div>
 </section></section>
 <section>
 <section id="summary" class="title-slide slide level1 center" data-number="6">
@@ -511,56 +656,22 @@
 </section>
 <section class="slide level2 scrollable">
 
-<p>This chapter motivated the need for <strong>statistical models</strong> in data analysis.</p>
-<p><strong>Key concepts</strong>:</p>
 <ol type="1">
-<li><strong>Data sparsity problem</strong>:
-<ul>
-<li>Nonparametric estimation fails when data are sparse</li>
-<li>Need to borrow strength across observations</li>
-</ul></li>
-<li><strong>Parametric models</strong>:
-<ul>
-<li>Make assumptions about functional form</li>
-<li>Allow estimation even with sparse data</li>
-<li>Examples: Linear, quadratic, logarithmic models</li>
-</ul></li>
-<li><strong>Smoothing</strong>:
-<ul>
-<li>Spectrum from nonparametric to parametric</li>
-<li>Semiparametric methods balance flexibility and smoothness</li>
-<li>Bandwidth/complexity controls amount of smoothing</li>
-</ul></li>
-<li><strong>Bias-variance trade-off</strong>:
-<ul>
-<li>Bias: Systematic error from modeling assumptions</li>
-<li>Variance: Random error from finite samples</li>
-<li>MSE = Bias² + Variance</li>
-<li>Optimal estimator minimizes MSE</li>
-</ul></li>
-<li><strong>Sample size matters</strong>:
-<ul>
-<li>Small samples: Need strong assumptions (parametric models)</li>
-<li>Large samples: Can use flexible/nonparametric approaches</li>
-</ul></li>
+<li><strong>Data cannot always speak for themselves</strong>: with sparse data, nonparametric (saturated) estimators of <span class="math inline">\(\text{E}{\left[Y|A = a\right]}\)</span> can be imprecise or undefined.</li>
+<li><strong>Parametric models</strong> are a priori restrictions on the distribution of the data; they let us estimate otherwise inestimable quantities by borrowing information, but only correctly if the model is correctly specified.</li>
+<li><strong>Saturated models</strong> impose no restrictions; Part I’s methods were nonparametric estimators under saturated models.</li>
+<li><strong>Smoothing</strong>: fewer parameters, smoother fit, more borrowing of information.</li>
+<li><strong>Bias-variance trade-off</strong>: more flexible models protect against misspecification bias at the cost of variance.</li>
 </ol>
 <aside class="notes">
-<p><strong>Implications for Part II</strong>:</p>
-<p>The remainder of Part II describes methods for causal inference that use parametric and semiparametric models:</p>
+<p><strong>Looking ahead</strong>: The following chapters use models for causal inference:</p>
 <ul>
-<li><strong>Chapter 12</strong>: Standardization with outcome regression models</li>
-<li><strong>Chapter 13</strong>: IP weighting with propensity score models<br>
-</li>
-<li><strong>Chapter 14</strong>: Instrumental variables with parametric models</li>
-<li><strong>Chapter 15</strong>: G-estimation with structural nested models</li>
+<li><strong>Chapter 12</strong>: IP weighting and marginal structural models</li>
+<li><strong>Chapter 13</strong>: Standardization and the parametric g-formula</li>
+<li><strong>Chapter 14</strong>: G-estimation of structural nested models</li>
+<li><strong>Chapter 15</strong>: Outcome regression and propensity scores</li>
+<li><strong>Chapter 16</strong>: Instrumental variable estimation</li>
 </ul>
-<p>All these methods face the bias-variance trade-off. Understanding this trade-off is crucial for:</p>
-<ul>
-<li>Choosing appropriate models</li>
-<li>Assessing model adequacy</li>
-<li>Interpreting results cautiously</li>
-</ul>
-<p><strong>The central challenge</strong>: We must make modeling assumptions to estimate causal effects with finite data, but wrong assumptions introduce bias. The art of causal inference involves making reasonable assumptions and assessing their plausibility.</p>
 <style type="text/css">
         span.MJX_Assistive_MathML {
           position:absolute!important;

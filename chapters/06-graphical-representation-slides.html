@@ -164,8 +164,9 @@
 <div class="quarto-title-authors">
 </div>
 
-</section><section class="slide level2"><!-- https://www.overleaf.com/learn/latex/Using_colors_in_LaTeX#Named_colors_provided_by_the_xcolor_package --><!-- \def\or{\theta}  --><!-- doesn't work for some reason --><p>So far we have used potential outcomes to represent causal effects. In this chapter we use causal diagrams—directed acyclic graphs (DAGs)—to represent causal relations. Causal diagrams encode our qualitative assumptions about the causal structure of the problem and allow us to determine when association equals causation, and which variables need to be adjusted for to eliminate confounding.</p>
-<aside class="notes"><p>This chapter is based on <span class="citation" data-cites="hernan2020causal">Hernán and Robins (<a href="#/references" role="doc-biblioref" onclick="">2020, chap. 6</a>, pp.&nbsp;59–76)</span>.</p>
+</section><section class="slide level2"><!-- https://www.overleaf.com/learn/latex/Using_colors_in_LaTeX#Named_colors_provided_by_the_xcolor_package --><!-- \def\or{\theta}  --><!-- doesn't work for some reason --><p>Causal inference needs expert knowledge and untestable assumptions about the causal network linking treatment, outcome, and other variables. In the simple settings of Chapters 1-5 that network could stay implicit; in realistic settings we must state what we know and what we assume.</p>
+<p>This chapter introduces <strong>causal diagrams</strong>, a graphical tool for encoding qualitative causal assumptions. The book’s advice: draw your assumptions before your conclusions.</p>
+<aside class="notes"><p>This chapter is based on <span class="citation" data-cites="hernan2020causal">Hernán and Robins (<a href="#/references" role="doc-biblioref" onclick="">2020, chap. 6</a>, pp.&nbsp;75-89)</span>. Chapters 6-9 of the book use causal diagrams to conceptualize problems.</p>
 <style type="text/css">
         span.MJX_Assistive_MathML {
           position:absolute!important;
@@ -176,58 +177,27 @@
           width: 1px!important;
           overflow: hidden!important;
           display:block!important;
-      }</style></aside></section><section><section id="causal-diagrams-pp.-5961" class="title-slide slide level1 center" data-number="1"><h1>
-<span class="header-section-number">1</span> 6.1 Causal Diagrams (pp.&nbsp;59–61)</h1>
+      }</style></aside></section><section><section id="causal-diagrams-pp.-75-77" class="title-slide slide level1 center" data-number="1"><h1>
+<span class="header-section-number">1</span> 6.1 Causal Diagrams (pp.&nbsp;75-77)</h1>
 
-</section><section class="slide level2"><p>A <strong>causal diagram</strong> is a directed acyclic graph (DAG) in which:</p>
-<ul>
-<li>Each <strong>node</strong> (vertex) represents a variable</li>
-<li>Each <strong>directed edge</strong> (arrow) from node <span class="math inline">\(V\)</span> to node <span class="math inline">\(W\)</span> represents a direct causal effect of <span class="math inline">\(V\)</span> on <span class="math inline">\(W\)</span>
-</li>
-<li>There are <strong>no cycles</strong>: following the arrows, you can never return to a starting node</li>
-</ul>
-<div id="def-dag" class="theorem definition">
-<p><span class="theorem-title"><strong>Definition 1 (Directed Acyclic Graph (DAG))</strong></span> A <strong>directed acyclic graph (DAG)</strong> used as a causal diagram represents a <strong>non-parametric structural equation model (NPSEM)</strong>. For each variable <span class="math inline">\(V_k\)</span> with parents <span class="math inline">\(\mathrm{pa}(V_k)\)</span> in the graph, there is a structural equation:</p>
-<p><span class="math display">\[V_k = f_k\bigl(\mathrm{pa}(V_k),\, U_k\bigr)\]</span></p>
-<p>where <span class="math inline">\(U_k\)</span> is an <strong>unmeasured background variable</strong> (exogenous variable) that represents all causes of <span class="math inline">\(V_k\)</span> not otherwise shown in the graph.</p>
-</div>
-</section><section id="the-main-example" class="slide level2"><h2>The Main Example</h2>
-<p>Consider a study of the causal effect of treatment <span class="math inline">\(A\)</span> on outcome <span class="math inline">\(Y\)</span>, where <span class="math inline">\(L\)</span> is a measured variable that causes both <span class="math inline">\(A\)</span> and <span class="math inline">\(Y\)</span>. The structural equations are:</p>
-<p><span class="math display">\[L = f_L(U_L)\]</span> <span class="math display">\[A = f_A(L,\, U_A)\]</span> <span class="math display">\[Y = f_Y(L,\, A,\, U_Y)\]</span></p>
-<p>where <span class="math inline">\(U_L\)</span>, <span class="math inline">\(U_A\)</span>, and <span class="math inline">\(U_Y\)</span> are <strong>mutually independent</strong> unmeasured background variables. The corresponding causal diagram is:</p>
-<div class="cell">
+</section><section class="slide level2"><div class="cell">
 <div class="cell-output-display">
-<div class="quarto-figure quarto-figure-center">
-<figure><figcaption>Figure 6.1. Causal diagram: L causes both A and Y, and A causes Y.</figcaption><p><a href="06-graphical-representation_files/figure-html/unnamed-chunk-1-1.png" class="lightbox" data-gallery="quarto-lightbox-gallery-1" title="Figure 6.1. Causal diagram: L causes both A and Y, and A causes Y."><img data-src="06-graphical-representation_files/figure-html/unnamed-chunk-1-1.png" width="384" alt="Figure 6.1. Causal diagram: L causes both A and Y, and A causes Y."></a></p>
+<div id="fig-dag-6-1" class="quarto-float quarto-figure quarto-figure-center">
+<figure class="quarto-float quarto-float-fig"><figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-fig" id="fig-dag-6-1-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;1: Book Figure 6.1: disease severity <span class="math inline">\(L\)</span>, heart transplant <span class="math inline">\(A\)</span>, death <span class="math inline">\(Y\)</span>.
+</figcaption><div aria-describedby="fig-dag-6-1-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<a href="06-graphical-representation_files/figure-html/fig-dag-6-1-1.png" class="lightbox" data-gallery="quarto-lightbox-gallery-1" title="Figure&nbsp;1: Book Figure 6.1: disease severity L, heart transplant A, death Y."><img data-src="06-graphical-representation_files/figure-html/fig-dag-6-1-1.png" width="384"></a>
+</div>
 </figure>
 </div>
 </div>
 </div>
-</section><section id="dag-terminology" class="slide level2"><h2>DAG Terminology</h2>
-<p>For a node <span class="math inline">\(W\)</span> in a causal diagram:</p>
 <ul>
-<li>A <strong>parent</strong> of <span class="math inline">\(W\)</span> is any node with a direct arrow into <span class="math inline">\(W\)</span>
-</li>
-<li>A <strong>child</strong> of <span class="math inline">\(W\)</span> is any node that <span class="math inline">\(W\)</span> has a direct arrow into</li>
-<li>An <strong>ancestor</strong> of <span class="math inline">\(W\)</span> is any node from which <span class="math inline">\(W\)</span> is reachable by following arrows</li>
-<li>A <strong>descendant</strong> of <span class="math inline">\(W\)</span> is any node reachable from <span class="math inline">\(W\)</span> by following arrows</li>
-<li>A <strong>path</strong> between two nodes is any sequence of nodes connected by edges (arrows), regardless of direction</li>
+<li>Nodes are random variables; time flows left to right.</li>
+<li>An arrow <span class="math inline">\(V \to W\)</span>: <span class="math inline">\(V\)</span> has a <strong>direct</strong> causal effect on <span class="math inline">\(W\)</span> (not mediated by other variables on the graph) <strong>for at least one individual</strong>.</li>
+<li>No arrow from <span class="math inline">\(V\)</span> to <span class="math inline">\(W\)</span>: <span class="math inline">\(V\)</span> has no direct causal effect on <span class="math inline">\(W\)</span> <strong>for any individual</strong>.</li>
 </ul>
-<p>In Figure 6.1: <span class="math inline">\(L\)</span> is a parent of <span class="math inline">\(A\)</span> and a parent of <span class="math inline">\(Y\)</span>; <span class="math inline">\(A\)</span> is a child of <span class="math inline">\(L\)</span>; <span class="math inline">\(Y\)</span> is a descendant of <span class="math inline">\(L\)</span> via two paths (<span class="math inline">\(L \to Y\)</span> directly, and <span class="math inline">\(L \to A \to Y\)</span>).</p>
-</section><section id="what-dag-arrows-represent" class="slide level2"><h2>What DAG Arrows Represent</h2>
-<p>The <strong>presence</strong> of an arrow <span class="math inline">\(V \to W\)</span> encodes the assumption that <span class="math inline">\(V\)</span> has a direct causal effect on <span class="math inline">\(W\)</span> (i.e., not entirely mediated by other variables explicitly shown in the graph).</p>
-<p>The <strong>absence</strong> of an arrow between <span class="math inline">\(V\)</span> and <span class="math inline">\(W\)</span> (with no directed path from <span class="math inline">\(V\)</span> to <span class="math inline">\(W\)</span>) encodes the assumption that <span class="math inline">\(V\)</span> has no direct causal effect on <span class="math inline">\(W\)</span>, given the other variables in the graph. This is a substantive causal assumption that must be justified by subject-matter knowledge.</p>
-<aside class="notes"><p><strong>What DAGs do and do not represent:</strong></p>
-<ul>
-<li>
-<strong>Do represent</strong>: qualitative causal structure (which variables directly cause which)</li>
-<li>
-<strong>Do not represent</strong>: magnitude, direction, or functional form of effects</li>
-<li>
-<strong>Do not represent</strong>: effect modification (heterogeneity of effects across subgroups)</li>
-</ul>
-<p><strong>Why acyclic?</strong> DAGs do not allow feedback loops (e.g., <span class="math inline">\(A \to Y \to A\)</span>). For dynamic settings with feedback, longitudinal DAGs or other frameworks are needed (see Part III of the textbook).</p>
-<p><strong>Unmeasured common causes:</strong> In Figure 6.1, we assume <span class="math inline">\(U_L\)</span>, <span class="math inline">\(U_A\)</span>, <span class="math inline">\(U_Y\)</span> are mutually independent. If they were not independent — for instance, if <span class="math inline">\(U_A\)</span> and <span class="math inline">\(U_Y\)</span> were correlated — we would need to add an unmeasured common cause node connecting <span class="math inline">\(A\)</span> and <span class="math inline">\(Y\)</span>, representing unmeasured confounding.</p>
+<aside class="notes"><p>A standard causal diagram does not say whether an arrow is harmful or protective, and when a variable (here <span class="math inline">\(Y\)</span>) has two causes it does not say how they interact <span class="citation" data-cites="hernan2020causal">(<a href="#/references" role="doc-biblioref" onclick="">Hernán and Robins 2020, 75</a>)</span>. The modern theory of causal diagrams arose in computer science and artificial intelligence; see Pearl (2009) and Spirtes, Glymour, and Scheines (2000).</p>
 <style type="text/css">
         span.MJX_Assistive_MathML {
           position:absolute!important;
@@ -238,124 +208,37 @@
           width: 1px!important;
           overflow: hidden!important;
           display:block!important;
-      }</style></aside></section></section><section><section id="causal-diagrams-and-marginal-independence-pp.-6164" class="title-slide slide level1 center" data-number="2"><h1>
-<span class="header-section-number">2</span> 6.2 Causal Diagrams and Marginal Independence (pp.&nbsp;61–64)</h1>
-
-</section><section class="slide level2"><p>Causal diagrams encode information about which variables are <strong>marginally independent</strong> (independent unconditionally, before conditioning on any variable). We can read this information directly from the graph structure.</p>
-</section><section id="open-and-blocked-paths" class="slide level2"><h2>Open and Blocked Paths</h2>
-<p>A path between two nodes <span class="math inline">\(V\)</span> and <span class="math inline">\(W\)</span> is either <strong>open</strong> or <strong>blocked</strong>:</p>
+      }</style></aside></section><section id="directed-acyclic-graphs-and-the-causal-markov-assumption" class="slide level2"><h2>Directed Acyclic Graphs and the Causal Markov Assumption</h2>
 <ul>
-<li>A path is <strong>blocked</strong> if it contains a <strong>collider</strong> node — a node where two arrowheads meet on the path: <span class="math inline">\(\cdots \to C \leftarrow \cdots\)</span>
-</li>
-<li>A path is <strong>open</strong> if it contains no collider (all intermediate nodes are non-colliders)</li>
-</ul>
-<p>Two variables are <strong>marginally associated</strong> if and only if there is at least one open path between them.</p>
-<div id="exm-marginal-independence" class="theorem example">
-<p><span class="theorem-title"><strong>Example 1 (Marginal Independence: Key Examples)</strong></span> <strong>Example 1</strong>: <span class="math inline">\(A \rightarrow Y\)</span></p>
-<ul>
-<li>One open path <span class="math inline">\(A \to Y\)</span>: <span class="math inline">\(A\)</span> and <span class="math inline">\(Y\)</span> are <strong>associated</strong>
-</li>
-</ul>
-<p><strong>Example 2</strong>: <span class="math inline">\(A \quad Y\)</span> (no path)</p>
-<ul>
-<li>No path between <span class="math inline">\(A\)</span> and <span class="math inline">\(Y\)</span>: they are <strong>independent</strong>
-</li>
-</ul>
-<p><strong>Example 3</strong>: <span class="math inline">\(A \leftarrow L \rightarrow Y\)</span> (fork with common cause <span class="math inline">\(L\)</span>)</p>
-<ul>
-<li>One open path <span class="math inline">\(A \leftarrow L \to Y\)</span> (non-collider <span class="math inline">\(L\)</span> not conditioned on)</li>
 <li>
-<span class="math inline">\(A\)</span> and <span class="math inline">\(Y\)</span> are <strong>associated</strong> even though <span class="math inline">\(A\)</span> does not cause <span class="math inline">\(Y\)</span>
-</li>
-</ul>
-<p><strong>Example 4</strong>: <span class="math inline">\(A \rightarrow C \leftarrow Y\)</span> (collider at <span class="math inline">\(C\)</span>)</p>
-<ul>
-<li>The only path <span class="math inline">\(A \to C \leftarrow Y\)</span> is <strong>blocked</strong> by the collider <span class="math inline">\(C\)</span>
-</li>
+<strong>Directed</strong>: each edge has a direction (<span class="math inline">\(L \to A\)</span> means <span class="math inline">\(L\)</span> may cause <span class="math inline">\(A\)</span>, not the reverse).</li>
 <li>
-<span class="math inline">\(A\)</span> and <span class="math inline">\(Y\)</span> are <strong>independent</strong> marginally</li>
+<strong>Acyclic</strong>: no variable causes itself, directly or through other variables.</li>
 </ul>
+<div id="def-causal-markov" class="theorem definition">
+<p><span class="theorem-title"><strong>Definition 1 (Causal Markov Assumption)</strong></span> Conditional on its direct causes (parents), any variable on a causal DAG is independent of any variable for which it is not a cause (its non-descendants) <span class="citation" data-cites="hernan2020causal">(<a href="#/references" role="doc-biblioref" onclick="">Hernán and Robins 2020, 76–77</a>)</span>.</p>
 </div>
-<aside class="notes"><p><strong>d-separation:</strong></p>
-<p>The formal criterion for reading independence from a DAG is called <strong>d-separation</strong>. Two variables <span class="math inline">\(X\)</span> and <span class="math inline">\(Y\)</span> are <em>d-separated</em> by a conditioning set <span class="math inline">\(Z\)</span> if all paths between <span class="math inline">\(X\)</span> and <span class="math inline">\(Y\)</span> are blocked given <span class="math inline">\(Z\)</span>. Under the Markov condition (which holds in any NPSEM with mutually independent <span class="math inline">\(U\)</span> variables), d-separation implies conditional independence in the observed data.</p>
-<p><strong>Why colliders block paths marginally:</strong></p>
-<p>In an NPSEM, the collider <span class="math inline">\(C\)</span> has independent causes <span class="math inline">\(A\)</span> and <span class="math inline">\(Y\)</span> (via their <span class="math inline">\(U\)</span> variables). Without any conditioning, <span class="math inline">\(C\)</span> is irrelevant to the association between <span class="math inline">\(A\)</span> and <span class="math inline">\(Y\)</span> — they have no shared cause and do not affect each other directly. The path through <span class="math inline">\(C\)</span> is blocked.</p>
-<p><strong>Markov condition:</strong> In the NPSEM, each variable is independent of its non-descendants given its parents. This property is encoded in the DAG and is what allows us to use d-separation to determine independence.</p>
-<style type="text/css">
-        span.MJX_Assistive_MathML {
-          position:absolute!important;
-          clip: rect(1px, 1px, 1px, 1px);
-          padding: 1px 0 0 0!important;
-          border: 0!important;
-          height: 1px!important;
-          width: 1px!important;
-          overflow: hidden!important;
-          display:block!important;
-      }</style></aside></section></section><section><section id="causal-diagrams-and-conditional-independence-pp.-6468" class="title-slide slide level1 center" data-number="3"><h1>
-<span class="header-section-number">3</span> 6.3 Causal Diagrams and Conditional Independence (pp.&nbsp;64–68)</h1>
-
-</section><section class="slide level2"><p>Conditioning on a variable — by stratifying, restricting, or including it in a regression — can change independence relationships. Whether conditioning on a variable opens or blocks a path depends on whether that variable is a <strong>collider</strong> or a <strong>non-collider</strong> on the path.</p>
-</section><section id="three-fundamental-path-structures" class="slide level2"><h2>Three Fundamental Path Structures</h2>
-<h3 id="chain-a-rightarrow-b-rightarrow-y">1. Chain: <span class="math inline">\(A \rightarrow B \rightarrow Y\)</span>
-</h3>
-<ul>
-<li>
-<strong>Marginally</strong>: <span class="math inline">\(A\)</span> and <span class="math inline">\(Y\)</span> are <strong>associated</strong> (open path <span class="math inline">\(A \to B \to Y\)</span>)</li>
-<li>
-<strong>Conditional on <span class="math inline">\(B\)</span></strong>: <span class="math inline">\(A\)</span> and <span class="math inline">\(Y\)</span> are <strong>independent</strong> — conditioning on the intermediate variable <span class="math inline">\(B\)</span> blocks the path</li>
-</ul>
-<h3 id="fork-a-leftarrow-b-rightarrow-y">2. Fork: <span class="math inline">\(A \leftarrow B \rightarrow Y\)</span>
-</h3>
-<ul>
-<li>
-<strong>Marginally</strong>: <span class="math inline">\(A\)</span> and <span class="math inline">\(Y\)</span> are <strong>associated</strong> (open path through common cause <span class="math inline">\(B\)</span>)</li>
-<li>
-<strong>Conditional on <span class="math inline">\(B\)</span></strong>: <span class="math inline">\(A\)</span> and <span class="math inline">\(Y\)</span> are <strong>independent</strong> — conditioning on the common cause <span class="math inline">\(B\)</span> blocks the non-causal association</li>
-</ul>
-<h3 id="collider-a-rightarrow-b-leftarrow-y">3. Collider: <span class="math inline">\(A \rightarrow B \leftarrow Y\)</span>
-</h3>
-<ul>
-<li>
-<strong>Marginally</strong>: <span class="math inline">\(A\)</span> and <span class="math inline">\(Y\)</span> are <strong>independent</strong> (path blocked by collider <span class="math inline">\(B\)</span>)</li>
-<li>
-<strong>Conditional on <span class="math inline">\(B\)</span></strong>: <span class="math inline">\(A\)</span> and <span class="math inline">\(Y\)</span> are <strong>dependent</strong> — conditioning on a collider <strong>opens</strong> the previously blocked path</li>
-</ul>
+<p>A consequence: <strong>all common causes of any pair of variables on the graph must also be on the graph</strong>, even if unmeasured.</p>
+</section><section id="randomized-experiments-and-observational-studies" class="slide level2"><h2>Randomized Experiments and Observational Studies</h2>
 <div class="cell">
 <div class="cell-output-display">
-<div class="quarto-figure quarto-figure-center">
-<figure><figcaption>The three fundamental path structures. Left: chain (conditioning on B blocks path). Middle: fork (conditioning on B blocks path). Right: collider (conditioning on B opens path — collider bias).</figcaption><p><a href="06-graphical-representation_files/figure-html/unnamed-chunk-2-1.png" class="lightbox" data-gallery="quarto-lightbox-gallery-2" title="The three fundamental path structures. Left: chain (conditioning on B blocks path). Middle: fork (conditioning on B blocks path). Right: collider (conditioning on B opens path — collider bias)."><img data-src="06-graphical-representation_files/figure-html/unnamed-chunk-2-1.png" width="864" alt="The three fundamental path structures. Left: chain (conditioning on B blocks path). Middle: fork (conditioning on B blocks path). Right: collider (conditioning on B opens path — collider bias)."></a></p>
+<div id="fig-dag-6-2" class="quarto-float quarto-figure quarto-figure-center">
+<figure class="quarto-float quarto-float-fig"><figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-fig" id="fig-dag-6-2-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;2: Book Figure 6.2: a marginally randomized experiment.
+</figcaption><div aria-describedby="fig-dag-6-2-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<a href="06-graphical-representation_files/figure-html/fig-dag-6-2-1.png" class="lightbox" data-gallery="quarto-lightbox-gallery-2" title="Figure&nbsp;2: Book Figure 6.2: a marginally randomized experiment."><img data-src="06-graphical-representation_files/figure-html/fig-dag-6-2-1.png" width="288"></a>
+</div>
 </figure>
 </div>
 </div>
 </div>
-</section><section id="collider-stratification-bias" class="slide level2"><h2>Collider Stratification Bias</h2>
-<p>Collider stratification bias is a <strong>subtle and important</strong> source of spurious association that arises from conditioning on a common effect of two variables.</p>
-<div id="exm-collider-bias" class="theorem example">
-<p><span class="theorem-title"><strong>Example 2 (Collider Stratification Bias: Aspirin, Smoking, and Hospitalization)</strong></span> Consider two variables that are <strong>independent</strong> in the general population:</p>
 <ul>
+<li>If transplant is randomized with a probability that depends on severity <span class="math inline">\(L\)</span>, <span class="math inline">\(L\)</span> is a common cause of <span class="math inline">\(A\)</span> and <span class="math inline">\(Y\)</span> and must appear: <a href="#/fig-dag-6-1" class="quarto-xref">Figure&nbsp;1</a> (conditionally randomized experiment).</li>
+<li>If everyone has the same probability of transplant, <span class="math inline">\(L\)</span> is not a common cause and can be omitted: <a href="#/fig-dag-6-2" class="quarto-xref">Figure&nbsp;2</a> (marginally randomized experiment).</li>
 <li>
-<span class="math inline">\(A\)</span>: regular aspirin use</li>
-<li>
-<span class="math inline">\(B\)</span>: smoking</li>
+<a href="#/fig-dag-6-1" class="quarto-xref">Figure&nbsp;1</a> can also depict an observational study in which the only parent of <span class="math inline">\(A\)</span> is <span class="math inline">\(L\)</span>, with no other causes of <span class="math inline">\(Y\)</span> affecting <span class="math inline">\(A\)</span>.</li>
 </ul>
-<p>Both <span class="math inline">\(A\)</span> and <span class="math inline">\(B\)</span> independently cause hospitalization (<span class="math inline">\(C\)</span>):</p>
-<p><span class="math display">\[A \longrightarrow C \longleftarrow B\]</span></p>
-<p><strong>In the general population</strong>: aspirin use <span class="math inline">\(A\)</span> and smoking <span class="math inline">\(B\)</span> are independent — knowing someone uses aspirin tells you nothing about whether they smoke.</p>
-<p><strong>Among hospitalized patients (<span class="math inline">\(C = 1\)</span>)</strong>: aspirin use and smoking become <strong>negatively associated</strong>. If a hospitalized patient does not use aspirin, it is more likely their hospitalization is due to smoking-related disease. If a hospitalized patient does not smoke, their admission is more likely due to a cardiovascular condition related to aspirin use.</p>
-<p>This spurious negative association between <span class="math inline">\(A\)</span> and <span class="math inline">\(B\)</span> among the hospitalized is <strong>collider stratification bias</strong>: conditioning on hospitalization <span class="math inline">\(C\)</span> opens the previously blocked path <span class="math inline">\(A \to C \leftarrow B\)</span>.</p>
-</div>
-<aside class="notes"><p><strong>Collider bias is pervasive in epidemiology:</strong></p>
-<ul>
-<li>
-<strong>Berkson’s bias</strong>: Selecting cases and controls from a hospital creates a collider; diseases that are independent in the general population appear associated among hospitalized patients</li>
-<li>
-<strong>Healthy worker effect</strong>: Restricting to employed workers (whose employment is a common effect of health status and occupational exposure) induces a spurious association</li>
-<li>
-<strong>Survivorship bias</strong>: Among survivors of some condition, factors affecting survival appear spuriously associated</li>
-</ul>
-<p><strong>Descendants of colliders:</strong></p>
-<p>Conditioning on a <em>descendant</em> of a collider also partially opens the path, though with weaker bias. Any variable affected by both <span class="math inline">\(A\)</span> and <span class="math inline">\(Y\)</span> (or by a cause of <span class="math inline">\(A\)</span> and a cause of <span class="math inline">\(Y\)</span>) is potentially a collider or descendant of one.</p>
-<p><strong>Key practical principle:</strong> Do NOT adjust for variables that are downstream (descendants) of both treatment and outcome. This applies to selection into studies, loss to follow-up, or other post-treatment variables.</p>
+<aside class="notes"><p>Chapter 7 shows that being willing to draw <a href="#/fig-dag-6-1" class="quarto-xref">Figure&nbsp;1</a> for an observational study is the graphical translation of conditional exchangeability <span class="math inline">\(Y^a \perp\!\!\!\perp A \mid L\)</span> for all <span class="math inline">\(a\)</span> <span class="citation" data-cites="hernan2020causal">(<a href="#/references" role="doc-biblioref" onclick="">Hernán and Robins 2020, 77</a>)</span>.</p>
 <style type="text/css">
         span.MJX_Assistive_MathML {
           position:absolute!important;
@@ -366,53 +249,160 @@
           width: 1px!important;
           overflow: hidden!important;
           display:block!important;
-      }</style></aside></section><section id="d-separation-rules-summary" class="slide level2"><h2>D-separation Rules (Summary)</h2>
-<p>The complete rules for determining whether a path is open or blocked after conditioning on a set <span class="math inline">\(Z\)</span>:</p>
+      }</style></aside></section><section class="slide level2 scrollable"><div title="Technical Point 6.1: Causal DAGs, Formally">
+<div class="callout callout-note callout-titled callout-style-default">
+<div class="callout-body">
+<div class="callout-title">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<p><strong>Technical Point 6.1: Causal DAGs, Formally</strong></p>
+</div>
+<div class="callout-content">
+<p>For a DAG <span class="math inline">\(G\)</span> with nodes <span class="math inline">\(V = (V_1, \ldots, V_M)\)</span>, ordered so that <span class="math inline">\(V_m\)</span> is not an ancestor of <span class="math inline">\(V_j\)</span> when <span class="math inline">\(m &gt; j\)</span>:</p>
+<ul>
+<li>
+<span class="math inline">\(PA_m\)</span>, the <strong>parents</strong> of <span class="math inline">\(V_m\)</span>, are the nodes with an arrow into <span class="math inline">\(V_m\)</span>;</li>
+<li>
+<span class="math inline">\(V_m\)</span> is a <strong>descendant</strong> of <span class="math inline">\(V_j\)</span> (and <span class="math inline">\(V_j\)</span> an <strong>ancestor</strong> of <span class="math inline">\(V_m\)</span>) if one can reach <span class="math inline">\(V_m\)</span> from <span class="math inline">\(V_j\)</span> by following arrows.</li>
+</ul>
+<p>The distribution of <span class="math inline">\(V\)</span> is <strong>Markov</strong> with respect to <span class="math inline">\(G\)</span> if each <span class="math inline">\(V_j\)</span> is independent of its non-descendants given its parents, which is equivalent to the <strong>Markov factorization</strong></p>
+<p><span class="math display">\[
+f(v) = \prod_{j=1}^{M} f(v_j \mid pa_j).
+\]</span></p>
+<aside class="notes"><p>A <strong>causal DAG</strong> is a DAG in which <span class="citation" data-cites="hernan2020causal">(<a href="#/references" role="doc-biblioref" onclick="">Hernán and Robins 2020</a>, Technical Point 6.1, p.&nbsp;76)</span>:</p>
+<ol type="1">
+<li>the lack of an arrow from <span class="math inline">\(V_j\)</span> to <span class="math inline">\(V_m\)</span> means no direct causal effect of <span class="math inline">\(V_j\)</span> on <span class="math inline">\(V_m\)</span> relative to the other variables on the graph;</li>
+<li>all common causes, even unmeasured, of any pair of variables on the graph are on the graph;</li>
+<li>any variable is a cause of its descendants.</li>
+</ol>
+<p>The causal Markov assumption links the causal DAG to the data: it says the distribution is Markov with respect to the causal DAG.</p>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside>
+</div>
+</div>
+</div>
+</div>
+<div id="exm-markov-factorization" class="theorem example">
+<p><span class="theorem-title"><strong>Example 1 (Markov Factorization Implies an Independence)</strong></span> Take the DAG <span class="math inline">\(A \leftarrow L \to Y\)</span> (<a href="#/fig-dag-6-3" class="quarto-xref">Figure&nbsp;3</a>). The parents are: none for <span class="math inline">\(L\)</span>; <span class="math inline">\(L\)</span> for <span class="math inline">\(A\)</span>; <span class="math inline">\(L\)</span> for <span class="math inline">\(Y\)</span>. Start from the chain rule, which holds for any distribution, and apply the Markov factorization:</p>
+<p><span class="math display">\[
+\begin{aligned}
+f(l, a, y)
+  &amp;= f(l)\, f(a \mid l)\, f(y \mid l, a)
+  &amp;&amp; \text{(chain rule)} \\
+  &amp;= f(l)\, f(a \mid l)\, f(y \mid l)
+  &amp;&amp; \text{(the only parent of } Y \text{ is } L\text{)}.
+\end{aligned}
+\]</span></p>
+<p>Dividing both sides by <span class="math inline">\(f(l)\)</span>:</p>
+<p><span class="math display">\[
+\begin{aligned}
+f(a, y \mid l)
+  &amp;= \frac{f(l, a, y)}{f(l)}
+  &amp;&amp; \text{(definition of conditional density)} \\
+  &amp;= f(a \mid l)\, f(y \mid l)
+  &amp;&amp; \text{(substitute the factorization)},
+\end{aligned}
+\]</span></p>
+<p>so <span class="math inline">\(A \perp\!\!\!\perp Y \mid L\)</span>: the missing arrow from <span class="math inline">\(A\)</span> to <span class="math inline">\(Y\)</span> implies a conditional independence.</p>
+</div>
+</section><section id="graphs-and-counterfactuals" class="slide level2"><h2>Graphs and Counterfactuals</h2>
+<p>Each causal DAG has an <strong>underlying counterfactual model</strong> (Technical Points 6.2 and 6.3). That model justifies the intuitive graphical rules in this chapter, but conventional diagrams do not show the counterfactual variables.</p>
+<p><strong>Single World Intervention Graphs (SWIGs)</strong> (Richardson and Robins 2013) put counterfactuals on the graph; they are introduced in Chapter 7.</p>
+<aside class="notes"><p>Causal diagrams encode both causation (our subject-matter knowledge) and the associations that the causal structure implies. That simultaneous representation is what makes them attractive <span class="citation" data-cites="hernan2020causal">(<a href="#/references" role="doc-biblioref" onclick="">Hernán and Robins 2020, 77</a>)</span>. The book’s treatment is informal, aiming at conceptual insight rather than rigor.</p>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside></section><section class="slide level2"><div title="Technical Point 6.2: Nonparametric Structural Equation Models">
+<div class="callout callout-note callout-titled callout-style-default">
+<div class="callout-body">
+<div class="callout-title">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<p><strong>Technical Point 6.2: Nonparametric Structural Equation Models</strong></p>
+</div>
+<div class="callout-content">
+<p>A <strong>nonparametric structural equation model (NPSEM)</strong> for a DAG with ordered nodes <span class="math inline">\(V_1, \ldots, V_M\)</span> assumes unobserved errors <span class="math inline">\(\epsilon_m\)</span> and unknown deterministic functions <span class="math inline">\(f_m\)</span> such that</p>
+<ul>
+<li>
+<span class="math inline">\(V_1 = f_1(\epsilon_1)\)</span>;</li>
+<li>the one-step-ahead counterfactual <span class="math inline">\(V_m^{pa_m}\)</span>, the value of <span class="math inline">\(V_m\)</span> when its parents are set to <span class="math inline">\(pa_m\)</span>, equals <span class="math inline">\(f_m(pa_m, \epsilon_m)\)</span>.</li>
+</ul>
+<p>Only the parents of <span class="math inline">\(V_m\)</span> have a direct effect on it. Every variable can be intervened on, and all factual and counterfactual values are obtained recursively.</p>
+</div>
+</div>
+</div>
+</div>
+<div id="exm-npsem-6-1" class="theorem example">
+<p><span class="theorem-title"><strong>Example 2 (The NPSEM for Book Figure 6.1)</strong></span> The structural equations are <span class="math inline">\(L = f_L(\epsilon_L)\)</span>, <span class="math inline">\(A = f_A(L, \epsilon_A)\)</span>, <span class="math inline">\(Y = f_Y(L, A, \epsilon_Y)\)</span>. Setting <span class="math inline">\(A\)</span> to <span class="math inline">\(a\)</span> leaves <span class="math inline">\(L\)</span> unchanged, because <span class="math inline">\(L\)</span> is not a descendant of <span class="math inline">\(A\)</span>, so the counterfactual outcome is obtained by substituting <span class="math inline">\(a\)</span> for <span class="math inline">\(A\)</span>: <span class="math inline">\(Y^a = f_Y(L, a, \epsilon_Y)\)</span>.</p>
+</div>
+<aside class="notes"><p>Robins (1986) introduced this model as a finest causally interpreted structural tree graph (FCISTG) “as detailed as the data”; Pearl (2009) showed how to represent it with a DAG <span class="citation" data-cites="hernan2020causal">(<a href="#/references" role="doc-biblioref" onclick="">Hernán and Robins 2020</a>, Technical Point 6.2, p.&nbsp;77)</span>. For exposition the book assumes every variable can be intervened on, although its statistical methods do not require this.</p>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside><div title="Technical Point 6.3: Which Independences?">
+<div class="callout callout-note callout-titled callout-style-default">
+<div class="callout-body">
+<div class="callout-title">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<p><strong>Technical Point 6.3: Which Independences?</strong></p>
+</div>
+<div class="callout-content">
+<p>An FCISTG alone does not imply the causal Markov assumption; independence assumptions must be added.</p>
 <table class="caption-top">
 <colgroup>
-<col style="width: 23%">
-<col style="width: 42%">
-<col style="width: 34%">
+<col style="width: 33%">
+<col style="width: 33%">
+<col style="width: 33%">
 </colgroup>
 <thead><tr class="header">
-<th style="text-align: left;">Node type on path</th>
-<th style="text-align: center;">
-<span class="math inline">\(B \notin Z\)</span> (not conditioned on)</th>
-<th style="text-align: center;">
-<span class="math inline">\(B \in Z\)</span> (conditioned on)</th>
+<th>Model</th>
+<th>Assumption</th>
+<th>Fig. 6.2 implies</th>
 </tr></thead>
 <tbody>
 <tr class="odd">
-<td style="text-align: left;">Non-collider (chain or fork)</td>
-<td style="text-align: center;"><strong>Open</strong></td>
-<td style="text-align: center;"><strong>Blocked</strong></td>
+<td>NPSEM-IE (Pearl)</td>
+<td>all errors <span class="math inline">\(\epsilon_m\)</span> mutually independent</td>
+<td>full exchangeability <span class="math inline">\((Y^{a=0}, Y^{a=1}) \perp\!\!\!\perp A\)</span>
+</td>
 </tr>
 <tr class="even">
-<td style="text-align: left;">Collider</td>
-<td style="text-align: center;"><strong>Blocked</strong></td>
-<td style="text-align: center;"><strong>Open</strong></td>
+<td>FFRCISTG (Robins 1986)</td>
+<td>one-step-ahead counterfactuals jointly independent</td>
+<td>marginal exchangeability <span class="math inline">\(Y^a \perp\!\!\!\perp A\)</span> for each <span class="math inline">\(a\)</span>
+</td>
 </tr>
 </tbody>
 </table>
-<p>Two variables are <strong>d-separated</strong> given <span class="math inline">\(Z\)</span> if every path between them is blocked given <span class="math inline">\(Z\)</span>. D-separated variables are (conditionally) independent in any distribution generated by the NPSEM.</p>
-</section></section><section><section id="positivity-and-structural-causal-models-pp.-6869" class="title-slide slide level1 center" data-number="4"><h1>
-<span class="header-section-number">4</span> 6.4 Positivity and Structural Causal Models (pp.&nbsp;68–69)</h1>
-
-</section><section id="non-parametric-structural-equation-models" class="slide level2"><h2>Non-Parametric Structural Equation Models</h2>
-<p>Causal diagrams and their associated structural equations constitute <strong>non-parametric structural equation models (NPSEMs)</strong>. The NPSEM framework provides a rigorous basis for defining counterfactual quantities from the observed data structure.</p>
-<p>Given the structural equations <span class="math inline">\(L = f_L(U_L)\)</span>, <span class="math inline">\(A = f_A(L, U_A)\)</span>, <span class="math inline">\(Y = f_Y(L, A, U_Y)\)</span> with <span class="math inline">\(U_L\)</span>, <span class="math inline">\(U_A\)</span>, <span class="math inline">\(U_Y\)</span> mutually independent, the counterfactual outcome <span class="math inline">\(Y^a\)</span> is formally defined as:</p>
-<p><span class="math display">\[Y^a = f_Y\bigl(L,\, a,\, U_Y\bigr)\]</span></p>
-<p>That is, <span class="math inline">\(Y^a\)</span> is the value <span class="math inline">\(Y\)</span> would take if we <strong>intervened</strong> to set <span class="math inline">\(A = a\)</span>, leaving all other structural equations (including those for <span class="math inline">\(L\)</span> and the <span class="math inline">\(U\)</span> variables) unchanged. This corresponds to Pearl’s <strong>do-operator</strong>: <span class="math inline">\(Y^a \equiv Y \,\mathrm{do}(A=a)\)</span>.</p>
-</section><section id="positivity-in-structural-causal-models" class="slide level2"><h2>Positivity in Structural Causal Models</h2>
-<p>The <strong>positivity assumption</strong> requires that every individual has a positive probability of receiving each treatment level:</p>
-<p><span class="math display">\[\Pr[A = a \mid L = l] &gt; 0 \quad \text{for all } a \text{ and all } l \text{ with } \Pr[L = l] &gt; 0\]</span></p>
-<p>In structural equation terms, positivity requires that the function <span class="math inline">\(f_A(L, U_A)\)</span> is not deterministic — no value of <span class="math inline">\(L\)</span> should completely determine the treatment assignment <span class="math inline">\(A\)</span>.</p>
-<p><strong>Structural positivity violations</strong> occur when <span class="math inline">\(L\)</span> deterministically forces <span class="math inline">\(A\)</span> to a particular value. In these strata, the counterfactual <span class="math inline">\(Y^a\)</span> cannot be identified from observational data regardless of sample size.</p>
-<p><strong>Random positivity violations</strong> occur when, by chance, certain <span class="math inline">\((A, L)\)</span> combinations do not appear in the finite sample, even though they have positive probability in the population.</p>
-<aside class="notes"><p><strong>Why positivity matters for the NPSEM:</strong></p>
-<p>When <span class="math inline">\(\Pr[A = a \mid L = l] = 0\)</span> for some <span class="math inline">\(l\)</span>, we observe no individuals with treatment <span class="math inline">\(a\)</span> in stratum <span class="math inline">\(L = l\)</span>. We cannot therefore identify the counterfactual <span class="math inline">\(Y^a\)</span> in that stratum from observational data. The causal effect is then not identifiable using standard methods (IP weighting, standardization, etc.) — a situation captured formally by the positivity assumption.</p>
-<p><strong>Consistency revisited:</strong></p>
-<p>In the NPSEM framework, the consistency assumption <span class="math inline">\(Y = Y^A\)</span> follows directly from the structural equations: when <span class="math inline">\(A = a\)</span> is actually assigned, <span class="math inline">\(Y = f_Y(L, A, U_Y) = f_Y(L, a, U_Y) = Y^a\)</span>. Consistency violations (e.g., multiple versions of treatment) correspond to a situation where the node <span class="math inline">\(A\)</span> in the DAG actually represents several distinct interventions, each potentially yielding different outcomes.</p>
+<p>Both imply the causal Markov assumption. An NPSEM-IE is an FFRCISTG, not vice versa. <strong>Unless stated otherwise, the book’s causal DAGs represent an FFRCISTG.</strong></p>
+<aside class="notes"><p>Source: <span class="citation" data-cites="hernan2020causal">Hernán and Robins (<a href="#/references" role="doc-biblioref" onclick="">2020</a>, Technical Point 6.3, p.&nbsp;78)</span>. Robins and Richardson (2010) showed that Robins’s original formulation is equivalent to the joint-independence assumption for a positive distribution, and that an NPSEM-IE makes many more independence assumptions than an FFRCISTG.</p>
 <style type="text/css">
         span.MJX_Assistive_MathML {
           position:absolute!important;
@@ -423,65 +413,168 @@
           width: 1px!important;
           overflow: hidden!important;
           display:block!important;
-      }</style></aside></section></section><section><section id="a-structural-classification-of-bias-pp.-6973" class="title-slide slide level1 center" data-number="5"><h1>
-<span class="header-section-number">5</span> 6.5 A Structural Classification of Bias (pp.&nbsp;69–73)</h1>
+      }</style></aside>
+</div>
+</div>
+</div>
+</div>
+</section></section><section><section id="causal-diagrams-and-marginal-independence-pp.-77-79" class="title-slide slide level1 center" data-number="2"><h1>
+<span class="header-section-number">2</span> 6.2 Causal Diagrams and Marginal Independence (pp.&nbsp;77-79)</h1>
 
-</section><section class="slide level2"><p>Causal diagrams provide a <strong>structural classification</strong> of the biases that may affect causal estimates. Three main types arise from the structure of the causal diagram.</p>
-</section><section id="confounding-bias" class="slide level2 scrollable"><h2>Confounding Bias</h2>
-<p><strong>Confounding</strong> is present when there is an open <strong>backdoor path</strong> from treatment <span class="math inline">\(A\)</span> to outcome <span class="math inline">\(Y\)</span>.</p>
-<div id="def-backdoor-path" class="theorem definition">
-<p><span class="theorem-title"><strong>Definition 2 (Backdoor Path)</strong></span> A <strong>backdoor path</strong> from <span class="math inline">\(A\)</span> to <span class="math inline">\(Y\)</span> is any path that:</p>
-<ol type="1">
-<li>Starts with an arrow <strong>pointing into</strong> <span class="math inline">\(A\)</span> (i.e., begins <span class="math inline">\(\cdots \to A\)</span>)</li>
-<li>Ends at <span class="math inline">\(Y\)</span>
-</li>
-</ol>
-<p>Such paths represent non-causal flows of association between <span class="math inline">\(A\)</span> and <span class="math inline">\(Y\)</span> induced by common causes.</p>
-</div>
-<div id="def-dag-confounding" class="theorem definition">
-<p><span class="theorem-title"><strong>Definition 3 (Confounding (Structural Definition))</strong></span> <strong>Confounding</strong> of the effect of <span class="math inline">\(A\)</span> on <span class="math inline">\(Y\)</span> exists when there is at least one open backdoor path from <span class="math inline">\(A\)</span> to <span class="math inline">\(Y\)</span>.</p>
-<p>In the diagram <span class="math inline">\(L \to A\)</span>, <span class="math inline">\(L \to Y\)</span>, <span class="math inline">\(A \to Y\)</span>: the path <span class="math inline">\(A \leftarrow L \to Y\)</span> is a backdoor path. Since <span class="math inline">\(L\)</span> is a non-collider on this path and has not been conditioned on, the path is open. There is therefore confounding.</p>
-</div>
+</section><section class="slide level2"><p>Three examples, all with no conditioning:</p>
 <div class="cell">
 <div class="cell-output-display">
-<div class="quarto-figure quarto-figure-center">
-<figure><figcaption>Figure 6.2. Confounding: L opens the backdoor path A ← L → Y. Adjusting for L blocks this path.</figcaption><p><a href="06-graphical-representation_files/figure-html/unnamed-chunk-3-1.png" class="lightbox" data-gallery="quarto-lightbox-gallery-3" title="Figure 6.2. Confounding: L opens the backdoor path A ← L → Y. Adjusting for L blocks this path."><img data-src="06-graphical-representation_files/figure-html/unnamed-chunk-3-1.png" width="384" alt="Figure 6.2. Confounding: L opens the backdoor path A ← L → Y. Adjusting for L blocks this path."></a></p>
+<div id="fig-dag-6-3" class="quarto-float quarto-figure quarto-figure-center">
+<figure class="quarto-float quarto-float-fig"><figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-fig" id="fig-dag-6-3-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;3: Book Figure 6.3: smoking <span class="math inline">\(L\)</span> causes carrying a lighter <span class="math inline">\(A\)</span> and lung cancer <span class="math inline">\(Y\)</span>.
+</figcaption><div aria-describedby="fig-dag-6-3-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<a href="06-graphical-representation_files/figure-html/fig-dag-6-3-1.png" class="lightbox" data-gallery="quarto-lightbox-gallery-3" title="Figure&nbsp;3: Book Figure 6.3: smoking L causes carrying a lighter A and lung cancer Y."><img data-src="06-graphical-representation_files/figure-html/fig-dag-6-3-1.png" width="384"></a>
+</div>
 </figure>
 </div>
 </div>
 </div>
-</section><section id="the-backdoor-criterion" class="slide level2 scrollable"><h2>The Backdoor Criterion</h2>
-<div id="def-backdoor-criterion" class="theorem definition">
-<p><span class="theorem-title"><strong>Definition 4 (Backdoor Criterion)</strong></span> A set of measured variables <span class="math inline">\(L\)</span> satisfies the <strong>backdoor criterion</strong> for estimating the causal effect of <span class="math inline">\(A\)</span> on <span class="math inline">\(Y\)</span> if:</p>
-<ol type="1">
-<li>No variable in <span class="math inline">\(L\)</span> is a descendant of <span class="math inline">\(A\)</span>
-</li>
-<li>
-<span class="math inline">\(L\)</span> blocks every backdoor path from <span class="math inline">\(A\)</span> to <span class="math inline">\(Y\)</span>
-</li>
-</ol>
-<p>When <span class="math inline">\(L\)</span> satisfies the backdoor criterion, adjusting for <span class="math inline">\(L\)</span> (via stratification, standardization, or IP weighting) eliminates confounding and yields an unbiased estimate of the causal effect.</p>
+<div class="cell">
+<div class="cell-output-display">
+<div id="fig-dag-6-4" class="quarto-float quarto-figure quarto-figure-center">
+<figure class="quarto-float quarto-float-fig"><figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-fig" id="fig-dag-6-4-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;4: Book Figure 6.4: haplotype <span class="math inline">\(A\)</span> and smoking <span class="math inline">\(Y\)</span> both cause heart disease <span class="math inline">\(L\)</span>, a collider.
+</figcaption><div aria-describedby="fig-dag-6-4-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<a href="06-graphical-representation_files/figure-html/fig-dag-6-4-1.png" class="lightbox" data-gallery="quarto-lightbox-gallery-4" title="Figure&nbsp;4: Book Figure 6.4: haplotype A and smoking Y both cause heart disease L, a collider."><img data-src="06-graphical-representation_files/figure-html/fig-dag-6-4-1.png" width="384"></a>
 </div>
-<div id="exm-backdoor" class="theorem example">
-<p><span class="theorem-title"><strong>Example 3 (Backdoor Criterion Example)</strong></span> <strong>DAG</strong>: <span class="math inline">\(U \to L \to A \to Y\)</span>, <span class="math inline">\(L \to Y\)</span></p>
-<p><strong>Backdoor path from <span class="math inline">\(A\)</span> to <span class="math inline">\(Y\)</span></strong>: <span class="math inline">\(A \leftarrow L \to Y\)</span></p>
-<p><strong>Does <span class="math inline">\(\{L\}\)</span> satisfy the backdoor criterion?</strong></p>
-<ol type="1">
-<li>
-<span class="math inline">\(L\)</span> is not a descendant of <span class="math inline">\(A\)</span> ✓</li>
-<li>Conditioning on <span class="math inline">\(L\)</span> (a non-collider on <span class="math inline">\(A \leftarrow L \to Y\)</span>) blocks this path ✓</li>
-</ol>
-<p>Yes — adjusting for <span class="math inline">\(L\)</span> suffices to identify the causal effect, even though <span class="math inline">\(L\)</span> has an unmeasured cause <span class="math inline">\(U\)</span>.</p>
-<p><strong>Does <span class="math inline">\(\{U\}\)</span> satisfy the backdoor criterion?</strong></p>
-<p>No — <span class="math inline">\(U\)</span> is an ancestor of <span class="math inline">\(L\)</span> but is not on the backdoor path <span class="math inline">\(A \leftarrow L \to Y\)</span>. Conditioning on <span class="math inline">\(U\)</span> alone does not block the path through <span class="math inline">\(L\)</span>.</p>
+</figure>
 </div>
-<aside class="notes"><p><strong>Minimal sufficient adjustment sets:</strong></p>
-<p>Multiple sets may satisfy the backdoor criterion. A <strong>minimal sufficient adjustment set</strong> is one from which no variable can be removed while still satisfying the criterion. The R package <code>dagitty</code> enumerates minimal sufficient adjustment sets automatically.</p>
-<p><strong>Avoiding over-adjustment:</strong></p>
+</div>
+</div>
+<table class="caption-top">
+<colgroup>
+<col style="width: 25%">
+<col style="width: 25%">
+<col style="width: 25%">
+<col style="width: 25%">
+</colgroup>
+<thead><tr class="header">
+<th>Figure</th>
+<th>Structure</th>
+<th>Example</th>
+<th>
+<span class="math inline">\(A\)</span> and <span class="math inline">\(Y\)</span>
+</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td><a href="#/fig-dag-6-2" class="quarto-xref">Figure&nbsp;2</a></td>
+<td><span class="math inline">\(A \to Y\)</span></td>
+<td>aspirin prevents heart disease (randomized)</td>
+<td>associated</td>
+</tr>
+<tr class="even">
+<td><a href="#/fig-dag-6-3" class="quarto-xref">Figure&nbsp;3</a></td>
+<td><span class="math inline">\(A \leftarrow L \to Y\)</span></td>
+<td>lighter, smoking, lung cancer</td>
+<td>associated (no effect of <span class="math inline">\(A\)</span>)</td>
+</tr>
+<tr class="odd">
+<td><a href="#/fig-dag-6-4" class="quarto-xref">Figure&nbsp;4</a></td>
+<td><span class="math inline">\(A \to L \leftarrow Y\)</span></td>
+<td>haplotype, heart disease, smoking</td>
+<td>independent</td>
+</tr>
+</tbody>
+</table></section><section id="paths-and-the-flow-of-association" class="slide level2"><h2>Paths and the Flow of Association</h2>
+<div id="def-path" class="theorem definition">
+<p><span class="theorem-title"><strong>Definition 2 (Path; Causal Path)</strong></span> A <strong>path</strong> between <span class="math inline">\(R\)</span> and <span class="math inline">\(S\)</span> is a route connecting them along a sequence of edges that visits no variable more than once. A path is <strong>causal</strong> if all its arrows point in the same direction; otherwise it is <strong>noncausal</strong> <span class="citation" data-cites="hernan2020causal">(<a href="#/references" role="doc-biblioref" onclick="">Hernán and Robins 2020, 78</a>, margin note)</span>.</p>
+</div>
+<p>Picture paths as pipes through which <strong>association</strong> flows. Association is symmetric, so it flows regardless of the direction of the arrows.</p>
+<div id="def-collider" class="theorem definition">
+<p><span class="theorem-title"><strong>Definition 3 (Collider)</strong></span> A variable on a path is a <strong>collider</strong> on that path if two arrowheads on the path collide at it, as <span class="math inline">\(L\)</span> does on <span class="math inline">\(A \to L \leftarrow Y\)</span>.</p>
+</div>
+</section><section id="the-three-examples" class="slide level2"><h2>The Three Examples</h2>
 <ul>
-<li>Adjusting for a <strong>mediator</strong> (a descendant of <span class="math inline">\(A\)</span> on a causal path to <span class="math inline">\(Y\)</span>) blocks part of the causal effect — this is over-adjustment</li>
-<li>Adjusting for a <strong>collider</strong> introduces collider stratification bias</li>
-<li>Adjusting for a <strong>descendant of a collider</strong> partially introduces this bias</li>
+<li>
+<a href="#/fig-dag-6-2" class="quarto-xref">Figure&nbsp;2</a>: causation implies association; in an ideal randomized experiment <span class="math inline">\(\Pr[Y^{a=1}=1] \neq \Pr[Y^{a=0}=1]\)</span> if and only if <span class="math inline">\(\Pr[Y=1 \mid A=1] \neq \Pr[Y=1 \mid A=0]\)</span>.</li>
+<li>
+<a href="#/fig-dag-6-3" class="quarto-xref">Figure&nbsp;3</a>: learning that Hera carries a lighter makes it likelier she smokes, hence likelier she gets lung cancer; association flows through the common cause <span class="math inline">\(L\)</span>, though <span class="math inline">\(A\)</span> has no effect on <span class="math inline">\(Y\)</span>.</li>
+<li>
+<a href="#/fig-dag-6-4" class="quarto-xref">Figure&nbsp;4</a>: learning that Apollo lacks the haplotype says nothing about his smoking; a collider <strong>blocks</strong> the flow of association, so <span class="math inline">\(A \perp\!\!\!\perp Y\)</span>.</li>
+</ul>
+<p><strong>Summary</strong>: two variables are marginally associated if one causes the other or if they share a common cause; otherwise they are marginally independent.</p>
+<aside class="notes"><p>In <a href="#/fig-dag-6-3" class="quarto-xref">Figure&nbsp;3</a>, an investigator who concludes from the association that carrying a lighter causes lung cancer makes a mistake: information about <span class="math inline">\(A\)</span> improves prediction of <span class="math inline">\(Y\)</span> without <span class="math inline">\(A\)</span> affecting <span class="math inline">\(Y\)</span> <span class="citation" data-cites="hernan2020causal">(<a href="#/references" role="doc-biblioref" onclick="">Hernán and Robins 2020, 79</a>)</span>. In <a href="#/fig-dag-6-4" class="quarto-xref">Figure&nbsp;4</a>, that both <span class="math inline">\(A\)</span> and <span class="math inline">\(Y\)</span> cause heart disease <span class="math inline">\(L\)</span> is irrelevant to the marginal association between <span class="math inline">\(A\)</span> and <span class="math inline">\(Y\)</span>.</p>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside></section></section><section><section id="causal-diagrams-and-conditional-independence-pp.-80-81" class="title-slide slide level1 center" data-number="3"><h1>
+<span class="header-section-number">3</span> 6.3 Causal Diagrams and Conditional Independence (pp.&nbsp;80-81)</h1>
+
+</section><section class="slide level2"><p>A square box around a node means we condition on it (e.g., restrict to one of its levels).</p>
+<div class="cell">
+<div class="cell-output-display">
+<div id="fig-dag-6-5" class="quarto-float quarto-figure quarto-figure-center">
+<figure class="quarto-float quarto-float-fig"><figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-fig" id="fig-dag-6-5-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;5: Book Figure 6.5: aspirin <span class="math inline">\(A\)</span> lowers platelet aggregation <span class="math inline">\(B\)</span>, which affects heart disease <span class="math inline">\(Y\)</span> (the square node <span class="math inline">\(B\)</span> marks conditioning).
+</figcaption><div aria-describedby="fig-dag-6-5-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<a href="06-graphical-representation_files/figure-html/fig-dag-6-5-1.png" class="lightbox" data-gallery="quarto-lightbox-gallery-5" title="Figure&nbsp;5: Book Figure 6.5: aspirin A lowers platelet aggregation B, which affects heart disease Y (the square node B marks conditioning)."><img data-src="06-graphical-representation_files/figure-html/fig-dag-6-5-1.png" width="384"></a>
+</div>
+</figure>
+</div>
+</div>
+</div>
+<table class="caption-top">
+<colgroup>
+<col style="width: 25%">
+<col style="width: 25%">
+<col style="width: 25%">
+<col style="width: 25%">
+</colgroup>
+<thead><tr class="header">
+<th>Structure</th>
+<th>Conditioning on</th>
+<th>Path</th>
+<th>
+<span class="math inline">\(A\)</span>, <span class="math inline">\(Y\)</span> given the conditioning variable</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td>
+<span class="math inline">\(A \to B \to Y\)</span> (Fig. 6.5)</td>
+<td>mediator <span class="math inline">\(B\)</span>
+</td>
+<td>blocked</td>
+<td>independent: <span class="math inline">\(A \perp\!\!\!\perp Y \mid B\)</span>
+</td>
+</tr>
+<tr class="even">
+<td>
+<span class="math inline">\(A \leftarrow L \to Y\)</span> (Fig. 6.6)</td>
+<td>common cause <span class="math inline">\(L\)</span>
+</td>
+<td>blocked</td>
+<td>independent: <span class="math inline">\(A \perp\!\!\!\perp Y \mid L\)</span>
+</td>
+</tr>
+<tr class="odd">
+<td>
+<span class="math inline">\(A \to L \leftarrow Y\)</span> (Fig. 6.7)</td>
+<td>collider <span class="math inline">\(L\)</span>
+</td>
+<td><strong>opened</strong></td>
+<td>associated</td>
+</tr>
+</tbody>
+</table>
+<aside class="notes"><ul>
+<li>
+<strong>Mediator</strong> <span class="citation" data-cites="hernan2020causal">(<a href="#/references" role="doc-biblioref" onclick="">Hernán and Robins 2020, 80</a>)</span>: among those with low platelet aggregation (<span class="math inline">\(B=0\)</span>), knowing whether someone took aspirin adds no information about heart disease, because aspirin acts only through <span class="math inline">\(B\)</span>: <span class="math inline">\(\Pr[Y=1 \mid A=1, B=b] = \Pr[Y=1 \mid A=0, B=b]\)</span> for all <span class="math inline">\(b\)</span>.</li>
+<li>
+<strong>Common cause</strong>: among nonsmokers (<span class="math inline">\(L=0\)</span>), carrying a lighter no longer predicts lung cancer. Blocking the flow of association through common causes is the graph-based justification for stratification as a way to achieve exchangeability.</li>
+<li>Because complete diagrams (all possible arrows present) imply no conditional independences, it is often said that the information about associations is in the <strong>missing</strong> arrows.</li>
 </ul><style type="text/css">
         span.MJX_Assistive_MathML {
           position:absolute!important;
@@ -492,20 +585,10 @@
           width: 1px!important;
           overflow: hidden!important;
           display:block!important;
-      }</style></aside></section><section id="selection-bias" class="slide level2"><h2>Selection Bias</h2>
-<p><strong>Selection bias</strong> arises when the analysis conditions on a variable <span class="math inline">\(C\)</span> that is a collider (or ancestor/descendant of a collider) on a path between <span class="math inline">\(A\)</span> and <span class="math inline">\(Y\)</span>.</p>
-<p><strong>Structural representation:</strong></p>
-<p><span class="math display">\[A \longrightarrow C \longleftarrow Y\]</span></p>
-<p>Restricting the analysis to individuals with <span class="math inline">\(C = 1\)</span> (e.g., individuals selected into the study) opens the path <span class="math inline">\(A \to C \leftarrow Y\)</span> and induces a spurious association between <span class="math inline">\(A\)</span> and <span class="math inline">\(Y\)</span>.</p>
-<aside class="notes"><p><strong>Connection to collider stratification bias:</strong></p>
-<p>Selection bias is collider stratification bias applied to the selection mechanism. The “collider” is a variable related to study participation, follow-up completion, or analysis inclusion, and both <span class="math inline">\(A\)</span> (or a cause of <span class="math inline">\(A\)</span>) and <span class="math inline">\(Y\)</span> (or a cause of <span class="math inline">\(Y\)</span>) affect it.</p>
-<p><strong>Common examples:</strong></p>
-<ul>
-<li>Loss to follow-up affected by both treatment and outcome</li>
-<li>Case-control studies where hospital admission depends on both exposure and disease</li>
-<li>Analysis restricted to survivors when survival depends on treatment and outcome</li>
-</ul>
-<p><strong>Chapter 8</strong> covers selection bias in detail with specific examples.</p>
+      }</style></aside></section><section id="conditioning-on-a-collider-opens-the-path" class="slide level2"><h2>Conditioning on a Collider Opens the Path</h2>
+<p>In <a href="#/fig-dag-6-4" class="quarto-xref">Figure&nbsp;4</a>, restrict to people with heart disease (<span class="math inline">\(L=1\)</span>, book Figure 6.7). Among them, someone without the haplotype is more likely to have the other cause, smoking: <span class="math inline">\(A\)</span> and <span class="math inline">\(Y\)</span> are <strong>inversely associated</strong> given <span class="math inline">\(L=1\)</span>.</p>
+<p>In the extreme, if <span class="math inline">\(A\)</span> and <span class="math inline">\(Y\)</span> were the only causes of <span class="math inline">\(L\)</span>, then among those with <span class="math inline">\(L=1\)</span> the absence of one would perfectly predict the presence of the other.</p>
+<aside class="notes"><p>Intuition from the book <span class="citation" data-cites="hernan2020causal">(<a href="#/references" role="doc-biblioref" onclick="">Hernán and Robins 2020, 81</a>)</span>: whether two causes are associated cannot depend on a future event (their common effect), but two causes of an effect generally become associated once we stratify on that effect. Chapter 8 develops associations due to conditioning on common effects.</p>
 <style type="text/css">
         span.MJX_Assistive_MathML {
           position:absolute!important;
@@ -516,102 +599,29 @@
           width: 1px!important;
           overflow: hidden!important;
           display:block!important;
-      }</style></aside></section><section id="measurement-bias" class="slide level2"><h2>Measurement Bias</h2>
-<p><strong>Measurement bias</strong> (information bias) occurs when a variable is measured imperfectly. In the causal diagram, we distinguish:</p>
-<ul>
-<li>
-<span class="math inline">\(A\)</span>: the true (unmeasured or imperfectly measured) treatment</li>
-<li>
-<span class="math inline">\(A^*\)</span>: the observed (potentially error-prone) measurement of treatment</li>
-</ul>
-<p>The structural relationship is <span class="math inline">\(A \to A^*\)</span>: the true value generates the measurement, with additional unmeasured factors <span class="math inline">\(U_{A^*}\)</span> affecting the measurement.</p>
-<p><strong>Structural representation:</strong></p>
-<p><span class="math display">\[A \longrightarrow Y \qquad A \longrightarrow A^*\]</span></p>
-<p>Using <span class="math inline">\(A^*\)</span> in place of <span class="math inline">\(A\)</span> produces a biased estimate of the causal effect of <span class="math inline">\(A\)</span> on <span class="math inline">\(Y\)</span>.</p>
-<aside class="notes"><p><strong>Differential vs.&nbsp;non-differential measurement error:</strong></p>
-<ul>
-<li>
-<strong>Non-differential</strong> (classical): <span class="math inline">\(A^* = f(A, U_{A^*})\)</span> where <span class="math inline">\(U_{A^*}\)</span> is independent of <span class="math inline">\(Y\)</span> and <span class="math inline">\(L\)</span> — typically attenuates estimates toward the null</li>
-<li>
-<strong>Differential</strong>: <span class="math inline">\(A^* = f(A, U_{A^*})\)</span> where <span class="math inline">\(U_{A^*}\)</span> is correlated with <span class="math inline">\(Y\)</span> or its causes — can bias in either direction</li>
-</ul>
-<p><strong>Measurement error in confounders:</strong></p>
-<p>Measuring <span class="math inline">\(L\)</span> imperfectly (using <span class="math inline">\(L^*\)</span> instead of <span class="math inline">\(L\)</span>) creates <strong>residual confounding</strong>: after adjusting for <span class="math inline">\(L^*\)</span>, the backdoor path <span class="math inline">\(A \leftarrow L \to Y\)</span> is only partially blocked, and confounding bias remains.</p>
-<p><strong>Chapter 9</strong> covers measurement bias in detail.</p>
-<style type="text/css">
-        span.MJX_Assistive_MathML {
-          position:absolute!important;
-          clip: rect(1px, 1px, 1px, 1px);
-          padding: 1px 0 0 0!important;
-          border: 0!important;
-          height: 1px!important;
-          width: 1px!important;
-          overflow: hidden!important;
-          display:block!important;
-      }</style></aside></section></section><section><section id="the-structure-of-effect-modification-pp.-7376" class="title-slide slide level1 center" data-number="6"><h1>
-<span class="header-section-number">6</span> 6.6 The Structure of Effect Modification (pp.&nbsp;73–76)</h1>
-
-</section><section id="effect-modification-in-causal-diagrams" class="slide level2"><h2>Effect Modification in Causal Diagrams</h2>
-<p><strong>Effect modification</strong> (heterogeneity of treatment effects) occurs when the causal effect of <span class="math inline">\(A\)</span> on <span class="math inline">\(Y\)</span> differs across levels of another variable <span class="math inline">\(V\)</span>. Standard DAGs, however, <strong>cannot directly represent effect modification</strong>.</p>
-<p>A DAG with <span class="math inline">\(V \to Y\)</span> and <span class="math inline">\(A \to Y\)</span> is compatible with:</p>
-<ul>
-<li>
-<strong>No effect modification</strong>: the <span class="math inline">\(A \to Y\)</span> effect is the same for all values of <span class="math inline">\(V\)</span>
-</li>
-<li>
-<strong>Effect modification</strong>: the <span class="math inline">\(A \to Y\)</span> effect varies across levels of <span class="math inline">\(V\)</span>
-</li>
-</ul>
-<p>Both cases have identical qualitative structure. The DAG encodes only the <em>presence</em> of causal effects (which variables cause which), not their <em>magnitude</em> or <em>heterogeneity</em>.</p>
-<aside class="notes"><p><strong>Why DAGs cannot encode effect modification:</strong></p>
-<p>Effect modification is a quantitative (or distributional) feature of the structural equations. A DAG specifies that <span class="math inline">\(Y = f_Y(L, A, U_Y)\)</span> but makes no claim about whether <span class="math inline">\(f_Y\)</span> involves an <span class="math inline">\(A \times V\)</span> interaction term. Two different NPSEMs — one with and one without effect modification — are represented by the same DAG if they share the same qualitative causal structure.</p>
-<p><strong>Frameworks that can encode effect modification:</strong></p>
-<p>Extensions of the DAG framework, such as <em>Single World Intervention Graphs (SWIGs)</em> (Richardson and Robins, 2014) and annotated DAGs, can explicitly represent counterfactual quantities and some aspects of effect modification, but these are beyond the scope of this chapter.</p>
-<style type="text/css">
-        span.MJX_Assistive_MathML {
-          position:absolute!important;
-          clip: rect(1px, 1px, 1px, 1px);
-          padding: 1px 0 0 0!important;
-          border: 0!important;
-          height: 1px!important;
-          width: 1px!important;
-          overflow: hidden!important;
-          display:block!important;
-      }</style></aside></section><section id="confounders-effect-modifiers-and-both" class="slide level2"><h2>Confounders, Effect Modifiers, and Both</h2>
-<p>A variable <span class="math inline">\(V\)</span> can play different roles with respect to the <span class="math inline">\(A \to Y\)</span> effect:</p>
-<ul>
-<li>
-<strong>Confounder</strong>: opens a backdoor path (<span class="math inline">\(V \to A\)</span>, <span class="math inline">\(V \to Y\)</span>) — must adjust for <span class="math inline">\(V\)</span> to remove bias</li>
-<li>
-<strong>Effect modifier</strong>: the <span class="math inline">\(A \to Y\)</span> effect varies by <span class="math inline">\(V\)</span> — should stratify by <span class="math inline">\(V\)</span> to fully characterize effects</li>
-<li>
-<strong>Both</strong>: must adjust for <span class="math inline">\(V\)</span> (confounding) and stratify (modification)</li>
-<li>
-<strong>Neither</strong>: <span class="math inline">\(V\)</span> is unrelated to the <span class="math inline">\(A \to Y\)</span> causal structure</li>
-</ul>
-<div id="exm-confounder-modifier-dag" class="theorem example">
-<p><span class="theorem-title"><strong>Example 4 (Confounder and Effect Modifier Roles)</strong></span> <strong>Scenario 1: <span class="math inline">\(V\)</span> is a confounder only</strong></p>
-<p><span class="math display">\[V \to A \to Y, \quad V \to Y\]</span></p>
-<p><span class="math inline">\(V\)</span> opens the backdoor path <span class="math inline">\(A \leftarrow V \to Y\)</span>. We must adjust for <span class="math inline">\(V\)</span> to remove confounding. Whether the <span class="math inline">\(A \to Y\)</span> effect varies by <span class="math inline">\(V\)</span> is a separate empirical question.</p>
-<p><strong>Scenario 2: <span class="math inline">\(V\)</span> is an effect modifier only (in a randomized trial)</strong></p>
-<p><span class="math display">\[V \to Y, \quad A \to Y, \quad \text{($A$ randomized, no } V \to A \text{ arrow)}\]</span></p>
-<p>No backdoor paths exist (randomization removes <span class="math inline">\(V \to A\)</span>). Adjustment for <span class="math inline">\(V\)</span> is not needed to remove bias. However, if the <span class="math inline">\(A \to Y\)</span> effect varies by <span class="math inline">\(V\)</span>, we should report stratum-specific estimates.</p>
-<p><strong>Scenario 3: <span class="math inline">\(V\)</span> is both confounder and effect modifier</strong></p>
-<p><span class="math display">\[V \to A \to Y, \quad V \to Y, \quad \text{($A$-$Y$ effect varies by $V$)}\]</span></p>
-<p>We must adjust for <span class="math inline">\(V\)</span> (removes confounding) and report stratum-specific effects (captures modification).</p>
+      }</style></aside></section><section id="conditioning-on-a-descendant-of-a-collider" class="slide level2"><h2>Conditioning on a Descendant of a Collider</h2>
+<div class="cell">
+<div class="cell-output-display">
+<div id="fig-dag-6-8" class="quarto-float quarto-figure quarto-figure-center">
+<figure class="quarto-float quarto-float-fig"><figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-fig" id="fig-dag-6-8-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;6: Book Figure 6.8: diuretic use <span class="math inline">\(C\)</span> follows a diagnosis of heart disease <span class="math inline">\(L\)</span> (the square node <span class="math inline">\(C\)</span> marks conditioning).
+</figcaption><div aria-describedby="fig-dag-6-8-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<a href="06-graphical-representation_files/figure-html/fig-dag-6-8-1.png" class="lightbox" data-gallery="quarto-lightbox-gallery-6" title="Figure&nbsp;6: Book Figure 6.8: diuretic use C follows a diagnosis of heart disease L (the square node C marks conditioning)."><img data-src="06-graphical-representation_files/figure-html/fig-dag-6-8-1.png" width="384"></a>
 </div>
-</section><section id="identifying-effect-modification" class="slide level2 scrollable"><h2>Identifying Effect Modification</h2>
-<p>Because DAGs cannot directly represent effect modification, we must assess it empirically:</p>
+</figure>
+</div>
+</div>
+</div>
+<p>Conditioning on <span class="math inline">\(C\)</span>, a variable affected by the collider <span class="math inline">\(L\)</span>, also opens <span class="math inline">\(A \to L \leftarrow Y\)</span>. The path stays blocked only if we condition on neither <span class="math inline">\(L\)</span> nor <span class="math inline">\(C\)</span>.</p>
+</section><section id="three-structural-sources-of-association" class="slide level2 scrollable"><h2>Three Structural Sources of Association</h2>
+<p>Two variables can be associated because</p>
 <ol type="1">
-<li>First, ensure the causal effect is identified within each stratum of <span class="math inline">\(V\)</span> (using the backdoor criterion or other identification strategies)</li>
-<li>Estimate stratum-specific causal effects <span class="math inline">\(\text{E}{\left[Y^{a=1} - Y^{a=0} \mid V = v\right]}\)</span> for each level <span class="math inline">\(v\)</span>
-</li>
-<li>Compare effect estimates across strata: if they differ, effect modification is present</li>
+<li>one causes the other;</li>
+<li>they share a common cause;</li>
+<li>they share a common effect and the analysis is restricted to a level of that effect (or of its descendants).</li>
 </ol>
-<aside class="notes"><p><strong>Effect modification and interaction:</strong></p>
-<p>Chapter 5 defined additive interaction between two treatments <span class="math inline">\(A\)</span> and <span class="math inline">\(E\)</span> using the interaction contrast <span class="math inline">\(\text{IC} = \text{E}{\left[Y^{a=1,e=1}\right]} - \text{E}{\left[Y^{a=1,e=0}\right]} - \text{E}{\left[Y^{a=0,e=1}\right]} + \text{E}{\left[Y^{a=0,e=0}\right]}\)</span>. Effect modification of the <span class="math inline">\(A \to Y\)</span> effect by <span class="math inline">\(V\)</span> corresponds to the case where <span class="math inline">\(V\)</span> plays the role of <span class="math inline">\(E\)</span>, but one where <span class="math inline">\(V\)</span> is not itself a treatment under consideration — it simply describes a subgroup characteristic.</p>
-<p><strong>Scale-dependence:</strong></p>
-<p>Effect modification is scale-dependent (Chapter 4). The <span class="math inline">\(A \to Y\)</span> effect may be modified by <span class="math inline">\(V\)</span> on the risk difference scale but not on the risk ratio scale. The DAG cannot distinguish between these cases; the scale of modification must be specified separately.</p>
+<p>A fourth, nonstructural source is <strong>chance</strong> (random variability), which shrinks as the study population grows. Until Chapter 10 the book assumes a very large population, so all associations discussed are structural.</p>
+<aside class="notes"><p>The heuristic arguments of this section are formalized by <strong>d-separation</strong> (Pearl 1995); Fine Point 6.1 lists the rules and Fine Point 6.2 introduces faithfulness <span class="citation" data-cites="hernan2020causal">(<a href="#/references" role="doc-biblioref" onclick="">Hernán and Robins 2020, 81</a>)</span>.</p>
 <style type="text/css">
         span.MJX_Assistive_MathML {
           position:absolute!important;
@@ -622,77 +632,356 @@
           width: 1px!important;
           overflow: hidden!important;
           display:block!important;
-      }</style></aside></section></section><section><section id="summary" class="title-slide slide level1 center" data-number="7"><h1>
+      }</style></aside></section></section><section><section id="positivity-and-consistency-in-causal-diagrams-pp.-81-85" class="title-slide slide level1 center" data-number="4"><h1>
+<span class="header-section-number">4</span> 6.4 Positivity and Consistency in Causal Diagrams (pp.&nbsp;81-85)</h1>
+
+</section><section class="slide level2"><div title="Fine Point 6.1: D-Separation">
+<div class="callout callout-note callout-titled callout-style-default">
+<div class="callout-body">
+<div class="callout-title">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<p><strong>Fine Point 6.1: D-Separation</strong></p>
+</div>
+<div class="callout-content">
+<p>A path is <strong>blocked</strong> if and only if</p>
+<ul>
+<li>it contains a <strong>non-collider</strong> that has been conditioned on, or</li>
+<li>it contains a <strong>collider</strong> that has not been conditioned on and has no descendant that has been conditioned on.</li>
+</ul>
+<p>Otherwise it is <strong>open</strong>. Two variables are <strong>d-separated</strong> if all paths between them are blocked; otherwise they are <strong>d-connected</strong>. Two sets are d-separated if each variable in one is d-separated from every variable in the other.</p>
+</div>
+</div>
+</div>
+</div>
+<div id="exm-d-separation" class="theorem example">
+<p><span class="theorem-title"><strong>Example 3 (D-Separation in Book Figures 6.1 and 6.4)</strong></span> &nbsp;</p>
+<ul>
+<li>
+<a href="#/fig-dag-6-1" class="quarto-xref">Figure&nbsp;1</a>, <span class="math inline">\(A\)</span> and <span class="math inline">\(L\)</span>: the path <span class="math inline">\(L \to A\)</span> is open, so they are d-connected, even though the other path <span class="math inline">\(A \to Y \leftarrow L\)</span> is blocked by the collider <span class="math inline">\(Y\)</span>.</li>
+<li>
+<a href="#/fig-dag-6-4" class="quarto-xref">Figure&nbsp;4</a>, <span class="math inline">\(A\)</span> and <span class="math inline">\(Y\)</span>: the only path is blocked by the collider <span class="math inline">\(L\)</span>, so they are d-separated.</li>
+</ul>
+</div>
+</section><section id="from-d-separation-to-independence" class="slide level2"><h2>From D-Separation to Independence</h2>
+<ul>
+<li>
+<strong>Pearl (1988)</strong>: under the causal Markov assumption, if <span class="math inline">\(\mathcal{A}\)</span> is d-separated from <span class="math inline">\(\mathcal{B}\)</span> given <span class="math inline">\(\mathcal{C}\)</span>, then <span class="math inline">\(\mathcal{A}\)</span> is statistically independent of <span class="math inline">\(\mathcal{B}\)</span> given <span class="math inline">\(\mathcal{C}\)</span> (disjoint sets of variables).</li>
+<li>
+<strong>Faithfulness</strong> is the separate assumption that the converse holds: independence implies d-separation.</li>
+</ul>
+<aside class="notes"><p>“d-” stands for directional. An equivalent set of graphical rules, <strong>moralization</strong>, was developed by Lauritzen et al.&nbsp;(1990) <span class="citation" data-cites="hernan2020causal">(<a href="#/references" role="doc-biblioref" onclick="">Hernán and Robins 2020</a>, Fine Point 6.1, p.&nbsp;82)</span>.</p>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside></section><section class="slide level2"><div title="Fine Point 6.2: Faithfulness">
+<div class="callout callout-note callout-titled callout-style-default">
+<div class="callout-body">
+<div class="callout-title">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<p><strong>Fine Point 6.2: Faithfulness</strong></p>
+</div>
+<div class="callout-content">
+<p>An arrow <span class="math inline">\(A \to Y\)</span> means <span class="math inline">\(A\)</span> affects <span class="math inline">\(Y\)</span> for at least one individual, yet the average causal effect and the association can still both be null, when effects in different individuals cancel exactly. Such exact cancellation is rare, so the book assumes faithfulness: lack of d-separation can almost always be equated with a non-zero association.</p>
+</div>
+</div>
+</div>
+</div>
+<div id="exm-unfaithful-table-4-1" class="theorem example">
+<p><span class="theorem-title"><strong>Example 4 (Unfaithfulness from Cancelling Effects)</strong></span> In the book’s Table 4.1, transplant increases the risk of death in women and decreases it in men, each half of the population, and the effects cancel exactly: <span class="math inline">\(\Pr[Y^{a=1}=1] = \Pr[Y^{a=0}=1]\)</span>. <a href="#/fig-dag-6-2" class="quarto-xref">Figure&nbsp;2</a> is still the correct diagram, because <span class="math inline">\(A\)</span> affects every individual’s <span class="math inline">\(Y\)</span>, but the expected association is absent: the distribution is <strong>not faithful</strong> to the DAG <span class="citation" data-cites="hernan2020causal">(<a href="#/references" role="doc-biblioref" onclick="">Hernán and Robins 2020</a>, Fine Point 6.2, p.&nbsp;83)</span>.</p>
+</div>
+<aside class="notes"><p>Faithfulness can be violated <strong>by design</strong>. In a matched study (book Section 4.5, Figure 6.9), selection <span class="math inline">\(S\)</span> depends on both <span class="math inline">\(A\)</span> and <span class="math inline">\(L\)</span>, and the analysis is restricted to <span class="math inline">\(S=1\)</span>. D-separation predicts <span class="math inline">\(L\)</span> and <span class="math inline">\(A\)</span> associated given <span class="math inline">\(S\)</span> (open paths <span class="math inline">\(L \to A\)</span> and <span class="math inline">\(L \to S \leftarrow A\)</span>), but matching makes them unassociated: the association created through <span class="math inline">\(L \to S \leftarrow A\)</span> exactly cancels the one through <span class="math inline">\(L \to A\)</span>.</p>
+<p>Faithfulness may also fail when variables are linked by deterministic arrows: two variables can then be independent even though some paths between them are open.</p>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside></section><section id="graphs-do-calculus-and-notation" class="slide level2"><h2>Graphs, Do-Calculus, and Notation</h2>
+<p>Standardization and IP weighting (Chapter 2) can also be derived from causal graph theory, as part of what is sometimes called the <strong>do-calculus</strong> (reviewed in Pearl 2009). So using counterfactuals in Chapters 1-5 privileged a notation, not an approach.</p>
+<p>Whatever the notation, causal inference via standardization or IP weighting requires exchangeability, positivity, and consistency. This section covers positivity and consistency; exchangeability is translated into graphs in Section 6.5 and Chapters 7-8.</p>
+</section><section id="positivity-and-consistency-in-the-graph" class="slide level2"><h2>Positivity and Consistency in the Graph</h2>
+<ul>
+<li>
+<strong>Positivity</strong> concerns arrows <strong>into</strong> treatment nodes. Causal graphs generally cannot encode its violations, except special cases, e.g., <span class="math inline">\(A\)</span> a deterministic function of a pretreatment <span class="math inline">\(L\)</span> (drawn as a bold <span class="math inline">\(L \to A\)</span> arrow).</li>
+<li>
+<strong>Consistency</strong> (well-defined counterfactuals) concerns arrows <strong>out of</strong> treatment nodes: <span class="math inline">\(A \to Y\)</span> must correspond to a possibly hypothetical but relatively unambiguous intervention (or, if <span class="math inline">\(A\)</span> is a state, to well-defined interventions that affect <span class="math inline">\(Y\)</span> only through <span class="math inline">\(A\)</span>; Fine Point 6.4).</li>
+</ul>
+<p>In the book’s diagrams, positivity is implicit unless stated and consistency is embedded in the notation.</p>
+<aside class="notes"><p>Treatment nodes thus have a special status <span class="citation" data-cites="hernan2020causal">(<a href="#/references" role="doc-biblioref" onclick="">Hernán and Robins 2020, 83–84</a>)</span>. Some authors draw it explicitly with <strong>decision nodes</strong>; influence diagrams are causal diagrams augmented with decision nodes (Dawid 2000, 2002). The book omits them, because it is always explicit about the interventions on <span class="math inline">\(A\)</span>, but gives treatment nodes a distinct status in SWIGs later. The causal trees of Chapter 2 and the sufficient-cause “pies” of Chapter 5 also distinguished treatments from other variables.</p>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside></section><section id="treatment-nodes-need-well-defined-interventions" class="slide level2"><h2>Treatment Nodes Need Well-Defined Interventions</h2>
+<p>Diagrams read as NPSEMs with independent errors seem to give all variables equal status, which can mislead when some nodes correspond to ill-defined interventions.</p>
+<ul>
+<li>A node for “obesity” may be acceptable as an outcome <span class="math inline">\(Y\)</span> or a covariate <span class="math inline">\(L\)</span>.</li>
+<li>It is generally <strong>not</strong> acceptable as a treatment <span class="math inline">\(A\)</span> (Chapter 3).</li>
+</ul>
+<aside class="notes"><p>Pearl (2018, 2019) has proposed a concept of causation based on variables that “listen to others”, which still assumes well-defined counterfactuals for every variable <span class="citation" data-cites="hernan2020causal">(<a href="#/references" role="doc-biblioref" onclick="">Hernán and Robins 2020, 84</a>, margin note)</span>.</p>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside></section><section class="slide level2"><div class="cell">
+<div class="cell-output-display">
+<div id="fig-dag-6-10" class="quarto-float quarto-figure quarto-figure-center">
+<figure class="quarto-float quarto-float-fig"><figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-fig" id="fig-dag-6-10-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;7: Book Figure 6.10, as described in the text: caloric intake <span class="math inline">\(Z\)</span>, exercise <span class="math inline">\(L\)</span>, and genetic traits <span class="math inline">\(U\)</span> affect weight loss <span class="math inline">\(A\)</span>; <span class="math inline">\(L\)</span> and <span class="math inline">\(U\)</span> also affect mortality <span class="math inline">\(Y\)</span> through other pathways.
+</figcaption><div aria-describedby="fig-dag-6-10-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<a href="06-graphical-representation_files/figure-html/fig-dag-6-10-1.png" class="lightbox" data-gallery="quarto-lightbox-gallery-7" title="Figure&nbsp;7: Book Figure 6.10, as described in the text: caloric intake Z, exercise L, and genetic traits U affect weight loss A; L and U also affect mortality Y through other pathways."><img data-src="06-graphical-representation_files/figure-html/fig-dag-6-10-1.png" width="480"></a>
+</div>
+</figure>
+</div>
+</div>
+</div>
+<p>When there are several ways to intervene on <span class="math inline">\(A\)</span> and some of them affect <span class="math inline">\(Y\)</span> directly, “the effect of <span class="math inline">\(A\)</span> on <span class="math inline">\(Y\)</span>” is unclear: losing weight by caloric restriction, by exercise, or by genetic manipulation would lead to different mortality. Being explicit about the intervention is a step toward a well-defined effect, relevant data, and the right adjustment variables.</p>
+</section><section class="slide level2"><div title="Fine Point 6.3: Discovery of Causal Structure">
+<div class="callout callout-note callout-titled callout-style-default">
+<div class="callout-body">
+<div class="callout-title">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<p><strong>Fine Point 6.3: Discovery of Causal Structure</strong></p>
+</div>
+<div class="callout-content">
+<p><strong>Discovery</strong> is learning parts of the causal structure from data. It sometimes works if we assume faithfulness, but often it does not: a strong association between <span class="math inline">\(B\)</span> and <span class="math inline">\(C\)</span> fits <span class="math inline">\(B \to C\)</span>, <span class="math inline">\(C \to B\)</span>, a shared unmeasured cause, a conditioned-on common effect, and combinations.</p>
+</div>
+</div>
+</div>
+</div>
+<div id="exm-discovery" class="theorem example">
+<p><span class="theorem-title"><strong>Example 5 (Learning <span class="math inline">\(Z \to A \to Y\)</span> <span class="citation" data-cites="hernan2020causal">(<a href="#/references" role="doc-biblioref" onclick="">Hernán and Robins 2020</a>, Fine Point 6.3, p.&nbsp;85)</span>)</strong></span> Suppose <span class="math inline">\(Z\)</span> precedes <span class="math inline">\(A\)</span>, which precedes <span class="math inline">\(Y\)</span>, and with infinite data all three are marginally associated and the only conditional independence is <span class="math inline">\(Z \perp\!\!\!\perp Y \mid A\)</span>. Under faithfulness the only consistent causal DAGs are <span class="math inline">\(Z \to A \to Y\)</span>, possibly with a common cause of <span class="math inline">\(Z\)</span> and <span class="math inline">\(A\)</span> in addition to, or instead of, <span class="math inline">\(Z \to A\)</span>. Then there is no unmeasured common cause of <span class="math inline">\(A\)</span> and <span class="math inline">\(Y\)</span>, and the average causal effect is identified by <span class="math inline">\(\text{E}{\left[Y \mid A=1\right]} - \text{E}{\left[Y \mid A=0\right]}\)</span>.</p>
+</div>
+<aside class="notes"><p>Why: a direct arrow <span class="math inline">\(Z \to Y\)</span>, a common cause of <span class="math inline">\(Z\)</span> and <span class="math inline">\(Y\)</span>, or an unmeasured common cause of <span class="math inline">\(A\)</span> and <span class="math inline">\(Y\)</span> would each make <span class="math inline">\(Z\)</span> and <span class="math inline">\(Y\)</span> dependent given <span class="math inline">\(A\)</span> (assuming faithfulness); the marginal association of <span class="math inline">\(A\)</span> and <span class="math inline">\(Y\)</span> then requires an arrow <span class="math inline">\(A \to Y\)</span>. If an unmeasured common cause of <span class="math inline">\(A\)</span> and <span class="math inline">\(Y\)</span> existed, no conditional independence would be found, and discovery could not tell whether <span class="math inline">\(A\)</span> causes <span class="math inline">\(Y\)</span>. Approaches to discovery are described by Spirtes et al.&nbsp;(2000) and Peters et al.&nbsp;(2017); finite samples are discussed in the book’s Technical Point 10.7.</p>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside></section></section><section><section id="a-structural-classification-of-bias-pp.-85-87" class="title-slide slide level1 center" data-number="5"><h1>
+<span class="header-section-number">5</span> 6.5 A Structural Classification of Bias (pp.&nbsp;85-87)</h1>
+
+</section><section class="slide level2"><div id="def-systematic-bias" class="theorem definition">
+<p><span class="theorem-title"><strong>Definition 4 (Systematic Bias)</strong></span> There is <strong>systematic bias</strong> when the data are insufficient to identify the causal effect even with an infinite sample size. Informally: any structural association between treatment and outcome that does not arise from the causal effect of treatment on outcome <span class="citation" data-cites="hernan2020causal">(<a href="#/references" role="doc-biblioref" onclick="">Hernán and Robins 2020, 85</a>)</span>.</p>
+</div>
+<ul>
+<li>
+<strong>Unconditional bias</strong>: <span class="math inline">\(\Pr[Y^{a=1}=1] - \Pr[Y^{a=0}=1] \neq \Pr[Y=1 \mid A=1] - \Pr[Y=1 \mid A=0]\)</span>, the case when <span class="math inline">\(Y^a \perp\!\!\!\perp A\)</span> fails.</li>
+<li>
+<strong>Conditional bias</strong>: <span class="math inline">\(\Pr[Y^{a=1}=1 \mid L=l] - \Pr[Y^{a=0}=1 \mid L=l] \neq \Pr[Y=1 \mid L=l, A=1] - \Pr[Y=1 \mid L=l, A=0]\)</span> for at least one <span class="math inline">\(l\)</span>, generally the case when <span class="math inline">\(Y^a \perp\!\!\!\perp A \mid L=l\)</span> fails for some <span class="math inline">\(a\)</span> and <span class="math inline">\(l\)</span>.</li>
+</ul>
+<aside class="notes"><p>With systematic bias no estimator can be consistent (see Chapter 1 for consistent estimators). Absence of unconditional bias means the association measure in the population is a consistent estimate of the corresponding effect measure. In this chapter “bias” means systematic bias, because the sample size is assumed infinite.</p>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside></section><section id="bias-under-the-null" class="slide level2"><h2>Bias Under the Null</h2>
+<p>Lack of exchangeability causes bias <strong>even when treatment has no effect</strong>: <strong>bias under the null</strong>.</p>
+<div id="exm-bias-under-null" class="theorem example">
+<p><span class="theorem-title"><strong>Example 6 (Table 3.1)</strong></span> In the book’s observational study of Table 3.1 the causal risk ratio was 1, whereas the associational risk ratio was 1.26 <span class="citation" data-cites="hernan2020causal">(<a href="#/references" role="doc-biblioref" onclick="">Hernán and Robins 2020, 86</a>)</span>.</p>
+</div>
+<p>Any structure that causes bias under the null also causes bias under the alternative (a non-null effect); the converse is false.</p>
+<aside class="notes"><p>For example, conditioning on some variables may cause selection bias under the alternative but not under the null (Greenland 1977; Hernán 2017; see also Chapter 18) <span class="citation" data-cites="hernan2020causal">(<a href="#/references" role="doc-biblioref" onclick="">Hernán and Robins 2020, 86</a>, margin note)</span>.</p>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside></section><section id="two-structures-that-break-exchangeability" class="slide level2 scrollable"><h2>Two Structures That Break Exchangeability</h2>
+<ol type="1">
+<li>
+<strong>Common causes</strong> of treatment and outcome: what many epidemiologists call <strong>confounding</strong> (Chapter 7).</li>
+<li>
+<strong>Conditioning on common effects</strong>: what many epidemiologists call <strong>selection bias under the null</strong> (Chapter 8).</li>
+</ol>
+<p>A third source is <strong>measurement bias</strong> (information bias), from mismeasured treatment, outcome, or covariates; some types also cause bias under the null (Chapter 9). Random variability is a separate, nonstructural source (Chapter 10).</p>
+<aside class="notes"><p>All three biases can arise in observational studies <strong>and</strong> in randomized experiments. Earlier chapters used idealized experiments (no loss to follow-up, full adherence, blinded assignment), but real experiments rarely look like that; the remaining chapters of Part I examine the boundary between experimenting and observing <span class="citation" data-cites="hernan2020causal">(<a href="#/references" role="doc-biblioref" onclick="">Hernán and Robins 2020, 86–87</a>)</span>.</p>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside></section></section><section><section id="the-structure-of-effect-modification-pp.-87-89" class="title-slide slide level1 center" data-number="6"><h1>
+<span class="header-section-number">6</span> 6.6 The Structure of Effect Modification (pp.&nbsp;87-89)</h1>
+
+</section><section class="slide level2"><p>Causal diagrams are good at locating sources of bias, but less helpful for illustrating effect modification.</p>
+<div class="cell">
+<div class="cell-output-display">
+<div id="fig-dag-6-12" class="quarto-float quarto-figure quarto-figure-center">
+<figure class="quarto-float quarto-float-fig"><figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-fig" id="fig-dag-6-12-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;8: Book Figure 6.12: randomized transplant <span class="math inline">\(A\)</span>; quality of care <span class="math inline">\(V\)</span> affects death <span class="math inline">\(Y\)</span>.
+</figcaption><div aria-describedby="fig-dag-6-12-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<a href="06-graphical-representation_files/figure-html/fig-dag-6-12-1.png" class="lightbox" data-gallery="quarto-lightbox-gallery-8" title="Figure&nbsp;8: Book Figure 6.12: randomized transplant A; quality of care V affects death Y."><img data-src="06-graphical-representation_files/figure-html/fig-dag-6-12-1.png" width="384"></a>
+</div>
+</figure>
+</div>
+</div>
+</div>
+<p>Transplant <span class="math inline">\(A\)</span> is randomized, so association is causation; investigators stratify by quality of care <span class="math inline">\(V\)</span> and find additive effect modification.</p>
+</section><section id="two-caveats" class="slide level2 scrollable"><h2>Two Caveats</h2>
+<ol type="1">
+<li>
+<a href="#/fig-dag-6-12" class="quarto-xref">Figure&nbsp;8</a> would be valid <strong>without</strong> <span class="math inline">\(V\)</span>, since <span class="math inline">\(V\)</span> is not a common cause of <span class="math inline">\(A\)</span> and <span class="math inline">\(Y\)</span>; <span class="math inline">\(V\)</span> appears only because the question refers to it. Variables on the path from <span class="math inline">\(V\)</span> to <span class="math inline">\(Y\)</span>, such as therapy complications <span class="math inline">\(N\)</span> (book Figure 6.13), could also be effect modifiers.</li>
+<li>
+<a href="#/fig-dag-6-12" class="quarto-xref">Figure&nbsp;8</a> does <strong>not</strong> show whether, or how, <span class="math inline">\(V\)</span> modifies the effect of <span class="math inline">\(A\)</span>. It cannot distinguish:
+<ul>
+<li>effects in the same direction in both strata of <span class="math inline">\(V\)</span>;</li>
+<li>effects in opposite directions (<strong>qualitative</strong> effect modification);</li>
+<li>an effect in one stratum only (e.g., <span class="math inline">\(A\)</span> kills only those with <span class="math inline">\(V=0\)</span>).</li>
+</ul>
+</li>
+</ol></section><section id="surrogate-effect-modifiers" class="slide level2"><h2>Surrogate Effect Modifiers</h2>
+<p>A <strong>surrogate effect modifier</strong> is associated with the causal effect modifier <span class="math inline">\(V\)</span> but does not affect <span class="math inline">\(Y\)</span>. The association can come from any structure:</p>
+<table class="caption-top">
+<colgroup>
+<col style="width: 33%">
+<col style="width: 33%">
+<col style="width: 33%">
+</colgroup>
+<thead><tr class="header">
+<th>Book figure</th>
+<th>Surrogate</th>
+<th>Structure linking it to <span class="math inline">\(V\)</span>
+</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td>6.14</td>
+<td>cost of treatment <span class="math inline">\(S\)</span>
+</td>
+<td>cause and effect: <span class="math inline">\(V \to S\)</span>
+</td>
+</tr>
+<tr class="even">
+<td>6.15</td>
+<td>passport nationality <span class="math inline">\(P\)</span>
+</td>
+<td>common cause: residence <span class="math inline">\(U\)</span> affects <span class="math inline">\(V\)</span> and <span class="math inline">\(P\)</span>
+</td>
+</tr>
+<tr class="odd">
+<td>6.16</td>
+<td>bottled mineral water <span class="math inline">\(W\)</span>
+</td>
+<td>conditioning on a common effect: <span class="math inline">\(V\)</span> and <span class="math inline">\(W\)</span> affect cost <span class="math inline">\(S\)</span>, analysis restricted to <span class="math inline">\(S=0\)</span>
+</td>
+</tr>
+</tbody>
+</table>
+<aside class="notes"><p>Causal and surrogate effect modifiers are often indistinguishable in practice, so “effect modification” covers both (Section 4.2); some prefer the neutral term “heterogeneity of causal effects”. Reading “cost modifies the effect of transplant” causally could suggest raising prices without raising quality <span class="citation" data-cites="hernan2020causal">(<a href="#/references" role="doc-biblioref" onclick="">Hernán and Robins 2020, 88</a>)</span>.</p>
+<p>Intuition for the mineral-water example (book margin note, p.&nbsp;88): low-cost hospitals that buy mineral water must spend less on care that lowers mortality, so among low-cost hospitals, mineral water use is inversely associated with quality of care. VanderWeele and Robins (2007b) give a finer classification of effect modification via causal diagrams.</p>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside></section><section id="interaction-in-causal-diagrams" class="slide level2"><h2>Interaction in Causal Diagrams</h2>
+<p>Causal diagrams are agnostic about interaction between two treatments <span class="math inline">\(A\)</span> and <span class="math inline">\(E\)</span>. They can encode it if augmented with nodes for sufficient-component causes (Chapter 5), with deterministic arrows from the treatments to those nodes; the book develops such diagrams in Chapter 8.</p>
+</section><section class="slide level2"><div title="Fine Point 6.4: Evidence That a State Has Well-Defined Counterfactuals">
+<div class="callout callout-note callout-titled callout-style-default">
+<div class="callout-body">
+<div class="callout-title">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<p><strong>Fine Point 6.4: Evidence That a State Has Well-Defined Counterfactuals</strong></p>
+</div>
+<div class="callout-content">
+<p>Consider drug <span class="math inline">\(Z\)</span>, systolic blood pressure <span class="math inline">\(A\)</span> (a state, not directly manipulable), and stroke <span class="math inline">\(Y\)</span>. If (i) <span class="math inline">\(Z\)</span> is associated with <span class="math inline">\(A\)</span> and <span class="math inline">\(Y\)</span>, (ii) <span class="math inline">\(A\)</span> and <span class="math inline">\(Y\)</span> are associated, and (iii) <span class="math inline">\(Z \perp\!\!\!\perp Y \mid A\)</span>, then under faithfulness the only causal DAG has <span class="math inline">\(A \to Y\)</span>, no <span class="math inline">\(Z \to Y\)</span>, and no unmeasured common cause of <span class="math inline">\(A\)</span> and <span class="math inline">\(Y\)</span> or of <span class="math inline">\(Z\)</span> and <span class="math inline">\(Y\)</span> (the discovery argument of Fine Point 6.3).</p>
+<ul>
+<li>If <span class="math inline">\(Y^a\)</span> is well defined, <span class="math inline">\(Y^a \perp\!\!\!\perp A\)</span> holds and <span class="math inline">\(\text{E}{\left[Y \mid A=1\right]} - \text{E}{\left[Y \mid A=0\right]}\)</span> is the average causal effect.</li>
+<li>An investigator who doubted that <span class="math inline">\(Y^a\)</span> was well defined might take (i)-(iii) as empirical evidence that it is.</li>
+</ul>
+<aside class="notes"><p>Usually unmeasured common causes <span class="math inline">\(U_3\)</span> of <span class="math inline">\(A\)</span> and <span class="math inline">\(Y\)</span> remain; then <span class="math inline">\(Z\)</span> and <span class="math inline">\(Y\)</span> are associated given the collider <span class="math inline">\(A\)</span>, (iii) fails, and the data give no support for <span class="math inline">\(Y^a\)</span> being well defined <span class="citation" data-cites="hernan2020causal">(<a href="#/references" role="doc-biblioref" onclick="">Hernán and Robins 2020</a>, Fine Point 6.4, p.&nbsp;89)</span>.</p>
+<p>The book’s remedy is a four-arm factorial <strong>dose-finding</strong> trial: randomize the drug (<span class="math inline">\(Z=1\)</span> or <span class="math inline">\(Z=2\)</span>) and the target blood-pressure reduction (<span class="math inline">\(A=a_1\)</span> or <span class="math inline">\(A=a_2\)</span>), and increase each individual’s dose <span class="math inline">\(D\)</span> until the assigned reduction is reached and maintained. The achieved <span class="math inline">\(A\)</span> is then a deterministic function of the assigned value, so nothing else has an arrow into <span class="math inline">\(A\)</span> (book Figure 6.18). If <span class="math inline">\(Y\)</span> is independent of <span class="math inline">\(D\)</span> given <span class="math inline">\(A\)</span> and <span class="math inline">\(\text{E}{\left[Y \mid A=a_1\right]} \neq \text{E}{\left[Y \mid A=a_2\right]}\)</span>, then under faithfulness (and assuming <span class="math inline">\(Y^{d,a}\)</span> and <span class="math inline">\(Y^a\)</span> are well defined) <span class="math inline">\(D\)</span> has no direct effect on <span class="math inline">\(Y\)</span> outside <span class="math inline">\(A\)</span>, and <span class="math inline">\(\text{E}{\left[Y^{a_1} - Y^{a_2}\right]}\)</span> is identified by <span class="math inline">\(\text{E}{\left[Y \mid A=a_1\right]} - \text{E}{\left[Y \mid A=a_2\right]}\)</span>, even with unknown common causes of <span class="math inline">\(A\)</span> and <span class="math inline">\(Y\)</span>. In a standard trial (book Figure 6.17), by contrast, <span class="math inline">\(Y\)</span> and <span class="math inline">\(Z\)</span> are associated given <span class="math inline">\(A\)</span>, so a direct effect of <span class="math inline">\(Z\)</span> on <span class="math inline">\(Y\)</span> cannot be ruled out.</p>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside>
+</div>
+</div>
+</div>
+</div>
+</section></section><section><section id="summary" class="title-slide slide level1 center" data-number="7"><h1>
 <span class="header-section-number">7</span> Summary</h1>
 
-</section><section class="slide level2 scrollable"><p>This chapter introduced <strong>causal diagrams (DAGs)</strong> as graphical tools for encoding causal assumptions and determining the identifiability of causal effects from observed data.</p>
-<p><strong>Key concepts:</strong></p>
-<ol type="1">
-<li><p><strong>DAGs and NPSEMs</strong>: A DAG represents a non-parametric structural equation model. Each variable <span class="math inline">\(V_k\)</span> satisfies <span class="math inline">\(V_k = f_k(\mathrm{pa}(V_k), U_k)\)</span> with mutually independent background variables <span class="math inline">\(U_k\)</span></p></li>
-<li><p><strong>Marginal independence</strong>: Two variables are marginally independent if all paths between them are blocked (d-separated). A collider on a path blocks it marginally.</p></li>
+</section><section class="slide level2"><ul>
+<li>A <strong>causal DAG</strong> encodes qualitative causal knowledge: an arrow means a direct effect for at least one individual; a missing arrow means none for anyone; all common causes of variables on the graph must be on the graph (causal Markov assumption).</li>
+<li>Each causal DAG represents a counterfactual model (by default an FFRCISTG).</li>
+<li>Association flows along open paths: marginally, causal chains and common causes transmit association, colliders block it; conditioning on a non-collider blocks a path, conditioning on a collider or its descendant opens it (<strong>d-separation</strong>).</li>
 <li>
-<p><strong>Three fundamental path structures</strong>:</p>
-<ul>
+<strong>Faithfulness</strong>, assumed throughout the book, lets us equate d-connection with association.</li>
+<li>Graphs rarely show <strong>positivity</strong> violations; <strong>consistency</strong> requires treatment nodes with well-defined interventions.</li>
 <li>
-<strong>Chain</strong> (<span class="math inline">\(A \to B \to Y\)</span>): Conditioning on <span class="math inline">\(B\)</span> blocks the path</li>
-<li>
-<strong>Fork</strong> (<span class="math inline">\(A \leftarrow B \to Y\)</span>): Conditioning on <span class="math inline">\(B\)</span> blocks the path</li>
-<li>
-<strong>Collider</strong> (<span class="math inline">\(A \to B \leftarrow Y\)</span>): Conditioning on <span class="math inline">\(B\)</span> <strong>opens</strong> the path — collider stratification bias</li>
+<strong>Systematic bias</strong> from lack of exchangeability has two structures: common causes (confounding) and conditioning on common effects (selection bias); measurement bias is a third type.</li>
+<li>Causal diagrams do not show whether or how a variable modifies an effect, and cannot separate causal from surrogate effect modifiers.</li>
 </ul>
-</li>
-<li><p><strong>Positivity and NPSEMs</strong>: The positivity assumption requires that treatment assignment is not deterministic given <span class="math inline">\(L\)</span>. Counterfactuals <span class="math inline">\(Y^a\)</span> are formally defined via the structural equations as <span class="math inline">\(Y^a = f_Y(L, a, U_Y)\)</span></p></li>
-<li>
-<p><strong>Structural classification of bias</strong>:</p>
-<ul>
-<li>
-<strong>Confounding</strong>: open backdoor path from <span class="math inline">\(A\)</span> to <span class="math inline">\(Y\)</span> (common cause not conditioned on)</li>
-<li>
-<strong>Selection bias</strong>: conditioning on a collider (common effect) on a path between <span class="math inline">\(A\)</span> and <span class="math inline">\(Y\)</span>
-</li>
-<li>
-<strong>Measurement bias</strong>: using an imperfect measure <span class="math inline">\(A^*\)</span> instead of the true <span class="math inline">\(A\)</span>
-</li>
-</ul>
-</li>
-<li><p><strong>Backdoor criterion</strong>: A set <span class="math inline">\(L\)</span> satisfying (i) no descendant of <span class="math inline">\(A\)</span> in <span class="math inline">\(L\)</span>, (ii) <span class="math inline">\(L\)</span> blocks all backdoor paths — adjusting for <span class="math inline">\(L\)</span> eliminates confounding</p></li>
-<li><p><strong>Effect modification</strong>: Standard DAGs encode qualitative structure only; effect modification cannot be read from the DAG and must be assessed empirically</p></li>
-</ol>
-<aside class="notes"><p><strong>Practical workflow:</strong></p>
-<ol type="1">
-<li>Draw a DAG based on subject-matter knowledge before analyzing data</li>
-<li>Identify all backdoor paths from <span class="math inline">\(A\)</span> to <span class="math inline">\(Y\)</span>
-</li>
-<li>Find a sufficient adjustment set satisfying the backdoor criterion</li>
-<li>Adjust for that set (IP weighting, standardization, regression)</li>
-<li>Do <strong>not</strong> adjust for colliders, mediators, or descendants of treatment</li>
-</ol>
-<p><strong>Software:</strong></p>
-<ul>
-<li>R package <code>dagitty</code>: draw DAGs, enumerate adjustment sets, test d-separation</li>
-<li>R package <code>ggdag</code>: visualize DAGs (used in this chapter)</li>
-<li>Web interface: <a href="https://www.dagitty.net">dagitty.net</a>
-</li>
-</ul>
-<p><strong>Limitations of DAGs:</strong></p>
-<ul>
-<li>Require qualitative causal assumptions justified by subject-matter knowledge</li>
-<li>Unmeasured common causes must be added explicitly as <span class="math inline">\(U\)</span> nodes; otherwise assumed absent</li>
-<li>Cannot represent dynamic feedback (cycles)</li>
-<li>Cannot encode effect modification or effect magnitudes</li>
-<li>Cannot represent interference between individuals</li>
-</ul>
-<p><strong>Looking ahead:</strong></p>
-<ul>
-<li>
-<strong>Chapter 7</strong>: Detailed treatment of confounding — definition, assessment, and adjustment</li>
-<li>
-<strong>Chapter 8</strong>: Selection bias — conditioning on common effects</li>
-<li>
-<strong>Chapter 9</strong>: Measurement bias — error in exposures and confounders</li>
-<li>
-<strong>Chapters 11–15</strong>: Estimation methods — IP weighting, g-formula, propensity scores</li>
-</ul><style type="text/css">
+<aside class="notes"><p><strong>Looking ahead</strong>: Chapter 7 (confounding), Chapter 8 (selection bias), Chapter 9 (measurement bias), Chapter 10 (random variability).</p>
+<p>The diagrams in this chapter are drawn with the R packages <code>dagitty</code> and <code>ggdag</code>.</p>
+<style type="text/css">
         span.MJX_Assistive_MathML {
           position:absolute!important;
           clip: rect(1px, 1px, 1px, 1px);

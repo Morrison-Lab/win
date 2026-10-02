@@ -166,15 +166,15 @@
 <!-- https://www.overleaf.com/learn/latex/Using_colors_in_LaTeX#Named_colors_provided_by_the_xcolor_package -->
 <!-- \def\or{\theta}  -->
 <!-- doesn't work for some reason -->
-<p>Chapter 4 introduced effect modification: the phenomenon where the effect of treatment <span class="math inline">\(A\)</span> varies across levels of another variable <span class="math inline">\(V\)</span>. In this chapter, we extend the concept to <strong>interaction</strong> between two treatments.</p>
-<p>Interaction addresses a fundamentally different question: Does the joint effect of two treatments differ from the sum of their individual effects? Understanding interaction is crucial for:</p>
+<p>Chapter 4 introduced effect modification: the effect of a single treatment <span class="math inline">\(A\)</span> varying across levels of another variable <span class="math inline">\(V\)</span>. Many causal questions, however, concern two or more treatments applied together. If the causal effect of one treatment depends on the value we set for the other, the two treatments <strong>interact</strong>.</p>
+<p>This chapter defines interaction between two treatments in two frameworks:</p>
 <ul>
-<li>Evaluating combination therapies</li>
-<li>Understanding synergistic or antagonistic effects</li>
-<li>Designing multi-component interventions</li>
+<li>the counterfactual (potential outcomes) framework, which we have used so far;</li>
+<li>the sufficient-component-cause framework, which describes causal mechanisms.</li>
 </ul>
 <aside class="notes">
-<p>This chapter is based on <span class="citation" data-cites="hernan2020causal">Hernán and Robins (<a href="#/references" role="doc-biblioref" onclick="">2020, chap. 5</a>, pp.&nbsp;47-58)</span>.</p>
+<p>This chapter is based on <span class="citation" data-cites="hernan2020causal">Hernán and Robins (<a href="#/references" role="doc-biblioref" onclick="">2020, chap. 5</a>, pp.&nbsp;61-74)</span>.</p>
+<p>The book motivates the chapter with the “looking up” experiment from Chapter 1: suppose we randomize not only whether you look up at the sky but also whether you stand in the street dressed or naked. If the effect of looking up differs between the dressed and naked conditions, the two treatments interact. When joint interventions are feasible, knowing about interaction tells us which combination of interventions works best.</p>
 <style type="text/css">
         span.MJX_Assistive_MathML {
           position:absolute!important;
@@ -188,68 +188,110 @@
       }</style></aside>
 </section>
 <section>
-<section id="interaction-requires-a-joint-intervention-pp.-47-49" class="title-slide slide level1 center" data-number="1">
-<h1><span class="header-section-number">1</span> 5.1 Interaction Requires a Joint Intervention (pp.&nbsp;47-49)</h1>
+<section id="interaction-requires-a-joint-intervention-pp.-61-62" class="title-slide slide level1 center" data-number="1">
+<h1><span class="header-section-number">1</span> 5.1 Interaction Requires a Joint Intervention (pp.&nbsp;61-62)</h1>
 
+</section>
+<section id="joint-interventions" class="slide level2">
+<h2>Joint Interventions</h2>
+<p>Extend the heart transplant example with a second treatment:</p>
+<ul>
+<li><span class="math inline">\(A\)</span>: heart transplant (<span class="math inline">\(A=1\)</span>) or not (<span class="math inline">\(A=0\)</span>);</li>
+<li><span class="math inline">\(E\)</span>: multivitamin complex (<span class="math inline">\(E=1\)</span>) or no vitamins (<span class="math inline">\(E=0\)</span>).</li>
+</ul>
+<p>Each individual now has four counterfactual outcomes, <span class="math inline">\(Y^{a=1,e=1}\)</span>, <span class="math inline">\(Y^{a=1,e=0}\)</span>, <span class="math inline">\(Y^{a=0,e=1}\)</span>, and <span class="math inline">\(Y^{a=0,e=0}\)</span>.</p>
+<div id="def-joint-intervention" class="theorem definition">
+<p><span class="theorem-title"><strong>Definition 1 (Joint Intervention and Joint Counterfactual)</strong></span> A <strong>joint intervention</strong> sets two or more treatments at once. The counterfactual outcome <span class="math inline">\(Y^{a,e}\)</span> is the outcome that would have been observed had we intervened to set <span class="math inline">\(A\)</span> to <span class="math inline">\(a\)</span> and <span class="math inline">\(E\)</span> to <span class="math inline">\(e\)</span>.</p>
+</div>
+<aside class="notes">
+<p><strong>Recursive substitution</strong> <span class="citation" data-cites="hernan2020causal">(<a href="#/references" role="doc-biblioref" onclick="">Hernán and Robins 2020, 61</a>, margin note)</span>. The counterfactual <span class="math inline">\(Y^a\)</span> under an intervention on <span class="math inline">\(A\)</span> alone is the joint counterfactual <span class="math inline">\(Y^{a,e}\)</span> evaluated at the value <span class="math inline">\(e\)</span> that <span class="math inline">\(E\)</span> actually takes: <span class="math inline">\(Y^a = Y^{a,E}\)</span>. Consistency is a special case of the same substitution: the observed outcome is <span class="math inline">\(Y = Y^A = Y^{A,E}\)</span>.</p>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside>
+</section>
+<section id="interaction-in-the-counterfactual-framework" class="slide level2">
+<h2>Interaction in the Counterfactual Framework</h2>
+<div id="def-interaction-additive" class="theorem definition">
+<p><span class="theorem-title"><strong>Definition 2 (Interaction on the Additive Scale)</strong></span> There is <strong>interaction between <span class="math inline">\(A\)</span> and <span class="math inline">\(E\)</span> on the additive scale</strong> in the population if the causal risk difference for <span class="math inline">\(A\)</span> when everybody receives <span class="math inline">\(E\)</span> differs from the causal risk difference for <span class="math inline">\(A\)</span> when nobody receives <span class="math inline">\(E\)</span>:</p>
+<p><span class="math display">\[
+\Pr[Y^{a=1,e=1}=1] - \Pr[Y^{a=0,e=1}=1]
+\neq
+\Pr[Y^{a=1,e=0}=1] - \Pr[Y^{a=0,e=0}=1].
+\]</span></p>
+</div>
+<div id="exm-transplant-vitamins" class="theorem example">
+<p><span class="theorem-title"><strong>Example 1 (Transplant and Vitamins <span class="citation" data-cites="hernan2020causal">(<a href="#/references" role="doc-biblioref" onclick="">Hernán and Robins 2020, 61–62</a>)</span>)</strong></span> Suppose the causal risk difference for transplant is</p>
+<ul>
+<li><span class="math inline">\(0.1\)</span> when everybody receives vitamins: <span class="math inline">\(\Pr[Y^{a=1,e=1}=1] - \Pr[Y^{a=0,e=1}=1] = 0.1\)</span>;</li>
+<li><span class="math inline">\(0.2\)</span> when nobody receives vitamins: <span class="math inline">\(\Pr[Y^{a=1,e=0}=1] - \Pr[Y^{a=0,e=0}=1] = 0.2\)</span>.</li>
+</ul>
+<p>Because <span class="math inline">\(0.1 \neq 0.2\)</span>, transplant and vitamins interact on the additive scale.</p>
+</div>
+</section>
+<section id="a-and-e-have-equal-status" class="slide level2">
+<h2><span class="math inline">\(A\)</span> and <span class="math inline">\(E\)</span> Have Equal Status</h2>
+<p>Write <span class="math inline">\(p_{ae} \stackrel{\text{def}}{=}\Pr[Y^{a,e}=1]\)</span>. Moving terms across the inequality in <a href="#/def-interaction-additive" class="quarto-xref">Definition&nbsp;2</a> shows that the same condition can be stated with the roles of <span class="math inline">\(A\)</span> and <span class="math inline">\(E\)</span> swapped:</p>
+<p><span class="math display">\[
+\begin{aligned}
+p_{11} - p_{01} &amp;\neq p_{10} - p_{00} \\
+p_{11} - p_{01} - p_{10} + p_{00} &amp;\neq 0
+  &amp;&amp; \text{(subtract } p_{10} - p_{00} \text{ from both sides)} \\
+p_{11} - p_{10} &amp;\neq p_{01} - p_{00}
+  &amp;&amp; \text{(add } p_{01} - p_{00} \text{ to both sides)}
+\end{aligned}
+\]</span></p>
+<p>The last line says that the causal risk difference for vitamins <span class="math inline">\(E\)</span> differs between “everybody transplanted” and “nobody transplanted”.</p>
+<aside class="notes">
+<p>In <a href="#/exm-transplant-vitamins" class="quarto-xref">Example&nbsp;1</a>, the middle line gives <span class="math inline">\(p_{11} - p_{01} - p_{10} + p_{00} = 0.1 - 0.2 = -0.1\)</span>, so the last line gives <span class="math inline">\(p_{11} - p_{10} = (p_{01} - p_{00}) - 0.1\)</span>: the risk difference for vitamins is <span class="math inline">\(0.1\)</span> lower among the transplanted than among the untransplanted, which is the book’s statement that the inequality for <span class="math inline">\(A\)</span> implies the corresponding inequality for <span class="math inline">\(E\)</span> <span class="citation" data-cites="hernan2020causal">(<a href="#/references" role="doc-biblioref" onclick="">Hernán and Robins 2020, 62</a>)</span>.</p>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside>
 </section>
 <section class="slide level2">
 
-<p>To define interaction, we need to consider the <strong>joint effect</strong> of two treatments, which requires imagining interventions on both treatments simultaneously.</p>
-</section>
-<section id="notation-for-two-treatments" class="slide level2">
-<h2>Notation for Two Treatments</h2>
-<p>Suppose we have two binary treatments:</p>
-<ul>
-<li><span class="math inline">\(A\)</span>: First treatment (e.g., aspirin), with levels 0 or 1</li>
-<li><span class="math inline">\(E\)</span>: Second treatment (e.g., blood pressure medication), with levels 0 or 1</li>
-</ul>
-<p>This creates four possible treatment combinations: 1. <span class="math inline">\((A=0, E=0)\)</span>: Neither treatment 2. <span class="math inline">\((A=1, E=0)\)</span>: Aspirin only 3. <span class="math inline">\((A=0, E=1)\)</span>: Blood pressure medication only<br>
-4. <span class="math inline">\((A=1, E=1)\)</span>: Both treatments</p>
-<p>For each individual, we have four counterfactual outcomes:</p>
-<ul>
-<li><span class="math inline">\(Y^{a=0, e=0}\)</span>: Outcome if neither treatment received</li>
-<li><span class="math inline">\(Y^{a=1, e=0}\)</span>: Outcome if only <span class="math inline">\(A\)</span> received</li>
-<li><span class="math inline">\(Y^{a=0, e=1}\)</span>: Outcome if only <span class="math inline">\(E\)</span> received</li>
-<li><span class="math inline">\(Y^{a=1, e=1}\)</span>: Outcome if both treatments received</li>
-</ul>
-<aside class="notes">
-<p><strong>Superscript notation</strong>: <span class="math inline">\(Y^{a,e}\)</span> denotes the potential outcome under the joint intervention that sets <span class="math inline">\(A = a\)</span> and <span class="math inline">\(E = e\)</span> simultaneously.</p>
-<p>This notation generalizes naturally to more than two treatments or to continuous treatments, but we focus on the binary case for clarity.</p>
-<style type="text/css">
-        span.MJX_Assistive_MathML {
-          position:absolute!important;
-          clip: rect(1px, 1px, 1px, 1px);
-          padding: 1px 0 0 0!important;
-          border: 0!important;
-          height: 1px!important;
-          width: 1px!important;
-          overflow: hidden!important;
-          display:block!important;
-      }</style></aside>
-</section>
-<section id="definition-of-interaction" class="slide level2">
-<h2>Definition of Interaction</h2>
-<div id="def-interaction-additive" class="theorem definition">
-<p><span class="theorem-title"><strong>Definition 1 (Additive Interaction)</strong></span> There is <strong>additive interaction</strong> (on the risk difference scale) between treatments <span class="math inline">\(A\)</span> and <span class="math inline">\(E\)</span> if:</p>
-<p><span class="math display">\[\text{E}{\left[Y^{a=1,e=1}\right]} - \text{E}{\left[Y^{a=0,e=0}\right]} \neq \bigl(\text{E}{\left[Y^{a=1,e=0}\right]} - \text{E}{\left[Y^{a=0,e=0}\right]}\bigr) + \bigl(\text{E}{\left[Y^{a=0,e=1}\right]} - \text{E}{\left[Y^{a=0,e=0}\right]}\bigr)\]</span></p>
-<p>In words: the joint effect of both treatments differs from the sum of the individual effects.</p>
+<div title="Technical Point 5.1: Additive and Multiplicative Scales">
+<div class="callout callout-note callout-titled callout-style-default">
+<div class="callout-body">
+<div class="callout-title">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
 </div>
-<p>Equivalently, we can define additive interaction using the <strong>interaction contrast</strong>:</p>
-<p><span class="math display">\[\text{IC} = \text{E}{\left[Y^{a=1,e=1}\right]} - \text{E}{\left[Y^{a=1,e=0}\right]} - \text{E}{\left[Y^{a=0,e=1}\right]} + \text{E}{\left[Y^{a=0,e=0}\right]}\]</span></p>
-<p>If <span class="math inline">\(\text{IC} \neq 0\)</span>, there is additive interaction.</p>
+<p><strong>Technical Point 5.1: Additive and Multiplicative Scales</strong></p>
+</div>
+<div class="callout-content">
+<p>No interaction on the additive scale means the joint effect is the sum of the two separate effects:</p>
+<p><span class="math display">\[
+p_{11} - p_{00} = (p_{10} - p_{00}) + (p_{01} - p_{00}).
+\]</span></p>
+<p>When the two sides differ, the interaction is</p>
+<ul>
+<li><strong>superadditive</strong> if the left side is greater (<span class="math inline">\(&gt;\)</span>);</li>
+<li><strong>subadditive</strong> if the left side is smaller (<span class="math inline">\(&lt;\)</span>).</li>
+</ul>
+<p>On the <strong>multiplicative scale</strong> (causal risk ratios), <span class="math inline">\(A\)</span> and <span class="math inline">\(E\)</span> interact if</p>
+<p><span class="math display">\[
+\frac{p_{11}}{p_{00}} \neq \frac{p_{10}}{p_{00}} \times \frac{p_{01}}{p_{00}},
+\]</span></p>
+<p>with <strong>supermultiplicative</strong> (<span class="math inline">\(&gt;\)</span>) and <strong>submultiplicative</strong> (<span class="math inline">\(&lt;\)</span>) interaction defined analogously.</p>
 <aside class="notes">
-<p><strong>Interpretation of IC</strong>:</p>
-<ul>
-<li>If <span class="math inline">\(\text{IC} &gt; 0\)</span>: <strong>Synergism</strong> or <strong>superadditivity</strong> (combined effect exceeds sum of individual effects)</li>
-<li>If <span class="math inline">\(\text{IC} &lt; 0\)</span>: <strong>Antagonism</strong> or <strong>subadditivity</strong> (combined effect is less than sum of individual effects)</li>
-<li>If <span class="math inline">\(\text{IC} = 0\)</span>: <strong>No interaction</strong> or <strong>additivity</strong> (combined effect equals sum of individual effects)</li>
-</ul>
-<p><strong>Important distinction</strong>:</p>
-<ul>
-<li><strong>Effect modification</strong> (Chapter 4): Effect of <span class="math inline">\(A\)</span> varies across levels of a baseline variable <span class="math inline">\(V\)</span></li>
-<li><strong>Interaction</strong> (Chapter 5): Joint effect of two treatments <span class="math inline">\(A\)</span> and <span class="math inline">\(E\)</span> differs from sum of individual effects</li>
-</ul>
-<p>Effect modification involves one treatment and one baseline covariate; interaction involves two (or more) treatments.</p>
+<p>The additive form follows from the definition in two steps <span class="citation" data-cites="hernan2020causal">(<a href="#/references" role="doc-biblioref" onclick="">Hernán and Robins 2020</a>, Technical Point 5.1, p.&nbsp;63)</span>. No interaction means <span class="math inline">\(p_{11} - p_{01} = p_{10} - p_{00}\)</span>. Adding <span class="math inline">\(p_{01}\)</span> to both sides gives <span class="math inline">\(p_{11} = p_{10} - p_{00} + p_{01}\)</span>. Subtracting <span class="math inline">\(p_{00}\)</span> from both sides gives <span class="math inline">\(p_{11} - p_{00} = (p_{10} - p_{00}) + (p_{01} - p_{00})\)</span>, the displayed equality.</p>
+<p>Subtracting <span class="math inline">\((p_{10} - p_{00}) + (p_{01} - p_{00})\)</span> from <span class="math inline">\(p_{11} - p_{00}\)</span> leaves <span class="math inline">\(p_{11} - p_{10} - p_{01} + p_{00}\)</span>, so in <a href="#/exm-transplant-vitamins" class="quarto-xref">Example&nbsp;1</a> (where that quantity is <span class="math inline">\(-0.1\)</span>) the interaction is subadditive.</p>
 <style type="text/css">
         span.MJX_Assistive_MathML {
           position:absolute!important;
@@ -261,67 +303,197 @@
           overflow: hidden!important;
           display:block!important;
       }</style></aside>
+</div>
+</div>
+</div>
+</div>
 </section>
-<section id="example-interaction-between-aspirin-and-exercise" class="slide level2">
-<h2>Example: Interaction Between Aspirin and Exercise</h2>
-<div id="exm-interaction-example" class="theorem example">
-<p><span class="theorem-title"><strong>Example 1 (Interaction Example)</strong></span> Suppose we study the effect of aspirin and exercise on heart attack risk (with lower values being better):</p>
+<section id="interaction-versus-effect-modification" class="slide level2">
+<h2>Interaction versus Effect Modification</h2>
 <table class="caption-top">
+<colgroup>
+<col style="width: 33%">
+<col style="width: 33%">
+<col style="width: 33%">
+</colgroup>
 <thead>
 <tr class="header">
-<th>Treatment Combination</th>
-<th>Risk</th>
+<th></th>
+<th>Effect modification by <span class="math inline">\(V\)</span></th>
+<th>Interaction between <span class="math inline">\(A\)</span> and <span class="math inline">\(E\)</span></th>
 </tr>
 </thead>
 <tbody>
 <tr class="odd">
-<td>No aspirin, no exercise: <span class="math inline">\(\text{E}{\left[Y^{a=0,e=0}\right]}\)</span></td>
-<td>0.30</td>
+<td>Counterfactuals involved</td>
+<td><span class="math inline">\(Y^a\)</span></td>
+<td><span class="math inline">\(Y^{a,e}\)</span></td>
 </tr>
 <tr class="even">
-<td>Aspirin only: <span class="math inline">\(\text{E}{\left[Y^{a=1,e=0}\right]}\)</span></td>
-<td>0.25</td>
+<td>Interventions</td>
+<td>on <span class="math inline">\(A\)</span> only</td>
+<td>joint, on <span class="math inline">\(A\)</span> and <span class="math inline">\(E\)</span></td>
 </tr>
 <tr class="odd">
-<td>Exercise only: <span class="math inline">\(\text{E}{\left[Y^{a=0,e=1}\right]}\)</span></td>
-<td>0.20</td>
-</tr>
-<tr class="even">
-<td>Both aspirin and exercise: <span class="math inline">\(\text{E}{\left[Y^{a=1,e=1}\right]}\)</span></td>
-<td>0.10</td>
+<td>Status of the two variables</td>
+<td>unequal: <span class="math inline">\(V\)</span> is not intervened on</td>
+<td>equal</td>
 </tr>
 </tbody>
 </table>
-<p><strong>Individual effects</strong>:</p>
+<aside class="notes">
+<p>Effect modification is about the causal effect of <span class="math inline">\(A\)</span> only. In Chapter 4, sex modified the effect of transplant, but the effect of sex on death was never considered, so <span class="math inline">\(V\)</span> and <span class="math inline">\(A\)</span> were not on an equal footing. Interaction concerns the joint causal effect of <span class="math inline">\(A\)</span> and <span class="math inline">\(E\)</span>, and its two equivalent definitions treat <span class="math inline">\(A\)</span> and <span class="math inline">\(E\)</span> symmetrically <span class="citation" data-cites="hernan2020causal">(<a href="#/references" role="doc-biblioref" onclick="">Hernán and Robins 2020, 62</a>)</span>.</p>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside>
+</section></section>
+<section>
+<section id="identifying-interaction-pp.-62-64" class="title-slide slide level1 center" data-number="2">
+<h1><span class="header-section-number">2</span> 5.2 Identifying Interaction (pp.&nbsp;62-64)</h1>
+
+</section>
+<section class="slide level2">
+
+<p>Interaction concerns a joint effect, so identifying it requires exchangeability, positivity, and consistency for <strong>both</strong> treatments.</p>
+</section>
+<section id="when-e-is-randomized-interaction-is-effect-modification-by-e" class="slide level2">
+<h2>When <span class="math inline">\(E\)</span> Is Randomized, Interaction Is Effect Modification by <span class="math inline">\(E\)</span></h2>
+<p>If vitamins <span class="math inline">\(E\)</span> are randomly and unconditionally assigned, then for each <span class="math inline">\(a\)</span> and <span class="math inline">\(e\)</span></p>
+<p><span class="math display">\[
+\begin{aligned}
+\Pr[Y^{a,e}=1]
+  &amp;= \Pr[Y^{a,e}=1 \mid E=e]
+  &amp;&amp; \text{(exchangeability for } E\text{: } Y^{a,e} \perp\!\!\!\perp E\text{)} \\
+  &amp;= \Pr[Y^{a,E}=1 \mid E=e]
+  &amp;&amp; \text{(}Y^{a,e} = Y^{a,E}\text{ when } E=e\text{)} \\
+  &amp;= \Pr[Y^{a}=1 \mid E=e]
+  &amp;&amp; \text{(recursive substitution, } Y^a = Y^{a,E}\text{)}.
+\end{aligned}
+\]</span></p>
+<p>Substituting into <a href="#/def-interaction-additive" class="quarto-xref">Definition&nbsp;2</a>, interaction on the additive scale becomes</p>
+<p><span class="math display">\[
+\Pr[Y^{a=1}=1 \mid E=1] - \Pr[Y^{a=0}=1 \mid E=1]
+\neq
+\Pr[Y^{a=1}=1 \mid E=0] - \Pr[Y^{a=0}=1 \mid E=0],
+\]</span></p>
+<p>which is the definition of additive effect modification of <span class="math inline">\(A\)</span> by <span class="math inline">\(E\)</span>.</p>
+<aside class="notes">
+<p>So when <span class="math inline">\(E\)</span> is randomized, interaction and effect modification coincide, and the Chapter 4 methods for detecting effect modification by <span class="math inline">\(V\)</span> apply after replacing <span class="math inline">\(V\)</span> by <span class="math inline">\(E\)</span> <span class="citation" data-cites="hernan2020causal">(<a href="#/references" role="doc-biblioref" onclick="">Hernán and Robins 2020, 62–63</a>)</span>.</p>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside>
+</section>
+<section id="when-e-is-not-randomized" class="slide level2">
+<h2>When <span class="math inline">\(E\)</span> Is Not Randomized</h2>
+<p>We still need the four marginal risks <span class="math inline">\(\Pr[Y^{a,e}=1]\)</span>. Under the usual identifying assumptions for <strong>both</strong> treatments, they can be computed by standardization or IP weighting over the measured covariates.</p>
+<p>Equivalently, treat <span class="math inline">\(AE\)</span> as <strong>one treatment with four levels</strong> (11, 01, 10, 00). Identifying interaction is then the familiar problem of identifying the effect of a single treatment, with more treatment values and more counterfactual outcomes.</p>
+<aside class="notes">
+<p><span class="citation" data-cites="hernan2020causal">Hernán and Robins (<a href="#/references" role="doc-biblioref" onclick="">2020, 64</a>)</span> states that exchangeability, positivity, and consistency for the joint treatment <span class="math inline">\((A, E)\)</span> are a <strong>sufficient</strong> condition for identifying interaction. Part III of the book shows the condition is not necessary when the two treatments occur at different times. After this chapter, most of Parts I and II return to a single treatment <span class="math inline">\(A\)</span>.</p>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside>
+</section>
+<section id="effect-modification-without-interaction" class="slide level2">
+<h2>Effect Modification Without Interaction</h2>
+<p>If we are willing to assume exchangeability for <span class="math inline">\(A\)</span> but not for <span class="math inline">\(E\)</span> (e.g., <span class="math inline">\(A\)</span> is randomized and we look at subgroups defined by <span class="math inline">\(E\)</span>), we can assess <strong>effect modification by <span class="math inline">\(E\)</span></strong> but generally not <strong>interaction between <span class="math inline">\(A\)</span> and <span class="math inline">\(E\)</span></strong>: computing the effect of <span class="math inline">\(A\)</span> within strata of <span class="math inline">\(E\)</span> requires no assumptions about the effect of <span class="math inline">\(E\)</span>.</p>
 <ul>
-<li>Effect of aspirin (without exercise): <span class="math inline">\(0.25 - 0.30 = -0.05\)</span></li>
-<li>Effect of exercise (without aspirin): <span class="math inline">\(0.20 - 0.30 = -0.10\)</span></li>
-<li>Sum of individual effects: <span class="math inline">\(-0.05 + (-0.10) = -0.15\)</span></li>
+<li>Chapter 4 wrote such variables as <span class="math inline">\(V\)</span> (no identifying assumptions made for them).</li>
+<li>Nationality <span class="math inline">\(V\)</span> was a <strong>surrogate</strong> effect modifier: it does not act on <span class="math inline">\(Y\)</span>, so it does not interact with <span class="math inline">\(A\)</span> (“no action, no interaction”).</li>
+<li><span class="math inline">\(V\)</span> still modifies the effect of <span class="math inline">\(A\)</span> because it is correlated with a variable that does act on <span class="math inline">\(Y\)</span> and does interact with <span class="math inline">\(A\)</span>.</li>
 </ul>
-<p><strong>Joint effect</strong>:</p>
-<ul>
-<li><span class="math inline">\(0.10 - 0.30 = -0.20\)</span></li>
-</ul>
-<p><strong>Interaction contrast</strong>:</p>
-<ul>
-<li><span class="math inline">\(\text{IC} = -0.20 - (-0.15) = -0.05\)</span></li>
-</ul>
-<p>There is <strong>negative</strong> additive interaction (antagonism is not the right word here; rather, the combined benefit exceeds the sum). Actually, let me recalculate:</p>
-<p><span class="math inline">\(\text{IC} = 0.10 - 0.25 - 0.20 + 0.30 = -0.05\)</span></p>
-<p>Since <span class="math inline">\(\text{IC} &lt; 0\)</span>, there is negative interaction, but in this case both treatments are beneficial, and their combined effect (-0.20) is actually more beneficial than the sum of individual effects (-0.15). This is <strong>synergism</strong>: the combination is more effective than expected from adding individual effects.</p>
+<aside class="notes">
+<p>So there can be effect modification of <span class="math inline">\(A\)</span> by a variable without interaction between <span class="math inline">\(A\)</span> and that variable. The reverse, interaction between <span class="math inline">\(A\)</span> and <span class="math inline">\(E\)</span> without modification of the effect of <span class="math inline">\(A\)</span> by <span class="math inline">\(E\)</span>, is logically possible but probably rare, because it requires dual effects of <span class="math inline">\(A\)</span> and exact cancellations <span class="citation" data-cites="hernan2020causal">(<a href="#/references" role="doc-biblioref" onclick="">Hernán and Robins 2020, 64</a>, margin note citing VanderWeele 2009b)</span>.</p>
+<p>The results so far do not require deterministic counterfactuals. Section 5.3 does: from there on the chapter assumes deterministic counterfactuals and dichotomous treatments and outcome <span class="citation" data-cites="hernan2020causal">(<a href="#/references" role="doc-biblioref" onclick="">Hernán and Robins 2020, 64</a>)</span>.</p>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside>
+</section></section>
+<section>
+<section id="counterfactual-response-types-and-interaction-pp.-64-66" class="title-slide slide level1 center" data-number="3">
+<h1><span class="header-section-number">3</span> 5.3 Counterfactual Response Types and Interaction (pp.&nbsp;64-66)</h1>
+
+</section>
+<section id="one-treatment-four-response-types" class="slide level2">
+<h2>One Treatment: Four Response Types</h2>
+<div id="tbl-response-types-one" class="quarto-float quarto-figure quarto-figure-center">
+<figure class="quarto-float quarto-float-tbl">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-response-types-one-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Table&nbsp;1: Response types for one dichotomous treatment <span class="citation" data-cites="hernan2020causal">(<a href="#/references" role="doc-biblioref" onclick="">Hernán and Robins 2020</a>, Table 5.1, p.&nbsp;64)</span>
+</figcaption>
+<div aria-describedby="tbl-response-types-one-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<table class="caption-top">
+<thead>
+<tr class="header">
+<th>Type</th>
+<th><span class="math inline">\(Y^{a=0}\)</span></th>
+<th><span class="math inline">\(Y^{a=1}\)</span></th>
+<th>Zeus’s family (Table 1.1)</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Doomed</td>
+<td>1</td>
+<td>1</td>
+<td>Artemis, Athena, Persephone, Ares</td>
+</tr>
+<tr class="even">
+<td>Helped</td>
+<td>1</td>
+<td>0</td>
+<td>Hebe, Kronos, Poseidon, Apollo, Hermes, Dionysus</td>
+</tr>
+<tr class="odd">
+<td>Hurt</td>
+<td>0</td>
+<td>1</td>
+<td>Rheia, Leto, Aphrodite, Zeus, Hephaestus, Polyphemus</td>
+</tr>
+<tr class="even">
+<td>Immune</td>
+<td>0</td>
+<td>0</td>
+<td>Demeter, Hestia, Hera, Hades</td>
+</tr>
+</tbody>
+</table>
+</div>
+</figure>
 </div>
 <aside class="notes">
-<p><strong>Confusion about signs</strong>: The sign of the interaction contrast depends on the coding of the outcome:</p>
-<ul>
-<li>If higher <span class="math inline">\(Y\)</span> is worse (e.g., risk of disease), negative IC means synergistic benefit</li>
-<li>If higher <span class="math inline">\(Y\)</span> is better (e.g., recovery), positive IC means synergistic benefit</li>
-</ul>
-<p>To avoid confusion, always interpret the interaction contrast in the context of the specific outcome and treatment effects.</p>
-<p><strong>Alternative terminology</strong>:</p>
-<ul>
-<li><strong>Positive interaction</strong> / <strong>Synergism</strong> / <strong>Superadditivity</strong>: <span class="math inline">\(|\text{Joint effect}| &gt; |\text{Sum of individual effects}|\)</span></li>
-<li><strong>Negative interaction</strong> / <strong>Antagonism</strong> / <strong>Subadditivity</strong>: <span class="math inline">\(|\text{Joint effect}| &lt; |\text{Sum of individual effects}|\)</span></li>
-</ul>
+<p>A combination of counterfactual responses is called a <strong>response pattern</strong> or <strong>response type</strong>.</p>
 <style type="text/css">
         span.MJX_Assistive_MathML {
           position:absolute!important;
@@ -333,139 +505,192 @@
           overflow: hidden!important;
           display:block!important;
       }</style></aside>
-</section></section>
-<section>
-<section id="identifying-interaction-pp.-49-51" class="title-slide slide level1 center" data-number="2">
-<h1><span class="header-section-number">2</span> 5.2 Identifying Interaction (pp.&nbsp;49-51)</h1>
-
 </section>
-<section class="slide level2">
-
-<p>To identify interaction from observed data, we need the three identifiability conditions introduced in Chapter 3:</p>
+<section id="two-treatments-sixteen-response-types" class="slide level2">
+<h2>Two Treatments: Sixteen Response Types</h2>
+<p>With two dichotomous treatments each individual has four counterfactual outcomes, so there are <span class="math inline">\(2^4 = 16\)</span> response types (Miettinen 1982).</p>
+<div id="tbl-response-types-two" class="quarto-float quarto-figure quarto-figure-center">
+<figure class="quarto-float quarto-float-tbl">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-response-types-two-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Table&nbsp;2: Response types for two dichotomous treatments; superscripts are <span class="math inline">\((a, e)\)</span> <span class="citation" data-cites="hernan2020causal">(<a href="#/references" role="doc-biblioref" onclick="">Hernán and Robins 2020</a>, Table 5.2, p.&nbsp;65)</span>
+</figcaption>
+<div aria-describedby="tbl-response-types-two-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<table class="caption-top">
+<thead>
+<tr class="header">
+<th>Type</th>
+<th><span class="math inline">\(Y^{1,1}\)</span></th>
+<th><span class="math inline">\(Y^{0,1}\)</span></th>
+<th><span class="math inline">\(Y^{1,0}\)</span></th>
+<th><span class="math inline">\(Y^{0,0}\)</span></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>1</td>
+<td>1</td>
+<td>1</td>
+<td>1</td>
+<td>1</td>
+</tr>
+<tr class="even">
+<td>2</td>
+<td>1</td>
+<td>1</td>
+<td>1</td>
+<td>0</td>
+</tr>
+<tr class="odd">
+<td>3</td>
+<td>1</td>
+<td>1</td>
+<td>0</td>
+<td>1</td>
+</tr>
+<tr class="even">
+<td>4</td>
+<td>1</td>
+<td>1</td>
+<td>0</td>
+<td>0</td>
+</tr>
+<tr class="odd">
+<td>5</td>
+<td>1</td>
+<td>0</td>
+<td>1</td>
+<td>1</td>
+</tr>
+<tr class="even">
+<td>6</td>
+<td>1</td>
+<td>0</td>
+<td>1</td>
+<td>0</td>
+</tr>
+<tr class="odd">
+<td>7</td>
+<td>1</td>
+<td>0</td>
+<td>0</td>
+<td>1</td>
+</tr>
+<tr class="even">
+<td>8</td>
+<td>1</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+</tr>
+<tr class="odd">
+<td>9</td>
+<td>0</td>
+<td>1</td>
+<td>1</td>
+<td>1</td>
+</tr>
+<tr class="even">
+<td>10</td>
+<td>0</td>
+<td>1</td>
+<td>1</td>
+<td>0</td>
+</tr>
+<tr class="odd">
+<td>11</td>
+<td>0</td>
+<td>1</td>
+<td>0</td>
+<td>1</td>
+</tr>
+<tr class="even">
+<td>12</td>
+<td>0</td>
+<td>1</td>
+<td>0</td>
+<td>0</td>
+</tr>
+<tr class="odd">
+<td>13</td>
+<td>0</td>
+<td>0</td>
+<td>1</td>
+<td>1</td>
+</tr>
+<tr class="even">
+<td>14</td>
+<td>0</td>
+<td>0</td>
+<td>1</td>
+<td>0</td>
+</tr>
+<tr class="odd">
+<td>15</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>1</td>
+</tr>
+<tr class="even">
+<td>16</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+</tr>
+</tbody>
+</table>
+</div>
+</figure>
+</div>
 </section>
-<section id="identifiability-conditions-for-interaction" class="slide level2 scrollable">
-<h2>Identifiability Conditions for Interaction</h2>
+<section id="types-without-interaction" class="slide level2">
+<h2>Types Without Interaction</h2>
+<p>In six types the effect of each treatment does not depend on the other:</p>
+<ul>
+<li>type 1 (dies under every joint treatment) and type 16 (survives under every joint treatment);</li>
+<li>type 4: dies only if given vitamins (<span class="math inline">\(E\)</span> alone matters);</li>
+<li>type 13: dies only if not given vitamins;</li>
+<li>type 6: dies only if transplanted (<span class="math inline">\(A\)</span> alone matters);</li>
+<li>type 11: dies only if not transplanted.</li>
+</ul>
+<p>If everyone has one of types 1, 4, 6, 11, 13, 16, there is no interaction between <span class="math inline">\(A\)</span> and <span class="math inline">\(E\)</span> on the additive scale.</p>
+<aside class="notes">
+<p>If everyone were of type 1 or 16, the sharp causal null hypothesis would hold for the joint treatment <span class="math inline">\((A, E)\)</span> <span class="citation" data-cites="hernan2020causal">(<a href="#/references" role="doc-biblioref" onclick="">Hernán and Robins 2020, 65</a>)</span>.</p>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside>
+</section>
+<section id="additive-interaction-requires-interaction-types" class="slide level2 scrollable">
+<h2>Additive Interaction Requires Interaction Types</h2>
+<p>Additive interaction implies that some individuals belong to at least one of three classes (Greenland and Poole 1988), each invariant to recoding <span class="math inline">\(A\)</span> and <span class="math inline">\(E\)</span>:</p>
 <ol type="1">
-<li><p><strong>Exchangeability</strong> for the joint treatment <span class="math inline">\((A, E)\)</span>: <span class="math display">\[Y^{a,e} \perp\!\!\!\perp(A, E) \quad \text{for all } (a,e)\]</span></p></li>
-<li><p><strong>Positivity</strong> for the joint treatment: <span class="math display">\[\Pr[A = a, E = e] &gt; 0 \quad \text{for all } (a,e)\]</span></p></li>
-<li><p><strong>Consistency</strong>: <span class="math display">\[Y = Y^{A,E}\]</span> No interference, well-defined treatments</p></li>
+<li>outcome under only <strong>one</strong> of the four joint treatments: types 8, 12, 14, 15;</li>
+<li>outcome under <strong>two</strong> joint treatments, with the effect of each treatment reversed across levels of the other: types 7, 10;</li>
+<li>outcome under <strong>three</strong> of the four joint treatments: types 2, 3, 5, 9.</li>
 </ol>
-<aside class="notes">
-<p><strong>Key point</strong>: We treat <span class="math inline">\((A, E)\)</span> as a single joint treatment with four levels: <span class="math inline">\((0,0), (1,0), (0,1), (1,1)\)</span>.</p>
-<p><strong>Randomized experiments</strong>:</p>
-<ul>
-<li>If both <span class="math inline">\(A\)</span> and <span class="math inline">\(E\)</span> are randomized independently, exchangeability and positivity typically hold</li>
-<li>This is a <strong>factorial design</strong>: randomize to all four combinations</li>
-<li>Allows unbiased estimation of interaction</li>
-</ul>
-<p><strong>Observational studies</strong>:</p>
-<ul>
-<li>Must adjust for confounders of <span class="math inline">\((A, E)\)</span> relationship with <span class="math inline">\(Y\)</span></li>
-<li>This may include confounders of <span class="math inline">\(A\)</span>, confounders of <span class="math inline">\(E\)</span>, and confounders of their joint distribution</li>
-<li>Positivity requires that all four treatment combinations occur at all levels of confounders</li>
-</ul>
-<style type="text/css">
-        span.MJX_Assistive_MathML {
-          position:absolute!important;
-          clip: rect(1px, 1px, 1px, 1px);
-          padding: 1px 0 0 0!important;
-          border: 0!important;
-          height: 1px!important;
-          width: 1px!important;
-          overflow: hidden!important;
-          display:block!important;
-      }</style></aside>
-</section>
-<section id="estimating-interaction-from-data" class="slide level2">
-<h2>Estimating Interaction from Data</h2>
-<p>Under the identifiability conditions, we can estimate the interaction contrast:</p>
-<p><strong>In a randomized experiment</strong>: <span class="math display">\[\widehat{\text{IC}} = \bar{Y}_{A=1,E=1} - \bar{Y}_{A=1,E=0} - \bar{Y}_{A=0,E=1} + \bar{Y}_{A=0,E=0}\]</span></p>
-<p>where <span class="math inline">\(\bar{Y}_{a,e}\)</span> is the average observed outcome in the group assigned to treatment combination <span class="math inline">\((a,e)\)</span>.</p>
-<p><strong>In an observational study with confounders <span class="math inline">\(L\)</span></strong>: Use standardization, IP weighting, or regression to adjust for <span class="math inline">\(L\)</span> before computing the interaction contrast.</p>
-<aside class="notes">
-<p><strong>Sample size considerations</strong>: Estimating interaction requires sufficient sample size in all four treatment groups. The standard error of the interaction contrast is typically larger than standard errors of main effects, so interaction estimates have less precision.</p>
-<p><strong>Multiple testing</strong>: When examining multiple potential interactions, be mindful of multiple comparisons and the increased risk of false positives.</p>
-<style type="text/css">
-        span.MJX_Assistive_MathML {
-          position:absolute!important;
-          clip: rect(1px, 1px, 1px, 1px);
-          padding: 1px 0 0 0!important;
-          border: 0!important;
-          height: 1px!important;
-          width: 1px!important;
-          overflow: hidden!important;
-          display:block!important;
-      }</style></aside>
-</section></section>
-<section>
-<section id="counterfactual-response-types-and-interaction-pp.-51-53" class="title-slide slide level1 center" data-number="3">
-<h1><span class="header-section-number">3</span> 5.3 Counterfactual Response Types and Interaction (pp.&nbsp;51-53)</h1>
-
-</section>
-<section class="slide level2">
-
-<p>Another way to understand interaction is through <strong>counterfactual response types</strong>—classifications of individuals based on their pattern of potential outcomes.</p>
-</section>
-<section id="four-response-types-binary-outcome" class="slide level2 scrollable">
-<h2>Four Response Types (Binary Outcome)</h2>
-<p>For a binary outcome, individuals can be classified into one of four types based on their four potential outcomes:</p>
-<ol type="1">
-<li><strong>Doomed</strong>: <span class="math inline">\(Y^{0,0} = Y^{1,0} = Y^{0,1} = Y^{1,1} = 1\)</span> (outcome occurs regardless of treatment)</li>
-<li><strong>Preventive via <span class="math inline">\(A\)</span> only</strong>: <span class="math inline">\(Y^{0,0} = Y^{0,1} = 1\)</span>, but <span class="math inline">\(Y^{1,0} = Y^{1,1} = 0\)</span></li>
-<li><strong>Preventive via <span class="math inline">\(E\)</span> only</strong>: <span class="math inline">\(Y^{0,0} = Y^{1,0} = 1\)</span>, but <span class="math inline">\(Y^{0,1} = Y^{1,1} = 0\)</span></li>
-<li><strong>Preventive via both</strong>: <span class="math inline">\(Y^{0,0} = 1\)</span>, but <span class="math inline">\(Y^{1,0} = Y^{0,1} = Y^{1,1} = 0\)</span></li>
-<li><strong>Immune</strong>: <span class="math inline">\(Y^{0,0} = Y^{1,0} = Y^{0,1} = Y^{1,1} = 0\)</span> (outcome never occurs)</li>
-</ol>
-<p>And several other combinations…</p>
-<aside class="notes">
-<p>Actually, with four binary potential outcomes, there are <span class="math inline">\(2^4 = 16\)</span> possible response types. Many of these correspond to various patterns of interaction:</p>
-<ul>
-<li><strong>Synergistic</strong> types: Individuals for whom the outcome is prevented only by the combination of both treatments</li>
-<li><strong>Redundant</strong> types: Individuals who benefit from either treatment alone (treatments are substitutes)</li>
-<li><strong>Antagonistic</strong> types: Individuals who benefit from one treatment alone but not from the combination</li>
-</ul>
-<p>These response types are <strong>unobservable</strong>—we can never know which type an individual is because we only observe one potential outcome. However, the <em>distribution</em> of response types in the population determines whether interaction exists.</p>
-<style type="text/css">
-        span.MJX_Assistive_MathML {
-          position:absolute!important;
-          clip: rect(1px, 1px, 1px, 1px);
-          padding: 1px 0 0 0!important;
-          border: 0!important;
-          height: 1px!important;
-          width: 1px!important;
-          overflow: hidden!important;
-          display:block!important;
-      }</style></aside>
-</section>
-<section id="relationship-to-interaction" class="slide level2">
-<h2>Relationship to Interaction</h2>
-<p>Interaction on the additive scale corresponds to certain response types being more or less common than others.</p>
-<div id="exm-response-types" class="theorem example">
-<p><span class="theorem-title"><strong>Example 2 (Response Types Example)</strong></span> Suppose we have:</p>
-<ul>
-<li>30% of population: Prevented only by <span class="math inline">\(A\)</span></li>
-<li>20% of population: Prevented only by <span class="math inline">\(E\)</span></li>
-<li>10% of population: Prevented only by both <span class="math inline">\(A\)</span> and <span class="math inline">\(E\)</span> together</li>
-<li>40% of population: Immune (never get disease)</li>
-</ul>
-<p>Then:</p>
-<ul>
-<li><span class="math inline">\(\text{E}{\left[Y^{0,0}\right]} = 0.30 + 0.20 + 0.10 = 0.60\)</span></li>
-<li><span class="math inline">\(\text{E}{\left[Y^{1,0}\right]} = 0.20 + 0.10 = 0.30\)</span> (the 30% prevented by <span class="math inline">\(A\)</span> no longer get disease)</li>
-<li><span class="math inline">\(\text{E}{\left[Y^{0,1}\right]} = 0.30 + 0.10 = 0.40\)</span> (the 20% prevented by <span class="math inline">\(E\)</span> no longer get disease)</li>
-<li><span class="math inline">\(\text{E}{\left[Y^{1,1}\right]} = 0.10\)</span> (only the synergistic group still gets disease)</li>
-</ul>
-<p><strong>Interaction contrast</strong>: <span class="math display">\[\text{IC} = 0.10 - 0.30 - 0.40 + 0.60 = 0\]</span></p>
-<p>Despite the synergistic response type existing, there is no interaction on the additive scale because the effects balance out.</p>
+<p>No additive interaction implies either that nobody is in these classes or that equal deviations of opposite sign cancel exactly (e.g., equal proportions of types 7 and 10, or of types 8 and 12).</p>
+<div id="exm-cancellation" class="theorem example">
+<p><span class="theorem-title"><strong>Example 2 (Cancellation of Interaction Types)</strong></span> Let a fraction <span class="math inline">\(q\)</span> of the population be type 8, a fraction <span class="math inline">\(q\)</span> be type 12, and the rest type 16. Reading the risks off <a href="#/tbl-response-types-two" class="quarto-xref">Table&nbsp;2</a>: <span class="math inline">\(p_{11} = q\)</span> (type 8), <span class="math inline">\(p_{01} = q\)</span> (type 12), <span class="math inline">\(p_{10} = 0\)</span>, <span class="math inline">\(p_{00} = 0\)</span>. Then</p>
+<p><span class="math display">\[
+\begin{aligned}
+p_{11} - p_{01} - p_{10} + p_{00}
+  &amp;= q - q - 0 + 0 \\
+  &amp;= 0,
+\end{aligned}
+\]</span></p>
+<p>so there is no interaction on the additive scale in the population, even though every type-8 and type-12 individual has an effect of <span class="math inline">\(A\)</span> that depends on <span class="math inline">\(E\)</span>.</p>
 </div>
 <aside class="notes">
-<p>This example illustrates that:</p>
-<ul>
-<li>Existence of synergistic response types does <strong>not</strong> guarantee additive interaction will be detected</li>
-<li>Interaction depends on the <em>prevalence</em> of different response types</li>
-<li>Different scales (additive vs.&nbsp;multiplicative) may reveal interaction even when others do not</li>
-</ul>
-<p>The response type framework provides a mechanistic interpretation of interaction but requires strong assumptions (monotonicity, no redundancy) to map cleanly onto observed interaction measures.</p>
+<p>Miettinen’s 16 types are not invariant to switching the labels “0” and “1”; Greenland and Poole’s three classes are <span class="citation" data-cites="hernan2020causal">(<a href="#/references" role="doc-biblioref" onclick="">Hernán and Robins 2020, 65</a>, margin note)</span>. Greenland, Lash, and Rothman (2008) discuss such cancellations further.</p>
 <style type="text/css">
         span.MJX_Assistive_MathML {
           position:absolute!important;
@@ -477,38 +702,179 @@
           overflow: hidden!important;
           display:block!important;
       }</style></aside>
+</section>
+<section class="slide level2">
+
+<div title="Technical Point 5.2: Monotonicity">
+<div class="callout callout-note callout-titled callout-style-default">
+<div class="callout-body">
+<div class="callout-title">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<p><strong>Technical Point 5.2: Monotonicity</strong></p>
+</div>
+<div class="callout-content">
+<p>For one treatment, <span class="math inline">\(Y^{a=0} &gt; Y^{a=1}\)</span> only for the “helped”. If nobody is helped, every individual has <span class="math inline">\(Y^{a=1} \geq Y^{a=0}\)</span>, and the causal effect of <span class="math inline">\(A\)</span> on <span class="math inline">\(Y\)</span> is <strong>monotonic</strong>.</p>
+<p>For two treatments, the effects of <span class="math inline">\(A\)</span> and <span class="math inline">\(E\)</span> are monotonic if every <span class="math inline">\(Y^{a,e}\)</span> is nondecreasing in both <span class="math inline">\(a\)</span> and <span class="math inline">\(e\)</span>, i.e., nobody has</p>
+<ul>
+<li><span class="math inline">\(Y^{a=1,e=1}=0\)</span> and <span class="math inline">\(Y^{a=0,e=1}=1\)</span>;</li>
+<li><span class="math inline">\(Y^{a=1,e=1}=0\)</span> and <span class="math inline">\(Y^{a=1,e=0}=1\)</span>;</li>
+<li><span class="math inline">\(Y^{a=1,e=0}=0\)</span> and <span class="math inline">\(Y^{a=0,e=0}=1\)</span>;</li>
+<li><span class="math inline">\(Y^{a=0,e=1}=0\)</span> and <span class="math inline">\(Y^{a=0,e=0}=1\)</span>.</li>
+</ul>
+<aside class="notes">
+<p>Source: <span class="citation" data-cites="hernan2020causal">Hernán and Robins (<a href="#/references" role="doc-biblioref" onclick="">2020</a>, Technical Point 5.2, p.&nbsp;66)</span>.</p>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside>
+</div>
+</div>
+</div>
+</div>
+<div title="Fine Point 5.1: Detecting Synergistic Types">
+<div class="callout callout-note callout-titled callout-style-default">
+<div class="callout-body">
+<div class="callout-title">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<p><strong>Fine Point 5.1: Detecting Synergistic Types</strong></p>
+</div>
+<div class="callout-content">
+<p>Do individuals exist who develop the outcome under both treatments but under neither alone, i.e., with <span class="math inline">\(Y^{a=1,e=1}=1\)</span> and <span class="math inline">\(Y^{a=0,e=1}=Y^{a=1,e=0}=0\)</span> (types 7 and 8)? A <strong>sufficient</strong> condition (VanderWeele and Robins 2007a, 2008) is</p>
+<p><span class="math display">\[
+p_{11} - p_{01} - p_{10} &gt; 0,
+\quad\text{equivalently}\quad
+p_{11} - p_{01} &gt; p_{10}.
+\]</span></p>
+<p>If the effects are monotonic, a weaker sufficient condition is superadditive interaction:</p>
+<p><span class="math display">\[
+p_{11} - p_{01} &gt; p_{10} - p_{00},
+\]</span></p>
+<p>which then implies type 8 exists (monotonicity rules out type 7).</p>
+<aside class="notes">
+<p>All three risks can be computed in a randomized experiment on <span class="math inline">\(A\)</span> and <span class="math inline">\(E\)</span>, so the existence of types 7 and 8 can be checked empirically <span class="citation" data-cites="hernan2020causal">(<a href="#/references" role="doc-biblioref" onclick="">Hernán and Robins 2020</a>, Fine Point 5.1, p.&nbsp;67)</span>. Because the first condition is sufficient but not necessary, it can fail even when types 7 and 8 exist, and it is strong enough to miss most such cases. The monotonic-case result was reported by Greenland and Rothman and appears in Greenland, Lash, and Rothman (2008).</p>
+<p>In genetics, the existence of type-8 individuals is called <strong>compositional epistasis</strong>; VanderWeele (2010a) reviews tests for it.</p>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside>
+</div>
+</div>
+</div>
+</div>
 </section></section>
 <section>
-<section id="sufficient-causes-pp.-53-55" class="title-slide slide level1 center" data-number="4">
-<h1><span class="header-section-number">4</span> 5.4 Sufficient Causes (pp.&nbsp;53-55)</h1>
+<section id="sufficient-causes-pp.-66-69" class="title-slide slide level1 center" data-number="4">
+<h1><span class="header-section-number">4</span> 5.4 Sufficient Causes (pp.&nbsp;66-69)</h1>
 
 </section>
 <section class="slide level2">
 
-<p>An alternative framework for thinking about interaction is the <strong>sufficient cause model</strong>, developed by Kenneth Rothman.</p>
+<p>The variety of response types shows that <span class="math inline">\(A\)</span> is not the only determinant of <span class="math inline">\(Y\)</span>. The sufficient-component-cause framework represents the other determinants as <strong>background factors</strong>.</p>
 <div id="def-sufficient-cause" class="theorem definition">
-<p><span class="theorem-title"><strong>Definition 2 (Sufficient Cause)</strong></span> A <strong>sufficient cause</strong> is a set of conditions that inevitably produces the outcome. Once all components of a sufficient cause are present, the outcome occurs.</p>
-</div>
-</section>
-<section id="components-of-sufficient-causes" class="slide level2 scrollable">
-<h2>Components of Sufficient Causes</h2>
-<p>Each sufficient cause consists of <strong>component causes</strong>—individual factors that, together, are sufficient to produce the outcome.</p>
-<div id="exm-sufficient-cause" class="theorem example">
-<p><span class="theorem-title"><strong>Example 3 (Sufficient Cause Example)</strong></span> Consider lung cancer. Possible sufficient causes:</p>
-<p><strong>Sufficient Cause I</strong>: Smoking + Genetic variant A + Occupational asbestos exposure</p>
-<p><strong>Sufficient Cause II</strong>: Radon exposure + Genetic variant B + Poor diet</p>
-<p><strong>Sufficient Cause III</strong>: Smoking + Radon exposure + Genetic variant C</p>
-<p>An individual will develop lung cancer if they complete any one (or more) of these sufficient causes by acquiring all of its component causes.</p>
+<p><span class="theorem-title"><strong>Definition 3 (Minimal Sufficient Cause)</strong></span> A <strong>sufficient cause</strong> of <span class="math inline">\(Y\)</span> is a set of conditions that together inevitably produce <span class="math inline">\(Y\)</span>. It is <strong>minimal</strong> if it contains the smallest set of background factors that, with the treatment component, suffices. Its elements are its <strong>component causes</strong>; “sufficient-component causes” refers to both.</p>
 </div>
 <aside class="notes">
-<p><strong>Key features of the sufficient cause model</strong>:</p>
+<p>By definition, the dichotomous background factors <span class="math inline">\(U\)</span> cannot be intervened on and cannot be affected by treatment <span class="math inline">\(A\)</span> <span class="citation" data-cites="hernan2020causal">(<a href="#/references" role="doc-biblioref" onclick="">Hernán and Robins 2020, 67</a>, margin note)</span>.</p>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside>
+</section>
+<section id="one-treatment-three-sufficient-causes" class="slide level2">
+<h2>One Treatment: Three Sufficient Causes</h2>
+<p>In the oversimplified heart transplant example <span class="citation" data-cites="hernan2020causal">(<a href="#/references" role="doc-biblioref" onclick="">Hernán and Robins 2020, 66–67</a>)</span>:</p>
+<table class="caption-top">
+<thead>
+<tr class="header">
+<th>Sufficient cause</th>
+<th>Treatment component</th>
+<th>Background factor (example)</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><span class="math inline">\(A=1\)</span> with <span class="math inline">\(U_1=1\)</span></td>
+<td>transplant</td>
+<td>allergy to anesthesia</td>
+</tr>
+<tr class="even">
+<td><span class="math inline">\(A=0\)</span> with <span class="math inline">\(U_2=1\)</span></td>
+<td>no transplant</td>
+<td>ejection fraction below 20%</td>
+</tr>
+<tr class="odd">
+<td><span class="math inline">\(U_0=1\)</span></td>
+<td>none</td>
+<td>pancreatic cancer at study start</td>
+</tr>
+</tbody>
+</table>
+<p>Figure 5.1 of the book draws each sufficient cause as a circle (“causal pie”) divided into its components.</p>
+</section>
+<section id="effect-size-depends-on-background-factors" class="slide level2">
+<h2>Effect Size Depends on Background Factors</h2>
+<p>Compare two populations, identical except that <span class="math inline">\(U_1=1\)</span> (allergy) has prevalence</p>
+<ul>
+<li>1% in the first;</li>
+<li>10% in the second.</li>
+</ul>
+<p>Randomize half of each population to <span class="math inline">\(A=1\)</span>. The average causal effect of transplant on death is greater in the second population, because the sufficient cause “<span class="math inline">\(A=1\)</span> plus <span class="math inline">\(U_1=1\)</span>” is ten times more common there.</p>
+<aside class="notes">
+<p>This is the Chapter 4 point that the magnitude of a causal effect depends on the distribution of effect modifiers, made visible with sufficient-component causes <span class="citation" data-cites="hernan2020causal">(<a href="#/references" role="doc-biblioref" onclick="">Hernán and Robins 2020, 68</a>)</span>.</p>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside>
+</section>
+<section id="two-treatments-nine-sufficient-causes" class="slide level2 scrollable">
+<h2>Two Treatments: Nine Sufficient Causes</h2>
+<p>With treatments <span class="math inline">\(A\)</span> and <span class="math inline">\(E\)</span> there are 9 possible sufficient causes (Greenland and Poole 1988), with treatment components</p>
 <ol type="1">
-<li><p><strong>Deterministic</strong>: If all components of a sufficient cause are present, the outcome occurs with certainty (in this model)</p></li>
-<li><p><strong>Multiple sufficient causes</strong>: There may be many different ways to produce the same outcome</p></li>
-<li><p><strong>Complementary components</strong>: Within a sufficient cause, all components are necessary for that particular pathway to cause the outcome</p></li>
-<li><p><strong>Unknown components</strong>: We typically don’t know all components of sufficient causes; many may be unmeasured or unknown</p></li>
+<li><span class="math inline">\(A=1\)</span> only;</li>
+<li><span class="math inline">\(A=0\)</span> only;</li>
+<li><span class="math inline">\(E=1\)</span> only;</li>
+<li><span class="math inline">\(E=0\)</span> only;</li>
+<li><span class="math inline">\(A=1\)</span> and <span class="math inline">\(E=1\)</span>;</li>
+<li><span class="math inline">\(A=1\)</span> and <span class="math inline">\(E=0\)</span>;</li>
+<li><span class="math inline">\(A=0\)</span> and <span class="math inline">\(E=1\)</span>;</li>
+<li><span class="math inline">\(A=0\)</span> and <span class="math inline">\(E=0\)</span>;</li>
+<li>neither <span class="math inline">\(A\)</span> nor <span class="math inline">\(E\)</span>.</li>
 </ol>
-<p><strong>Critique</strong>: The deterministic nature is unrealistic for most health outcomes, which involve stochastic processes. However, the model is useful conceptually for understanding interaction.</p>
+<p>Each also contains background factors from <span class="math inline">\(U_1, \ldots, U_8\)</span> and <span class="math inline">\(U_0\)</span> (Figure 5.2 of the book).</p>
+<aside class="notes">
+<p>Not all 9 need exist. If vitamins <span class="math inline">\(E=1\)</span> never kill anyone, whatever <span class="math inline">\(A\)</span> is, then the 3 sufficient causes with component <span class="math inline">\(E=1\)</span> are absent; their existence would mean some individuals (e.g., those with <span class="math inline">\(U_3=1\)</span>) would be killed by vitamins, i.e., saved by withholding them <span class="citation" data-cites="hernan2020causal">(<a href="#/references" role="doc-biblioref" onclick="">Hernán and Robins 2020, 69</a>)</span>.</p>
 <style type="text/css">
         span.MJX_Assistive_MathML {
           position:absolute!important;
@@ -522,51 +888,30 @@
       }</style></aside>
 </section></section>
 <section>
-<section id="sufficient-cause-interaction-pp.-55-57" class="title-slide slide level1 center" data-number="5">
-<h1><span class="header-section-number">5</span> 5.5 Sufficient Cause Interaction (pp.&nbsp;55-57)</h1>
+<section id="sufficient-cause-interaction-pp.-69-71" class="title-slide slide level1 center" data-number="5">
+<h1><span class="header-section-number">5</span> 5.5 Sufficient Cause Interaction (pp.&nbsp;69-71)</h1>
 
 </section>
 <section class="slide level2">
 
-<p>Within the sufficient cause framework, we can define a specific type of interaction:</p>
+<p>The counterfactual definition of interaction (<a href="#/def-interaction-additive" class="quarto-xref">Definition&nbsp;2</a>) is a contrast of counterfactual risks. It can be identified in an ideal randomized experiment on <span class="math inline">\(A\)</span> and <span class="math inline">\(E\)</span> without any knowledge of the mechanisms by which the treatments act.</p>
+<p>A second concept of interaction refers to mechanisms directly.</p>
 <div id="def-sufficient-cause-interaction" class="theorem definition">
-<p><span class="theorem-title"><strong>Definition 3 (Sufficient Cause Interaction)</strong></span> There is <strong>sufficient cause interaction</strong> between <span class="math inline">\(A\)</span> and <span class="math inline">\(E\)</span> if they are both component causes of the same sufficient cause.</p>
-<p>In other words, <span class="math inline">\(A\)</span> and <span class="math inline">\(E\)</span> interact if there exists some sufficient cause containing both <span class="math inline">\(A\)</span> and <span class="math inline">\(E\)</span> as components.</p>
+<p><span class="theorem-title"><strong>Definition 4 (Sufficient Cause Interaction)</strong></span> “A sufficient cause interaction between <span class="math inline">\(A\)</span> and <span class="math inline">\(E\)</span> exists in the population if <span class="math inline">\(A\)</span> and <span class="math inline">\(E\)</span> occur together in a sufficient cause” <span class="citation" data-cites="hernan2020causal">(<a href="#/references" role="doc-biblioref" onclick="">Hernán and Robins 2020, 69</a>)</span>.</p>
+</div>
+<div id="exm-sufficient-cause-interaction" class="theorem example">
+<p><span class="theorem-title"><strong>Example 3 (Background Factor <span class="math inline">\(U_5\)</span>)</strong></span> Suppose individuals with <span class="math inline">\(U_5=1\)</span> develop the outcome when receiving both vitamins and transplant but not when receiving only one of them. Then a sufficient cause interaction exists if anyone has <span class="math inline">\(U_5=1\)</span>. Hence, if some individual has <span class="math inline">\(Y^{a=1,e=1}=1\)</span> and <span class="math inline">\(Y^{a=0,e=1}=Y^{a=1,e=0}=0\)</span>, a sufficient cause interaction between <span class="math inline">\(A\)</span> and <span class="math inline">\(E\)</span> is present <span class="citation" data-cites="hernan2020causal">(<a href="#/references" role="doc-biblioref" onclick="">Hernán and Robins 2020, 69–70</a>)</span>.</p>
 </div>
 </section>
-<section id="sufficient-cause-interaction-and-synergism" class="slide level2">
-<h2>Sufficient Cause Interaction and Synergism</h2>
-<p>Sufficient cause interaction corresponds to <strong>synergism</strong>:</p>
+<section id="synergism-and-antagonism" class="slide level2">
+<h2>Synergism and Antagonism</h2>
 <ul>
-<li>Neither <span class="math inline">\(A\)</span> alone nor <span class="math inline">\(E\)</span> alone completes a sufficient cause</li>
-<li>But <span class="math inline">\(A\)</span> and <span class="math inline">\(E\)</span> together (plus other unknown components) form a sufficient cause</li>
-<li>Therefore, the joint effect exceeds the sum of individual effects</li>
+<li><strong>Synergism</strong>: <span class="math inline">\(A=1\)</span> and <span class="math inline">\(E=1\)</span> are components of the same sufficient cause.</li>
+<li><strong>Antagonism</strong>: <span class="math inline">\(A=1\)</span> and <span class="math inline">\(E=0\)</span> (or <span class="math inline">\(A=0\)</span> and <span class="math inline">\(E=1\)</span>) are components of the same sufficient cause.</li>
 </ul>
-<div id="exm-sufficient-cause-interaction" class="theorem example">
-<p><span class="theorem-title"><strong>Example 4 (Sufficient Cause Interaction Example)</strong></span> Consider the effect of smoking (<span class="math inline">\(A\)</span>) and asbestos exposure (<span class="math inline">\(E\)</span>) on lung cancer (<span class="math inline">\(Y\)</span>):</p>
-<p><strong>Sufficient Cause I</strong>: Smoking + Asbestos + Unknown factors U₁ <strong>Sufficient Cause II</strong>: Smoking + Unknown factors U₂<br>
-<strong>Sufficient Cause III</strong>: Asbestos + Unknown factors U₃</p>
-<p>If an individual has Unknown factors U₁ but not U₂ or U₃:</p>
-<ul>
-<li><span class="math inline">\(Y^{a=0,e=0} = 0\)</span> (no sufficient cause completed)</li>
-<li><span class="math inline">\(Y^{a=1,e=0} = 0\)</span> (smoking alone doesn’t complete a sufficient cause)</li>
-<li><span class="math inline">\(Y^{a=0,e=1} = 0\)</span> (asbestos alone doesn’t complete a sufficient cause)</li>
-<li><span class="math inline">\(Y^{a=1,e=1} = 1\)</span> (Sufficient Cause I completed)</li>
-</ul>
-<p>This is <strong>pure synergism</strong>: neither treatment alone has an effect, but the combination does.</p>
-</div>
+<p>Antagonism between <span class="math inline">\(A\)</span> and <span class="math inline">\(E\)</span> can be viewed as synergism between <span class="math inline">\(A\)</span> and “no <span class="math inline">\(E\)</span>” (or between “no <span class="math inline">\(A\)</span>” and <span class="math inline">\(E\)</span>).</p>
 <aside class="notes">
-<p><strong>Relationship between sufficient cause interaction and causal interaction</strong>:</p>
-<ul>
-<li><p><strong>Sufficient cause interaction is a mechanistic concept</strong>: It refers to biological, chemical, or social mechanisms by which factors combine to produce an outcome</p></li>
-<li><p><strong>Causal interaction (in potential outcomes framework) is a statistical concept</strong>: It refers to departures from additivity in population-level effect measures</p></li>
-</ul>
-<p><strong>These concepts are related but not identical</strong>:</p>
-<ul>
-<li>Sufficient cause interaction (synergism) implies positive additive interaction in the population <em>if</em> the sufficient cause is common enough</li>
-<li>However, positive additive interaction can occur even without sufficient cause interaction (e.g., if treatments prevent the outcome via independent pathways but with different magnitudes)</li>
-</ul>
-<p><strong>Modern perspective</strong>: The sufficient cause model has limitations (determinism, untestable assumptions) but provides useful intuition about mechanistic synergy. The potential outcomes framework is more general and forms the basis for modern causal inference methods.</p>
+<p>Rothman (1976) described synergism and antagonism within the sufficient-component-cause framework <span class="citation" data-cites="hernan2020causal">(<a href="#/references" role="doc-biblioref" onclick="">Hernán and Robins 2020, 71</a>, margin note)</span>.</p>
 <style type="text/css">
         span.MJX_Assistive_MathML {
           position:absolute!important;
@@ -578,49 +923,166 @@
           overflow: hidden!important;
           display:block!important;
       }</style></aside>
+</section>
+<section id="detecting-synergism-without-knowing-the-mechanisms" class="slide level2">
+<h2>Detecting Synergism Without Knowing the Mechanisms</h2>
+<p>Sufficient cause interaction is defined through mechanisms, yet sometimes it can be detected with no knowledge of them: if the inequalities of Fine Point 5.1 hold, synergism between <span class="math inline">\(A\)</span> and <span class="math inline">\(E\)</span> exists.</p>
+<aside class="notes">
+<p>This is not surprising, for two reasons <span class="citation" data-cites="hernan2020causal">(<a href="#/references" role="doc-biblioref" onclick="">Hernán and Robins 2020, 71</a>)</span>: response types correspond to sufficient causes (Fine Point 5.2), and the inequalities are sufficient but not necessary, so they can fail even when synergism exists.</p>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside>
+</section>
+<section class="slide level2">
+
+<div title="Fine Point 5.2: From Response Types to Component Causes">
+<div class="callout callout-note callout-titled callout-style-default">
+<div class="callout-body">
+<div class="callout-title">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<p><strong>Fine Point 5.2: From Response Types to Component Causes</strong></p>
+</div>
+<div class="callout-content">
+<div id="tbl-types-components" class="quarto-float quarto-figure quarto-figure-center">
+<figure class="quarto-float quarto-float-tbl">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-types-components-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Table&nbsp;3: Mapping between response types and sufficient-component causes for one treatment <span class="citation" data-cites="hernan2020causal">(<a href="#/references" role="doc-biblioref" onclick="">Hernán and Robins 2020</a>, Fine Point 5.2, p.&nbsp;70)</span>
+</figcaption>
+<div aria-describedby="tbl-types-components-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<table class="caption-top">
+<thead>
+<tr class="header">
+<th>Type</th>
+<th><span class="math inline">\(Y^{a=0}\)</span></th>
+<th><span class="math inline">\(Y^{a=1}\)</span></th>
+<th>Component causes</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Doomed</td>
+<td>1</td>
+<td>1</td>
+<td><span class="math inline">\(U_0=1\)</span> or <span class="math inline">\(\{U_1=1\)</span> and <span class="math inline">\(U_2=1\}\)</span></td>
+</tr>
+<tr class="even">
+<td>Helped</td>
+<td>1</td>
+<td>0</td>
+<td><span class="math inline">\(U_0=0\)</span>, <span class="math inline">\(U_1=0\)</span>, <span class="math inline">\(U_2=1\)</span></td>
+</tr>
+<tr class="odd">
+<td>Hurt</td>
+<td>0</td>
+<td>1</td>
+<td><span class="math inline">\(U_0=0\)</span>, <span class="math inline">\(U_1=1\)</span>, <span class="math inline">\(U_2=0\)</span></td>
+</tr>
+<tr class="even">
+<td>Immune</td>
+<td>0</td>
+<td>0</td>
+<td><span class="math inline">\(U_0=0\)</span>, <span class="math inline">\(U_1=0\)</span>, <span class="math inline">\(U_2=0\)</span></td>
+</tr>
+</tbody>
+</table>
+</div>
+</figure>
+</div>
+<p>Each combination of component causes gives exactly one response type, but a response type can arise from several combinations (e.g., “doomed” arises from any combination with <span class="math inline">\(U_0=1\)</span>, or with <span class="math inline">\(U_1=1\)</span> and <span class="math inline">\(U_2=1\)</span>).</p>
+<aside class="notes">
+<p><strong>Exchangeability in terms of component causes</strong> <span class="citation" data-cites="hernan2020causal">(<a href="#/references" role="doc-biblioref" onclick="">Hernán and Robins 2020</a>, Fine Point 5.2, p.&nbsp;70)</span>. For a dichotomous treatment and outcome, <span class="math inline">\(Y^a \perp\!\!\!\perp A\)</span> means <span class="math inline">\(\Pr[Y^{a=1}=1 \mid A=1] = \Pr[Y^{a=1}=1 \mid A=0]\)</span> and <span class="math inline">\(\Pr[Y^{a=0}=1 \mid A=1] = \Pr[Y^{a=0}=1 \mid A=0]\)</span>.</p>
+<ul>
+<li>Those with <span class="math inline">\(Y^{a=1}=1\)</span> are the doomed and the hurt, i.e., those with <span class="math inline">\(U_0=1\)</span> or <span class="math inline">\(U_1=1\)</span>.</li>
+<li>Those with <span class="math inline">\(Y^{a=0}=1\)</span> are the doomed and the helped, i.e., those with <span class="math inline">\(U_0=1\)</span> or <span class="math inline">\(U_2=1\)</span>.</li>
+</ul>
+<p>Substituting these sets, exchangeability holds when <span class="math inline">\(\Pr[U_0=1 \text{ or } U_1=1 \mid A=1] = \Pr[U_0=1 \text{ or } U_1=1 \mid A=0]\)</span> and <span class="math inline">\(\Pr[U_0=1 \text{ or } U_2=1 \mid A=1] = \Pr[U_0=1 \text{ or } U_2=1 \mid A=0]\)</span>.</p>
+<p>See Greenland and Brumback (2002), Flanders (2006), and VanderWeele and Hernán (2006); VanderWeele and Robins (2008) generalized some results to two or more treatments.</p>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside>
+</div>
+</div>
+</div>
+</div>
+<div title="Fine Point 5.3: &quot;Biologic&quot; Interaction">
+<div class="callout callout-note callout-titled callout-style-default">
+<div class="callout-body">
+<div class="callout-title">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<p><strong>Fine Point 5.3: “Biologic” Interaction</strong></p>
+</div>
+<div class="callout-content">
+<p>Sufficient cause interaction is often called <strong>biologic interaction</strong> (Rothman et al.&nbsp;1980), but it need not involve treatments acting on each other.</p>
+</div>
+</div>
+</div>
+</div>
+<div id="exm-alleles" class="theorem example">
+<p><span class="theorem-title"><strong>Example 4 (Two Alleles <span class="citation" data-cites="hernan2020causal">(<a href="#/references" role="doc-biblioref" onclick="">Hernán and Robins 2020</a>, Fine Point 5.3, p.&nbsp;71)</span>)</strong></span> Let <span class="math inline">\(A\)</span> and <span class="math inline">\(E\)</span> indicate a deleterious mutation in each of the two alleles of a gene that produces an essential protein (VanderWeele and Robins 2007a). Infants with both mutations (<span class="math inline">\(A=1\)</span>, <span class="math inline">\(E=1\)</span>) lack the protein and die within a week; those with one or no mutation survive. There is synergism, since a sufficient cause of death contains <span class="math inline">\(A=1\)</span> and <span class="math inline">\(E=1\)</span>, yet the alleles arguably do not physically act on each other.</p>
+</div>
 </section></section>
 <section>
-<section id="counterfactuals-or-sufficient-component-causes-pp.-57-58" class="title-slide slide level1 center" data-number="6">
-<h1><span class="header-section-number">6</span> 5.6 Counterfactuals or Sufficient-Component Causes? (pp.&nbsp;57-58)</h1>
+<section id="counterfactuals-or-sufficient-component-causes-pp.-71-74" class="title-slide slide level1 center" data-number="6">
+<h1><span class="header-section-number">6</span> 5.6 Counterfactuals or Sufficient-Component Causes? (pp.&nbsp;71-74)</h1>
 
 </section>
 <section class="slide level2">
 
-<p>Should we use the counterfactual (potential outcomes) framework or the sufficient cause framework to study interaction?</p>
-</section>
-<section id="advantages-of-the-counterfactual-framework" class="slide level2 scrollable">
-<h2>Advantages of the Counterfactual Framework</h2>
-<ol type="1">
-<li><strong>More general</strong>: Applies to any outcome (binary, continuous, time-to-event) and any treatments</li>
-<li><strong>Testable implications</strong>: Under identifiability conditions, interaction can be estimated from data</li>
-<li><strong>Rigorous mathematical foundation</strong>: Clear notation and assumptions</li>
-<li><strong>Connects to statistical methods</strong>: Directly links to regression, weighting, standardization</li>
-</ol>
-</section>
-<section id="advantages-of-the-sufficient-cause-framework" class="slide level2 scrollable">
-<h2>Advantages of the Sufficient Cause Framework</h2>
-<ol type="1">
-<li><strong>Mechanistic intuition</strong>: Provides a way to think about biological/physical mechanisms</li>
-<li><strong>Useful for binary outcomes</strong>: Particularly clear for presence/absence of disease</li>
-<li><strong>Historical importance</strong>: Widely used in epidemiology</li>
-<li><strong>Qualitative insights</strong>: Helps conceptualize synergism and prevention</li>
-</ol>
+<p>The two frameworks answer different questions:</p>
+<table class="caption-top">
+<colgroup>
+<col style="width: 33%">
+<col style="width: 33%">
+<col style="width: 33%">
+</colgroup>
+<thead>
+<tr class="header">
+<th></th>
+<th>Sufficient-component causes</th>
+<th>Counterfactuals</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Starts from</td>
+<td>a particular effect</td>
+<td>a particular cause or intervention</td>
+</tr>
+<tr class="even">
+<td>Asks</td>
+<td>“how does it happen?”</td>
+<td>“what happens?”</td>
+</tr>
+<tr class="odd">
+<td>Describes mechanisms</td>
+<td>yes</td>
+<td>no</td>
+</tr>
+</tbody>
+</table>
+<p>For estimating average causal effects of hypothetical interventions, the subject of the book, the counterfactual framework is the natural one.</p>
 <aside class="notes">
-<p><strong>Recommendation from Hernán &amp; Robins</strong>: Use the counterfactual framework as the primary approach, but keep sufficient cause intuition in mind for biological interpretation.</p>
-<p><strong>Why prioritize counterfactuals?</strong></p>
-<ul>
-<li>Sufficient cause model makes strong untestable assumptions (determinism, completeness of sufficient causes)</li>
-<li>Counterfactual framework is more flexible and connects better to modern statistical methods</li>
-<li>Most interaction research is in the potential outcomes tradition</li>
-</ul>
-<p><strong>When to use sufficient cause thinking?</strong></p>
-<ul>
-<li>When seeking mechanistic explanations</li>
-<li>When biological synergism is the scientific question</li>
-<li>When teaching interaction to those unfamiliar with potential outcomes</li>
-<li>As a conceptual tool alongside formal potential outcomes analysis</li>
-</ul>
-<p><strong>Integration</strong>: Many modern papers use potential outcomes for formal definitions and estimation, then discuss findings in terms of sufficient cause mechanisms.</p>
+<p>The sufficient-component-cause model asks which events might have caused a given effect; the counterfactual model asks what would have happened had a factor been set to a different level than it was <span class="citation" data-cites="hernan2020causal">(<a href="#/references" role="doc-biblioref" onclick="">Hernán and Robins 2020, 71</a>)</span>. In philosophy the sufficient-component-cause framework goes back to Mackie (1965), whose <strong>INUS condition</strong> for <span class="math inline">\(Y\)</span> is an <strong>I</strong>nsufficient but <strong>N</strong>ecessary part of a condition which is itself <strong>U</strong>nnecessary but exclusively <strong>S</strong>ufficient for <span class="math inline">\(Y\)</span>. A counterfactual framework of causation was already hinted at by Hume (1748).</p>
 <style type="text/css">
         span.MJX_Assistive_MathML {
           position:absolute!important;
@@ -632,44 +1094,112 @@
           overflow: hidden!important;
           display:block!important;
       }</style></aside>
+</section>
+<section id="strengths-and-limitations-of-sufficient-component-causes" class="slide level2">
+<h2>Strengths and Limitations of Sufficient-Component Causes</h2>
+<p>Useful for teaching, because they illustrate</p>
+<ul>
+<li>why the size of a causal effect depends on the distribution of background factors (effect modifiers);</li>
+<li>how effect modification, interaction, and synergism relate.</li>
+</ul>
+<p>Limited for data analysis, because in its classical form the framework</p>
+<ul>
+<li>is deterministic;</li>
+<li>gives conclusions that depend on the coding of the outcome;</li>
+<li>is restricted to dichotomous treatments and outcomes;</li>
+<li>requires large amounts of data to study the fine distinctions it makes.</li>
+</ul>
+<aside class="notes">
+<p>Extensions to stochastic settings and to categorical or ordinal treatments might widen its use: VanderWeele (2010b) extended it to 3-level treatments, and VanderWeele and Robins (2012) related stochastic counterfactuals to stochastic sufficient causes <span class="citation" data-cites="hernan2020causal">(<a href="#/references" role="doc-biblioref" onclick="">Hernán and Robins 2020, 72</a>)</span>. The counterfactual framework will likely remain the one most often used, and apparent alternatives such as causal diagrams and decision theory are essentially equivalent to it (Chapter 6).</p>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside>
+</section>
+<section class="slide level2">
+
+<div title="Fine Point 5.4: Attributable Fractions Do Not Add">
+<div class="callout callout-note callout-titled callout-style-default">
+<div class="callout-body">
+<div class="callout-title">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<p><strong>Fine Point 5.4: Attributable Fractions Do Not Add</strong></p>
+</div>
+<div class="callout-content">
+<p>Suppose the excess fraction (Fine Point 3.5) is 75% for <span class="math inline">\(A\)</span> and 50% for <span class="math inline">\(E\)</span>. A joint intervention cannot prevent <span class="math inline">\(75\% + 50\% = 125\%\)</span> of cases: no intervention, single or joint, can prevent more than 100%.</p>
+<p>The resolution: an individual like Zeus with <span class="math inline">\(U_5=1\)</span>, treated with <span class="math inline">\(A=1\)</span> and <span class="math inline">\(E=1\)</span>, would not have been a case had <strong>either</strong> treatment been withheld, so Zeus is counted in both the 75% and the 50%.</p>
+<aside class="notes">
+<p>When <span class="math inline">\(A\)</span> and <span class="math inline">\(E\)</span> can be components of the same sufficient cause, the fraction of disease attributable to each separately makes little sense <span class="citation" data-cites="hernan2020causal">(<a href="#/references" role="doc-biblioref" onclick="">Hernán and Robins 2020</a>, Fine Point 5.4, p.&nbsp;72)</span>. Phenylketonuria example: mental retardation occurs in genetically susceptible individuals who eat certain foods. Removing the foods would prevent all cases, and so would replacing the susceptibility genes, so the cases are both “100% environmental” and “100% genetic”. See Rothman, Greenland, and Lash (2008).</p>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside>
+</div>
+</div>
+</div>
+</div>
+<div title="Technical Point 5.3: Monotonicity Rules Out Some Sufficient Causes">
+<div class="callout callout-note callout-titled callout-style-default">
+<div class="callout-body">
+<div class="callout-title">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<p><strong>Technical Point 5.3: Monotonicity Rules Out Some Sufficient Causes</strong></p>
+</div>
+<div class="callout-content">
+<p>If smoking (<span class="math inline">\(A=1\)</span>) never prevents heart disease and physical inactivity (<span class="math inline">\(E=1\)</span>) never prevents heart disease, then no sufficient cause can contain <span class="math inline">\(A=0\)</span> or <span class="math inline">\(E=0\)</span>.</p>
+<aside class="notes">
+<p>If a sufficient cause containing <span class="math inline">\(A=0\)</span> existed, some individuals (e.g., those with <span class="math inline">\(U_2=1\)</span>) would develop the outcome when unexposed, i.e., treating them (<span class="math inline">\(A=1\)</span>) would prevent their outcome, contradicting monotonicity; the same argument applies to <span class="math inline">\(E=0\)</span>. Figure 5.3 of the book crosses out the sufficient causes excluded this way <span class="citation" data-cites="hernan2020causal">(<a href="#/references" role="doc-biblioref" onclick="">Hernán and Robins 2020</a>, Technical Point 5.3, pp.&nbsp;73-74)</span>.</p>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside>
+</div>
+</div>
+</div>
+</div>
 </section></section>
 <section>
 <section id="summary" class="title-slide slide level1 center" data-number="7">
 <h1><span class="header-section-number">7</span> Summary</h1>
 
 </section>
-<section class="slide level2 scrollable">
+<section class="slide level2">
 
-<p>This chapter introduced <strong>interaction</strong> between two treatments.</p>
-<p><strong>Key concepts</strong>:</p>
-<ol type="1">
-<li><p><strong>Definition</strong>: Interaction exists when the joint effect of two treatments differs from the sum of their individual effects: <span class="math display">\[\text{IC} = \text{E}{\left[Y^{a=1,e=1}\right]} - \text{E}{\left[Y^{a=1,e=0}\right]} - \text{E}{\left[Y^{a=0,e=1}\right]} + \text{E}{\left[Y^{a=0,e=0}\right]} \neq 0\]</span></p></li>
-<li><p><strong>Identification</strong>: Requires exchangeability, positivity, and consistency for the joint treatment <span class="math inline">\((A, E)\)</span></p></li>
-<li><p><strong>Response types</strong>: Interaction can be understood through the distribution of counterfactual response types in the population</p></li>
-<li><p><strong>Sufficient causes</strong>: The sufficient cause model provides a mechanistic framework where interaction corresponds to synergism</p></li>
-<li><p><strong>Frameworks</strong>: The counterfactual (potential outcomes) framework is recommended for formal analysis; sufficient causes provide mechanistic intuition</p></li>
-<li><p><strong>Scale dependence</strong>: Whether interaction exists depends on the scale (additive, multiplicative, etc.)</p></li>
-</ol>
+<ul>
+<li><strong>Interaction</strong> between two treatments <span class="math inline">\(A\)</span> and <span class="math inline">\(E\)</span> is defined by joint counterfactuals <span class="math inline">\(Y^{a,e}\)</span>: on the additive scale, <span class="math inline">\(\Pr[Y^{1,1}=1] - \Pr[Y^{0,1}=1] \neq \Pr[Y^{1,0}=1] - \Pr[Y^{0,0}=1]\)</span>, a definition symmetric in <span class="math inline">\(A\)</span> and <span class="math inline">\(E\)</span>; a multiplicative version uses risk ratios.</li>
+<li><strong>Identification</strong> requires exchangeability, positivity, and consistency for the joint treatment <span class="math inline">\((A, E)\)</span>; if <span class="math inline">\(E\)</span> is randomized, interaction coincides with effect modification by <span class="math inline">\(E\)</span>.</li>
+<li><strong>Effect modification</strong> can occur without interaction (surrogate modifiers).</li>
+<li>With deterministic, dichotomous counterfactuals there are <strong>16 response types</strong>; additive interaction requires individuals of interaction types, but their presence can cancel out.</li>
+<li><strong>Sufficient cause interaction</strong> means <span class="math inline">\(A\)</span> and <span class="math inline">\(E\)</span> appear in the same sufficient cause; synergism can sometimes be detected from counterfactual risks alone (Fine Point 5.1).</li>
+<li>The counterfactual framework answers “what happens?” and is the one used in the rest of the book; sufficient-component causes answer “how does it happen?” and are mainly a teaching tool.</li>
+</ul>
 <aside class="notes">
-<p><strong>Distinction from Chapter 4</strong>:</p>
-<ul>
-<li><strong>Effect modification</strong> (Chapter 4): Effect of treatment <span class="math inline">\(A\)</span> varies by baseline variable <span class="math inline">\(V\)</span></li>
-<li><strong>Interaction</strong> (Chapter 5): Joint effect of treatments <span class="math inline">\(A\)</span> and <span class="math inline">\(E\)</span> differs from sum of individual effects</li>
-</ul>
-<p><strong>Looking ahead</strong>:</p>
-<ul>
-<li><strong>Chapter 6</strong>: Causal diagrams provide graphical tools for understanding when and how to adjust for confounding</li>
-<li><strong>Chapter 7</strong>: Detailed treatment of confounding</li>
-<li><strong>Chapter 13</strong>: The g-formula provides a flexible method for estimating effects when both confounding and interaction are present</li>
-<li><strong>Chapter 14</strong>: G-estimation of structural nested models for treatment effect heterogeneity</li>
-</ul>
-<p><strong>Practical takeaway</strong>:</p>
-<ul>
-<li>When studying combination therapies or multiple exposures, consider whether interaction exists</li>
-<li>Use factorial designs (randomize both treatments independently) when possible</li>
-<li>Report joint effects and interaction contrasts, not just main effects</li>
-<li>Interpret interaction in light of both statistical and mechanistic frameworks</li>
-</ul>
+<p><strong>Looking ahead</strong>: Chapter 6 introduces causal diagrams, which the book describes as essentially equivalent to the counterfactual framework.</p>
 <style type="text/css">
         span.MJX_Assistive_MathML {
           position:absolute!important;

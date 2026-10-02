@@ -166,9 +166,10 @@
 <!-- https://www.overleaf.com/learn/latex/Using_colors_in_LaTeX#Named_colors_provided_by_the_xcolor_package -->
 <!-- \def\or{\theta}  -->
 <!-- doesn't work for some reason -->
-<p>Part I focused on causal inference in settings where we conceptualized study populations as effectively infinite, allowing us to ignore random variability and focus solely on systematic bias from confounding, selection, and measurement. Part II now introduces <strong>random variability</strong> and the use of <strong>statistical models</strong> for causal inference. This chapter bridges identification (Part I) and estimation (Part II), explaining why we need models and how to quantify uncertainty.</p>
+<p>So far we have treated study populations as if they were effectively infinite, so that the only obstacles to causal inference were the systematic biases of the previous chapters: confounding, selection bias, and measurement bias. Real studies are finite, and random variability is a second, qualitatively different reason why causal inferences may be wrong. This chapter, the last of Part I, introduces random variability and the problems it raises for causal inference.</p>
 <aside class="notes">
-<p>This chapter is based on <span class="citation" data-cites="hernan2020causal">Hernán and Robins (<a href="#/references" role="doc-biblioref" onclick="">2020, chap. 10</a>, pp.&nbsp;131-142)</span>. It marks the transition from Part I (Causal inference without models) to Part II (Causal inference with models).</p>
+<p>This chapter is based on <span class="citation" data-cites="hernan2020causal">Hernán and Robins (<a href="#/references" role="doc-biblioref" onclick="">2020, chap. 10</a>, pp.&nbsp;137-150)</span>. It closes Part I (Causal inference without models) and motivates Part II (Causal inference with models).</p>
+<p>The book opens with a toy randomized experiment (“does my looking up make other pedestrians look up?”) with only 4 pedestrians, 2 per arm. By chance, 1 of the 2 pedestrians in the “looking up” arm, and neither in the “looking straight” arm, was blind, so half of the treated group could not respond to treatment and the estimated effect was diluted. Nothing about this study is systematically biased: no confounding (randomized), no selection bias (all responses recorded), no measurement bias. The problem is purely the small size of the study population.</p>
 <style type="text/css">
         span.MJX_Assistive_MathML {
           position:absolute!important;
@@ -182,38 +183,17 @@
       }</style></aside>
 </section>
 <section>
-<section id="identification-versus-estimation-pp.-131-134" class="title-slide slide level1 center" data-number="1">
-<h1><span class="header-section-number">1</span> 10.1 Identification Versus Estimation (pp.&nbsp;131-134)</h1>
+<section id="identification-versus-estimation-pp.-137-139" class="title-slide slide level1 center" data-number="1">
+<h1><span class="header-section-number">1</span> 10.1 Identification Versus Estimation (pp.&nbsp;137-139)</h1>
 
 </section>
 <section class="slide level2">
 
-<p>Up to now, we have focused on <strong>identification</strong>: determining whether causal effects can be computed from observed data under certain assumptions. Now we turn to <strong>estimation</strong>: using finite data to approximate those causal effects.</p>
-</section>
-<section id="key-concepts-in-statistical-estimation" class="slide level2">
-<h2>Key Concepts in Statistical Estimation</h2>
-<p><strong>Estimand</strong>: The population parameter of interest (e.g., <span class="math inline">\(\Pr[Y = 1|A = a]\)</span> in the super-population).</p>
-<p><strong>Estimator</strong>: A rule for computing the estimand from sample data.</p>
-<p><strong>Estimate</strong>: The numerical value obtained by applying the estimator to a particular sample (a point estimate).</p>
-<div id="exm-estimator" class="theorem example">
-<p><span class="theorem-title"><strong>Example 1 (Sample Proportion as an Estimator)</strong></span> <strong>Estimand</strong>: Super-population risk <span class="math inline">\(\Pr[Y = 1|A = 1]\)</span></p>
-<p><strong>Estimator</strong>: Sample proportion <span class="math inline">\(\widehat{Pr}[Y = 1|A = 1]\)</span></p>
-<p><strong>Estimate</strong>: From our 20-person study, <span class="math inline">\(\widehat{Pr}[Y = 1|A = 1] = 7/13 \approx 0.54\)</span></p>
-</div>
+<p><strong>Identification problems</strong> are problems in which we can act as if the study population were effectively infinite. Part I reduced causal inference to an identification problem: under exchangeability, positivity, and consistency, can the average causal effect be computed from the data?</p>
+<p><strong>Estimation</strong> asks how to learn about that effect from a <em>finite</em> sample, in the presence of random variability.</p>
 <aside class="notes">
-<p><strong>Identification vs.&nbsp;Estimation</strong>:</p>
-<ul>
-<li><strong>Identification</strong> (Part I): Can we express the causal effect in terms of observable quantities?
-<ul>
-<li>Requires: Exchangeability, positivity, consistency</li>
-<li>Answer: “Yes, the causal risk difference equals the associational risk difference under these conditions”</li>
-</ul></li>
-<li><strong>Estimation</strong> (Part II): How do we estimate the causal effect from finite data?
-<ul>
-<li>Requires: Statistical methods to handle random variability</li>
-<li>Answer: “Use sample statistics with appropriate confidence intervals”</li>
-</ul></li>
-</ul>
+<p>In Chapter 2 the twenty-person heart transplant study was treated as if each individual stood for 1 billion identical individuals. That device let us ignore random fluctuations and concentrate on systematic biases, but it is unrealistic: real study populations are not effectively infinite.</p>
+<p>Identifiability was introduced in Section 3.1 and revisited in Sections 7.2 and 8.4 <span class="citation" data-cites="hernan2020causal">(<a href="#/references" role="doc-biblioref" onclick="">Hernán and Robins 2020, chap. 10</a>, p.&nbsp;137)</span>. For background on statistics, the book points to <span class="citation" data-cites="wasserman2004all">Wasserman (<a href="#/references" role="doc-biblioref" onclick="">2004</a>)</span> and <span class="citation" data-cites="casella2002statistical">Casella and Berger (<a href="#/references" role="doc-biblioref" onclick="">2002</a>)</span>.</p>
 <style type="text/css">
         span.MJX_Assistive_MathML {
           position:absolute!important;
@@ -225,40 +205,305 @@
           overflow: hidden!important;
           display:block!important;
       }</style></aside>
+</section>
+<section id="estimands-estimators-and-estimates" class="slide level2">
+<h2>Estimands, Estimators, and Estimates</h2>
+<p>Suppose the 20 study individuals are a random sample from a <strong>super-population</strong> so large that we can regard it as infinite, and we want to make inferences about that super-population.</p>
+<div id="def-estimand-estimator" class="theorem definition">
+<p><span class="theorem-title"><strong>Definition 1 (Estimand, estimator, estimate)</strong></span> &nbsp;</p>
+<ul>
+<li><strong>Estimand</strong>: the parameter of interest in the super-population, e.g.&nbsp;<span class="math inline">\(\Pr[Y = 1 \mid A = a]\)</span>.</li>
+<li><strong>Estimator</strong>: a rule that takes the data from any sample and produces a numerical value for the estimand.</li>
+<li><strong>Estimate</strong>: the value the estimator produces in a particular sample (a <strong>point estimate</strong>).</li>
+</ul>
+</div>
+<div id="exm-estimator" class="theorem example">
+<p><span class="theorem-title"><strong>Example 1 (Sample proportion as an estimator)</strong></span> &nbsp;</p>
+<ul>
+<li>Estimand: <span class="math inline">\(\Pr[Y = 1 \mid A = 1]\)</span> in the super-population.</li>
+<li>Estimator: the sample proportion <span class="math inline">\(\widehat{\Pr}[Y = 1 \mid A = 1]\)</span>.</li>
+<li>Estimate: in the heart transplant study, 7 of the 13 treated individuals died, so <span class="math inline">\(\widehat{\Pr}[Y = 1 \mid A = 1] = 7/13 \approx 0.54\)</span>.</li>
+</ul>
+<p>A different random sample of 20 individuals would give a different estimate.</p>
+</div>
 </section>
 <section id="consistency-of-estimators" class="slide level2">
 <h2>Consistency of Estimators</h2>
-<p>An estimator is <strong>consistent</strong> if estimates get arbitrarily close to the true parameter as sample size increases.</p>
-<p><span class="math display">\[Pr\left[|\hat{\theta}_n - \theta| &gt; \epsilon\right] \rightarrow 0 \text{ as } n \rightarrow \infty, \text{ for all } \epsilon &gt; 0\]</span></p>
-<p>The sample proportion <span class="math inline">\(\widehat{Pr}[Y = 1|A = a]\)</span> is a consistent estimator of <span class="math inline">\(\Pr[Y = 1|A = a]\)</span>.</p>
+<p>An estimator is <strong>consistent</strong> for an estimand if its estimates get arbitrarily close to the estimand as the sample size <span class="math inline">\(n\)</span> grows. For example, the sample proportion <span class="math inline">\(\widehat{\Pr}[Y = 1 \mid A = a]\)</span> is consistent for <span class="math inline">\(\Pr[Y = 1 \mid A = a]\)</span>: the larger <span class="math inline">\(n\)</span>, the smaller we expect <span class="math inline">\(\left|\Pr[Y = 1 \mid A = a] - \widehat{\Pr}[Y = 1 \mid A = a]\right|\)</span> to be.</p>
+<p>Even a consistent estimator can produce a point estimate far from the super-population value, especially in small samples. So we should have more confidence in estimates from larger studies, and we quantify that confidence with <strong>confidence intervals</strong>.</p>
 </section>
-<section id="confidence-intervals" class="slide level2 scrollable">
-<h2>Confidence Intervals</h2>
-<p>A <strong>95% confidence interval</strong> quantifies uncertainty due to random sampling.</p>
-<p><strong>Construction (Wald interval)</strong>:</p>
-<ol type="1">
-<li>Compute point estimate <span class="math inline">\(\hat{p}\)</span></li>
-<li>Estimate standard error: <span class="math inline">\(\widehat{SE} = \sqrt{\frac{\hat{p}(1-\hat{p})}{n}}\)</span></li>
-<li>Compute interval: <span class="math inline">\(\hat{p} \pm 1.96 \times \widehat{SE}\)</span></li>
-</ol>
-<p><strong>Example</strong>: For <span class="math inline">\(\hat{p} = 7/13 \approx 0.54\)</span> with <span class="math inline">\(n = 13\)</span>:</p>
+<section id="wald-confidence-intervals" class="slide level2">
+<h2>Wald Confidence Intervals</h2>
+<p>A 95% <strong>Wald confidence interval</strong> for a parameter <span class="math inline">\(\theta\)</span> based on an estimator <span class="math inline">\(\hat\theta\)</span> is</p>
+<p><span class="math display">\[
+\hat\theta\pm 1.96 \times \widehat{\text{se}}{\left(\hat\theta\right)},
+\]</span></p>
+<p>where <span class="math inline">\(\widehat{\text{se}}{\left(\hat\theta\right)}\)</span> estimates the (exact or large-sample) standard error of <span class="math inline">\(\hat\theta\)</span>, and 1.96 is the upper 97.5% quantile of the standard normal distribution.</p>
+<div id="exm-wald-binomial" class="theorem example">
+<p><span class="theorem-title"><strong>Example 2 (Wald interval for the risk among the treated)</strong></span> Let <span class="math inline">\(p = \Pr[Y = 1 \mid A = 1]\)</span> and <span class="math inline">\(\hat p = \widehat{\Pr}[Y = 1 \mid A = 1] = 7/13\)</span>, with <span class="math inline">\(n = 13\)</span>. The standard error of a binomial proportion is <span class="math inline">\(\sqrt{p(1-p)/n}\)</span>, so</p>
+<p><span class="math display">\[
+\begin{aligned}
+\widehat{\text{se}}{\left(\hat p\right)}
+&amp;= \sqrt{\frac{\hat p (1 - \hat p)}{n}}
+= \sqrt{\frac{(7/13)(6/13)}{13}} \\
+&amp;= \sqrt{\frac{42/169}{13}}
+= \sqrt{\frac{42}{2197}}
+\approx \sqrt{0.0191} \approx 0.138.
+\end{aligned}
+\]</span></p>
+<p>The 95% Wald interval is</p>
+<p><span class="math display">\[
+\begin{aligned}
+\hat p \pm 1.96 \times 0.138
+&amp;= 0.538 \pm 0.271 \\
+&amp;= (0.27, 0.81).
+\end{aligned}
+\]</span></p>
+</div>
+</section>
+<section id="calibrated-conservative-and-valid-intervals" class="slide level2">
+<h2>Calibrated, Conservative, and Valid Intervals</h2>
+<div id="def-valid-ci" class="theorem definition">
+<p><span class="theorem-title"><strong>Definition 2 (Calibration and validity of a 95% confidence interval)</strong></span> A 95% confidence interval is</p>
 <ul>
-<li><span class="math inline">\(\widehat{SE} = \sqrt{(7/13)(6/13)/13} = 0.138\)</span></li>
-<li>95% CI: <span class="math inline">\(0.54 \pm 1.96(0.138) = (0.27, 0.81)\)</span></li>
+<li><strong>calibrated</strong> if it contains the estimand in 95% of random samples;</li>
+<li><strong>conservative</strong> if it contains the estimand in more than 95% of samples;</li>
+<li><strong>anticonservative</strong> otherwise.</li>
 </ul>
+<p>It is <strong>valid</strong> if, for every value of the true parameter, it is calibrated or conservative (coverage of at least 95%). Among valid intervals, we prefer the narrowest.</p>
+</div>
+<ul>
+<li><strong>Small-sample valid</strong>: valid at every sample size for which it is defined (small-sample calibrated intervals are sometimes called <strong>exact</strong>).</li>
+<li><strong>Large-sample (asymptotically) valid</strong>: valid only in large samples.</li>
+</ul>
+<p>The Wald interval for <span class="math inline">\(p\)</span> in <a href="#/exm-wald-binomial" class="quarto-xref">Example&nbsp;2</a> is large-sample calibrated but not small-sample valid. In the book, “95% confidence interval” means a large-sample valid interval, such as a Wald interval, unless stated otherwise.</p>
 <aside class="notes">
-<p><strong>Interpretation of 95% Confidence Intervals</strong>:</p>
-<p><strong>Correct interpretation</strong> (frequentist): In repeated sampling, 95% of such intervals will contain the true parameter.</p>
-<p><strong>Incorrect interpretation</strong>: “There is a 95% probability that the true parameter is in this interval.”</p>
-<p>The parameter is fixed (though unknown). The interval either contains it (probability 1) or doesn’t (probability 0).</p>
-<p><strong>Calibrated vs.&nbsp;valid intervals</strong>:</p>
+<p>The Wald interval centered at <span class="math inline">\(\hat p\)</span> is only guaranteed to be valid in large samples, and it can be badly anticonservative in small samples <span class="citation" data-cites="brown2001interval">(<a href="#/references" role="doc-biblioref" onclick="">Brown et al. 2001</a>)</span>. The book assumes, for simplicity, that the sample is large enough for the Wald interval in the example to be valid. Small-sample valid intervals for <span class="math inline">\(p\)</span> exist but are not often used in practice.</p>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside>
+</section>
+<section id="interpreting-a-confidence-interval" class="slide level2">
+<h2>Interpreting a Confidence Interval</h2>
+<p>Validity is a statement about coverage over repeated samples from the super-population. If we and our colleagues construct valid 95% intervals in every study we ever conduct, then the parameters of interest will be covered in at least 95% of those studies, though we cannot tell which (up to) 5% of the intervals missed.</p>
+<p>A single 95% interval does <strong>not</strong> mean there is a 95% probability that the estimand lies in it. The estimand is fixed, so the probability that it lies in <span class="math inline">\((0.27, 0.81)\)</span> is either 0 or 1.</p>
+<aside class="notes">
+<p>A frequentist confidence level refers to how often the interval traps the unknown super-population quantity across a collection of studies, or across hypothetical repetitions of one study.</p>
+<p>In contrast, a Bayesian 95% <strong>credible interval</strong> can be interpreted as “there is a 95% probability that the estimand is in the interval”, because for a Bayesian, probability is a degree of belief rather than a frequency. The book adopts the frequency definition of probability (see its Fine Point 11.2 for Bayesian intervals).</p>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside>
+<div title="Fine Point 10.1: Honest Confidence Intervals">
+<div class="callout callout-note callout-titled callout-style-default">
+<div class="callout-body">
+<div class="callout-title">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<p><strong>Fine Point 10.1: Honest Confidence Intervals</strong></p>
+</div>
+<div class="callout-content">
+<p>For a large-sample valid interval, the smallest sample size at which coverage reaches 95% may depend on the unknown true parameter. A large-sample valid interval is <strong>uniform</strong> or <strong>honest</strong> if there is a sample size <span class="math inline">\(n\)</span> at which it covers the true parameter at least 95% of the time <em>whatever</em> the true parameter is. Without uniformity, at any finite <span class="math inline">\(n\)</span> some data-generating distributions may have coverage well below 95%. Even for honest intervals, the smallest such <span class="math inline">\(n\)</span> is generally unknown and hard to determine, even by simulation <span class="citation" data-cites="robins1997toward">(<a href="#/references" role="doc-biblioref" onclick="">Robins and Ritov 1997</a>)</span>.</p>
+<p>From here on, the book uses “valid confidence interval” to mean a large-sample <em>honest</em> interval. Any small-sample valid interval is automatically honest for all <span class="math inline">\(n\)</span> at which it is defined.</p>
+</div>
+</div>
+</div>
+</div>
+</section>
+<section id="bias-means-failing-to-center-a-valid-wald-interval" class="slide level2">
+<h2>Bias Means Failing to Center a Valid Wald Interval</h2>
+<p>Not every consistent estimator can center a valid Wald interval, even in large samples. Most users of statistics call an estimator <strong>unbiased</strong> if it can center a valid Wald interval and <strong>biased</strong> if it cannot, and the book adopts that definition for now.</p>
+<p>Confidence intervals quantify only random error, so they can overstate our confidence when systematic biases may be present (Fine Point 10.2).</p>
+<div title="Technical Point 10.1: Bias and Consistency in Statistical Inference">
+<div class="callout callout-note callout-titled callout-style-default">
+<div class="callout-body">
+<div class="callout-title">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<p><strong>Technical Point 10.1: Bias and Consistency in Statistical Inference</strong></p>
+</div>
+<div class="callout-content">
+<p>Suppose we observe <span class="math inline">\(n\)</span> i.i.d. copies of a random vector whose distribution <span class="math inline">\(P\)</span> lies in a model <span class="math inline">\(\mathcal{M}\)</span>.</p>
 <ul>
-<li><strong>Calibrated</strong>: Contains the true parameter in exactly 95% of samples</li>
-<li><strong>Conservative</strong>: Contains the true parameter in &gt;95% of samples<br>
-</li>
-<li><strong>Valid</strong>: Calibrated or conservative (at least 95% coverage)</li>
+<li><span class="math inline">\(\hat\theta_n\)</span> is <strong>consistent</strong> for <span class="math inline">\(\theta = \theta(P)\)</span> in <span class="math inline">\(\mathcal{M}\)</span> if, for every <span class="math inline">\(P \in \mathcal{M}\)</span> and every <span class="math inline">\(\varepsilon &gt; 0\)</span>, <span class="math display">\[\Pr_P{\left[\left|\hat\theta_n - \theta(P)\right| &gt; \varepsilon\right]} \to 0 \text{ as } n \to \infty.\]</span></li>
+<li><span class="math inline">\(\hat\theta_n\)</span> is <strong>exactly unbiased</strong> in <span class="math inline">\(\mathcal{M}\)</span> if <span class="math inline">\(E_P[\hat\theta_n] = \theta(P)\)</span> for every <span class="math inline">\(P \in \mathcal{M}\)</span>; the exact bias under <span class="math inline">\(P\)</span> is <span class="math inline">\(E_P[\hat\theta_n] - \theta(P)\)</span>. For many parameters, such as the risk ratio <span class="math inline">\(\Pr[Y=1 \mid A=1]/\Pr[Y=1 \mid A=0]\)</span>, no exactly unbiased estimator exists.</li>
+<li>A <strong>systematically biased</strong> estimator is neither consistent nor exactly unbiased.</li>
 </ul>
-<p>Most commonly used intervals (like Wald intervals) are <strong>large-sample valid</strong>: guaranteed to be valid only in large samples.</p>
+<p><span class="citation" data-cites="robins1987foundations">Robins and Morgenstern (<a href="#/references" role="doc-biblioref" onclick="">1987</a>)</span> argue that applied researchers call an estimator unbiased only if it can center a valid Wald interval, and show that this holds only for estimators that are <strong>uniformly asymptotically normal and unbiased (UANU)</strong>: there exist sequences <span class="math inline">\(\sigma_n(P)\)</span> such that</p>
+<p><span class="math display">\[
+\sup_{P \in \mathcal{M}} \left|\Pr_P{\left[n^{1/2} {\left(\hat\theta_n - \theta(P)\right)} / \sigma_n(P) &lt; t\right]} - \Phi(t)\right| \to 0 \text{ as } n \to \infty
+\]</span></p>
+<p>for every <span class="math inline">\(t \in \mathbb{R}\)</span>, where <span class="math inline">\(\Phi\)</span> is the standard normal cumulative distribution function <span class="citation" data-cites="robins1997toward">(<a href="#/references" role="doc-biblioref" onclick="">Robins and Ritov 1997</a>)</span>. All inconsistent estimators, and some consistent ones (examples in Chapter 18), are biased under this definition. In the book, “unbiased” without qualification means UANU.</p>
+</div>
+</div>
+</div>
+</div>
+</section></section>
+<section>
+<section id="estimation-of-causal-effects-pp.-140-141" class="title-slide slide level1 center" data-number="2">
+<h1><span class="header-section-number">2</span> 10.2 Estimation of Causal Effects (pp.&nbsp;140-141)</h1>
+
+</section>
+<section class="slide level2">
+
+<p>Suppose the heart transplant study were a marginally randomized experiment in which</p>
+<ul>
+<li>the 20 individuals are a random sample from a near-infinite super-population,</li>
+<li><em>everyone in the super-population</em> was randomly assigned to <span class="math inline">\(A = 1\)</span> or <span class="math inline">\(A = 0\)</span>, and</li>
+<li>everyone adhered to their assigned treatment.</li>
+</ul>
+<p>Then exchangeability holds in the super-population, <span class="math inline">\(\Pr[Y^a = 1] = \Pr[Y = 1 \mid A = a]\)</span>, so</p>
+<p><span class="math display">\[
+\Pr[Y^{a=1} = 1] - \Pr[Y^{a=0} = 1] = \Pr[Y = 1 \mid A = 1] - \Pr[Y = 1 \mid A = 0].
+\]</span></p>
+<aside class="notes">
+<p>Because the study population is a random sample, <span class="math inline">\(\widehat{\Pr}[Y = 1 \mid A = a]\)</span> is an unbiased estimator of <span class="math inline">\(\Pr[Y = 1 \mid A = a]\)</span>, and, by exchangeability in the super-population, also of <span class="math inline">\(\Pr[Y^a = 1]\)</span>.</p>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside>
+</section>
+<section id="testing-and-estimation-in-the-randomized-experiment" class="slide level2">
+<h2>Testing and Estimation in the Randomized Experiment</h2>
+<p>Testing the causal null hypothesis <span class="math inline">\(\Pr[Y^{a=1} = 1] = \Pr[Y^{a=0} = 1]\)</span> reduces to comparing the sample proportions <span class="math inline">\(\widehat{\Pr}[Y = 1 \mid A = 1] = 7/13\)</span> and <span class="math inline">\(\widehat{\Pr}[Y = 1 \mid A = 0] = 3/7\)</span>.</p>
+<p>Standard methods give confidence intervals for the causal effects in the super-population, estimated by</p>
+<ul>
+<li>causal risk difference: <span class="math inline">\(7/13 - 3/7\)</span>;</li>
+<li>causal risk ratio: <span class="math inline">\((7/13)/(3/7)\)</span>.</li>
+</ul>
+<p>In observational studies, slightly more involved but standard procedures give confidence intervals for standardized, IP weighted, or stratified association measures.</p>
+</section>
+<section id="randomizing-the-sample-instead-of-the-super-population" class="slide level2 scrollable">
+<h2>Randomizing the Sample Instead of the Super-Population</h2>
+<p>Now suppose only the 20 study individuals, not the whole super-population, were randomized. Because of sampling variability, exchangeability need not hold exactly <em>in the sample</em>.</p>
+<div id="exm-chance-imbalance" class="theorem example">
+<p><span class="theorem-title"><strong>Example 3 (Chance imbalance in prognosis)</strong></span> Classify each individual as good or bad prognosis at randomization, and call the arms exchangeable if they contain the same proportion with bad prognosis. By chance, 2 of the 13 individuals assigned to <span class="math inline">\(A = 1\)</span> (<span class="math inline">\(\approx 15\%\)</span>) and 3 of the 7 assigned to <span class="math inline">\(A = 0\)</span> (<span class="math inline">\(\approx 43\%\)</span>) might have bad prognosis. In a larger sample, the relative imbalance between arms would very probably shrink.</p>
+</div>
+<p>There are then two possible targets of inference:</p>
+<ol type="1">
+<li><strong>The randomized sample itself</strong> (agnostic about any super-population): <strong>randomization-based inference</strong> <span class="citation" data-cites="robins1988confidence">(<a href="#/references" role="doc-biblioref" onclick="">Robins 1988</a>)</span>, whose technicalities are beyond the book’s scope.</li>
+<li><strong>The super-population from which the sample was drawn</strong>: mathematically equivalent to the first conceptualization in this section. Randomization followed by random sampling is equivalent to random sampling followed by randomization.</li>
+</ol>
+<aside class="notes">
+<p>We are often not interested in the first target. In a trial comparing two first-line cancer treatments, learning which is better comes too late to help the trial participants; the study is meant to guide treatment for a larger group of individuals similar to those studied. So far we have assumed that this larger group is a super-population from which participants were randomly sampled. Section 10.3 examines that assumption.</p>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside>
+<div title="Fine Point 10.2: Uncertainty from Systematic Biases">
+<div class="callout callout-note callout-titled callout-style-default">
+<div class="callout-body">
+<div class="callout-title">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<p><strong>Fine Point 10.2: Uncertainty from Systematic Biases</strong></p>
+</div>
+<div class="callout-content">
+<p>The width of a Wald-type interval depends on the estimator’s standard error, so it reflects only random error. Systematic biases (confounding, selection, measurement) are another source of uncertainty and do not shrink as the sample grows. Hence the larger the study, the more a usual Wald interval understates the total uncertainty.</p>
+<p>Some authors therefore call these intervals <strong>compatibility intervals</strong>: they show which effect sizes are highly compatible with the data <em>under our adjustment assumptions and methods</em> <span class="citation" data-cites="amrhein2019scientists greenland2019some">(<a href="#/references" role="doc-biblioref" onclick="">Amrhein et al. 2019</a>; <a href="#/references" role="doc-biblioref" onclick="">Greenland 2019</a>)</span>, without claiming confidence that adjustment removed all systematic bias.</p>
+<p>Discussion sections usually treat systematic bias informally. <strong>Quantitative bias analysis</strong> instead produces intervals that combine random and systematic uncertainty <span class="citation" data-cites="lash2009applying">(<a href="#/references" role="doc-biblioref" onclick="">Lash et al. 2009</a>)</span>; Bayesian alternatives also exist.</p>
+</div>
+</div>
+</div>
+</div>
+</section></section>
+<section>
+<section id="the-myth-of-the-super-population-pp.-142-143" class="title-slide slide level1 center" data-number="3">
+<h1><span class="header-section-number">3</span> 10.3 The Myth of the Super-Population (pp.&nbsp;142-143)</h1>
+
+</section>
+<section class="slide level2">
+
+<p>Chapter 1 named two sources of randomness: <strong>sampling variability</strong> and <strong>nondeterministic counterfactuals</strong>.</p>
+<p>Nearly every investigator would report the binomial interval <span class="math inline">\(\hat p \pm 1.96 \sqrt{\hat p (1 - \hat p)/n}\)</span> for <span class="math inline">\(p\)</span> from <span class="math inline">\(\hat p = 7/13\)</span>. But this interval is justified only if <span class="math inline">\(\hat p\)</span> has a binomial sampling distribution. When does that happen?</p>
+</section>
+<section id="two-scenarios-that-give-a-binomial-distribution" class="slide level2">
+<h2>Two Scenarios That Give a Binomial Distribution</h2>
+<p><strong>Scenario 1 (super-population).</strong> The study population is a random sample from an essentially infinite super-population (sometimes called the source or target population), and the estimand is <span class="math inline">\(p = \Pr[Y = 1 \mid A = 1]\)</span> in that super-population. Then, across repeated random samples of 13 treated individuals, the number who develop the outcome is binomial with success probability <span class="math inline">\(p\)</span>, and the Wald interval from <a href="#/exm-wald-binomial" class="quarto-xref">Example&nbsp;2</a> is asymptotically calibrated for <span class="math inline">\(p\)</span>.</p>
+<p><strong>Scenario 2 (stochastic counterfactuals, no super-population).</strong> Each of the 13 treated individuals <span class="math inline">\(i\)</span> has a nondeterministic counterfactual probability <span class="math inline">\(p_i^{a=1}\)</span>, the observed outcome <span class="math inline">\(Y_i = Y_i^{a=1}\)</span> occurs with probability <span class="math inline">\(p_i^{a=1}\)</span>, and <span class="math inline">\(p_i^{a=1}\)</span> equals the <em>same</em> value <span class="math inline">\(p\)</span> for all 13. Then the number of treated with the outcome is binomial with success probability <span class="math inline">\(p\)</span>, and the interval is again asymptotically calibrated for <span class="math inline">\(p\)</span>.</p>
+<aside class="notes">
+<p>“i.i.d.” in Technical Point 10.1 means that the data were a random sample of size <span class="math inline">\(n\)</span> from a super-population, i.e., Scenario 1. The book credits <span class="citation" data-cites="robins1988confidence">Robins (<a href="#/references" role="doc-biblioref" onclick="">1988</a>)</span> with a more detailed discussion of the two scenarios.</p>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside>
+</section>
+<section id="scenario-2-is-untenable" class="slide level2">
+<h2>Scenario 2 Is Untenable</h2>
+<p>The risks <span class="math inline">\(p_i^{a=1}\)</span> almost certainly vary between individuals (for example, with genetic make-up). If they are not constant, the natural estimand for the study population is their average, say <span class="math inline">\(p\)</span>, but the number of treated with the outcome is then <strong>not</strong> binomial with success probability <span class="math inline">\(p\)</span>, and the binomial interval is not calibrated but <strong>conservative</strong>.</p>
+<p>So anyone who reports a binomial interval for <span class="math inline">\(\Pr[Y = 1 \mid A = a]\)</span> while acknowledging between-individual variation in risk is implicitly assuming Scenario 1. Under Scenario 1 the count is binomial whether the counterfactuals are deterministic or stochastic.</p>
+<aside class="notes">
+<p>Why the interval is conservative rather than anticonservative: if the outcomes are independent Bernoulli(<span class="math inline">\(p_i\)</span>) with unequal <span class="math inline">\(p_i\)</span> (a Poisson-binomial count), their sum has variance <span class="math inline">\(\sum_i p_i(1-p_i)\)</span>, which is smaller than the binomial variance <span class="math inline">\(n \bar p (1 - \bar p)\)</span> at the same mean <span class="math inline">\(\bar p\)</span>. To see this, write</p>
+<p><span class="math display">\[
+\begin{aligned}
+\sum_i p_i(1-p_i)
+&amp;= \sum_i p_i - \sum_i p_i^2 \\
+&amp;= n\bar p - {\left(n \bar p^2 + \sum_i (p_i - \bar p)^2\right)} \\
+&amp;= n \bar p (1 - \bar p) - \sum_i (p_i - \bar p)^2,
+\end{aligned}
+\]</span></p>
+<p>using <span class="math inline">\(\sum_i p_i^2 = n\bar p^2 + \sum_i (p_i - \bar p)^2\)</span>. The binomial formula therefore overstates the variance, so the interval is too wide. (This derivation is ours, added to explain the book’s statement.)</p>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside>
+</section>
+<section id="why-does-the-myth-endure" class="slide level2 scrollable">
+<h2>Why Does the Myth Endure?</h2>
+<p>Advantage of the super-population: nothing hinges on whether the world is deterministic. Yet it is usually a fiction; individuals are rarely sampled at random from any near-infinite population. It endures because</p>
+<ol type="1">
+<li>it leads to simple statistical methods, and</li>
+<li>it gives a simple route to <strong>generalization</strong> from the study population (e.g., our 20 individuals) to a large target population (e.g., all immortals in the Greek pantheon).</li>
+</ol>
+<p>Because the random sampling is fictional, a 95% interval computed under Scenario 1 should be read as a <strong>what-if statement</strong>: it covers the super-population parameter <em>had</em> the study individuals been randomly sampled from a near-infinite super-population.</p>
+<aside class="notes">
+<p>An investigator might reject Scenario 1 if the pool of potential treatment recipients is not much larger than the study population, or if the target population is believed to differ from the study population in ways that sampling variability cannot explain. The rest of the chapter accepts that individuals were randomly sampled from a super-population, and studies the consequences of random variability for causal inference, starting with a simple randomized experiment.</p>
 <style type="text/css">
         span.MJX_Assistive_MathML {
           position:absolute!important;
@@ -272,50 +517,55 @@
       }</style></aside>
 </section></section>
 <section>
-<section id="estimation-of-causal-effects-pp.-134-136" class="title-slide slide level1 center" data-number="2">
-<h1><span class="header-section-number">2</span> 10.2 Estimation of Causal Effects (pp.&nbsp;134-136)</h1>
+<section id="the-conditionality-principle-pp.-144-147" class="title-slide slide level1 center" data-number="4">
+<h1><span class="header-section-number">4</span> 10.4 The Conditionality “Principle” (pp.&nbsp;144-147)</h1>
 
 </section>
 <section class="slide level2">
 
-<p>In randomized experiments with random sampling, standard statistical methods can be used to estimate causal effects and compute confidence intervals.</p>
-</section>
-<section id="setting" class="slide level2 scrollable">
-<h2>Setting</h2>
-<p>Suppose:</p>
-<ol type="1">
-<li>Study population is a random sample from a super-population</li>
-<li>Treatment is randomly assigned in the super-population (or in the sample)</li>
-<li>All individuals adhere to assigned treatment</li>
-<li>Exchangeability holds: <span class="math inline">\(\Pr[Y^a = 1] = \Pr[Y = 1|A = a]\)</span></li>
-</ol>
-</section>
-<section id="causal-inference" class="slide level2 scrollable">
-<h2>Causal Inference</h2>
-<p>Because of exchangeability, the causal risk difference equals the associational risk difference in the super-population:</p>
-<p><span class="math display">\[\Pr[Y^{a=1} = 1] - \Pr[Y^{a=0} = 1] = \Pr[Y = 1|A = 1] - \Pr[Y = 1|A = 0]\]</span></p>
-<p><strong>Estimators</strong>:</p>
-<ul>
-<li>Causal risk difference: <span class="math inline">\(\widehat{Pr}[Y = 1|A = 1] - \widehat{Pr}[Y = 1|A = 0]\)</span></li>
-<li>Causal risk ratio: <span class="math inline">\(\widehat{Pr}[Y = 1|A = 1] / \widehat{Pr}[Y = 1|A = 0]\)</span></li>
-</ul>
-<p>Standard statistical methods provide confidence intervals for these causal effects.</p>
+<div id="exm-trial-unadjusted" class="theorem example">
+<p><span class="theorem-title"><strong>Example 4 (A randomized trial, unadjusted (Table 10.1))</strong></span> A trial of treatment <span class="math inline">\(A\)</span> on 1-year death <span class="math inline">\(Y\)</span> randomized 240 individuals, 120 per arm.</p>
+<table class="caption-top">
+<thead>
+<tr class="header">
+<th></th>
+<th style="text-align: right;"><span class="math inline">\(Y=1\)</span></th>
+<th style="text-align: right;"><span class="math inline">\(Y=0\)</span></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><span class="math inline">\(A = 1\)</span></td>
+<td style="text-align: right;">24</td>
+<td style="text-align: right;">96</td>
+</tr>
+<tr class="even">
+<td><span class="math inline">\(A = 0\)</span></td>
+<td style="text-align: right;">42</td>
+<td style="text-align: right;">78</td>
+</tr>
+</tbody>
+</table>
+<p>Unadjusted risk difference:</p>
+<p><span class="math display">\[
+\frac{24}{120} - \frac{42}{120} = 0.20 - 0.35 = -0.15.
+\]</span></p>
+<p>Estimated variance:</p>
+<p><span class="math display">\[
+\begin{aligned}
+\frac{(24/120)(96/120)}{120} + \frac{(42/120)(78/120)}{120}
+&amp;= \frac{0.20 \times 0.80 + 0.35 \times 0.65}{120} \\
+&amp;= \frac{0.16 + 0.2275}{120} = \frac{0.3875}{120} = \frac{31}{9600}.
+\end{aligned}
+\]</span></p>
+<p>95% Wald interval:</p>
+<p><span class="math display">\[
+-0.15 \pm 1.96 \sqrt{31/9600} = -0.15 \pm 1.96 \times 0.0568 = -0.15 \pm 0.111 = (-0.26, -0.04).
+\]</span></p>
+<p>The investigators publish: treatment reduced the risk of death by 15 percentage points.</p>
+</div>
 <aside class="notes">
-<p><strong>Two perspectives on randomization</strong>:</p>
-<ol type="1">
-<li><strong>Super-population randomization</strong>: Entire super-population is randomized, then we sample
-<ul>
-<li>Exchangeability holds in super-population</li>
-<li>Sample estimates have random sampling variability</li>
-</ul></li>
-<li><strong>Sample randomization</strong>: We sample first, then randomize only the sample
-<ul>
-<li>Exchangeability holds on average across randomizations</li>
-<li>Can lead to imbalance in small samples</li>
-</ul></li>
-</ol>
-<p><strong>Mathematically equivalent</strong>: Both approaches lead to the same statistical inference procedures.</p>
-<p><strong>Practical implication</strong>: We typically assume a super-population exists and use standard statistical methods.</p>
+<p>In a near-infinite super-population, randomization would make the arms exchangeable, <span class="math inline">\(Y^a \perp\!\!\!\perp A\)</span>, and the associational risk difference would equal the causal risk difference <span class="math inline">\(\Pr[Y^{a=1} = 1] - \Pr[Y^{a=0} = 1]\)</span>. With only 240 individuals, randomization guarantees only that departures from exchangeability are due to chance, not that they are absent. Our ignorance of chance correlations between unmeasured baseline risk factors and <span class="math inline">\(A\)</span> in the sample contributes to the length (0.22) of the interval.</p>
 <style type="text/css">
         span.MJX_Assistive_MathML {
           position:absolute!important;
@@ -328,21 +578,195 @@
           display:block!important;
       }</style></aside>
 </section>
-<section id="observational-studies" class="slide level2">
-<h2>Observational Studies</h2>
-<p>In observational studies, similar methods apply after adjusting for confounding:</p>
+<section id="a-chance-imbalance-on-smoking" class="slide level2">
+<h2>A Chance Imbalance on Smoking</h2>
+<div id="exm-trial-stratified" class="theorem example">
+<p><span class="theorem-title"><strong>Example 5 (The same trial stratified by smoking <span class="math inline">\(L\)</span> (Table 10.2))</strong></span> &nbsp;</p>
+<table class="caption-top">
+<thead>
+<tr class="header">
+<th><span class="math inline">\(L = 1\)</span> (smokers)</th>
+<th style="text-align: right;"><span class="math inline">\(Y=1\)</span></th>
+<th style="text-align: right;"><span class="math inline">\(Y=0\)</span></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><span class="math inline">\(A = 1\)</span></td>
+<td style="text-align: right;">4</td>
+<td style="text-align: right;">76</td>
+</tr>
+<tr class="even">
+<td><span class="math inline">\(A = 0\)</span></td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">38</td>
+</tr>
+</tbody>
+</table>
+<table class="caption-top">
+<thead>
+<tr class="header">
+<th><span class="math inline">\(L = 0\)</span> (nonsmokers)</th>
+<th style="text-align: right;"><span class="math inline">\(Y=1\)</span></th>
+<th style="text-align: right;"><span class="math inline">\(Y=0\)</span></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><span class="math inline">\(A = 1\)</span></td>
+<td style="text-align: right;">20</td>
+<td style="text-align: right;">20</td>
+</tr>
+<tr class="even">
+<td><span class="math inline">\(A = 0\)</span></td>
+<td style="text-align: right;">40</td>
+<td style="text-align: right;">40</td>
+</tr>
+</tbody>
+</table>
 <ul>
-<li>Compute standardized or IP weighted estimates</li>
-<li>Calculate confidence intervals using appropriate standard errors</li>
-<li>Account for adjustment when computing standard errors</li>
+<li>Proportion treated: <span class="math inline">\(80/120\)</span> among smokers, twice the <span class="math inline">\(40/120\)</span> among nonsmokers.</li>
+<li>Smokers: <span class="math inline">\(4/80 - 2/40 = 0.05 - 0.05 = 0\)</span>.</li>
+<li>Nonsmokers: <span class="math inline">\(20/40 - 40/80 = 0.50 - 0.50 = 0\)</span>.</li>
 </ul>
+<p>The adjusted (stratified) analysis finds no effect in either stratum, although the marginal estimate suggested a benefit. The Wald interval centered at the adjusted estimate is <span class="math inline">\((-0.076, 0.076)\)</span> (see Technical Point 10.5 for the variance).</p>
+</div>
+<p>Malfeasance is ruled out, so the imbalance is “very very bad luck”. Should the article be retracted?</p>
+<ul>
+<li>Investigator 1: no. Imbalances on unmeasured factors <span class="math inline">\(U\)</span> may cancel the imbalance on <span class="math inline">\(L\)</span>, so the unadjusted estimate may still be closer to the truth.</li>
+<li>Investigator 2: yes. The strong <span class="math inline">\(L\)</span>-<span class="math inline">\(A\)</span> association confounds the estimate; within levels of <span class="math inline">\(L\)</span> we have mini randomized trials, whose intervals reflect possible <span class="math inline">\(U\)</span>-<span class="math inline">\(A\)</span> associations given <span class="math inline">\(L\)</span>.</li>
+</ul>
+</section>
+<section id="settling-the-debate" class="slide level2">
+<h2>Settling the Debate</h2>
+<p>Assume a constant causal risk difference across strata of <span class="math inline">\(L\)</span>, and imagine running the trial trillions of times. <strong>Condition on</strong> the runs in which <span class="math inline">\(L\)</span> and <span class="math inline">\(A\)</span> are as strongly positively associated as observed. Within each level of <span class="math inline">\(L\)</span>, any pre-treatment risk factor <span class="math inline">\(U\)</span> is positively associated with <span class="math inline">\(A\)</span> in essentially as many of these runs as it is negatively associated (even if <span class="math inline">\(U\)</span> and <span class="math inline">\(L\)</span> are highly correlated). Therefore:</p>
+<ul>
+<li><strong>Conditionally</strong> (over those runs): the adjusted estimate is unbiased; the unadjusted estimate is greatly biased.</li>
+<li><strong>Unconditionally</strong> (over all runs): both are unbiased, but the adjusted estimate has smaller variance.</li>
+</ul>
+<p>Either way, the Wald interval centered on the adjusted estimator is the better analysis. <strong>Investigator 2 is right; the article should be retracted.</strong></p>
 <aside class="notes">
-<p><strong>Key difference from randomized experiments</strong>:</p>
+<p>The adjusted estimator is unconditionally more efficient because it is the maximum likelihood estimator (MLE) of the risk difference when data on <span class="math inline">\(L\)</span> are available.</p>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside>
+</section>
+<section id="the-conditionality-principle" class="slide level2">
+<h2>The Conditionality Principle</h2>
+<p>The observed <span class="math inline">\(L\)</span>-<span class="math inline">\(A\)</span> association is an <strong>ancillary statistic</strong> for the causal risk difference.</p>
+<div id="def-conditionality-principle" class="theorem definition">
+<p><span class="theorem-title"><strong>Definition 3 (Conditionality principle)</strong></span> Inference on a parameter should be performed conditional on ancillary statistics.</p>
+</div>
+<p>Investigators who intuitively follow this principle call an estimator unbiased only if it can center a valid Wald interval <em>conditional on</em> ancillary statistics, a stricter definition than in Section 10.1. To the frequentist objection that the unadjusted estimate is unbiased over all runs, they reply: why should <span class="math inline">\(L\)</span>-<span class="math inline">\(A\)</span> associations in hypothetical other studies matter, when in <em>my</em> study <span class="math inline">\(L\)</span> is a confounder?</p>
+<p>That reply is convincing in randomized and observational studies <strong>as long as the number of measured confounders is not large</strong>. With many confounders, strictly following the conditionality principle stops being wise (Section 10.5). The quotation marks around “principle” in the section title anticipate this point.</p>
+<div title="Technical Point 10.2: A Formal Statement of the Conditionality Principle">
+<div class="callout callout-note callout-titled callout-style-default">
+<div class="callout-body">
+<div class="callout-title">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<p><strong>Technical Point 10.2: A Formal Statement of the Conditionality Principle</strong></p>
+</div>
+<div class="callout-content">
+<p>Take one dichotomous <span class="math inline">\(L\)</span>, exchangeability <span class="math inline">\(Y^a \perp\!\!\!\perp A \mid L\)</span>, and a stratum-specific risk difference <span class="math inline">\(\text{sRD} = \Pr(Y = 1 \mid L = l, A = 1) - \Pr(Y = 1 \mid L = l, A = 0)\)</span> known to be constant across strata and of interest. The likelihood factors as</p>
+<p><span class="math display">\[
+\prod_{i=1}^n f(Y_i \mid L_i, A_i; \text{sRD}, p_0) \times f(A_i \mid L_i; \alpha) \times f(L_i; \rho),
+\]</span></p>
+<p>where <span class="math inline">\(p_{0l} = \Pr(Y = 1 \mid L = l, A = 0)\)</span>, and <span class="math inline">\(p_0\)</span>, <span class="math inline">\(\alpha\)</span>, <span class="math inline">\(\rho\)</span> are nuisance parameters.</p>
+<p>The data on <span class="math inline">\((A, L)\)</span> are <strong>S-ancillary</strong> for sRD: the conditional distribution of the data given <span class="math inline">\((A, L)\)</span> depends on sRD, but the joint density of <span class="math inline">\((A, L)\)</span> shares no parameters with <span class="math inline">\(f(Y \mid L, A; \text{sRD}, p_0)\)</span>. The conditionality principle says to condition on S-ancillary statistics, here <span class="math inline">\(\{A_i, L_i; i = 1, \ldots, n\}\)</span>. The same holds if the risk ratio, rather than the risk difference, is known to be constant. An <strong>exact ancillary</strong> is an S-ancillary statistic with known marginal distribution (here, <span class="math inline">\(\alpha\)</span> and <span class="math inline">\(\rho\)</span> known).</p>
+</div>
+</div>
+</div>
+</div>
+<div title="Technical Point 10.3: Approximate Ancillarity">
+<div class="callout callout-note callout-titled callout-style-default">
+<div class="callout-body">
+<div class="callout-title">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<p><strong>Technical Point 10.3: Approximate Ancillarity</strong></p>
+</div>
+<div class="callout-content">
+<p>If the stratum-specific risk differences <span class="math inline">\(\text{sRD}_l\)</span> vary over <span class="math inline">\(L\)</span>, the population causal risk difference is the standardized risk difference</p>
+<p><span class="math display">\[
+\text{RD}_{std} = \sum_l {\left[\Pr(Y = 1 \mid L = l, A = 1; \upsilon) - \Pr(Y = 1 \mid L = l, A = 0; \upsilon)\right]} f(l; \rho),
+\]</span></p>
+<p>with <span class="math inline">\(\upsilon = \{\text{sRD}_l, p_{0,l}; l = 0, 1\}\)</span>. In an unconditionally randomized experiment <span class="math inline">\(A \perp\!\!\!\perp L\)</span>, so <span class="math inline">\(\text{RD}_{std}\)</span> equals the associational risk difference. Because <span class="math inline">\(\text{RD}_{std}\)</span> depends on <span class="math inline">\(\rho\)</span>, <span class="math inline">\(\{A_i, L_i\}\)</span> is no longer exactly ancillary, and no exact ancillary exists.</p>
+<p>Let <span class="math inline">\(\widetilde S = \widehat{\text{OR}}_{AL} - \text{OR}_{AL}\)</span>, the sample minus the super-population <span class="math inline">\(A\)</span>-<span class="math inline">\(L\)</span> odds ratio, and <span class="math inline">\(\widehat S = \widetilde S / \widehat{\text{se}}{\left(\widetilde S\right)}\)</span>, which is approximately standard normal in large samples. When <span class="math inline">\(\text{OR}_{AL}\)</span> is known (e.g., <span class="math inline">\(\text{OR}_{AL} = 1\)</span> in a randomized experiment), <span class="math inline">\(\widehat S\)</span> is an <strong>approximate (large-sample) ancillary</strong>: it can be computed from the data, has approximately known distribution, is governed by the <span class="math inline">\(f(A \mid L; \alpha)\)</span> factor of the likelihood only, and conditional on it the adjusted estimate of <span class="math inline">\(\text{RD}_{std}\)</span> is unbiased while the unadjusted one is biased.</p>
+<p>Under a <strong>continuity principle</strong> <span class="citation" data-cites="buehler1982some">(<a href="#/references" role="doc-biblioref" onclick="">Buehler 1982</a>)</span>, inferences should not change discontinuously after an arbitrarily small known change in the data-generating distribution. Accepting both conditionality and continuity implies conditioning on approximate ancillaries too: the <strong>extended conditionality principle</strong>.</p>
+</div>
+</div>
+</div>
+</div>
+<div title="Technical Point 10.4: Adjusted Versus Unadjusted Estimators">
+<div class="callout callout-note callout-titled callout-style-default">
+<div class="callout-body">
+<div class="callout-title">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<p><strong>Technical Point 10.4: Adjusted Versus Unadjusted Estimators</strong></p>
+</div>
+<div class="callout-content">
+<p>The adjusted estimator <span class="math inline">\(\widehat{\text{RD}}_{MLE}\)</span> replaces the population proportions in <span class="math inline">\(\text{RD}_{std}\)</span> by sample proportions; the unadjusted estimator is <span class="math inline">\(\widehat{\text{RD}}_{UN} = \widehat{\Pr}(Y = 1 \mid A = 1) - \widehat{\Pr}(Y = 1 \mid A = 0)\)</span>. Unconditionally, both are asymptotically normal and unbiased for <span class="math inline">\(\text{RD}_{std}\)</span>.</p>
+<p><span class="citation" data-cites="robins1987foundations">Robins and Morgenstern (<a href="#/references" role="doc-biblioref" onclick="">1987</a>)</span> show that</p>
 <ul>
-<li><strong>Randomized</strong>: Association = Causation (under assumptions)</li>
-<li><strong>Observational</strong>: Need to adjust for confounding first, then association = causation (under additional assumptions)</li>
+<li><span class="math inline">\(\widehat{\text{RD}}_{MLE}\)</span> has the same asymptotic distribution conditionally on <span class="math inline">\(\widehat S\)</span> as unconditionally;</li>
+<li><span class="math inline">\(\text{aVar}(\widehat{\text{RD}}_{MLE}) = \text{aVar}(\widehat{\text{RD}}_{UN}) - {\left[\text{aCov}(\widehat S, \widehat{\text{RD}}_{UN})\right]}^2\)</span>;</li>
+<li>the conditional asymptotic bias of <span class="math inline">\(\widehat{\text{RD}}_{UN}\)</span> given <span class="math inline">\(\widehat S\)</span> is <span class="math inline">\(\text{aCov}(\widehat S, \widehat{\text{RD}}_{UN}) \, \widehat S\)</span>.</li>
 </ul>
-<p>Both require handling random variability through confidence intervals.</p>
+<p>So <span class="math inline">\(\widehat{\text{RD}}_{UN}\)</span> is unconditionally inefficient <strong>if and only if</strong> it is conditionally biased (both iff <span class="math inline">\(\text{aCov} \neq 0\)</span>). Moreover, <span class="math inline">\(\text{aCov}(\widehat S, \widehat{\text{RD}}_{UN}) = 0\)</span> iff <span class="math inline">\(L \perp\!\!\!\perp Y \mid A\)</span>, so when a measured risk factor for <span class="math inline">\(Y\)</span> is available, <span class="math inline">\(\widehat{\text{RD}}_{MLE}\)</span> is preferred. The corrected estimator <span class="math inline">\(\widehat{\text{RD}}_{UN} - \text{aCov}(\widehat S, \widehat{\text{RD}}_{UN})\widehat S\)</span> has the same asymptotic distribution as <span class="math inline">\(\widehat{\text{RD}}_{MLE}\)</span> given <span class="math inline">\(\widehat S\)</span>.</p>
+</div>
+</div>
+</div>
+</div>
+<div title="Technical Point 10.5: Most Researchers Follow the Extended Conditionality Principle">
+<div class="callout callout-note callout-titled callout-style-default">
+<div class="callout-body">
+<div class="callout-title">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<p><strong>Technical Point 10.5: Most Researchers Follow the Extended Conditionality Principle</strong></p>
+</div>
+<div class="callout-content">
+<p>With a constant sRD over a dichotomous <span class="math inline">\(L\)</span>, the estimated variance of the MLE of sRD is <span class="math inline">\(\widehat V_0 \widehat V_1 / (\widehat V_0 + \widehat V_1)\)</span>, where <span class="math inline">\(\widehat V_l\)</span> is the estimated variance of the stratum-specific estimate <span class="math inline">\(\widehat{\text{RD}}_l\)</span>.</p>
+<p>Two choices for <span class="math inline">\(\widehat V_1\)</span> (smokers, Table 10.2) differ only in the denominators:</p>
+<p><span class="math display">\[
+\begin{aligned}
+\widehat V_1^{obs} &amp;= \frac{(4/80)(76/80)}{80} + \frac{(2/40)(38/40)}{40} = \frac{0.0475}{80} + \frac{0.0475}{40} \approx 1.78 \times 10^{-3}, \\
+\widehat V_1^{exp} &amp;= \frac{(4/80)(76/80)}{60} + \frac{(2/40)(38/40)}{60} = \frac{0.0475}{60} + \frac{0.0475}{60} \approx 1.58 \times 10^{-3}.
+\end{aligned}
+\]</span></p>
+<p><span class="math inline">\(\widehat V_1^{obs}\)</span> uses the observed numbers per arm (80 and 40; <strong>observed information</strong>), <span class="math inline">\(\widehat V_1^{exp}\)</span> the expected number (60 per arm under <span class="math inline">\(A \perp\!\!\!\perp L\)</span>; <strong>expected information</strong>). Nearly all researchers would choose <span class="math inline">\(\widehat V_1^{obs}\)</span>. Results of <span class="citation" data-cites="efron1978assessing">Efron and Hinkley (<a href="#/references" role="doc-biblioref" onclick="">1978</a>)</span> and <span class="citation" data-cites="robins1987foundations">Robins and Morgenstern (<a href="#/references" role="doc-biblioref" onclick="">1987</a>)</span> imply that this choice amounts to conditioning on the approximate ancillary <span class="math inline">\(\widehat S\)</span>, i.e., following the extended conditionality principle. (The conditional and unconditional variances of the MLE differ by order <span class="math inline">\(n^{-3/2}\)</span>; the observed-information estimator is closer than that to the conditional variance, the expected-information estimator closer than that to the unconditional variance.)</p>
+</div>
+</div>
+</div>
+</div>
+<aside class="notes">
+<p><strong>Checking the adjusted interval <span class="math inline">\((-0.076, 0.076)\)</span></strong> (our arithmetic, using <span class="math inline">\(\widehat V^{obs}\)</span> in both strata):</p>
+<p><span class="math display">\[
+\begin{aligned}
+\widehat V_0^{obs} &amp;= \frac{(20/40)(20/40)}{40} + \frac{(40/80)(40/80)}{80} = \frac{0.25}{40} + \frac{0.25}{80} = 0.009375, \\
+\widehat V_1^{obs} &amp;= 0.00178125, \\
+\widehat{\text{Var}}{\left(\widehat{\text{sRD}}\right)}
+&amp;= \frac{\widehat V_0 \widehat V_1}{\widehat V_0 + \widehat V_1}
+= \frac{0.009375 \times 0.00178125}{0.009375 + 0.00178125}
+= \frac{1.670 \times 10^{-5}}{0.01116} \approx 0.001497, \\
+1.96 \sqrt{0.001497} &amp;= 1.96 \times 0.0387 \approx 0.076.
+\end{aligned}
+\]</span></p>
+<p>With point estimate 0, the interval is <span class="math inline">\((-0.076, 0.076)\)</span>, matching the book.</p>
 <style type="text/css">
         span.MJX_Assistive_MathML {
           position:absolute!important;
@@ -356,275 +780,80 @@
       }</style></aside>
 </section></section>
 <section>
-<section id="the-myth-of-the-super-population-pp.-136-139" class="title-slide slide level1 center" data-number="3">
-<h1><span class="header-section-number">3</span> 10.3 The Myth of the Super-Population (pp.&nbsp;136-139)</h1>
+<section id="the-curse-of-dimensionality-pp.-148-150" class="title-slide slide level1 center" data-number="5">
+<h1><span class="header-section-number">5</span> 10.5 The Curse of Dimensionality (pp.&nbsp;148-150)</h1>
 
 </section>
 <section class="slide level2">
 
-<p>The concept of a “super-population” is a useful fiction that allows us to apply statistical methods, but it raises important questions about the sources of randomness.</p>
+<p>The arguments of Section 10.4 rely on asymptotic theory in which the number of strata of <span class="math inline">\(L\)</span> is small relative to the sample size. Now suppose the investigators had measured 100 binary pre-treatment variables, <span class="math inline">\(L = (L_1, \ldots, L_{100})\)</span>, with <span class="math inline">\(2^{100}\)</span> strata: <strong>high-dimensional</strong> data.</p>
+<p>For simplicity, assume no additive effect modification by <span class="math inline">\(L\)</span>: the super-population risk difference <span class="math inline">\(\Pr[Y = 1 \mid A = 1, L = l] - \Pr[Y = 1 \mid A = 0, L = l]\)</span> is constant, and equal to 0, across all <span class="math inline">\(2^{100}\)</span> strata.</p>
 </section>
-<section id="two-sources-of-randomness" class="slide level2 scrollable">
-<h2>Two Sources of Randomness</h2>
-<ol type="1">
-<li><strong>Sampling variability</strong>: Random selection of individuals from a super-population</li>
-<li><strong>Nondeterministic counterfactuals</strong>: Intrinsic randomness in outcomes even with fixed treatment and covariates</li>
-</ol>
+<section id="the-adjusted-interval-becomes-uninformative" class="slide level2">
+<h2>The Adjusted Interval Becomes Uninformative</h2>
+<ul>
+<li>The investigators now accept the conditionality principle, so they consider the unadjusted <span class="math inline">\(-0.15\)</span> conditionally biased.</li>
+<li>But with <span class="math inline">\(2^{100}\)</span> strata, far more than the 240 individuals, at most a few strata contain both a treated and an untreated individual.</li>
+</ul>
+<div id="exm-curse" class="theorem example">
+<p><span class="theorem-title"><strong>Example 6 (One informative stratum)</strong></span> Suppose exactly one stratum contains one treated and one untreated individual, and no other stratum contains both. The empirical risk difference in that stratum can only be <span class="math inline">\(-1\)</span>, <span class="math inline">\(0\)</span>, or <span class="math inline">\(1\)</span>, so the adjusted 95% interval for the common risk difference is <span class="math inline">\((-1, 1)\)</span>: completely uninformative. The unadjusted interval is still <span class="math inline">\((-0.26, -0.04)\)</span>, since its width does not depend on how many covariates were measured.</p>
+</div>
+<p>This is the reverse of the one-covariate case. The adjusted estimator is guaranteed to be more efficient only when the ratio of individuals to unknown parameters is large (a common rule of thumb is at least 10, though the minimum depends on the data).</p>
 </section>
-<section id="when-are-binomial-confidence-intervals-valid" class="slide level2 scrollable">
-<h2>When Are Binomial Confidence Intervals Valid?</h2>
-<p>The standard binomial confidence interval for <span class="math inline">\(p = \Pr[Y = 1|A = a]\)</span> is valid in two scenarios:</p>
-<p><strong>Scenario 1: Random sampling from a super-population</strong></p>
-<ul>
-<li>Study participants are randomly sampled from a large super-population</li>
-<li>Each individual <span class="math inline">\(i\)</span> has a fixed but unknown <span class="math inline">\(Y_i^a\)</span> (deterministic counterfactuals)</li>
-<li>Randomness comes solely from which individuals are sampled</li>
-</ul>
-<p><strong>Scenario 2: Nondeterministic counterfactuals</strong></p>
-<ul>
-<li>Study participants are the entire population of interest (no sampling)</li>
-<li>Each individual has a probability <span class="math inline">\(p_i\)</span> of outcome, not a fixed <span class="math inline">\(Y_i^a\)</span></li>
-<li>Randomness comes from the probabilistic nature of outcomes</li>
-</ul>
-<aside class="notes">
-<p><strong>The super-population is often a fiction</strong>:</p>
-<p>In many studies, we don’t actually randomly sample from a larger population:</p>
-<ul>
-<li>Clinical trials: Enroll volunteers who meet criteria (not random sampling)</li>
-<li>Observational studies: Use convenient samples (hospitals, registries)</li>
-<li>Rare diseases: Study all available patients (no super-population)</li>
-</ul>
-<p><strong>Why use super-population framework anyway?</strong></p>
-<p>Even without actual random sampling, the super-population framework provides a convenient way to:</p>
-<ol type="1">
-<li>Quantify uncertainty via confidence intervals</li>
-<li>Use standard statistical methods</li>
-<li>Think about generalizability</li>
-</ol>
-<p><strong>Alternative: Randomization-based inference</strong></p>
-<p>Some authors prefer inference based solely on the randomization of treatment within the observed sample, without invoking a super-population. This approach has different technical requirements.</p>
-<style type="text/css">
-        span.MJX_Assistive_MathML {
-          position:absolute!important;
-          clip: rect(1px, 1px, 1px, 1px);
-          padding: 1px 0 0 0!important;
-          border: 0!important;
-          height: 1px!important;
-          width: 1px!important;
-          overflow: hidden!important;
-          display:block!important;
-      }</style></aside>
-</section>
-<section id="practical-implications" class="slide level2">
-<h2>Practical Implications</h2>
-<p>Most applied researchers use confidence intervals computed under the super-population framework, even when:</p>
-<ul>
-<li>No random sampling was performed</li>
-<li>The super-population is not well-defined</li>
-<li>Generalization to a specific population is unclear</li>
-</ul>
-<p>This practice is justified by the convenience and familiarity of standard methods, though it requires careful interpretation.</p>
-</section></section>
-<section>
-<section id="the-conditionality-principle-pp.-139-140" class="title-slide slide level1 center" data-number="4">
-<h1><span class="header-section-number">4</span> 10.4 The Conditionality Principle (pp.&nbsp;139-140)</h1>
-
-</section>
-<section class="slide level2">
-
-<p>When should we condition on variables when computing causal effects and their standard errors?</p>
-</section>
-<section id="the-principle" class="slide level2">
-<h2>The Principle</h2>
-<p><strong>Conditionality principle</strong>: If a variable <span class="math inline">\(L\)</span> is independent of treatment <span class="math inline">\(A\)</span> and outcome <span class="math inline">\(Y\)</span> under the intervention, we may condition on <span class="math inline">\(L\)</span> when computing estimates and standard errors without affecting validity.</p>
-</section>
-<section id="applications" class="slide level2">
-<h2>Applications</h2>
-<p><strong>Example 1: Stratified randomization</strong></p>
-<p>If treatment is randomized within strata of sex <span class="math inline">\(L\)</span>:</p>
-<ul>
-<li>Can estimate effects unconditional on <span class="math inline">\(L\)</span> (marginal effects)</li>
-<li>Can estimate effects conditional on <span class="math inline">\(L\)</span> (stratum-specific effects)</li>
-<li>Both are valid; choice depends on scientific question</li>
-</ul>
-<p><strong>Example 2: Baseline covariates in randomized trials</strong></p>
-<p>Even when baseline covariates <span class="math inline">\(L\)</span> are balanced across treatment groups:</p>
-<ul>
-<li>Conditioning on <span class="math inline">\(L\)</span> may improve precision (narrower confidence intervals)</li>
-<li>Does not introduce bias if <span class="math inline">\(L\)</span> is a pre-treatment variable</li>
-<li>Called “covariate adjustment” or “regression adjustment”</li>
-</ul>
-<aside class="notes">
-<p><strong>Why condition on baseline variables?</strong></p>
-<p><strong>Precision gain</strong>:</p>
-<ul>
-<li>If <span class="math inline">\(L\)</span> predicts outcome <span class="math inline">\(Y\)</span>, adjusting for <span class="math inline">\(L\)</span> reduces unexplained variability</li>
-<li>Leads to smaller standard errors and narrower confidence intervals</li>
-<li>Can increase statistical power</li>
-</ul>
-<p><strong>No bias introduced</strong>:</p>
-<ul>
-<li>If <span class="math inline">\(L\)</span> is measured before treatment assignment</li>
-<li>And randomization ensures <span class="math inline">\(L \perp A\)</span></li>
-<li>Then adjusting for <span class="math inline">\(L\)</span> doesn’t create confounding</li>
-</ul>
-<p><strong>Practical recommendation</strong>:</p>
-<p>In randomized trials, pre-specify baseline covariates to adjust for. This improves efficiency without cherry-picking.</p>
-<style type="text/css">
-        span.MJX_Assistive_MathML {
-          position:absolute!important;
-          clip: rect(1px, 1px, 1px, 1px);
-          padding: 1px 0 0 0!important;
-          border: 0!important;
-          height: 1px!important;
-          width: 1px!important;
-          overflow: hidden!important;
-          display:block!important;
-      }</style></aside>
-</section></section>
-<section>
-<section id="the-curse-of-dimensionality-pp.-140-142" class="title-slide slide level1 center" data-number="5">
-<h1><span class="header-section-number">5</span> 10.5 The Curse of Dimensionality (pp.&nbsp;140-142)</h1>
-
-</section>
-<section class="slide level2">
-
-<p>As the number of confounders or effect modifiers increases, nonparametric estimation becomes increasingly difficult. This is the <strong>curse of dimensionality</strong>.</p>
-</section>
-<section id="the-problem" class="slide level2 scrollable">
-<h2>The Problem</h2>
-<p>Suppose we need to adjust for 10 binary confounders:</p>
-<ul>
-<li>Number of possible covariate patterns: <span class="math inline">\(2^{10} = 1024\)</span></li>
-<li>Need enough observations in each pattern to estimate effects</li>
-<li>With limited data, many cells will be sparse or empty</li>
-</ul>
-<p><strong>Consequences</strong>:</p>
-<ol type="1">
-<li><strong>Positivity violations</strong>: Some covariate patterns have no treated or untreated individuals</li>
-<li><strong>Unstable estimates</strong>: Small cell counts lead to large standard errors</li>
-<li><strong>Impractical stratification</strong>: Cannot stratify on so many variables simultaneously</li>
-</ol>
-</section>
-<section id="the-solution-parametric-models" class="slide level2">
-<h2>The Solution: Parametric Models</h2>
-<p><strong>Parametric models</strong> make assumptions about the functional form relating variables:</p>
-<ul>
-<li>Logistic regression: <span class="math inline">\(\text{logit} \Pr[Y = 1|A, L] = \beta_0 + \beta_1 A + \beta_2 L\)</span></li>
-<li>Linear regression: <span class="math inline">\(\text{E}{\left[Y|A, L\right]} = \beta_0 + \beta_1 A + \beta_2 L\)</span></li>
-</ul>
-<p><strong>Advantages</strong>:</p>
-<ul>
-<li>Can “borrow strength” across covariate patterns</li>
-<li>Requires fewer parameters than nonparametric estimation</li>
-<li>Provides smooth estimates even with sparse data</li>
-</ul>
-<p><strong>Disadvantages</strong>:</p>
-<ul>
-<li><strong>Model misspecification</strong>: If functional form is wrong, estimates are biased</li>
-<li>Trade-off between bias (from model assumptions) and variance (from limited data)</li>
-</ul>
-<aside class="notes">
-<p><strong>Why models are necessary</strong>:</p>
-<p>With finite data and many covariates, we must make modeling assumptions. The question is not whether to use models, but which models to use and how to assess their adequacy.</p>
-<p><strong>Nonparametric vs.&nbsp;parametric</strong>:</p>
-<ul>
-<li><strong>Nonparametric</strong>: No assumptions about functional form, but requires large data relative to dimension of covariates</li>
-<li><strong>Semiparametric</strong>: Weaker assumptions than parametric, stronger than nonparametric (e.g., requires only correct propensity score model)</li>
-<li><strong>Parametric</strong>: Strong assumptions about functional form, works with smaller data</li>
-</ul>
-<p><strong>Modern approach</strong>:</p>
-<ul>
-<li>Use flexible, data-adaptive methods (machine learning)</li>
-<li>Cross-validation to assess model fit</li>
-<li>Doubly robust methods that combine multiple models</li>
-<li>Sensitivity analyses to assess robustness to model assumptions</li>
-</ul>
-<p><strong>The curse applies to all adjustment methods</strong>:</p>
-<ul>
-<li>Stratification: Need cells for all covariate combinations</li>
-<li>Standardization: Need to estimate <span class="math inline">\(\text{E}{\left[Y|A, L\right]}\)</span> for all <span class="math inline">\(L\)</span> values<br>
-</li>
-<li>IP weighting: Need to estimate <span class="math inline">\(\Pr[A|L]\)</span> for all <span class="math inline">\(L\)</span> values</li>
-<li>Matching: Need to find matches for all covariate patterns</li>
-</ul>
-<style type="text/css">
-        span.MJX_Assistive_MathML {
-          position:absolute!important;
-          clip: rect(1px, 1px, 1px, 1px);
-          padding: 1px 0 0 0!important;
-          border: 0!important;
-          height: 1px!important;
-          width: 1px!important;
-          overflow: hidden!important;
-          display:block!important;
-      }</style></aside>
-</section>
-<section id="why-this-matters-for-part-ii" class="slide level2 scrollable">
-<h2>Why This Matters for Part II</h2>
-<p>The remainder of Part II describes methods that use parametric and semiparametric models to:</p>
-<ol type="1">
-<li>Adjust for many confounders efficiently</li>
-<li>Handle high-dimensional covariate spaces</li>
-<li>Estimate causal effects with adequate precision</li>
-</ol>
-<p>Understanding the curse of dimensionality motivates the need for these modeling approaches.</p>
+<section id="conditionality-should-not-be-a-principle" class="slide level2">
+<h2>Conditionality Should Not Be a Principle</h2>
+<p>The <strong>curse of dimensionality</strong>: conditional on all 100 covariates, the marginal estimator is still biased, but the conditional estimator is now uninformative. Conditionality is compelling in simple examples, but it cannot be carried through in high-dimensional models, so it should not be raised to a principle <span class="citation" data-cites="robins1997toward">(<a href="#/references" role="doc-biblioref" onclick="">Robins and Ritov 1997</a>)</span>. The same applies to observational studies.</p>
+<p>Solving the curse of dimensionality is hard and an active research area; Chapter 18 reviews it. Chapters 11 through 17 supply the background on models for causal inference.</p>
+<div title="Technical Point 10.6: Can the Curse of Dimensionality Be Reversed?">
+<div class="callout callout-note callout-titled callout-style-default">
+<div class="callout-body">
+<div class="callout-title">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<p><strong>Technical Point 10.6: Can the Curse of Dimensionality Be Reversed?</strong></p>
+</div>
+<div class="callout-content">
+<p>With many strata of <span class="math inline">\(L\)</span>, informative inference <em>conditional</em> on the exact ancillary <span class="math inline">\(\{A_i, L_i\}\)</span> is impossible whatever the estimator. Unconditional inference in a marginally randomized experiment is different: <span class="math inline">\(\widehat{\text{RD}}_{UN}\)</span> stays unbiased, with Wald interval width proportional to <span class="math inline">\(1/n^{1/2}\)</span>, regardless of the dimension of <span class="math inline">\(L\)</span>. It uses prior information the MLE does not: it is unbiased for the common risk difference only if <span class="math inline">\(A \perp\!\!\!\perp L\)</span> is known to hold in the super-population. Even unconditionally, the MLE’s intervals remain uninformative. Can data on <span class="math inline">\(L\)</span> give an unconditionally unbiased estimator more efficient than <span class="math inline">\(\widehat{\text{RD}}_{UN}\)</span>? Chapter 18 shows that this is sometimes possible.</p>
+</div>
+</div>
+</div>
+</div>
+<div title="Technical Point 10.7: Random Variability and Causal Discovery">
+<div class="callout callout-note callout-titled callout-style-default">
+<div class="callout-body">
+<div class="callout-title">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<p><strong>Technical Point 10.7: Random Variability and Causal Discovery</strong></p>
+</div>
+<div class="callout-content">
+<p>Fine Point 6.3 showed that, under faithfulness and with infinite data, the causal structure can sometimes be learned. Suppose variables <span class="math inline">\(Z\)</span>, <span class="math inline">\(A\)</span>, <span class="math inline">\(Y\)</span> occur in that order, the empirical <span class="math inline">\(Z\)</span>-<span class="math inline">\(Y\)</span> odds ratio is 1 at every level of <span class="math inline">\(A\)</span>, and all other odds ratios are far from 1. If <span class="math inline">\(Z \perp\!\!\!\perp Y \mid A\)</span> held in the super-population, faithfulness would leave only <span class="math inline">\(Z \to A \to Y\)</span> (possibly with a common cause of <span class="math inline">\(Z\)</span> and <span class="math inline">\(A\)</span>), so <span class="math inline">\(\text{E}{\left[Y \mid A = 1\right]} - \text{E}{\left[Y \mid A = 0\right]}\)</span> would be the average causal effect.</p>
+<p>But <span class="citation" data-cites="robins2003uniform">Robins et al. (<a href="#/references" role="doc-biblioref" onclick="">2003</a>)</span> showed that faithfulness-based inferences are <strong>non-uniform</strong>: for any <span class="math inline">\(n\)</span>, there are faithful distributions in which the true conditional <span class="math inline">\(Z\)</span>-<span class="math inline">\(Y\)</span> odds ratios are so close to 1 that empirical values of 1 are unsurprising, yet the average causal effect of <span class="math inline">\(A\)</span> on <span class="math inline">\(Y\)</span> is zero. So no honest 95% frequentist interval for that effect can exclude 0, even if the empirical risk difference is large (say 0.2) and many (say 30) times its standard error.</p>
+<p>A Bayesian who believes in faithfulness may obtain a narrow credible interval that excludes 0, but such inferences are very sensitive to the prior; the authors argue that the prior probability of any observational-study diagram without a common cause of <span class="math inline">\(A\)</span> and <span class="math inline">\(Y\)</span> should be essentially zero. In finite samples, data alone cannot distinguish <span class="math inline">\(Z \perp\!\!\!\perp Y \mid A\)</span> from near-independence, so causal discovery from observational data relies heavily on subject-matter knowledge.</p>
+</div>
+</div>
+</div>
+</div>
 </section></section>
 <section>
 <section id="summary" class="title-slide slide level1 center" data-number="6">
 <h1><span class="header-section-number">6</span> Summary</h1>
 
 </section>
-<section class="slide level2 scrollable">
+<section class="slide level2">
 
-<p>This chapter introduced <strong>random variability</strong> and bridged Part I (identification) and Part II (estimation).</p>
-<p><strong>Key concepts</strong>:</p>
-<ol type="1">
-<li><strong>Identification vs.&nbsp;estimation</strong>:
 <ul>
-<li>Identification: Can we express causal effects in terms of observables?</li>
-<li>Estimation: How do we estimate from finite data?</li>
-</ul></li>
-<li><strong>Statistical concepts</strong>:
-<ul>
-<li>Estimands, estimators, estimates</li>
-<li>Consistency: Estimates approach truth as <span class="math inline">\(n \to \infty\)</span></li>
-<li>Confidence intervals: Quantify random sampling uncertainty</li>
-</ul></li>
-<li><strong>The super-population</strong>:
-<ul>
-<li>Convenient fiction for statistical inference</li>
-<li>Two sources of randomness: sampling and nondeterministic counterfactuals</li>
-<li>Justifies use of standard confidence intervals</li>
-</ul></li>
-<li><strong>The conditionality principle</strong>:
-<ul>
-<li>Can condition on variables independent of treatment/outcome</li>
-<li>Conditioning on baseline variables can improve precision</li>
-</ul></li>
-<li><strong>The curse of dimensionality</strong>:
-<ul>
-<li>High-dimensional covariates require parametric/semiparametric models</li>
-<li>Trade-off between bias (model misspecification) and variance (limited data)</li>
-<li>Motivates modeling approaches in Part II</li>
-</ul></li>
-</ol>
-<aside class="notes">
-<p><strong>Transition to Part II</strong>:</p>
-<p>Part I established <strong>what</strong> we want to estimate (causal effects) and <strong>when</strong> they can be identified (under exchangeability, positivity, consistency).</p>
-<p>Part II addresses <strong>how</strong> to estimate causal effects from finite data using statistical models.</p>
-<p><strong>Looking ahead</strong>:</p>
-<ul>
-<li><strong>Chapter 11</strong>: Standardization and IP weighting with parametric models</li>
-<li><strong>Chapter 12</strong>: The parametric g-formula</li>
-<li><strong>Chapter 13</strong>: Propensity scores and marginal structural models</li>
-<li><strong>Chapter 14</strong>: Instrumental variable estimation</li>
-<li><strong>Chapter 15</strong>: Outcome regression and g-estimation</li>
-<li><strong>Chapter 16</strong>: Structural nested models</li>
+<li><strong>Identification</strong> (Part I) assumes effectively infinite data; <strong>estimation</strong> deals with random variability in finite samples.</li>
+<li>Estimands, estimators, and estimates; consistency; Wald confidence intervals and their calibration, validity, and (frequentist) interpretation.</li>
+<li>In the book, an estimator is <strong>unbiased</strong> if it can center a valid Wald interval (formally, UANU); confidence intervals ignore systematic bias.</li>
+<li>Standard binomial intervals implicitly assume random sampling from a <strong>super-population</strong>, usually a fiction, so they are what-if statements.</li>
+<li>In a trial with a chance imbalance on a measured prognostic factor <span class="math inline">\(L\)</span>, the adjusted estimator is conditionally unbiased and unconditionally more efficient: the <strong>conditionality principle</strong> favors adjustment.</li>
+<li>With high-dimensional <span class="math inline">\(L\)</span>, conditioning makes estimates uninformative while the unadjusted estimator stays conditionally biased: the <strong>curse of dimensionality</strong>, which motivates the models of Part II.</li>
 </ul>
-<p>All of these methods address the curse of dimensionality by making modeling assumptions, with different trade-offs between flexibility and robustness.</p>
-<p><strong>Key message</strong>:</p>
-<p>In practice, we almost always need models. The question is not whether to make assumptions, but which assumptions to make and how to assess their plausibility.</p>
+<aside class="notes">
+<p>Part I established when causal effects are identified (under exchangeability, positivity, and consistency). Part II (Chapters 11 through 18) turns to estimation with models: why models are needed (Chapter 11), IP weighting and marginal structural models (Chapter 12), standardization and the parametric g-formula (Chapter 13), g-estimation of structural nested models (Chapter 14), outcome regression and propensity scores (Chapter 15), instrumental variable estimation (Chapter 16), causal survival analysis (Chapter 17), and variable selection and high-dimensional data (Chapter 18).</p>
 <style type="text/css">
         span.MJX_Assistive_MathML {
           position:absolute!important;
@@ -645,8 +874,44 @@
 <section class="slide level2 smaller scrollable" id="references">
 
 <div id="refs" class="references csl-bib-body hanging-indent" role="list">
+<div id="ref-amrhein2019scientists" class="csl-entry" role="listitem">
+Amrhein, V, S Greenland, and B McShane. 2019. <span>“Scientists Rise up Against Statistical Significance.”</span> <em>Nature</em> 567: 305–7.
+</div>
+<div id="ref-brown2001interval" class="csl-entry" role="listitem">
+Brown, LD, T Cai, and A DasGupta. 2001. <span>“Interval Estimation for a Binomial Proportion (with Discussion).”</span> <em>Statistical Science</em> 16: 101–33.
+</div>
+<div id="ref-buehler1982some" class="csl-entry" role="listitem">
+Buehler, RJ. 1982. <span>“Some Ancillary Statistics and Their Properties. Rejoinder.”</span> <em>Journal of the American Statistical Association</em> 77: 593–94.
+</div>
+<div id="ref-casella2002statistical" class="csl-entry" role="listitem">
+Casella, G, and RL Berger. 2002. <em>Statistical Inference</em>. 2nd ed. Duxbury Press.
+</div>
+<div id="ref-efron1978assessing" class="csl-entry" role="listitem">
+Efron, B, and DV Hinkley. 1978. <span>“Assessing the Accuracy of the Maximum Likelihood Estimator: Observed Versus Expected <span>F</span>isher Information.”</span> <em>Biometrika</em> 65: 457–87.
+</div>
+<div id="ref-greenland2019some" class="csl-entry" role="listitem">
+Greenland, S. 2019. <span>“Valid <span>P</span>-Values Behave Exactly as They Should: Some Misleading Criticisms of <span>P</span>-Values and Their Resolution with <span>S</span>-Values.”</span> <em>The American Statistician</em> 73 (supplement 1): 106–14.
+</div>
 <div id="ref-hernan2020causal" class="csl-entry" role="listitem">
 Hernán, Miguel A, and James M Robins. 2020. <em>Causal Inference: What If</em>. Chapman &amp; Hall/CRC. <a href="https://miguelhernan.org/whatifbook">https://miguelhernan.org/whatifbook</a>.
+</div>
+<div id="ref-lash2009applying" class="csl-entry" role="listitem">
+Lash, TL, MP Fox, and AK Fink. 2009. <em>Applying Quantitative Bias Analysis to Epidemiologic Data</em>. Springer.
+</div>
+<div id="ref-robins1988confidence" class="csl-entry" role="listitem">
+Robins, JM. 1988. <span>“Confidence Intervals for Causal Parameters.”</span> <em>Statistics in Medicine</em> 7: 773–85.
+</div>
+<div id="ref-robins1987foundations" class="csl-entry" role="listitem">
+Robins, JM, and H Morgenstern. 1987. <span>“The Foundations of Confounding in Epidemiology.”</span> <em>Computers &amp; Mathematics with Applications</em> 14 (9-12): 869–916.
+</div>
+<div id="ref-robins1997toward" class="csl-entry" role="listitem">
+Robins, JM, and Y Ritov. 1997. <span>“Toward a Curse of Dimensionality Appropriate (<span>CODA</span>) Asymptotic Theory for Semiparametric Models.”</span> <em>Statistics in Medicine</em> 16: 285–319.
+</div>
+<div id="ref-robins2003uniform" class="csl-entry" role="listitem">
+Robins, JM, R Scheines, P Spirtes, and L Wasserman. 2003. <span>“Uniform Consistency in Causal Inference.”</span> <em>Biometrika</em> 90 (3): 491–515.
+</div>
+<div id="ref-wasserman2004all" class="csl-entry" role="listitem">
+Wasserman, L. 2004. <em>All of Statistics: A Concise Course in Statistical Inference</em>. Springer.
 </div>
 </div>
 

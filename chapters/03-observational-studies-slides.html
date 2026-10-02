@@ -166,10 +166,11 @@
 <!-- https://www.overleaf.com/learn/latex/Using_colors_in_LaTeX#Named_colors_provided_by_the_xcolor_package -->
 <!-- \def\or{\theta}  -->
 <!-- doesn't work for some reason -->
-<p>In Chapter 1, we defined causal effects using counterfactual outcomes. In Chapter 2, we showed how randomized experiments allow us to estimate causal effects because randomization ensures exchangeability. But most research questions cannot be answered with randomized experiments—either because it would be unethical, impractical, or impossible to randomize treatment. This chapter discusses observational studies, which do not involve randomization of treatment.</p>
-<p>The key question is: under what conditions can we validly estimate causal effects from observational data? This chapter introduces the fundamental identifiability conditions necessary for causal inference in observational studies.</p>
+<p>In Chapter 2, randomization gave us exchangeability by design. Many scientific questions, however, are answered with <strong>observational studies</strong>, in which the investigators observe and record the relevant data but do not assign treatment. Much of what we know (evolution, plate tectonics, the fact that hot coffee can burn) comes from observation rather than experiment.</p>
+<p>This chapter asks: under what conditions can an observational study support a valid causal inference?</p>
 <aside class="notes">
-<p>This chapter is based on <span class="citation" data-cites="hernan2020causal">Hernán and Robins (<a href="#/references" role="doc-biblioref" onclick="">2020, chap. 3</a>, pp.&nbsp;25-36)</span>.</p>
+<p>This chapter is based on <span class="citation" data-cites="hernan2020causal">Hernán and Robins (<a href="#/references" role="doc-biblioref" onclick="">2020, chap. 3</a>, pp.&nbsp;27-46)</span>.</p>
+<p>The book’s opening example returns to the pedestrians: instead of randomizing who looks up, you watch pairs of pedestrians and record whether the second one looks up after the first does. A critic can always object that both looked up because of a common cause (a thunderclap, the first raindrops), an objection that does not apply to a randomized experiment.</p>
 <style type="text/css">
         span.MJX_Assistive_MathML {
           position:absolute!important;
@@ -183,220 +184,479 @@
       }</style></aside>
 </section>
 <section>
-<section id="identifiability-conditions-pp.-25-27" class="title-slide slide level1 center" data-number="1">
-<h1><span class="header-section-number">1</span> 3.1 Identifiability Conditions (pp.&nbsp;25-27)</h1>
+<section id="identifiability-conditions-pp.-27-29" class="title-slide slide level1 center" data-number="1">
+<h1><span class="header-section-number">1</span> 3.1 Identifiability Conditions (pp.&nbsp;27-29)</h1>
+
+</section>
+<section class="slide level2">
+
+<p>In an ideal randomized experiment, an associational risk ratio of, say, 0.7 is expected to equal the causal risk ratio, because randomization makes the treated and untreated exchangeable.</p>
+<p>In an observational study of heart transplant where sicker patients were more likely to be transplanted, an associational risk ratio of 1.1 may be a <strong>compromise</strong> between:</p>
+<ul>
+<li>a truly beneficial effect of transplant (pushing the ratio below 1), and</li>
+<li>the higher baseline mortality of those who were transplanted (pushing it above 1).</li>
+</ul>
+<aside class="notes">
+<p>The best explanation for an association in an observational study is not necessarily a causal effect. The common strategy is to analyze the data <em>as if</em> treatment had been randomly assigned conditional on measured covariates <span class="math inline">\(L\)</span>, knowing this is at best an approximation. Causal inference from observational data then rests on the hope that the study can be viewed as a <strong>conditionally randomized experiment</strong>.</p>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside>
+</section>
+<section class="slide level2 scrollable">
+
+<p>An observational study can be conceptualized as a conditionally randomized experiment if:</p>
+<ol type="1">
+<li>each individual’s observed outcome is her counterfactual outcome under the treatment she actually received (<strong>consistency</strong>, Chapter 1);</li>
+<li>given only the known, measured covariates <span class="math inline">\(L\)</span>, the counterfactual outcomes are independent of the treatment actually received (<strong>exchangeability</strong>, Chapter 2);</li>
+<li>the probability of receiving each treatment value conditional on <span class="math inline">\(L\)</span> is greater than zero (<strong>positivity</strong>, Technical Point 2.3).</li>
+</ol>
+<p>These are the <strong>identifiability conditions</strong> (or identifiability assumptions).</p>
+<aside class="notes">
+<p>In ideal randomized experiments the identifiability conditions hold by design. In observational studies they must be <em>assumed</em>, and they are often heroic, which is why causal inferences from observational data are viewed with suspicion. Causal inference from observational data requires two elements: data <strong>and</strong> identifiability conditions.</p>
+<p>For simplicity, this chapter considers only studies in which everyone stays under follow-up and adheres to the assigned treatment; Chapters 8 and 9 relax this.</p>
+<p>The book notes that Rubin (1974, 1978) extended Neyman’s theory to observational studies, and that Rosenbaum and Rubin (1983) called the combination of exchangeability and positivity <strong>weak ignorability</strong>, and the combination of full exchangeability (Technical Point 2.1) and positivity <strong>strong ignorability</strong> <span class="citation" data-cites="hernan2020causal">(<a href="#/references" role="doc-biblioref" onclick="">Hernán and Robins 2020, 28</a>)</span>.</p>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside>
+</section>
+<section id="table-3.1" class="slide level2">
+<h2>Table 3.1</h2>
+</section>
+<section class="slide level2">
+
+<p>Table 3.1 contains the same data as Table 2.2: <span class="math inline">\(L\)</span> is critical condition at baseline (1: yes), <span class="math inline">\(A\)</span> is heart transplant, and <span class="math inline">\(Y\)</span> is death.</p>
+<table class="caption-top">
+<thead>
+<tr class="header">
+<th>Name</th>
+<th><span class="math inline">\(L\)</span></th>
+<th><span class="math inline">\(A\)</span></th>
+<th><span class="math inline">\(Y\)</span></th>
+<th>Name</th>
+<th><span class="math inline">\(L\)</span></th>
+<th><span class="math inline">\(A\)</span></th>
+<th><span class="math inline">\(Y\)</span></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Rheia</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>Leto</td>
+<td>1</td>
+<td>0</td>
+<td>0</td>
+</tr>
+<tr class="even">
+<td>Kronos</td>
+<td>0</td>
+<td>0</td>
+<td>1</td>
+<td>Ares</td>
+<td>1</td>
+<td>1</td>
+<td>1</td>
+</tr>
+<tr class="odd">
+<td>Demeter</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>Athena</td>
+<td>1</td>
+<td>1</td>
+<td>1</td>
+</tr>
+<tr class="even">
+<td>Hades</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>Hephaestus</td>
+<td>1</td>
+<td>1</td>
+<td>1</td>
+</tr>
+<tr class="odd">
+<td>Hestia</td>
+<td>0</td>
+<td>1</td>
+<td>0</td>
+<td>Aphrodite</td>
+<td>1</td>
+<td>1</td>
+<td>1</td>
+</tr>
+<tr class="even">
+<td>Poseidon</td>
+<td>0</td>
+<td>1</td>
+<td>0</td>
+<td>Polyphemus</td>
+<td>1</td>
+<td>1</td>
+<td>1</td>
+</tr>
+<tr class="odd">
+<td>Hera</td>
+<td>0</td>
+<td>1</td>
+<td>0</td>
+<td>Persephone</td>
+<td>1</td>
+<td>1</td>
+<td>1</td>
+</tr>
+<tr class="even">
+<td>Zeus</td>
+<td>0</td>
+<td>1</td>
+<td>1</td>
+<td>Hermes</td>
+<td>1</td>
+<td>1</td>
+<td>0</td>
+</tr>
+<tr class="odd">
+<td>Artemis</td>
+<td>1</td>
+<td>0</td>
+<td>1</td>
+<td>Hebe</td>
+<td>1</td>
+<td>1</td>
+<td>0</td>
+</tr>
+<tr class="even">
+<td>Apollo</td>
+<td>1</td>
+<td>0</td>
+<td>1</td>
+<td>Dionysus</td>
+<td>1</td>
+<td>1</td>
+<td>0</td>
+</tr>
+</tbody>
+</table>
+<p>If these data came from an observational study in which the three identifiability conditions held, we would compute the same causal risk ratio as in Chapter 2: 1.</p>
+<div id="exm-table-3-1-standardization" class="theorem example">
+<p><span class="theorem-title"><strong>Example 1 (Standardized risks in Table 3.1)</strong></span> Stratum-specific risks from Table 3.1 (8 individuals with <span class="math inline">\(L = 0\)</span>, 12 with <span class="math inline">\(L = 1\)</span>):</p>
+<ul>
+<li><span class="math inline">\(L = 0\)</span>: <span class="math inline">\(\Pr[Y = 1 \mid A = 1, L = 0] = 1/4\)</span> and <span class="math inline">\(\Pr[Y = 1 \mid A = 0, L = 0] = 1/4\)</span></li>
+<li><span class="math inline">\(L = 1\)</span>: <span class="math inline">\(\Pr[Y = 1 \mid A = 1, L = 1] = 6/9 = 2/3\)</span> and <span class="math inline">\(\Pr[Y = 1 \mid A = 0, L = 1] = 2/3\)</span></li>
+</ul>
+<p>with <span class="math inline">\(\Pr[L = 0] = 8/20 = 0.4\)</span> and <span class="math inline">\(\Pr[L = 1] = 12/20 = 0.6\)</span>. Standardizing,</p>
+<p><span class="math display">\[
+\begin{aligned}
+\Pr[Y^{a=1} = 1] &amp;= \Pr[Y = 1 \mid A = 1, L = 0]\Pr[L = 0] + \Pr[Y = 1 \mid A = 1, L = 1]\Pr[L = 1] \\
+&amp;= (1/4)(0.4) + (2/3)(0.6) \\
+&amp;= 0.1 + 0.4 = 0.5,
+\end{aligned}
+\]</span></p>
+<p><span class="math display">\[
+\begin{aligned}
+\Pr[Y^{a=0} = 1] &amp;= \Pr[Y = 1 \mid A = 0, L = 0]\Pr[L = 0] + \Pr[Y = 1 \mid A = 0, L = 1]\Pr[L = 1] \\
+&amp;= (1/4)(0.4) + (2/3)(0.6) \\
+&amp;= 0.1 + 0.4 = 0.5,
+\end{aligned}
+\]</span></p>
+<p>so the causal risk ratio is <span class="math inline">\(0.5 / 0.5 = 1\)</span>.</p>
+</div>
+</section>
+<section id="identifiability" class="slide level2">
+<h2>Identifiability</h2>
+</section>
+<section class="slide level2">
+
+<div id="def-identifiability" class="theorem definition">
+<p><span class="theorem-title"><strong>Definition 1 (Identifiability)</strong></span> An average causal effect is (nonparametrically) <strong>identifiable</strong> under a set of assumptions if those assumptions imply that the distribution of the observed data is compatible with a single value of the effect measure. It is <strong>nonidentifiable</strong> if the observed data distribution is compatible with several values of the effect measure <span class="citation" data-cites="hernan2020causal">(<a href="#/references" role="doc-biblioref" onclick="">Hernán and Robins 2020</a>, Fine Point 3.1, p.&nbsp;29)</span>.</p>
+</div>
+<div title="Fine Point 3.1: Identifiability of causal effects">
+<div class="callout callout-note callout-titled callout-style-default">
+<div class="callout-body">
+<div class="callout-title">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<p><strong>Fine Point 3.1: Identifiability of causal effects</strong></p>
+</div>
+<div class="callout-content">
+<p>If Table 3.1 came from a conditionally randomized experiment, <span class="math inline">\(Y^a \perp\!\!\!\perp A \mid L\)</span> holds by design and the causal risk ratio of 1 is identified with no further assumptions. If it came from an observational study, the risk ratio equals 1 only if we add the <em>identifying assumption</em> <span class="math inline">\(Y^a \perp\!\!\!\perp A \mid L\)</span>, which is external to the data. Without it, the same data are compatible with a causal risk ratio</p>
+<ul>
+<li>below 1, if risk factors other than <span class="math inline">\(L\)</span> are more frequent among the treated;</li>
+<li>above 1, if risk factors other than <span class="math inline">\(L\)</span> are more frequent among the untreated;</li>
+<li>equal to 1, if all risk factors other than <span class="math inline">\(L\)</span> are equally distributed, i.e., <span class="math inline">\(Y^a \perp\!\!\!\perp A \mid L\)</span>.</li>
+</ul>
+</div>
+</div>
+</div>
+</div>
+</section>
+<section id="other-identifiability-conditions" class="slide level2">
+<h2>Other identifiability conditions</h2>
+<p>When any of the three conditions fails, the analogy with a conditionally randomized experiment breaks down. Other approaches rely on different identifiability conditions; for example, <strong>instrumental variable</strong> methods (Chapter 16) assume that a predictor of treatment behaves as if randomly assigned conditional on measured covariates.</p>
+<aside class="notes">
+<p>Methods based on the analogy with a conditionally randomized experiment have traditionally been favored in disciplines where that analogy is often reasonable (e.g., epidemiology), and instrumental variable methods in disciplines where it often is not (e.g., economics). Until Chapter 16, the book focuses on the first family.</p>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside>
+</section></section>
+<section>
+<section id="exchangeability-pp.-29-31" class="title-slide slide level1 center" data-number="2">
+<h1><span class="header-section-number">2</span> 3.2 Exchangeability (pp.&nbsp;29-31)</h1>
+
+</section>
+<section class="slide level2">
+
+<p>In a marginally randomized experiment, the treated and untreated are exchangeable (<span class="math inline">\(Y^a \perp\!\!\!\perp A\)</span>) because randomization balances the <strong>independent predictors of the outcome</strong> between groups.</p>
+<p>An <strong>independent predictor of the outcome</strong> is a covariate associated with <span class="math inline">\(Y\)</span> within levels of treatment; for dichotomous outcomes these are often called <strong>risk factors</strong>.</p>
+<p>In Table 3.1, 69% of the treated (<span class="math inline">\(9/13\)</span>) but only 43% of the untreated (<span class="math inline">\(3/7\)</span>) were in critical condition (<span class="math inline">\(L = 1\)</span>), so marginal exchangeability does not hold.</p>
+</section>
+<section class="slide level2 scrollable">
+
+<div id="def-exchangeability-conditional" class="theorem definition">
+<p><span class="theorem-title"><strong>Definition 2 (Conditional exchangeability)</strong></span> The treated and untreated are <strong>conditionally exchangeable</strong> given <span class="math inline">\(L\)</span> when</p>
+<p><span class="math display">\[Y^a \perp\!\!\!\perp A \mid L \quad \text{for all } a.\]</span></p>
+<p>Equivalently, for a dichotomous outcome, <span class="math inline">\(\Pr[Y^a = 1 \mid A = 1, L = l] = \Pr[Y^a = 1 \mid A = 0, L = l]\)</span> for all <span class="math inline">\(a\)</span> and <span class="math inline">\(l\)</span>.</p>
+</div>
+<p>Conditional exchangeability holds in a conditionally randomized experiment because, <em>within</em> levels of <span class="math inline">\(L\)</span>, all other outcome predictors are equally distributed between the treated and the untreated.</p>
+<aside class="notes">
+<p>The study in Table 3.1 can be described in two logically equivalent ways:</p>
+<ol type="1">
+<li>an observational study in which <span class="math inline">\(\Pr[A = 1 \mid L = 1] = 9/12 = 0.75\)</span> and <span class="math inline">\(\Pr[A = 1 \mid L = 0] = 4/8 = 0.50\)</span>, e.g., because doctors direct the scarce hearts to those in critical condition; or</li>
+<li>a (nonblinded) conditionally randomized experiment in which investigators assigned <span class="math inline">\(A = 1\)</span> with probability 0.75 when <span class="math inline">\(L = 1\)</span> and 0.50 when <span class="math inline">\(L = 0\)</span>.</li>
+</ol>
+<p>Under either description, if <span class="math inline">\(L\)</span> is the <strong>only</strong> outcome predictor unequally distributed between treatment groups, <span class="math inline">\(Y^a \perp\!\!\!\perp A \mid L\)</span> holds and standardization or IP weighting identifies the causal effect. Chapter 7 calls such outcome predictors <em>confounders</em>.</p>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside>
+</section>
+<section id="not-every-imbalanced-variable-must-be-in-l" class="slide level2">
+<h2>Not every imbalanced variable must be in <span class="math inline">\(L\)</span></h2>
+</section>
+<section class="slide level2">
+
+<p>Heart transplants are allocated by <strong>HLA compatibility</strong>, so HLA genes are unequally distributed between treatment groups. But HLA genes do not predict mortality given <span class="math inline">\(L\)</span> and <span class="math inline">\(A\)</span>, so treatment is still effectively random within levels of <span class="math inline">\(L\)</span>, and HLA need not be included in the analysis.</p>
+</section>
+<section id="unmeasured-outcome-predictors" class="slide level2">
+<h2>Unmeasured outcome predictors</h2>
+<p>Suppose, unknown to the investigators, doctors prefer to transplant hearts into nonsmokers. Let <span class="math inline">\(U\)</span> denote smoking (an unmeasured variable). Within the stratum <span class="math inline">\(L = 1\)</span>, smokers (<span class="math inline">\(U = 1\)</span>) are less likely to be treated, so smoking is less common among the treated than the untreated, and <span class="math inline">\(Y^a \perp\!\!\!\perp A \mid L\)</span> fails.</p>
+<div id="rem-exchangeability-untestable" class="proof remark">
+<p><span class="proof-title"><em>Remark 1</em> (Conditional exchangeability cannot be verified). </span>Conditional exchangeability <span class="math inline">\(Y^a \perp\!\!\!\perp A \mid L\)</span> fails whenever there is an unmeasured independent predictor <span class="math inline">\(U\)</span> of the outcome such that the probability of treatment depends on <span class="math inline">\(U\)</span> within strata of <span class="math inline">\(L\)</span>. Even when it holds, it cannot be checked: verifying it would require comparing <span class="math inline">\(\Pr[Y^a = 1 \mid A = a, L = l]\)</span> with <span class="math inline">\(\Pr[Y^a = 1 \mid A \neq a, L = l]\)</span>, but <span class="math inline">\(Y^a\)</span> is unknown for individuals with <span class="math inline">\(A \neq a\)</span>.</p>
+</div>
+<aside class="notes">
+<p>Because unmeasured variables cannot be used for standardization or IP weighting, the causal effect is not identified when the measured <span class="math inline">\(L\)</span> is insufficient for conditional exchangeability. Collecting data on smoking would not remove the possibility that other unknown outcome predictors remain imbalanced.</p>
+<p>Investigators can use expert knowledge to make the assumption more plausible, for example by measuring many determinants of treatment that are also independent outcome predictors and assuming exchangeability within the strata they define. But no matter how many variables are in <span class="math inline">\(L\)</span>, the assumption cannot be tested. The validity of the inference rests on the investigators’ expert knowledge, encoded as conditional exchangeability, which supplements the data.</p>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside>
+<div title="Fine Point 3.2: Crossover randomized experiments">
+<div class="callout callout-note callout-titled callout-style-default">
+<div class="callout-body">
+<div class="callout-title">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<p><strong>Fine Point 3.2: Crossover randomized experiments</strong></p>
+</div>
+<div class="callout-content">
+<aside class="notes">
+<p>Fine Point 2.1 identified individual effects in crossover experiments (periods <span class="math inline">\(t = 0, 1\)</span>) under three conditions: (i) no carryover, <span class="math inline">\(Y_{i,t=1}^{a_0, a_1} = Y_{i,t=1}^{a_1}\)</span>; (ii) a time-constant individual effect, <span class="math inline">\(Y_{it}^{a_t = 1} - Y_{it}^{a_t = 0} = \alpha_i\)</span>; and (iii) a time-constant untreated outcome, <span class="math inline">\(Y_{it}^{a_t = 0} = \beta_i\)</span>.</p>
+<p>Now drop (iii), and randomize the order: each individual gets <span class="math inline">\((A_{i0}, A_{i1}) = (0, 1)\)</span> or <span class="math inline">\((1, 0)\)</span> with probability 0.5. Let <span class="math inline">\(r_i \stackrel{\text{def}}{=}Y_{i1}^{a_1 = 0} - Y_{i0}^{a_0 = 0}\)</span>. Under (i), (ii), and consistency:</p>
+<p><span class="math display">\[
+\begin{aligned}
+\text{if } (A_{i0}, A_{i1}) = (0, 1):\quad Y_{i1} - Y_{i0} &amp;= Y_{i1}^{a_1 = 1} - Y_{i0}^{a_0 = 0} &amp;&amp; \text{(consistency)} \\
+&amp;= {\left(\alpha_i + Y_{i1}^{a_1 = 0}\right)} - Y_{i0}^{a_0 = 0} &amp;&amp; \text{(ii)} \\
+&amp;= \alpha_i + r_i, &amp;&amp; \text{(definition of } r_i\text{)} \\
+\text{if } (A_{i0}, A_{i1}) = (1, 0):\quad Y_{i0} - Y_{i1} &amp;= {\left(\alpha_i + Y_{i0}^{a_0 = 0}\right)} - Y_{i1}^{a_1 = 0} = \alpha_i - r_i.
+\end{aligned}
+\]</span></p>
+<p>Individual effects are no longer identified because <span class="math inline">\(r_i\)</span> is unknown. But, using <span class="math inline">\(A_{i0} = 1 - A_{i1}\)</span>,</p>
+<p><span class="math display">\[
+\begin{aligned}
+\text{E}{\left[(Y_{i1} - Y_{i0}) A_{i1} + (Y_{i0} - Y_{i1}) A_{i0}\right]}
+&amp;= \text{E}{\left[(\alpha_i + r_i) A_{i1} + (\alpha_i - r_i) A_{i0}\right]} \\
+&amp;= \text{E}{\left[\alpha_i (A_{i1} + A_{i0})\right]} + \text{E}{\left[r_i (A_{i1} - A_{i0})\right]} \\
+&amp;= \text{E}{\left[\alpha_i\right]} + \text{E}{\left[r_i\right]}\,\text{E}{\left[A_{i1} - A_{i0}\right]} &amp;&amp; \text{($A_{i1} + A_{i0} = 1$; randomization: } A \perp\!\!\!\perp r_i\text{)} \\
+&amp;= \text{E}{\left[\alpha_i\right]} + \text{E}{\left[r_i\right]}(0.5 - 0.5) = \text{E}{\left[\alpha_i\right]}.
+\end{aligned}
+\]</span></p>
+<p>If only (i) holds, the same mean estimates <span class="math inline">\((\text{E}{\left[\alpha_{i1}\right]} + \text{E}{\left[\alpha_{i0}\right]})/2\)</span>, the average of the period-specific average effects. The book concludes that, for the treatments and outcomes it studies, the no-carryover assumption is implausible <span class="citation" data-cites="hernan2020causal">(<a href="#/references" role="doc-biblioref" onclick="">Hernán and Robins 2020</a>, Fine Point 3.2, p.&nbsp;31)</span>.</p>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside>
+</div>
+</div>
+</div>
+</div>
+</section></section>
+<section>
+<section id="positivity-pp.-32-33" class="title-slide slide level1 center" data-number="3">
+<h1><span class="header-section-number">3</span> 3.3 Positivity (pp.&nbsp;32-33)</h1>
+
+</section>
+<section class="slide level2">
+
+<p>An experiment that assigned everyone to <span class="math inline">\(A = 1\)</span> (or everyone to <span class="math inline">\(A = 0\)</span>) could not estimate the average causal effect. Treatment must be assigned so that each treatment level has a <strong>positive probability</strong>.</p>
+<div id="def-positivity" class="theorem definition">
+<p><span class="theorem-title"><strong>Definition 3 (Positivity)</strong></span> <span class="math display">\[\Pr[A = a \mid L = l] &gt; 0 \quad \text{for all values } l \text{ with } \Pr[L = l] \neq 0 \text{ in the population of interest,}\]</span></p>
+<p>for every treatment value <span class="math inline">\(a\)</span> involved in the causal contrast.</p>
+</div>
+<aside class="notes">
+<p>Positivity is sometimes called the <strong>experimental treatment assumption</strong>. It is taken for granted in experiments: in marginally randomized experiments <span class="math inline">\(\Pr[A = 1]\)</span> and <span class="math inline">\(\Pr[A = 0]\)</span> are positive by design, and in both marginally and conditionally randomized experiments <span class="math inline">\(\Pr[A = a \mid L = l]\)</span> is positive by design for every level <span class="math inline">\(l\)</span> of <span class="math inline">\(L\)</span>. In Table 3.1, <span class="math inline">\(\Pr[A = 1 \mid L = 1] = 0.75\)</span> and <span class="math inline">\(\Pr[A = 1 \mid L = 0] = 0.50\)</span>; neither is 0 or 1, so positivity holds.</p>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside>
+</section>
+<section id="two-refinements" class="slide level2">
+<h2>Two refinements</h2>
+</section>
+<section class="slide level2">
+
+<ul>
+<li>Positivity is needed only for values <span class="math inline">\(l\)</span> <strong>present in the population of interest</strong>: if the study were restricted to <span class="math inline">\(L = 1\)</span>, positivity in <span class="math inline">\(L = 0\)</span> would be irrelevant.</li>
+<li>Positivity is needed only for the variables <span class="math inline">\(L\)</span> <strong>required for exchangeability</strong>. We do not ask whether people with blue eyes had a positive probability of transplant, because eye color is not needed to make the groups exchangeable.</li>
+</ul>
+</section>
+<section id="positivity-in-observational-studies" class="slide level2">
+<h2>Positivity in observational studies</h2>
+<div id="exm-positivity-violation" class="theorem example">
+<p><span class="theorem-title"><strong>Example 2 (A positivity violation)</strong></span> If doctors always transplanted a heart to individuals in critical condition, then <span class="math inline">\(\Pr[A = 0 \mid L = 1] = 0\)</span> (book Figure 3.1). The data would contain no untreated individuals with <span class="math inline">\(L = 1\)</span> who could stand in for what would have happened to the treated with <span class="math inline">\(L = 1\)</span> had they been untreated.</p>
+</div>
+<p>Unlike exchangeability, positivity can sometimes be <strong>checked empirically</strong> (Chapter 12). In Table 3.1 there are treated and untreated individuals in both levels of <span class="math inline">\(L\)</span>.</p>
+<div title="Technical Point 3.1: Positivity for standardization and IP weighting">
+<div class="callout callout-note callout-titled callout-style-default">
+<div class="callout-body">
+<div class="callout-title">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<p><strong>Technical Point 3.1: Positivity for standardization and IP weighting</strong></p>
+</div>
+<div class="callout-content">
+<p>The standardized mean <span class="math inline">\(\sum_l \text{E}{\left[Y \mid A = a, L = l\right]} \Pr[L = l]\)</span> is defined only if <span class="math inline">\(\text{E}{\left[Y \mid A = a, L = l\right]}\)</span> is defined for every <span class="math inline">\(l\)</span> with <span class="math inline">\(\Pr[L = l] \neq 0\)</span>, i.e., only under positivity; otherwise it is undefined.</p>
+<p>For IP weighting, <span class="math inline">\(\text{E}{\left[\frac{I(A = a) Y}{f[a \mid L]}\right]}\)</span> is undefined without positivity (it involves <span class="math inline">\(0/0\)</span>). The version <span class="math inline">\(\text{E}{\left[\frac{I(A = a) Y}{f[A \mid L]}\right]}\)</span> is always defined, because <span class="math inline">\(f[A \mid L]\)</span> is never 0, but it no longer equals the counterfactual mean. Let <span class="math inline">\(Q(a) \stackrel{\text{def}}{=}\{l : \Pr[A = a \mid L = l] &gt; 0\}\)</span>. Then</p>
+<p><span class="math display">\[
+\text{E}{\left[\frac{I(A = a) Y}{f[A \mid L]}\right]} = \Pr[L \in Q(a)] \sum_l \text{E}{\left[Y \mid A = a, L = l, L \in Q(a)\right]} \Pr[L = l \mid L \in Q(a)],
+\]</span></p>
+<p>which under exchangeability equals <span class="math inline">\(\text{E}{\left[Y^a \mid L \in Q(a)\right]} \Pr[L \in Q(a)]\)</span>. For binary <span class="math inline">\(A\)</span> without positivity, <span class="math inline">\(Q(0) \neq Q(1)\)</span>, so the IP weighted contrast compares two different groups and has no causal interpretation even under exchangeability. Under positivity <span class="math inline">\(Q(0) = Q(1)\)</span> and the contrast is the average causal effect if exchangeability holds.</p>
+</div>
+</div>
+</div>
+</div>
+</section></section>
+<section>
+<section id="consistency-first-define-the-counterfactual-outcome-pp.-33-38" class="title-slide slide level1 center" data-number="4">
+<h1><span class="header-section-number">4</span> 3.4 Consistency: First, Define the Counterfactual Outcome (pp.&nbsp;33-38)</h1>
 
 </section>
 <section class="slide level2 scrollable">
 
-<p>In an observational study, treatment is not randomly assigned by the investigator. Instead, individuals receive treatment based on their characteristics, preferences, physician recommendations, or other factors. As a result, treated and untreated individuals may differ systematically in ways that affect the outcome.</p>
-<p>Can we still estimate causal effects from observational data? The answer is yes—but only under certain conditions called <strong>identifiability conditions</strong>.</p>
-<div id="def-identifiability" class="theorem definition">
-<p><span class="theorem-title"><strong>Definition 1 (Identifiability)</strong></span> A causal quantity (such as the average treatment effect) is <strong>identifiable</strong> if it can be computed from the observed data distribution under a given set of assumptions.</p>
-</div>
-<p>Three key identifiability conditions are required for causal inference from observational data:</p>
-<ol type="1">
-<li><strong>Exchangeability</strong> (also called “no unmeasured confounding”)</li>
-<li><strong>Positivity</strong> (also called “experimental treatment assignment”)</li>
-<li><strong>Consistency</strong> (linking counterfactual outcomes to observed outcomes)</li>
-</ol>
-<aside class="notes">
-<p>These three conditions are sometimes called the “causal inference triad” or “fundamental assumptions of causal inference.” Each is necessary for identifying causal effects from observational data. Throughout this book, we will repeatedly return to these conditions and explore their implications.</p>
-<p>Note that randomized experiments automatically satisfy exchangeability (by design) and typically satisfy positivity (by protocol). However, even randomized experiments require the consistency assumption.</p>
-<style type="text/css">
-        span.MJX_Assistive_MathML {
-          position:absolute!important;
-          clip: rect(1px, 1px, 1px, 1px);
-          padding: 1px 0 0 0!important;
-          border: 0!important;
-          height: 1px!important;
-          width: 1px!important;
-          overflow: hidden!important;
-          display:block!important;
-      }</style></aside>
-</section>
-<section id="why-identifiability-matters" class="slide level2 scrollable">
-<h2>Why Identifiability Matters</h2>
-<p>Without these conditions, association does not equal causation. Specifically:</p>
-<ul>
-<li>If <strong>exchangeability</strong> fails, observed associations may reflect confounding rather than causal effects</li>
-<li>If <strong>positivity</strong> fails, we cannot learn about causal effects for all individuals</li>
-<li>If <strong>consistency</strong> fails, the causal question itself may be ill-defined</li>
-</ul>
-<aside class="notes">
-<p>In practice, we can never be certain that all identifiability conditions hold. Instead, we must:</p>
-<ol type="1">
-<li>Think carefully about whether these assumptions are plausible given subject-matter knowledge</li>
-<li>Conduct sensitivity analyses to assess robustness to violations</li>
-<li>Be transparent about the limitations of our causal conclusions</li>
-</ol>
-<p>The remainder of this chapter explores each condition in detail.</p>
-<style type="text/css">
-        span.MJX_Assistive_MathML {
-          position:absolute!important;
-          clip: rect(1px, 1px, 1px, 1px);
-          padding: 1px 0 0 0!important;
-          border: 0!important;
-          height: 1px!important;
-          width: 1px!important;
-          overflow: hidden!important;
-          display:block!important;
-      }</style></aside>
-</section></section>
-<section>
-<section id="exchangeability-pp.-27-29" class="title-slide slide level1 center" data-number="2">
-<h1><span class="header-section-number">2</span> 3.2 Exchangeability (pp.&nbsp;27-29)</h1>
-
-</section>
-<section class="slide level2">
-
-<p>The most critical identifiability condition is <strong>exchangeability</strong>. Informally, exchangeability means that the treated and untreated are comparable with respect to their potential outcomes.</p>
-<div id="def-exchangeability-conditional" class="theorem definition">
-<p><span class="theorem-title"><strong>Definition 2 (Conditional Exchangeability)</strong></span> The treated and untreated are <strong>exchangeable</strong> conditional on covariates <span class="math inline">\(L\)</span> when:</p>
-<p><span class="math display">\[Y^a \perp\!\!\!\perp A \mid L \quad \text{for all } a\]</span></p>
-<p>This means the potential outcome <span class="math inline">\(Y^a\)</span> is independent of treatment <span class="math inline">\(A\)</span> within levels of <span class="math inline">\(L\)</span>.</p>
-</div>
-<p>Under conditional exchangeability:</p>
-<p><span class="math display">\[\Pr[Y^a = 1 | A = 1, L] = \Pr[Y^a = 1 | A = 0, L] = \Pr[Y^a = 1 | L]\]</span></p>
-<p>for all values of <span class="math inline">\(a\)</span> and <span class="math inline">\(L\)</span>.</p>
-<aside class="notes">
-<p><strong>Conditional</strong> exchangeability means the treated and untreated are exchangeable within strata defined by <span class="math inline">\(L\)</span>. This is weaker than <strong>marginal</strong> exchangeability (which requires <span class="math inline">\(Y^a \perp\!\!\!\perp A\)</span> without conditioning on anything).</p>
-<p>In randomized experiments, we have marginal exchangeability by design. In observational studies, we typically only hope for conditional exchangeability after adjusting for measured confounders.</p>
-<p>The notation <span class="math inline">\(\perp\!\!\!\perp\)</span> denotes statistical independence.</p>
-<style type="text/css">
-        span.MJX_Assistive_MathML {
-          position:absolute!important;
-          clip: rect(1px, 1px, 1px, 1px);
-          padding: 1px 0 0 0!important;
-          border: 0!important;
-          height: 1px!important;
-          width: 1px!important;
-          overflow: hidden!important;
-          display:block!important;
-      }</style></aside>
-</section>
-<section id="exchangeability-and-confounding" class="slide level2">
-<h2>Exchangeability and Confounding</h2>
-<p><strong>Confounding</strong> is the absence of exchangeability. When exchangeability fails, comparing treated and untreated groups yields a biased estimate of the causal effect.</p>
-<div id="exm-confounding" class="theorem example">
-<p><span class="theorem-title"><strong>Example 1 (Confounding Example)</strong></span> Suppose we want to estimate the causal effect of smoking on lung cancer using observational data. If smokers differ from non-smokers in other ways that affect lung cancer risk (e.g., occupational exposures, genetic factors), then:</p>
-<p><span class="math display">\[\Pr[Y^{a=1} = 1 | A = 1] \neq \Pr[Y^{a=1} = 1 | A = 0]\]</span></p>
-<p>The potential outcome under smoking is not independent of actual smoking status. The treated (smokers) are not exchangeable with the untreated (non-smokers).</p>
-</div>
-</section>
-<section id="achieving-conditional-exchangeability" class="slide level2 scrollable">
-<h2>Achieving Conditional Exchangeability</h2>
-<p>In observational studies, we try to achieve conditional exchangeability by:</p>
-<ol type="1">
-<li><strong>Identifying</strong> potential confounders <span class="math inline">\(L\)</span> based on subject-matter knowledge</li>
-<li><strong>Measuring</strong> these confounders accurately</li>
-<li><strong>Adjusting</strong> for confounders using appropriate statistical methods</li>
-</ol>
-<aside class="notes">
-<p><strong>Critical limitation</strong>: Conditional exchangeability is an <strong>untestable assumption</strong>. We can never verify from data alone that we have measured and adjusted for all confounders.</p>
-<p>This is why subject-matter knowledge is essential in causal inference. We must use:</p>
-<ul>
-<li>Prior research</li>
-<li>Biological mechanisms<br>
-</li>
-<li>Causal diagrams (introduced in Chapter 6)</li>
-<li>Expert opinion</li>
-</ul>
-<p>to identify the set of confounders <span class="math inline">\(L\)</span> that, if measured and adjusted for, would render the treated and untreated exchangeable.</p>
-<p>If there exist <strong>unmeasured confounders</strong>—variables that affect both treatment and outcome but are not in <span class="math inline">\(L\)</span>—then conditional exchangeability fails, and our causal effect estimates will be biased.</p>
-<style type="text/css">
-        span.MJX_Assistive_MathML {
-          position:absolute!important;
-          clip: rect(1px, 1px, 1px, 1px);
-          padding: 1px 0 0 0!important;
-          border: 0!important;
-          height: 1px!important;
-          width: 1px!important;
-          overflow: hidden!important;
-          display:block!important;
-      }</style></aside>
-</section></section>
-<section>
-<section id="positivity-pp.-29-30" class="title-slide slide level1 center" data-number="3">
-<h1><span class="header-section-number">3</span> 3.3 Positivity (pp.&nbsp;29-30)</h1>
-
-</section>
-<section class="slide level2">
-
-<p>The second identifiability condition is <strong>positivity</strong>, also called the experimental treatment assignment assumption.</p>
-<div id="def-positivity" class="theorem definition">
-<p><span class="theorem-title"><strong>Definition 3 (Positivity)</strong></span> <strong>Positivity</strong> requires that, for every combination of values of <span class="math inline">\(L\)</span> for which <span class="math inline">\(\Pr[L] &gt; 0\)</span>:</p>
-<p><span class="math display">\[\Pr[A = a | L] &gt; 0 \quad \text{for all } a\]</span></p>
-<p>In words: every individual has a non-zero probability of receiving every level of treatment, conditional on their measured covariates.</p>
-</div>
-</section>
-<section id="why-positivity-matters" class="slide level2 scrollable">
-<h2>Why Positivity Matters</h2>
-<p>Without positivity, we cannot estimate causal effects for all individuals. If certain individuals (with specific values of <span class="math inline">\(L\)</span>) have zero probability of receiving treatment, we cannot learn about their counterfactual outcome under treatment from the data.</p>
-<div id="exm-positivity-violation" class="theorem example">
-<p><span class="theorem-title"><strong>Example 2 (Positivity Violation Example)</strong></span> Suppose we want to estimate the effect of a treatment on 90-year-old individuals, but in our data, no 90-year-old person received the treatment. Then:</p>
-<p><span class="math display">\[\Pr[A = 1 | \text{Age} = 90] = 0\]</span></p>
-<p>We cannot estimate <span class="math inline">\(\text{E}{\left[Y^{a=1} | \text{Age} = 90\right]}\)</span> from the data because we have no treated 90-year-olds to observe.</p>
-</div>
-<aside class="notes">
-<p><strong>Positivity violations</strong> can occur due to:</p>
-<ol type="1">
-<li><strong>Structural violations</strong>: Some individuals cannot receive treatment (e.g., males cannot receive a pregnancy intervention)</li>
-<li><strong>Random violations</strong>: By chance, no individuals with certain covariate values received treatment in our sample</li>
-<li><strong>Practical violations</strong>: Treatment is theoretically possible but extremely rare for certain subgroups</li>
-</ol>
-<p>When positivity is violated, we must either:</p>
-<ul>
-<li>Restrict our causal question to the subpopulation where positivity holds</li>
-<li>Make additional modeling assumptions (with their own limitations)</li>
-<li>Accept that we cannot answer the original causal question with the available data</li>
-</ul>
-<p>In practice, <strong>near-violations</strong> of positivity (where <span class="math inline">\(\Pr[A = a | L]\)</span> is very close to 0 or 1) can also cause problems, leading to unstable estimates with large variance.</p>
-<style type="text/css">
-        span.MJX_Assistive_MathML {
-          position:absolute!important;
-          clip: rect(1px, 1px, 1px, 1px);
-          padding: 1px 0 0 0!important;
-          border: 0!important;
-          height: 1px!important;
-          width: 1px!important;
-          overflow: hidden!important;
-          display:block!important;
-      }</style></aside>
-</section></section>
-<section>
-<section id="consistency-first-define-the-counterfactual-outcome-pp.-30-32" class="title-slide slide level1 center" data-number="4">
-<h1><span class="header-section-number">4</span> 3.4 Consistency: First, Define the Counterfactual Outcome (pp.&nbsp;30-32)</h1>
-
-</section>
-<section class="slide level2">
-
-<p>The third identifiability condition is <strong>consistency</strong>. Unlike exchangeability and positivity, consistency is not about the relationship between treatment and outcome. Instead, it concerns the definition of the counterfactual outcome itself.</p>
 <div id="def-consistency" class="theorem definition">
-<p><span class="theorem-title"><strong>Definition 4 (Consistency)</strong></span> The <strong>consistency assumption</strong> states that:</p>
-<p><span class="math display">\[Y = Y^A\]</span></p>
-<p>In words: the observed outcome <span class="math inline">\(Y\)</span> for an individual equals their counterfactual outcome <span class="math inline">\(Y^a\)</span> under the treatment level <span class="math inline">\(a\)</span> that they actually received.</p>
+<p><span class="theorem-title"><strong>Definition 4 (Consistency)</strong></span> The observed outcome of every treated individual equals her outcome had she received treatment, and the observed outcome of every untreated individual equals her outcome had she remained untreated:</p>
+<p><span class="math display">\[Y = Y^A,\]</span></p>
+<p>where <span class="math inline">\(Y^A\)</span> is the counterfactual <span class="math inline">\(Y^a\)</span> evaluated at the individual’s actual treatment <span class="math inline">\(A\)</span>.</p>
 </div>
+<p>The book takes the counterfactuals <span class="math inline">\(Y^a\)</span> as <strong>primitives</strong>; the observed <span class="math inline">\(Y\)</span> is a function of them. For binary <span class="math inline">\(A\)</span>:</p>
+<p><span class="math display">\[
+Y^A = A\,Y^{a=1} + (1 - A)\,Y^{a=0},
+\]</span></p>
+<p>which equals <span class="math inline">\(Y^{a=1}\)</span> when <span class="math inline">\(A = 1\)</span> (the second term vanishes) and <span class="math inline">\(Y^{a=0}\)</span> when <span class="math inline">\(A = 0\)</span> (the first term vanishes).</p>
+<aside class="notes">
+<p>Consistency can look trivially true: if you take aspirin and die, your counterfactual outcome had you taken aspirin is death. But it cannot always be taken for granted. Consistency has two components:</p>
+<ol type="1">
+<li>a precise definition of the counterfactual outcomes <span class="math inline">\(Y^a\)</span>, through the specification of the superscript <span class="math inline">\(a\)</span> (this section);</li>
+<li>the linkage of the counterfactual outcomes to the observed outcomes (Section 3.5).</li>
+</ol>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside>
 </section>
 <section id="well-defined-interventions" class="slide level2">
-<h2>Well-Defined Interventions</h2>
-<p>For consistency to hold, the treatment must be <strong>well-defined</strong>. This means we must be able to precisely specify what it means to receive treatment level <span class="math inline">\(a\)</span>.</p>
-<div id="exm-ill-defined-treatment" class="theorem example">
-<p><span class="theorem-title"><strong>Example 3 (Ill-Defined Treatment Example)</strong></span> Consider “exercise” as a treatment. What does <span class="math inline">\(A = 1\)</span> (receives exercise) mean?</p>
+<h2>Well-defined interventions</h2>
+</section>
+<section class="slide level2">
+
+<p>An individual’s causal effect <span class="math inline">\(Y^{a=1} - Y^{a=0}\)</span> can be well-defined only if her <span class="math inline">\(Y^a\)</span> is well-defined for both <span class="math inline">\(a = 1\)</span> and <span class="math inline">\(a = 0\)</span>. In turn, the average causal effect <span class="math inline">\(\Pr[Y^{a=1} = 1] - \Pr[Y^{a=0} = 1]\)</span> in a given population can be well-defined only if every member of that population has a well-defined individual causal effect.</p>
+<p>How do we know the counterfactuals are well-defined? A natural sufficient condition: when <span class="math inline">\(a\)</span> is itself a <strong>well-defined intervention</strong>, <span class="math inline">\(Y^a\)</span> is well-defined, as the outcome that would have been seen had that intervention been carried out.</p>
+<div id="exm-two-transplant-trials" class="theorem example">
+<p><span class="theorem-title"><strong>Example 3 (Two heart transplant trials)</strong></span> Two ideal randomized trials of heart transplant (<span class="math inline">\(a = 1\)</span>) versus medical therapy (<span class="math inline">\(a = 0\)</span>) in the same population:</p>
 <ul>
-<li>Running 3 miles?</li>
-<li>Swimming for 30 minutes?</li>
-<li>Walking 10,000 steps?</li>
-<li>Weight training?</li>
+<li><strong>Trial 1</strong> writes a detailed protocol: <span class="math inline">\(a = 1\)</span> means assignment to transplant (<span class="math inline">\(a_0 = 1\)</span>) followed by specified preoperative procedures (<span class="math inline">\(a_1\)</span>), anesthesia (<span class="math inline">\(a_2\)</span>), and surgical technique (<span class="math inline">\(a_3\)</span>).</li>
+<li><strong>Trial 2</strong> is a <strong>pragmatic trial</strong>: <span class="math inline">\(a = 1\)</span> means assignment to transplant (<span class="math inline">\(a_0 = 1\)</span>) followed by whatever happens in routine care, i.e., <span class="math inline">\(a_1 = A_1\)</span>, <span class="math inline">\(a_2 = A_2\)</span>, <span class="math inline">\(a_3 = A_3\)</span>.</li>
 </ul>
-<p>If different individuals in the <span class="math inline">\(A = 1\)</span> group received different forms of exercise, then <span class="math inline">\(Y^{a=1}\)</span> is not well-defined. The potential outcome under “exercise” depends on which specific form of exercise.</p>
+<p>In both trials <span class="math inline">\(a = 1\)</span> is well-defined by the protocol, so <span class="math inline">\(Y^{a=1}\)</span> is well-defined. But the two counterfactuals, and hence the two causal effects, will likely differ.</p>
 </div>
 <aside class="notes">
-<p>When treatment is not well-defined, we have <strong>treatment variation irrelevance</strong>. Different versions of “treatment” may have different effects on the outcome. In this case:</p>
-<p><span class="math display">\[Y = Y^{A,K}\]</span></p>
-<p>where <span class="math inline">\(K\)</span> represents the specific version of treatment received.</p>
-<p>For consistency to hold, we need either: 1. <strong>No treatment variation</strong>: All individuals who receive <span class="math inline">\(A = a\)</span> receive exactly the same intervention 2. <strong>Treatment variation irrelevance</strong>: Different versions of treatment have the same effect on the outcome (which is often implausible)</p>
-<p>This is sometimes called the <strong>Stable Unit Treatment Value Assumption (SUTVA)</strong>.</p>
+<p>Formally, <span class="math inline">\(Y^{a=1}\)</span> is the joint counterfactual <span class="math inline">\(Y^{a_0 = 1, a_1, a_2, a_3}\)</span> in Trial 1 and <span class="math inline">\(Y^{a_0 = 1, A_1^{a_0=1}, A_2^{a_0=1}, A_3^{a_0=1}}\)</span> in Trial 2; for those assigned to transplant in Trial 2, this equals the observed <span class="math inline">\(Y\)</span> (Technical Point 3.2).</p>
+<p>The same treatment name is used with different meanings. Which effect is preferable is a question for the consumers of the research. Trial 1’s effect may vary less across populations, because its components are fixed, whereas the natural values <span class="math inline">\((A_1, A_2, A_3)\)</span> in Trial 2 depend on the setting; so Trial 1’s result may be easier to <strong>transport</strong> (Chapter 4). This is a question of transportability, not of whether each effect is well-defined.</p>
 <style type="text/css">
         span.MJX_Assistive_MathML {
           position:absolute!important;
@@ -408,39 +668,149 @@
           overflow: hidden!important;
           display:block!important;
       }</style></aside>
+</section>
+<section id="interventions-are-never-perfectly-specified" class="slide level2">
+<h2>Interventions are never perfectly specified</h2>
+</section>
+<section class="slide level2">
+
+<p>Even Trial 1 did not specify the surgeon’s training. Because surgical experience affects post-transplant mortality, <span class="math inline">\(\Pr[Y^{a=1} = 1]\)</span> depends on the (unknown) mix of surgeons. Had the protocol specified training, some other detail would still have been left unspecified or open to interpretation.</p>
+<ul>
+<li>The average causal effect can therefore differ across populations that follow the same protocol: a community whose surgeons differ in experience from the trial’s will typically see a different effect.</li>
+<li>The more precisely we define the interventions, the easier it generally is to transport the result.</li>
+<li>Components with no effect on the outcome (the color of the surgeons’ scrubs) cannot affect transportability.</li>
+</ul>
+<aside class="notes">
+<p>The phrase “no causation without manipulation” (Holland 1986) captures the idea that causal inference requires sufficiently well-defined interventions. Such interventions need not be feasible at the time: the effect of genetic variants on disease was considered well-defined before gene-editing technology existed.</p>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside>
+</section>
+<section id="sufficiently-well-defined-interventions" class="slide level2">
+<h2>Sufficiently well-defined interventions</h2>
+</section>
+<section class="slide level2">
+
+<p>In experiments, the protocol makes the interventions explicit. In observational studies, investigators who talk about “the effect of heart transplant” without defining the intervention may mean different things, so <span class="math inline">\(Y^a\)</span> is ill-defined until the experts agree on one intervention at a time.</p>
+<blockquote>
+<p>An intervention is <strong>sufficiently well-defined</strong> when, for all practical purposes, no meaningful vagueness remains for <span class="math inline">\(Y^a\)</span>.</p>
+</blockquote>
+<p>How do we know no meaningful vagueness remains? We don’t. It is a matter of agreement among experts, based on the substantive knowledge available at a particular time, and experts who agree today may judge differently once new knowledge arrives.</p>
+<div title="Fine Point 3.3: Possible worlds">
+<div class="callout callout-note callout-titled callout-style-default">
+<div class="callout-body">
+<div class="callout-title">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<p><strong>Fine Point 3.3: Possible worlds</strong></p>
+</div>
+<div class="callout-content">
+<p>Philosophers (Stalnaker 1968, Lewis 1973) defined <span class="math inline">\(Y^a\)</span> as the value of <span class="math inline">\(Y\)</span> in the closest possible world in which the individual received <span class="math inline">\(a\)</span>. Since the closest world to the actual world is itself, <span class="math inline">\(Y^a = Y\)</span> when <span class="math inline">\(A = a\)</span>, so consistency always holds under this definition. When <span class="math inline">\(A \neq a\)</span>, the closest possible world is vague. Robins and Greenland (2000) argued that well-defined interventions should replace closest possible worlds, because in observational studies counterfactuals are vague to the degree that the hypothetical interventions are not made precise.</p>
+</div>
+</div>
+</div>
+</div>
+</section>
+<section id="non-intervention-variables" class="slide level2">
+<h2>Non-intervention variables</h2>
+</section>
+<section class="slide level2">
+
+<p>Biological states (blood pressure, LDL cholesterol, body weight) and social factors (socioeconomic status) can be changed only by intervening on their causes.</p>
+<ul>
+<li>“The effect of becoming obese on myocardial infarction” has no meaningful interpretation: the counterfactual is ill-defined. Specifying the timing and the method of weight change (medication, surgery, diet, exercise) would turn it into the effect of <em>those</em> interventions, not of obesity.</li>
+<li>Yet experts agree that “blood pressure causes stroke”, by synthesizing physics, in vitro studies, animal experiments, autopsies, and intervention studies.</li>
+</ul>
+<aside class="notes">
+<p>Whether an effect is ill-defined also depends on the outcome. For obesity and job discrimination (whether an employer invites an applicant to interview after reviewing the application and photograph), the treatment is really whether the employer perceives the applicant as obese, and how the applicant became obese may be irrelevant. A margin note points to Hernán and Taubman (2008), a paper about the difficulties a tyrannical monarch and an inept head of state run into when weighing “the effect of obesity” <span class="citation" data-cites="hernan2020causal">(<a href="#/references" role="doc-biblioref" onclick="">Hernán and Robins 2020, 37</a>)</span>.</p>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside>
+</section>
+<section class="slide level2">
+
+<div id="def-ende" class="theorem definition">
+<p><span class="theorem-title"><strong>Definition 5 (Effective no-direct-effect (ENDE) intervention)</strong></span> One way to read the claim that blood pressure <span class="math inline">\(A\)</span> affects this particular individual’s stroke outcome <span class="math inline">\(Y\)</span> is as a belief that some intervention <span class="math inline">\(X\)</span> exists (possibly not yet discovered) that can change this individual’s value of <span class="math inline">\(A\)</span> to <span class="math inline">\(a\)</span> and that affects her outcome <span class="math inline">\(Y\)</span> only through <span class="math inline">\(A\)</span>, with no (direct) effect of its own. Such an <span class="math inline">\(X\)</span> is an <strong>effective no-direct-effect intervention for <span class="math inline">\(a\)</span></strong>, written <strong>ENDE(<span class="math inline">\(a\)</span>)</strong>. Its existence is logically equivalent to the statement that the counterfactuals <span class="math inline">\(Y^a\)</span> and the joint counterfactuals <span class="math inline">\(Y^{x,a}\)</span> are both well-defined and equal.</p>
+</div>
+<aside class="notes">
+<p>Antihypertensive drugs, exercise, and diet all change blood pressure. Some antihypertensive drugs might serve as ENDE interventions <span class="math inline">\(X\)</span>; diet and exercise cannot, because they affect stroke risk through pathways other than blood pressure. “<span class="math inline">\(X\)</span> has no direct effect on <span class="math inline">\(Y\)</span> except through <span class="math inline">\(A\)</span>” means the same as “the effect of <span class="math inline">\(X\)</span> on <span class="math inline">\(Y\)</span> is completely mediated by <span class="math inline">\(A\)</span>” (Chapter 23).</p>
+<p>Belief in ENDE interventions is easier for variables whose mechanisms are well understood (blood pressure and stroke) than for others (socioeconomic status and myocardial infarction). Where experts disagree, a study design might support the claim that the effect of <span class="math inline">\(X\)</span> on <span class="math inline">\(Y\)</span> is completely mediated by <span class="math inline">\(A\)</span> (Fine Point 6.4).</p>
+<p>Blood pressure is really a vector <span class="math inline">\((A_{sys}, A_{dia})\)</span>. Accounting for this, the claim that <span class="math inline">\(X\)</span> has no direct effect on <span class="math inline">\(Y\)</span> except through <span class="math inline">\(A\)</span> asserts that <span class="math inline">\(Y^{a_{sys}, a_{dia}}\)</span> and <span class="math inline">\(Y^{x, a_{sys}, a_{dia}}\)</span> are well-defined and equal.</p>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside>
+</section>
+<section id="average-effects-of-non-interventions" class="slide level2">
+<h2>Average effects of non-interventions</h2>
+</section>
+<section class="slide level2">
+
+<p>Because an average causal effect requires a well-defined individual effect for every member of the population, the average effect of a non-intervention <span class="math inline">\(A\)</span>, comparing <span class="math inline">\(a\)</span> with <span class="math inline">\(a'\)</span>, is well-defined if every individual in the population has both an ENDE(<span class="math inline">\(a\)</span>) and an ENDE(<span class="math inline">\(a'\)</span>) intervention.</p>
+<ul>
+<li>If, for some individuals, no ENDE intervention can move <span class="math inline">\(A\)</span> to <span class="math inline">\(a\)</span> and to <span class="math inline">\(a'\)</span>, the population effect is not defined.</li>
+<li>A well-defined population effect therefore requires restricting attention to those individuals who have ENDE interventions available.</li>
+</ul>
+<p>Considering <strong>small changes</strong> in <span class="math inline">\(A\)</span> makes ENDE interventions more credible. For a change in blood pressure of <span class="math inline">\(\Delta\)</span> mm Hg with <span class="math inline">\(\Delta\)</span> near 0:</p>
+<ul>
+<li>it is more plausible that (essentially) every individual has an effective intervention;</li>
+<li>direct effects may appear only with large changes (an antihypertensive drug without direct effects at low doses may be toxic at high doses).</li>
+</ul>
+<p>So <span class="math inline">\(Y^{\Delta}\)</span> and <span class="math inline">\(\text{E}{\left[Y^{\Delta} - Y^{\Delta = 0}\right]}\)</span> are (essentially) well-defined for all individuals, where <span class="math inline">\(Y^{\Delta}\)</span> is <span class="math inline">\(Y^a\)</span> evaluated at <span class="math inline">\(a = A - \Delta\)</span> and <span class="math inline">\(A\)</span> is the individual’s blood pressure before the intervention begins.</p>
+<div title="Fine Point 3.4: An interventionist approach to causal inference">
+<div class="callout callout-note callout-titled callout-style-default">
+<div class="callout-body">
+<div class="callout-title">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<p><strong>Fine Point 3.4: An interventionist approach to causal inference</strong></p>
+</div>
+<div class="callout-content">
+<p>The book’s framework, sometimes called “interventionist”, rests on well-defined counterfactual outcomes, which are in turn defined through well-defined interventions. It supplies the formal language for precise discussion of causal inference about interventions and for interpreting the numbers that data analyses produce. Many published papers, however, attach causal interpretations to numerical quantities for questions that involve no recognizable intervention. The book therefore extends the interventionist approach to non-interventions by spelling out when quantitative causal inference about them is meaningful. The authors do not claim that this is the only valid philosophy of causality, but they know of no alternative framework that produces practically interpretable estimates of causal effects <span class="citation" data-cites="hernan2020causal">(<a href="#/references" role="doc-biblioref" onclick="">Hernán and Robins 2020</a>, Fine Point 3.4, p.&nbsp;39)</span>.</p>
+</div>
+</div>
+</div>
+</div>
 </section></section>
 <section>
-<section id="consistency-second-link-counterfactuals-to-observed-data-pp.-32-34" class="title-slide slide level1 center" data-number="5">
-<h1><span class="header-section-number">5</span> 3.5 Consistency: Second, Link Counterfactuals to Observed Data (pp.&nbsp;32-34)</h1>
+<section id="consistency-second-link-counterfactuals-to-the-observed-data-pp.-38-40" class="title-slide slide level1 center" data-number="5">
+<h1><span class="header-section-number">5</span> 3.5 Consistency: Second, Link Counterfactuals to the Observed Data (pp.&nbsp;38-40)</h1>
 
 </section>
 <section class="slide level2">
 
-<p>The consistency assumption also requires that there is no <strong>interference</strong> between individuals.</p>
-</section>
-<section id="no-interference" class="slide level2">
-<h2>No Interference</h2>
-<p><strong>Interference</strong> occurs when one individual’s treatment affects another individual’s outcome. For consistency to hold, we need:</p>
-<p><span class="math display">\[Y_i = Y_i^{A_i}\]</span></p>
-<p>The outcome for individual <span class="math inline">\(i\)</span> depends only on individual <span class="math inline">\(i\)</span>’s treatment, not on other individuals’ treatments.</p>
-<div id="exm-interference" class="theorem example">
-<p><span class="theorem-title"><strong>Example 4 (Interference Example)</strong></span> Consider a vaccine study. If vaccinating person A reduces person B’s risk of disease (through herd immunity), then:</p>
-<p><span class="math display">\[Y_B \neq Y_B^{A_B}\]</span></p>
-<p>Person B’s outcome depends not just on <span class="math inline">\(A_B\)</span> (whether B was vaccinated), but also on <span class="math inline">\(A_A\)</span> and the vaccination status of others in the population.</p>
-</div>
-<aside class="notes">
-<p>When interference exists, the full counterfactual notation must specify everyone’s treatment:</p>
-<p><span class="math display">\[Y_i^{\mathbf{a}} = Y_i^{a_1, a_2, \ldots, a_n}\]</span></p>
-<p>where <span class="math inline">\(\mathbf{a}\)</span> is a vector of everyone’s treatment assignments.</p>
-<p>Interference is common in:</p>
+<p>The second component of consistency is the “<span class="math inline">\(=\)</span>” in <span class="math inline">\(Y^a = Y\)</span> for individuals with <span class="math inline">\(A = a\)</span>.</p>
 <ul>
-<li>Infectious disease studies (herd immunity)</li>
-<li>Social network studies (peer effects)<br>
-</li>
-<li>Environmental exposures (shared exposures)</li>
-<li>Cluster randomized trials</li>
+<li><strong>Experiments</strong>: when the intervention <span class="math inline">\(a\)</span> was implemented per protocol, <span class="math inline">\(Y = Y^A = Y^a\)</span> for those with <span class="math inline">\(A = a\)</span> by definition.</li>
+<li><strong>Observational studies with real-world interventions</strong>: if eligible patients were offered either heart transplant (<span class="math inline">\(A = 1\)</span>) or medical therapy (<span class="math inline">\(A = 0\)</span>) as part of their care at a particular time and place, then <span class="math inline">\(a = 1\)</span> is “whatever procedures followed a transplant offer in that time and place”, and <span class="math inline">\(Y^{a=1} = Y\)</span> for those with <span class="math inline">\(A = 1\)</span>.</li>
 </ul>
-<p>Special methods are needed to handle interference, which is beyond the scope of the standard framework introduced in this chapter. For now, we assume no interference.</p>
+<aside class="notes">
+<p>In the observational case, the targeted effect is of questionable relevance elsewhere if investigators cannot roughly characterize what “heart transplant” meant in that setting. Madenci et al.&nbsp;(2024) discuss the practical problems of studying heart transplant with observational healthcare databases <span class="citation" data-cites="hernan2020causal">(<a href="#/references" role="doc-biblioref" onclick="">Hernán and Robins 2020, 39</a>)</span>.</p>
 <style type="text/css">
         span.MJX_Assistive_MathML {
           position:absolute!important;
@@ -453,16 +823,63 @@
           display:block!important;
       }</style></aside>
 </section>
-<section id="temporal-consistency" class="slide level2">
-<h2>Temporal Consistency</h2>
-<p>Consistency also requires that the <strong>timing</strong> of treatment and outcome measurement is well-defined.</p>
+<section id="the-choice-of-intervention-depends-on-the-data" class="slide level2">
+<h2>The choice of intervention depends on the data</h2>
+</section>
+<section class="slide level2">
+
+<div id="exm-consistency-linkage" class="theorem example">
+<p><span class="theorem-title"><strong>Example 4 (A well-defined intervention the data cannot link to)</strong></span> Investigators define <span class="math inline">\(a = 1\)</span> as heart transplant with specified preoperative procedures, anesthesia, surgical technique, postoperative care, and immunosuppressive therapy. The data contain only an indicator <span class="math inline">\(B\)</span> of whether a person had a transplant. For an individual with <span class="math inline">\(B = 1\)</span>, the well-defined <span class="math inline">\(Y^{a=1}\)</span> need not equal the observed <span class="math inline">\(Y\)</span>.</p>
+</div>
+<p>The book uses a different letter (<span class="math inline">\(B\)</span>) for the recorded variable precisely because the same letter is reserved for cases in which <span class="math inline">\(A = a\)</span> corresponds to the well-defined intervention <span class="math inline">\(a\)</span>.</p>
 <aside class="notes">
-<p>If we ask “What is the effect of treatment on the outcome?”, we must specify:</p>
+<p>Two lessons:</p>
 <ul>
-<li>When is treatment received?</li>
-<li>When is the outcome measured?</li>
+<li>Being able to describe a well-defined intervention is <strong>not sufficient</strong> for consistency; we must also be able to link <span class="math inline">\(Y^a\)</span> to the observed <span class="math inline">\(Y\)</span>.</li>
+<li>Conversely, recording a variable <span class="math inline">\(A\)</span> does not make “the effect of <span class="math inline">\(A\)</span>” meaningful, because the corresponding interventions may be ill-defined.</li>
 </ul>
-<p>For example, the effect of exercise on weight at 6 months may differ from the effect on weight at 1 year. We need to be precise about the follow-up time.</p>
+<p>Having a well-defined intervention <span class="math inline">\(a\)</span> but nobody in the population with <span class="math inline">\(A = a\)</span> can be viewed as an extreme form of non-positivity.</p>
+<p>Achieving consistency can be hard in observational studies. A good practice is to make the reasoning transparent so others can challenge it; the target trial (Section 3.6) is a procedure for doing so.</p>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside>
+<div title="Fine Point 3.5: Attributable fraction">
+<div class="callout callout-note callout-titled callout-style-default">
+<div class="callout-body">
+<div class="callout-title">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<p><strong>Fine Point 3.5: Attributable fraction</strong></p>
+</div>
+<div class="callout-content">
+<p>The <strong>excess fraction</strong>, one version of the attributable fraction, is the share of observed cases that would not have occurred had everyone been untreated: <span class="math inline">\((\Pr[Y = 1] - \Pr[Y^{a=0} = 1]) / \Pr[Y = 1]\)</span>.</p>
+</div>
+</div>
+</div>
+</div>
+<div id="exm-attributable-fraction" class="theorem example">
+<p><span class="theorem-title"><strong>Example 5 (The ambrosia dinner)</strong></span> All 20 individuals attended a dinner: 10 ate ambrosia (<span class="math inline">\(A = 1\)</span>), 10 ate nectar (<span class="math inline">\(A = 0\)</span>). The next day 7 of the 10 ambrosia eaters and 1 of the 10 nectar drinkers were sick. Assuming exchangeability,</p>
+<ul>
+<li>causal risk ratio <span class="math inline">\(= 0.7 / 0.1 = 7\)</span>, causal risk difference <span class="math inline">\(= 0.7 - 0.1 = 0.6\)</span>;</li>
+<li>observed risk <span class="math inline">\(\Pr[Y = 1] = 8/20 = 0.4\)</span>, versus <span class="math inline">\(\Pr[Y^{a=0} = 1] = 0.1\)</span> had everyone received <span class="math inline">\(a = 0\)</span>.</li>
+</ul>
+<p>The excess fraction is</p>
+<p><span class="math display">\[
+\frac{\Pr[Y = 1] - \Pr[Y^{a=0} = 1]}{\Pr[Y = 1]} = \frac{0.4 - 0.1}{0.4} = \frac{0.3}{0.4} = 0.75.
+\]</span></p>
+<p>Of the 8 observed cases, only <span class="math inline">\(0.1 \times 20 = 2\)</span> would have occurred had everyone received <span class="math inline">\(a = 0\)</span>, so 75% of the cases are attributable to ambrosia.</p>
+</div>
+<aside class="notes">
+<p>The excess fraction generally differs from the <strong>etiologic fraction</strong>, the proportion of cases mechanically caused by exposure. In the book’s example, suppose the untreated would have had 7 cases had they been treated, none of them the 1 case that actually occurred among them (treatment would produce 7 cases and prevent 1), and the treated would have had only 1 case had they been untreated, different from their 7 actual cases. Then the excess fraction differs from the etiologic fraction and is a lower bound on it. Because the etiologic fraction does not rest on excess cases, it can be computed only in randomized experiments under strong assumptions (Greenland and Robins 1988; Robins and Greenland 1989). Fine Point 5.4 revisits the excess fraction in the sufficient-component-cause framework.</p>
 <style type="text/css">
         span.MJX_Assistive_MathML {
           position:absolute!important;
@@ -476,41 +893,136 @@
       }</style></aside>
 </section></section>
 <section>
-<section id="the-target-trial-pp.-34-36" class="title-slide slide level1 center" data-number="6">
-<h1><span class="header-section-number">6</span> 3.6 The Target Trial (pp.&nbsp;34-36)</h1>
+<section id="the-target-trial-pp.-41-46" class="title-slide slide level1 center" data-number="6">
+<h1><span class="header-section-number">6</span> 3.6 The Target Trial (pp.&nbsp;41-46)</h1>
 
+</section>
+<section class="slide level2">
+
+<p>Assuming the three identifiability conditions amounts to viewing an observational analysis as an attempt to <strong>emulate</strong> a hypothetical randomized experiment.</p>
+<div id="def-target-trial" class="theorem definition">
+<p><span class="theorem-title"><strong>Definition 6 (Target trial)</strong></span> The <strong>target trial</strong> (or target experiment) is the hypothetical randomized experiment that would quantify the causal effect of interest. For each causal effect, we may (i) specify the protocol of the target trial that we would like to, but cannot, conduct, and (ii) describe how the observational data would be used to emulate it.</p>
+</div>
+<p>If the emulation were successful, the observational study and the target trial (had it been conducted) would give the same results.</p>
+<aside class="notes">
+<p>The target trial, or its logical equivalents, has a long history: the book cites Dorn (1953), Wold (1954), Cochran (1972), Rubin (1974), Feinstein (1971), and Dawid (2000), and Robins (1986) generalized it to time-varying treatments. The key components were specified by Hernán and Robins (2016) and Hernán et al.&nbsp;(2025). Chapter 22 returns to the framework.</p>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside>
+</section>
+<section id="key-components-of-the-protocol" class="slide level2">
+<h2>Key components of the protocol</h2>
+</section>
+<section class="slide level2">
+
+<ul>
+<li>eligibility criteria</li>
+<li>interventions (or, generally, treatment strategies)</li>
+<li>assignment</li>
+<li>outcomes</li>
+<li>start and end of follow-up</li>
+<li>causal contrasts</li>
+</ul>
+<aside class="notes">
+<p>Eligibility criteria must be chosen so that every eligible individual could in principle receive every treatment of interest; otherwise some individual causal effects, and hence the average effect, would be undefined. In Parts I and II, each individual meets the eligibility criteria at one time only, which becomes <strong>time zero</strong> (the start of follow-up). The acronym PICO (Population, Intervention, Comparator, Outcome; Richardson et al.&nbsp;1995) summarizes some of these components.</p>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside>
+</section>
+<section id="interventions-and-target-trials" class="slide level2">
+<h2>Interventions and target trials</h2>
+</section>
+<section class="slide level2">
+
+<ul>
+<li><strong>Experiments</strong>: in a fully adherent trial of low-dose aspirin <span class="math inline">\(A\)</span> and stroke <span class="math inline">\(Y\)</span>, <span class="math inline">\(A\)</span> is the investigators’ action, so <span class="math inline">\(Y^a\)</span> is well-defined; the target trial is the trial actually conducted.</li>
+<li><strong>Observational studies of interventions</strong>: if <span class="math inline">\(A\)</span> indicates prescription of aspirin, in a population without absolute indications or contraindications, most experts would accept “prescribed” and “not prescribed” as sufficiently well-defined; a target trial <em>could</em> have been conducted, and specifying its protocol characterizes the causal effect.</li>
+<li><strong>Non-interventions</strong>: the target trial randomizes an ENDE intervention <span class="math inline">\(X\)</span> rather than <span class="math inline">\(A\)</span>, if experts believe one exists.</li>
+</ul>
+<aside class="notes">
+<p>Whether a variable corresponds to an intervention is often debatable: assignment in a randomized trial uncontroversially is one, socioeconomic status uncontroversially is not, and there is a gradient in between.</p>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside>
+</section>
+<section id="three-non-intervention-variables" class="slide level2">
+<h2>Three non-intervention variables</h2>
 </section>
 <section class="slide level2 scrollable">
 
-<p>A useful framework for thinking about identifiability conditions in observational studies is the <strong>target trial</strong>.</p>
-<div id="def-target-trial" class="theorem definition">
-<p><span class="theorem-title"><strong>Definition 5 (Target Trial)</strong></span> The <strong>target trial</strong> is the (hypothetical) randomized experiment we would conduct if we could. By specifying the target trial, we clarify:</p>
 <ol type="1">
-<li>The causal question we are trying to answer</li>
-<li>The treatment comparison of interest</li>
-<li>The outcome and follow-up time</li>
-<li>The eligibility criteria</li>
-<li>The estimand (parameter to be estimated)</li>
+<li><strong>Genotype.</strong> <span class="math inline">\(Y^a\)</span> is well-defined if ENDE interventions <span class="math inline">\(X\)</span> could set each target-population member’s genotype to <span class="math inline">\(a\)</span> at conception, so that <span class="math inline">\(Y^a\)</span> and <span class="math inline">\(Y^{x,a}\)</span> are equal for each of them. The interventions need not be known: decades ago most experts considered the effect of genotype well-defined, and gene editing was eventually developed.</li>
+<li><strong>Systolic blood pressure.</strong> <span class="math inline">\(Y^a\)</span> is well-defined for everyone in the population if ENDE interventions <span class="math inline">\(X\)</span> could bring each individual’s blood pressure to <span class="math inline">\(a\)</span>. Many experts believe some drugs act as ENDE interventions in some populations, perhaps only over a limited range, so the effect of <em>modest</em> changes can be defined through a target trial that randomizes <span class="math inline">\(X\)</span> (the small-change argument of Section 3.4).</li>
+<li><strong>Socioeconomic status.</strong> Most experts doubt that interventions could place people at a given status without affecting <span class="math inline">\(Y\)</span> through other means (they may even disagree on what the term means), so no target trial can be specified and the effect is not well-defined.</li>
 </ol>
+<div id="rem-target-trial-non-intervention" class="proof remark">
+<p><span class="proof-title"><em>Remark 2</em> (Summary of the target trial for interventions and non-interventions). </span>If <span class="math inline">\(A\)</span> is an intervention, the target trial randomizes eligible individuals to values <span class="math inline">\(a\)</span>. If <span class="math inline">\(A\)</span> is a non-intervention and we believe ENDE interventions <span class="math inline">\(X\)</span> exist, the target trial randomizes eligible individuals to an <span class="math inline">\(X\)</span> that sets <span class="math inline">\(A\)</span> to <span class="math inline">\(a\)</span>, and the effect of <span class="math inline">\(A\)</span> is equated with the effect of <span class="math inline">\(X\)</span>. Without that belief, <span class="math inline">\(Y^a\)</span> and the effect of <span class="math inline">\(A\)</span> are not well-defined.</p>
+</div>
+<div title="Fine Point 3.6: When causal inference for non-interventions goes unquestioned">
+<div class="callout callout-note callout-titled callout-style-default">
+<div class="callout-body">
+<div class="callout-title">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<p><strong>Fine Point 3.6: When causal inference for non-interventions goes unquestioned</strong></p>
+</div>
+<div class="callout-content">
+<p>In a trial with assignment <span class="math inline">\(Z\)</span> and received treatment <span class="math inline">\(A\)</span>, the intention-to-treat effect of <span class="math inline">\(Z\)</span> is well-defined because <span class="math inline">\(Z\)</span> is an intervention <span class="citation" data-cites="hernan2020causal">(<a href="#/references" role="doc-biblioref" onclick="">Hernán and Robins 2020</a>, Fine Point 3.6, p.&nbsp;43)</span>. With perfect adherence and no direct effect of <span class="math inline">\(Z\)</span>, <span class="math inline">\(Z = A\)</span> and <span class="math inline">\(Z\)</span> is an ENDE intervention for <span class="math inline">\(A\)</span>. Without perfect adherence, <span class="math inline">\(Z\)</span> is not an ENDE intervention for everyone, because it does not succeed in setting <span class="math inline">\(A\)</span> to 1 or 0 for every individual (even if <span class="math inline">\(Z\)</span> has no direct effect on <span class="math inline">\(Y\)</span>). The effect of <span class="math inline">\(A\)</span> in the whole population is then well-defined only if some ENDE intervention <span class="math inline">\(X\)</span> on <span class="math inline">\(A\)</span> exists (e.g., adding aspirin to food without the participants’ knowledge). Most experts find this so self-evident that “the effect of received treatment” is discussed without mentioning <span class="math inline">\(X\)</span>.</p>
+<p>Whether or not such an <span class="math inline">\(X\)</span> exists, <span class="math inline">\(Z\)</span> is effective for one subset: individuals who would have <span class="math inline">\(A = 1\)</span> under <span class="math inline">\(Z = 1\)</span> and <span class="math inline">\(A = 0\)</span> under <span class="math inline">\(Z = 0\)</span>. For them, <span class="math inline">\(Z\)</span> is an ENDE intervention, so the effect of <span class="math inline">\(A\)</span> in that subset is well-defined and equals the effect of <span class="math inline">\(Z\)</span>. Chapter 16 calls this subset the <strong>compliers</strong>; its members cannot be identified individually, but the effect of <span class="math inline">\(A\)</span> among them can be identified under additional assumptions.</p>
+<p>If <span class="math inline">\(Z\)</span> has direct effects on <span class="math inline">\(Y\)</span> not through <span class="math inline">\(A\)</span>, the effect of <span class="math inline">\(Z\)</span> differs from that of <span class="math inline">\(X\)</span> even under full adherence.</p>
+<p>Some authors treat “the causal effect of <span class="math inline">\(A\)</span> on <span class="math inline">\(Y\)</span>” as well-defined even where many experts would not grant that any ENDE intervention <span class="math inline">\(X\)</span> on <span class="math inline">\(A\)</span> exists (Pearl 2009; Schwartz et al.&nbsp;2016; Glymour and Spiegelman 2016) <span class="citation" data-cites="hernan2020causal">(<a href="#/references" role="doc-biblioref" onclick="">Hernán and Robins 2020, 42</a>)</span>.</p>
+</div>
+</div>
+</div>
 </div>
 </section>
-<section id="emulating-the-target-trial" class="slide level2 scrollable">
-<h2>Emulating the Target Trial</h2>
-<p>When conducting an observational study, we should ask: “How closely can we emulate the target trial with the available data?”</p>
-<p>The identifiability conditions can be understood as requirements for successfully emulating a randomized experiment:</p>
+<section id="what-a-valid-emulation-needs" class="slide level2">
+<h2>What a valid emulation needs</h2>
+</section>
+<section class="slide level2">
+
 <ul>
-<li><strong>Exchangeability</strong>: Can we adjust for confounders to simulate randomization?</li>
-<li><strong>Positivity</strong>: Do we have both treated and untreated individuals in all relevant subgroups?</li>
-<li><strong>Consistency</strong>: Is the treatment well-defined, matching what would be implemented in the trial?</li>
+<li>enough information to map the protocol to the data: identify eligible individuals, classify them by intervention, and ascertain outcomes;</li>
+<li>when using IP weighting or standardization, enough adjustment variables <span class="math inline">\(L\)</span> for conditional exchangeability. For “the effect of blood pressure on stroke”, investigators who believe in an ENDE intervention would adjust for variables, such as diet and exercise, that they believe affect both blood pressure and stroke.</li>
 </ul>
+<p>Chapter 16 considers alternative identifying conditions for emulating a target trial.</p>
+</section>
+<section id="anchoring-analyses-to-realistic-interventions" class="slide level2">
+<h2>Anchoring analyses to realistic interventions</h2>
+</section>
+<section class="slide level2 scrollable">
+
+<div id="exm-bmi-target-trial" class="theorem example">
+<p><span class="theorem-title"><strong>Example 6 (Body mass index and death)</strong></span> Comparing the risk of death between people with body mass index (BMI) 25 versus 30 at the start of follow-up implies a target trial of an instantaneous, possibly very large, weight change, for which no ENDE intervention is known. A modified analysis could emulate a more reasonable target trial, e.g., one assigning some individuals to a 5% reduction in BMI every year, starting at age 40, for as long as their BMI stays over 25 (a sustained strategy of the kind studied in Part III).</p>
+</div>
 <aside class="notes">
-<p>The target trial framework is especially useful for:</p>
-<ol type="1">
-<li><p><strong>Clarifying the causal question</strong>: By specifying exactly what randomized trial we would run, we force ourselves to be precise about what causal effect we want to estimate</p></li>
-<li><p><strong>Identifying potential biases</strong>: Differences between the target trial and our observational study reveal potential sources of bias</p></li>
-<li><p><strong>Guiding analysis</strong>: The analysis plan should mimic what we would do in the target trial (e.g., intention-to-treat analysis, per-protocol analysis)</p></li>
-</ol>
-<p>This framework will be revisited throughout the book, particularly in Part III when we discuss time-varying treatments and complex longitudinal data.</p>
+<p>Experts may still disagree that ENDE interventions exist for gradual weight change, but such interventions are more plausible than instantaneous weight loss. One course of action is to proceed as if they existed, adjusting for prognostic factors <span class="math inline">\(L\)</span>, while accepting that the results lack a causal interpretation and may be inadequate for decisions. Such an analysis may still tell us something about what ENDE interventions would do were they to exist, or inspire technologies to create them. Danaei et al.&nbsp;(2016) considered unknown interventions producing progressive weight loss over several years in a study of weight loss and heart disease.</p>
+<p>At the very least, specifying a target trial aligns causal questions with interventions that are feasible or not totally unrealistic, and helps decision makers recognize analyses that imply extreme or impossible interventions.</p>
 <style type="text/css">
         span.MJX_Assistive_MathML {
           position:absolute!important;
@@ -522,35 +1034,23 @@
           overflow: hidden!important;
           display:block!important;
       }</style></aside>
-</section>
-<section id="example-target-trial-for-statins-and-cardiovascular-disease" class="slide level2 scrollable">
-<h2>Example: Target Trial for Statins and Cardiovascular Disease</h2>
-<div id="exm-target-trial" class="theorem example">
-<p><span class="theorem-title"><strong>Example 5 (Target Trial Example)</strong></span> <strong>Research question</strong>: Does taking statins reduce the risk of cardiovascular disease (CVD)?</p>
-<p><strong>Target trial specification</strong>:</p>
-<ul>
-<li><strong>Eligibility</strong>: Adults aged 40-75 with LDL cholesterol &gt; 190 mg/dL, no history of CVD</li>
-<li><strong>Treatment</strong>: Daily statin (yes/no)</li>
-<li><strong>Assignment</strong>: Random assignment to statin or no statin</li>
-<li><strong>Outcome</strong>: CVD event within 5 years</li>
-<li><strong>Estimand</strong>: Risk difference <span class="math inline">\(\Pr[Y^{a=1} = 1] - \Pr[Y^{a=0} = 1]\)</span></li>
-</ul>
-<p><strong>Observational study emulation</strong>:</p>
-<ul>
-<li>Identify individuals meeting eligibility criteria in electronic health records</li>
-<li>Compare those who initiated statins vs.&nbsp;those who did not</li>
-<li>Adjust for baseline confounders <span class="math inline">\(L\)</span> (age, sex, blood pressure, smoking, etc.)</li>
-<li>Follow individuals for 5 years, censoring if they move or die from non-CVD causes</li>
-</ul>
+<div title="Fine Point 3.7: Some limits of target trial emulation">
+<div class="callout callout-note callout-titled callout-style-default">
+<div class="callout-body">
+<div class="callout-title">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
 </div>
+<p><strong>Fine Point 3.7: Some limits of target trial emulation</strong></p>
+</div>
+<div class="callout-content">
 <aside class="notes">
-<p>In this example, the key challenges are:</p>
-<ol type="1">
-<li><p><strong>Exchangeability</strong>: Did we measure all confounders? Are there unmeasured factors (e.g., health behaviors, genetics) that affect both statin use and CVD risk?</p></li>
-<li><p><strong>Positivity</strong>: Are there individuals with certain characteristics (e.g., very high cholesterol) who always receive statins? If so, we cannot estimate the effect for them.</p></li>
-<li><p><strong>Consistency</strong>: Is “taking statins” well-defined? Do adherence levels vary? Should we analyze intention-to-treat or per-protocol?</p></li>
+<p>“The effect of heart transplant” can mean the average counterfactual outcome of the <span class="math inline">\(n\)</span> eligible individuals under:</p>
+<ol type="i">
+<li>an intervention in which all <span class="math inline">\(n\)</span> individuals receive treatment concurrently; or</li>
+<li>an intervention in which each individual <span class="math inline">\(i\)</span> receives treatment while everyone else receives the treatment they actually received.</li>
 </ol>
-<p>The target trial framework helps us think systematically about these issues.</p>
+<p>Interpretation (ii), an average of <span class="math inline">\(n\)</span> interventions, is the one relevant to a physician and patient deciding on transplant, and the one the book uses implicitly. Interpretation (i) is not well-defined: it does not say how the health system would be redesigned to supply the hearts and the capacity. If that redesign were specified, current observational data would be inadequate, because they were generated under the old system (e.g., a system that transplants everyone might accept lower-quality organs). This issue is related to interference (Fine Point 1.1), although the interference literature usually assumes interpretation (i) is well-defined. Observational data may be insufficient to characterize the effect of scaling up an intervention.</p>
 <style type="text/css">
         span.MJX_Assistive_MathML {
           position:absolute!important;
@@ -562,6 +1062,25 @@
           overflow: hidden!important;
           display:block!important;
       }</style></aside>
+</div>
+</div>
+</div>
+</div>
+<div title="Technical Point 3.2: Recursive substitution">
+<div class="callout callout-note callout-titled callout-style-default">
+<div class="callout-body">
+<div class="callout-title">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<p><strong>Technical Point 3.2: Recursive substitution</strong></p>
+</div>
+<div class="callout-content">
+<p>For chronologically ordered variables <span class="math inline">\(L, A, M, Y\)</span> with well-defined interventions on <span class="math inline">\(L, A, M\)</span>, the <strong>one-step-ahead counterfactuals</strong> are <span class="math inline">\(L, A^l, M^{l,a}, Y^{l,a,m}\)</span>. All other factuals and well-defined counterfactuals are functions of them via recursive substitution, e.g., <span class="math inline">\(A = A^L\)</span>, <span class="math inline">\(M^a = M^{L,a}\)</span>, <span class="math inline">\(Y^a = Y^{L, a, M^a}\)</span>, and <span class="math inline">\(Y = Y^{L, A, M}\)</span>. Applied to the two transplant trials, recursive substitution shows why Trial 2’s outcome distribution is harder to transport: it changes whenever the distribution of the natural values <span class="math inline">\(A_1^{a_0=1}, A_2^{a_0=1}, A_3^{a_0=1}\)</span> differs between populations. The argument applies equally to observational and randomized studies.</p>
+</div>
+</div>
+</div>
+</div>
 </section></section>
 <section>
 <section id="summary" class="title-slide slide level1 center" data-number="7">
@@ -570,24 +1089,21 @@
 </section>
 <section class="slide level2 scrollable">
 
-<p>This chapter introduced the fundamental <strong>identifiability conditions</strong> for causal inference in observational studies:</p>
+<p>The identifiability conditions under which an observational study can be analyzed like a conditionally randomized experiment:</p>
 <ol type="1">
-<li><strong>Exchangeability</strong>: <span class="math inline">\(Y^a \perp\!\!\!\perp A \mid L\)</span> (no unmeasured confounding)</li>
-<li><strong>Positivity</strong>: <span class="math inline">\(\Pr[A = a | L] &gt; 0\)</span> for all <span class="math inline">\(a\)</span> and <span class="math inline">\(L\)</span> (every subgroup can receive every treatment level)</li>
-<li><strong>Consistency</strong>: <span class="math inline">\(Y = Y^A\)</span> (well-defined interventions, no interference)</li>
+<li><strong>Exchangeability</strong>: <span class="math inline">\(Y^a \perp\!\!\!\perp A \mid L\)</span> (untestable; requires expert knowledge)</li>
+<li><strong>Positivity</strong>: <span class="math inline">\(\Pr[A = a \mid L = l] &gt; 0\)</span> for all <span class="math inline">\(a\)</span> in the contrast and all <span class="math inline">\(l\)</span> with <span class="math inline">\(\Pr[L = l] \neq 0\)</span> (sometimes checkable)</li>
+<li><strong>Consistency</strong>: <span class="math inline">\(Y = Y^A\)</span>, which requires (i) sufficiently well-defined interventions and (ii) a link between those interventions and the observed data</li>
 </ol>
-<p>Under these three conditions, we can identify causal effects from observational data by adjusting for measured confounders <span class="math inline">\(L\)</span>.</p>
-<p>The <strong>target trial framework</strong> provides a useful way to think about observational studies: we should try to emulate the randomized experiment we would have conducted if we could. The identifiability conditions tell us what is required for this emulation to succeed.</p>
+<p>Specifying the <strong>target trial</strong> makes the causal question, and what the data must supply to emulate it, explicit. For non-intervention variables, the target trial randomizes an ENDE intervention <span class="math inline">\(X\)</span>.</p>
 <aside class="notes">
 <p><strong>Looking ahead</strong>:</p>
 <ul>
-<li>Chapter 4 introduces effect modification, where causal effects differ across subgroups</li>
-<li>Chapter 5 discusses interaction between treatments</li>
-<li>Chapter 6 introduces causal diagrams, a powerful tool for understanding confounding</li>
-<li>Chapters 7-9 explore specific types of bias: confounding, selection bias, and measurement bias</li>
-<li>Chapter 10 introduces time-varying treatments and confounding</li>
+<li>Chapter 4 discusses effect modification and the dependence of causal effects on the population</li>
+<li>Chapter 6 introduces causal diagrams; Chapters 7-9 cover confounding, selection bias, and measurement bias</li>
+<li>Chapter 16 describes instrumental variable methods, which rely on different identifiability conditions</li>
+<li>Chapter 22 returns to target trial emulation</li>
 </ul>
-<p>The three identifiability conditions introduced in this chapter will appear repeatedly throughout the book. They are the foundation of all causal inference from observational data.</p>
 <style type="text/css">
         span.MJX_Assistive_MathML {
           position:absolute!important;

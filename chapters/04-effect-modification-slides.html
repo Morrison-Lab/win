@@ -166,15 +166,15 @@
 <!-- https://www.overleaf.com/learn/latex/Using_colors_in_LaTeX#Named_colors_provided_by_the_xcolor_package -->
 <!-- \def\or{\theta}  -->
 <!-- doesn't work for some reason -->
-<p>In previous chapters, we focused on estimating average causal effects in a population. But what if the effect of treatment varies across individuals? This chapter introduces <strong>effect modification</strong>: the phenomenon where the causal effect of treatment differs across levels of another variable.</p>
-<p>Understanding effect modification is crucial for:</p>
+<p>So far we have focused on the average causal effect in an entire population. Many causal questions, however, are about <strong>subsets</strong> of the population: the effect of your looking up in city dwellers versus visitors, say.</p>
+<p>Whether to target the whole population or a subset depends on the goal:</p>
 <ul>
-<li>Identifying subgroups that benefit more (or less) from treatment</li>
-<li>Targeting interventions to those who need them most</li>
-<li>Understanding biological or social mechanisms</li>
+<li>a nationwide water fluoridation program reaches every household, so the policy maker cares about the population-average effect;</li>
+<li>variation across subsets matters when an intervention can be targeted, or when findings must be applied to other populations.</li>
 </ul>
+<p>The theme of this chapter: there is no such thing as <em>the</em> causal effect of a treatment. The effect depends on the characteristics of the population under study.</p>
 <aside class="notes">
-<p>This chapter is based on <span class="citation" data-cites="hernan2020causal">Hernán and Robins (<a href="#/references" role="doc-biblioref" onclick="">2020, chap. 4</a>, pp.&nbsp;37-46)</span>.</p>
+<p>This chapter is based on <span class="citation" data-cites="hernan2020causal">Hernán and Robins (<a href="#/references" role="doc-biblioref" onclick="">2020, chap. 4</a>, pp.&nbsp;47-60)</span>.</p>
 <style type="text/css">
         span.MJX_Assistive_MathML {
           position:absolute!important;
@@ -188,36 +188,198 @@
       }</style></aside>
 </section>
 <section>
-<section id="heterogeneity-of-treatment-effects-pp.-37-39" class="title-slide slide level1 center" data-number="1">
-<h1><span class="header-section-number">1</span> 4.1 Heterogeneity of Treatment Effects (pp.&nbsp;37-39)</h1>
+<section id="heterogeneity-of-treatment-effects-pp.-47-48" class="title-slide slide level1 center" data-number="1">
+<h1><span class="header-section-number">1</span> 4.1 Heterogeneity of Treatment Effects (pp.&nbsp;47-48)</h1>
 
 </section>
 <section class="slide level2">
 
-<p>Consider again Zeus’s family from Chapter 1. Suppose we estimate that heart transplant has no average causal effect on mortality (the average treatment effect is zero). Does this mean the treatment has no effect on anyone?</p>
-<p>Not necessarily. The average treatment effect can be zero even when there are large individual effects, as long as beneficial effects for some individuals are balanced by harmful effects for others.</p>
-<div id="def-effect-modification" class="theorem definition">
-<p><span class="theorem-title"><strong>Definition 1 (Effect Modification)</strong></span> <strong>Effect modification</strong> (also called <strong>heterogeneity of treatment effects</strong>) is present when the average causal effect of treatment differs across levels of another variable <span class="math inline">\(V\)</span>.</p>
-<p>For a binary modifier <span class="math inline">\(V\)</span>, effect modification exists when:</p>
-<p><span class="math display">\[\text{E}{\left[Y^{a=1} - Y^{a=0} | V = 1\right]} \neq \text{E}{\left[Y^{a=1} - Y^{a=0} | V = 0\right]}\]</span></p>
-</div>
-</section>
-<section id="example-effect-modification-by-sex" class="slide level2">
-<h2>Example: Effect Modification by Sex</h2>
-<p>Suppose in Zeus’s family:</p>
-<ul>
-<li>Among males: <span class="math inline">\(\text{E}{\left[Y^{a=1} - Y^{a=0} | \text{Sex} = \text{male}\right]} = -0.3\)</span> (benefit from transplant)</li>
-<li>Among females: <span class="math inline">\(\text{E}{\left[Y^{a=1} - Y^{a=0} | \text{Sex} = \text{female}\right]} = +0.3\)</span> (harm from transplant)</li>
-</ul>
-<p>The average effect across the whole family is zero, but there is strong effect modification by sex. The treatment has opposite effects in males and females.</p>
+<p>Table 4.1 is Table 1.1 (the counterfactual outcomes in Zeus’s family) plus an indicator <span class="math inline">\(V\)</span> for sex: <span class="math inline">\(V = 1\)</span> for women, <span class="math inline">\(V = 0\)</span> for men.</p>
+<table class="caption-top">
+<colgroup>
+<col style="width: 9%">
+<col style="width: 7%">
+<col style="width: 16%">
+<col style="width: 16%">
+<col style="width: 9%">
+<col style="width: 7%">
+<col style="width: 16%">
+<col style="width: 16%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Name</th>
+<th><span class="math inline">\(V\)</span></th>
+<th><span class="math inline">\(Y^{a=0}\)</span></th>
+<th><span class="math inline">\(Y^{a=1}\)</span></th>
+<th>Name</th>
+<th><span class="math inline">\(V\)</span></th>
+<th><span class="math inline">\(Y^{a=0}\)</span></th>
+<th><span class="math inline">\(Y^{a=1}\)</span></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Rheia</td>
+<td>1</td>
+<td>0</td>
+<td>1</td>
+<td>Kronos</td>
+<td>0</td>
+<td>1</td>
+<td>0</td>
+</tr>
+<tr class="even">
+<td>Demeter</td>
+<td>1</td>
+<td>0</td>
+<td>0</td>
+<td>Hades</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+</tr>
+<tr class="odd">
+<td>Hestia</td>
+<td>1</td>
+<td>0</td>
+<td>0</td>
+<td>Poseidon</td>
+<td>0</td>
+<td>1</td>
+<td>0</td>
+</tr>
+<tr class="even">
+<td>Hera</td>
+<td>1</td>
+<td>0</td>
+<td>0</td>
+<td>Zeus</td>
+<td>0</td>
+<td>0</td>
+<td>1</td>
+</tr>
+<tr class="odd">
+<td>Artemis</td>
+<td>1</td>
+<td>1</td>
+<td>1</td>
+<td>Apollo</td>
+<td>0</td>
+<td>1</td>
+<td>0</td>
+</tr>
+<tr class="even">
+<td>Leto</td>
+<td>1</td>
+<td>0</td>
+<td>1</td>
+<td>Ares</td>
+<td>0</td>
+<td>1</td>
+<td>1</td>
+</tr>
+<tr class="odd">
+<td>Athena</td>
+<td>1</td>
+<td>1</td>
+<td>1</td>
+<td>Hephaestus</td>
+<td>0</td>
+<td>0</td>
+<td>1</td>
+</tr>
+<tr class="even">
+<td>Aphrodite</td>
+<td>1</td>
+<td>0</td>
+<td>1</td>
+<td>Polyphemus</td>
+<td>0</td>
+<td>0</td>
+<td>1</td>
+</tr>
+<tr class="odd">
+<td>Persephone</td>
+<td>1</td>
+<td>1</td>
+<td>1</td>
+<td>Hermes</td>
+<td>0</td>
+<td>1</td>
+<td>0</td>
+</tr>
+<tr class="even">
+<td>Hebe</td>
+<td>1</td>
+<td>1</td>
+<td>0</td>
+<td>Dionysus</td>
+<td>0</td>
+<td>1</td>
+<td>0</td>
+</tr>
+</tbody>
+</table>
 <aside class="notes">
-<p><strong>Important terminology</strong>:</p>
+<p>In the whole population, <span class="math inline">\(\Pr[Y^{a=1} = 1] = 10/20 = 0.5\)</span> and <span class="math inline">\(\Pr[Y^{a=0} = 1] = 10/20 = 0.5\)</span>, so the causal risk ratio is 1 and the causal risk difference is 0 (Chapter 1). The book notes that calling these deities “women” and “men” is a slight abuse of terms.</p>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside>
+</section>
+<section class="slide level2">
+
+<div id="exm-sex-specific-effects" class="theorem example">
+<p><span class="theorem-title"><strong>Example 1 (Sex-specific effects in Table 4.1)</strong></span> <strong>Women</strong> (<span class="math inline">\(V = 1\)</span>, first 10 rows):</p>
 <ul>
-<li><span class="math inline">\(V\)</span> is called an <strong>effect modifier</strong> or <strong>modifier</strong></li>
-<li>The causal effect <strong>varies</strong> or is <strong>heterogeneous</strong> across levels of <span class="math inline">\(V\)</span></li>
-<li>Effect modification is a <strong>property of the population</strong>, not of individuals</li>
+<li><span class="math inline">\(\Pr[Y^{a=1} = 1 \mid V = 1] = 6/10 = 0.6\)</span> and <span class="math inline">\(\Pr[Y^{a=0} = 1 \mid V = 1] = 4/10 = 0.4\)</span></li>
+<li>causal risk ratio <span class="math inline">\(0.6/0.4 = 1.5\)</span>; causal risk difference <span class="math inline">\(0.6 - 0.4 = 0.2\)</span>: transplant <strong>increases</strong> risk.</li>
 </ul>
-<p><strong>Notation</strong>: We write <span class="math inline">\(\text{E}{\left[Y^{a=1} - Y^{a=0} | V = v\right]}\)</span> to denote the average causal effect in the subpopulation with <span class="math inline">\(V = v\)</span>. This is a <strong>conditional average treatment effect</strong>.</p>
+<p><strong>Men</strong> (<span class="math inline">\(V = 0\)</span>, last 10 rows):</p>
+<ul>
+<li><span class="math inline">\(\Pr[Y^{a=1} = 1 \mid V = 0] = 4/10 = 0.4\)</span> and <span class="math inline">\(\Pr[Y^{a=0} = 1 \mid V = 0] = 6/10 = 0.6\)</span></li>
+<li>causal risk ratio <span class="math inline">\(0.4/0.6 = 2/3\)</span>; causal risk difference <span class="math inline">\(0.4 - 0.6 = -0.2\)</span>: transplant <strong>decreases</strong> risk.</li>
+</ul>
+</div>
+<p>A null average effect in the population does not imply a null effect in every subset. Here the two sex-specific effects are equal in magnitude, opposite in sign, and each sex is 50% of the population, so they cancel exactly.</p>
+<aside class="notes">
+<p>Exact cancellation is probably rare, but heterogeneity of individual effects is often expected because individuals differ in their susceptibility to treatment. The exception is the <strong>sharp causal null hypothesis</strong>: if the effect is null for every individual, the average effect in every subset is null too, and there is no heterogeneity.</p>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside>
+</section>
+<section id="effect-modification" class="slide level2">
+<h2>Effect modification</h2>
+</section>
+<section class="slide level2">
+
+<div id="def-effect-modification" class="theorem definition">
+<p><span class="theorem-title"><strong>Definition 1 (Effect modifier)</strong></span> <span class="math inline">\(V\)</span> is a <strong>modifier</strong> of the effect of <span class="math inline">\(A\)</span> on <span class="math inline">\(Y\)</span> when the average causal effect of <span class="math inline">\(A\)</span> on <span class="math inline">\(Y\)</span> varies across levels of <span class="math inline">\(V\)</span>. For binary <span class="math inline">\(V\)</span>:</p>
+<ul>
+<li><strong>additive</strong> effect modification: <span class="math inline">\(\text{E}{\left[Y^{a=1} - Y^{a=0} \mid V = 1\right]} \neq \text{E}{\left[Y^{a=1} - Y^{a=0} \mid V = 0\right]}\)</span></li>
+<li><strong>multiplicative</strong> effect modification: <span class="math inline">\(\dfrac{\text{E}{\left[Y^{a=1} \mid V = 1\right]}}{\text{E}{\left[Y^{a=0} \mid V = 1\right]}} \neq \dfrac{\text{E}{\left[Y^{a=1} \mid V = 0\right]}}{\text{E}{\left[Y^{a=0} \mid V = 0\right]}}\)</span></li>
+</ul>
+<p>Only variables <span class="math inline">\(V\)</span> not affected by treatment <span class="math inline">\(A\)</span> are considered as effect modifiers.</p>
+</div>
+<p>In Table 4.1, sex modifies the effect on both scales, and the effects in the two strata go in <strong>opposite directions</strong>: this is <strong>qualitative</strong> effect modification.</p>
+<aside class="notes">
+<p>The book does not consider effect modification on the odds ratio scale, because the odds ratio is rarely, if ever, the parameter of interest for causal inference (see also Fine Point 4.3). Section 6.6 gives a structural classification of effect modifiers.</p>
 <style type="text/css">
         span.MJX_Assistive_MathML {
           position:absolute!important;
@@ -231,166 +393,78 @@
       }</style></aside>
 </section>
 <section id="effect-modification-depends-on-the-scale" class="slide level2">
-<h2>Effect Modification Depends on the Scale</h2>
-<p>Whether effect modification exists can depend on the <strong>scale</strong> (measure) used:</p>
-<ul>
-<li><strong>Risk difference scale</strong>: <span class="math inline">\(\text{E}{\left[Y^{a=1} | V\right]} - \text{E}{\left[Y^{a=0} | V\right]}\)</span></li>
-<li><strong>Risk ratio scale</strong>: <span class="math inline">\(\text{E}{\left[Y^{a=1} | V\right]} / \text{E}{\left[Y^{a=0} | V\right]}\)</span></li>
-</ul>
-<div id="exm-scale-dependent" class="theorem example">
-<p><span class="theorem-title"><strong>Example 1 (Scale-Dependent Effect Modification)</strong></span> Suppose:</p>
-<ul>
-<li>When <span class="math inline">\(V = 0\)</span>: <span class="math inline">\(\text{E}{\left[Y^{a=1}\right]} = 0.2\)</span>, <span class="math inline">\(\text{E}{\left[Y^{a=0}\right]} = 0.1\)</span></li>
-<li>When <span class="math inline">\(V = 1\)</span>: <span class="math inline">\(\text{E}{\left[Y^{a=1}\right]} = 0.4\)</span>, <span class="math inline">\(\text{E}{\left[Y^{a=0}\right]} = 0.2\)</span></li>
-</ul>
-<p><strong>Risk difference</strong>:</p>
-<ul>
-<li>When <span class="math inline">\(V = 0\)</span>: <span class="math inline">\(0.2 - 0.1 = 0.1\)</span></li>
-<li>When <span class="math inline">\(V = 1\)</span>: <span class="math inline">\(0.4 - 0.2 = 0.2\)</span></li>
-</ul>
-<p>There is effect modification on the risk difference scale (effect is 0.1 in one group, 0.2 in the other).</p>
-<p><strong>Risk ratio</strong>:</p>
-<ul>
-<li>When <span class="math inline">\(V = 0\)</span>: <span class="math inline">\(0.2 / 0.1 = 2.0\)</span></li>
-<li>When <span class="math inline">\(V = 1\)</span>: <span class="math inline">\(0.4 / 0.2 = 2.0\)</span></li>
-</ul>
-<p>There is NO effect modification on the risk ratio scale (effect is 2.0 in both groups).</p>
+<h2>Effect modification depends on the scale</h2>
+</section>
+<section class="slide level2">
+
+<p>With qualitative effect modification, additive implies multiplicative effect modification and vice versa. Without it, there can be modification on one scale but not the other.</p>
+<div id="exm-multiplicative-not-additive" class="theorem example">
+<p><span class="theorem-title"><strong>Example 2 (Multiplicative but not additive effect modification)</strong></span> In a second study:</p>
+<table class="caption-top">
+<colgroup>
+<col style="width: 20%">
+<col style="width: 20%">
+<col style="width: 20%">
+<col style="width: 20%">
+<col style="width: 20%">
+</colgroup>
+<thead>
+<tr class="header">
+<th></th>
+<th><span class="math inline">\(\Pr[Y^{a=0} = 1 \mid V = v]\)</span></th>
+<th><span class="math inline">\(\Pr[Y^{a=1} = 1 \mid V = v]\)</span></th>
+<th>risk difference</th>
+<th>risk ratio</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><span class="math inline">\(V = 1\)</span></td>
+<td>0.8</td>
+<td>0.9</td>
+<td><span class="math inline">\(0.9 - 0.8 = 0.1\)</span></td>
+<td><span class="math inline">\(0.9/0.8 = 1.125\)</span></td>
+</tr>
+<tr class="even">
+<td><span class="math inline">\(V = 0\)</span></td>
+<td>0.1</td>
+<td>0.2</td>
+<td><span class="math inline">\(0.2 - 0.1 = 0.1\)</span></td>
+<td><span class="math inline">\(0.2/0.1 = 2\)</span></td>
+</tr>
+</tbody>
+</table>
+<p>The risk differences are equal (no additive effect modification), but the risk ratios differ (multiplicative effect modification).</p>
 </div>
-<aside class="notes">
-<p>This example shows that effect modification is <strong>measure-dependent</strong>. The same data can show:</p>
-<ul>
-<li>Effect modification on one scale (risk difference)</li>
-<li>No effect modification on another scale (risk ratio)</li>
-</ul>
-<p><strong>Which scale should we use?</strong></p>
-<ul>
-<li>From a <strong>biological/mechanistic</strong> perspective, one scale may be more natural</li>
-<li>From a <strong>public health</strong> perspective, risk differences are often most relevant</li>
-<li>There is no single “correct” answer—the choice depends on the scientific question</li>
-</ul>
-<p>This highlights that effect modification is not simply a yes/no property, but depends on how we measure effects.</p>
-<style type="text/css">
-        span.MJX_Assistive_MathML {
-          position:absolute!important;
-          clip: rect(1px, 1px, 1px, 1px);
-          padding: 1px 0 0 0!important;
-          border: 0!important;
-          height: 1px!important;
-          width: 1px!important;
-          overflow: hidden!important;
-          display:block!important;
-      }</style></aside>
+<p>Because “effect modification” means nothing without naming the effect measure, some authors say <strong>effect-measure modification</strong> instead.</p>
 </section></section>
 <section>
-<section id="stratification-to-identify-effect-modification-pp.-39-41" class="title-slide slide level1 center" data-number="2">
-<h1><span class="header-section-number">2</span> 4.2 Stratification to Identify Effect Modification (pp.&nbsp;39-41)</h1>
+<section id="stratification-to-identify-effect-modification-pp.-49-51" class="title-slide slide level1 center" data-number="2">
+<h1><span class="header-section-number">2</span> 4.2 Stratification to Identify Effect Modification (pp.&nbsp;49-51)</h1>
 
 </section>
 <section class="slide level2">
 
-<p>The standard approach to identify effect modification is <strong>stratification</strong>: estimate the treatment effect separately within levels (strata) of the modifier variable <span class="math inline">\(V\)</span>.</p>
+<p>A <strong>stratified analysis</strong> is the natural way to identify effect modification by measured variables: compute the effect of <span class="math inline">\(A\)</span> on <span class="math inline">\(Y\)</span> in each level (stratum) of <span class="math inline">\(V\)</span>. For dichotomous <span class="math inline">\(V\)</span>, the stratified causal risk differences are</p>
+<p><span class="math display">\[
+\Pr[Y^{a=1} = 1 \mid V = 1] - \Pr[Y^{a=0} = 1 \mid V = 1]
+\quad\text{and}\quad
+\Pr[Y^{a=1} = 1 \mid V = 0] - \Pr[Y^{a=0} = 1 \mid V = 0].
+\]</span></p>
+<p>In real data we see <span class="math inline">\(A\)</span> and <span class="math inline">\(Y\)</span>, not <span class="math inline">\(Y^{a=1}\)</span> and <span class="math inline">\(Y^{a=0}\)</span>. How we stratify depends on the design.</p>
 </section>
-<section id="stratified-analysis" class="slide level2 scrollable">
-<h2>Stratified Analysis</h2>
-<p>To detect effect modification by variable <span class="math inline">\(V\)</span>:</p>
-<ol type="1">
-<li>Divide the population into strata defined by <span class="math inline">\(V\)</span> (e.g., males and females)</li>
-<li>Estimate the average causal effect within each stratum</li>
-<li>Compare effects across strata</li>
-</ol>
-<p>If effects differ across strata, <span class="math inline">\(V\)</span> is an effect modifier.</p>
-<div id="exm-stratification" class="theorem example">
-<p><span class="theorem-title"><strong>Example 2 (Stratified Analysis Example)</strong></span> Using data from a randomized trial of heart transplant in Zeus’s family:</p>
-<p><strong>Stratum 1 (Males)</strong>:</p>
-<ul>
-<li>Risk in treated: <span class="math inline">\(\Pr[Y = 1 | A = 1, V = \text{male}] = 0.40\)</span></li>
-<li>Risk in untreated: <span class="math inline">\(\Pr[Y = 1 | A = 0, V = \text{male}] = 0.70\)</span></li>
-<li>Risk difference: <span class="math inline">\(0.40 - 0.70 = -0.30\)</span> (benefit)</li>
-</ul>
-<p><strong>Stratum 2 (Females)</strong>:</p>
-<ul>
-<li>Risk in treated: <span class="math inline">\(\Pr[Y = 1 | A = 1, V = \text{female}] = 0.65\)</span></li>
-<li>Risk in untreated: <span class="math inline">\(\Pr[Y = 1 | A = 0, V = \text{female}] = 0.35\)</span></li>
-<li>Risk difference: <span class="math inline">\(0.65 - 0.35 = +0.30\)</span> (harm)</li>
-</ul>
-<p>Since <span class="math inline">\(-0.30 \neq +0.30\)</span>, there is effect modification by sex.</p>
-</div>
-<aside class="notes">
-<p><strong>Key points about stratification</strong>:</p>
-<ol type="1">
-<li><p><strong>Randomized experiments</strong>: In a randomized experiment, stratification by any baseline variable <span class="math inline">\(V\)</span> yields valid estimates of stratum-specific causal effects (because randomization ensures exchangeability within each stratum).</p></li>
-<li><p><strong>Observational studies</strong>: In observational studies, stratification by <span class="math inline">\(V\)</span> only yields valid estimates if:</p>
-<ul>
-<li>We also adjust for all confounders</li>
-<li>Confounders may differ across strata of <span class="math inline">\(V\)</span></li>
-</ul></li>
-<li><p><strong>Multiple modifiers</strong>: We can stratify by multiple variables simultaneously (e.g., sex and age), but:</p>
-<ul>
-<li>The number of strata grows quickly (e.g., 2 sexes × 4 age groups = 8 strata)</li>
-<li>Sample sizes within strata may become small</li>
-<li>This is sometimes called <strong>fine stratification</strong></li>
-</ul></li>
-<li><p><strong>Statistical testing</strong>: Formal statistical tests can assess whether observed differences across strata are consistent with chance (e.g., interaction tests in regression). However, lack of statistical significance does not mean absence of effect modification—it may simply reflect lack of power.</p></li>
-</ol>
-<style type="text/css">
-        span.MJX_Assistive_MathML {
-          position:absolute!important;
-          clip: rect(1px, 1px, 1px, 1px);
-          padding: 1px 0 0 0!important;
-          border: 0!important;
-          height: 1px!important;
-          width: 1px!important;
-          overflow: hidden!important;
-          display:block!important;
-      }</style></aside>
-</section></section>
-<section>
-<section id="why-care-about-effect-modification-pp.-41-42" class="title-slide slide level1 center" data-number="3">
-<h1><span class="header-section-number">3</span> 4.3 Why Care About Effect Modification (pp.&nbsp;41-42)</h1>
-
+<section id="marginally-randomized-experiments" class="slide level2">
+<h2>Marginally randomized experiments</h2>
 </section>
 <section class="slide level2">
 
-<p>Why is identifying effect modification important?</p>
-</section>
-<section id="improving-precision-of-effect-estimates" class="slide level2">
-<h2>1. Improving Precision of Effect Estimates</h2>
-<p>If treatment effects vary substantially across subgroups, reporting only an average effect can be misleading. Stratum-specific estimates provide more precise information about who benefits from treatment.</p>
-</section>
-<section id="targeting-interventions" class="slide level2">
-<h2>2. Targeting Interventions</h2>
-<p>When effect modification exists, we can:</p>
-<ul>
-<li>Target treatment to subgroups that benefit most</li>
-<li>Avoid treating subgroups that experience harm</li>
-<li>Allocate limited resources more efficiently</li>
-</ul>
-<div id="exm-precision-medicine" class="theorem example">
-<p><span class="theorem-title"><strong>Example 3 (Precision Medicine Example)</strong></span> If genetic testing reveals that a drug benefits patients with genotype AA but harms patients with genotype BB, we should:</p>
-<ul>
-<li>Prescribe the drug only to AA patients</li>
-<li>Use alternative treatments for BB patients</li>
-</ul>
-<p>This is the foundation of <strong>precision medicine</strong> or <strong>personalized medicine</strong>.</p>
-</div>
-</section>
-<section id="understanding-mechanisms" class="slide level2">
-<h2>3. Understanding Mechanisms</h2>
-<p>Effect modification can provide clues about biological or social mechanisms:</p>
-<ul>
-<li>If an effect is modified by sex, hormones may play a role</li>
-<li>If an effect is modified by age, developmental processes may be involved</li>
-<li>If an effect is modified by socioeconomic status, access or adherence may matter</li>
-</ul>
+<p>If treatment is randomly and unconditionally assigned, exchangeability is expected in <strong>every subset</strong> of the population. So within each stratum the associational risk difference equals the causal one, e.g.,</p>
+<p><span class="math display">\[
+\Pr[Y = 1 \mid A = 1, V = 1] - \Pr[Y = 1 \mid A = 0, V = 1] = \Pr[Y^{a=1} = 1 \mid V = 1] - \Pr[Y^{a=0} = 1 \mid V = 1],
+\]</span></p>
+<p>and a stratified analysis of association measures identifies effect modification.</p>
 <aside class="notes">
-<p><strong>Caution</strong>: Effect modification is <strong>descriptive</strong>, not <strong>mechanistic</strong>. Just because <span class="math inline">\(V\)</span> modifies the effect of <span class="math inline">\(A\)</span> on <span class="math inline">\(Y\)</span> does not necessarily mean <span class="math inline">\(V\)</span> is part of the causal mechanism. There may be other variables correlated with <span class="math inline">\(V\)</span> that are the true modifiers.</p>
-<p><strong>Example</strong>: Suppose the effect of a drug is modified by zip code. This doesn’t mean zip code <em>causes</em> differential effects. Rather, zip code may be a proxy for socioeconomic status, healthcare access, environmental exposures, etc.</p>
-<p>To understand mechanisms, we need:</p>
-<ul>
-<li>Subject-matter knowledge</li>
-<li>Careful measurement of mechanistic variables</li>
-<li>Additional assumptions (sometimes formalized using mediation analysis, covered in later chapters)</li>
-</ul>
+<p>Stratification yields average effects in subsets of the population, not individual effects (Fine Points 2.1 and 3.2).</p>
 <style type="text/css">
         span.MJX_Assistive_MathML {
           position:absolute!important;
@@ -402,61 +476,432 @@
           overflow: hidden!important;
           display:block!important;
       }</style></aside>
+</section>
+<section id="conditionally-randomized-experiments-greeks-and-romans" class="slide level2">
+<h2>Conditionally randomized experiments: Greeks and Romans</h2>
+</section>
+<section class="slide level2">
+
+<p>A population of 40: transplant <span class="math inline">\(A\)</span> randomly assigned with probability 0.75 if in severe condition (<span class="math inline">\(L = 1\)</span>) and 0.50 otherwise (<span class="math inline">\(L = 0\)</span>). Nationality <span class="math inline">\(V\)</span>: 20 Greeks (<span class="math inline">\(V = 1\)</span>, data in Table 3.1) and 20 Romans (<span class="math inline">\(V = 0\)</span>, Table 4.2).</p>
+<p><strong>Table 4.2</strong> (Romans, <span class="math inline">\(V = 0\)</span>)</p>
+<table class="caption-top">
+<thead>
+<tr class="header">
+<th>Name</th>
+<th><span class="math inline">\(L\)</span></th>
+<th><span class="math inline">\(A\)</span></th>
+<th><span class="math inline">\(Y\)</span></th>
+<th>Name</th>
+<th><span class="math inline">\(L\)</span></th>
+<th><span class="math inline">\(A\)</span></th>
+<th><span class="math inline">\(Y\)</span></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Cybele</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>Latona</td>
+<td>1</td>
+<td>0</td>
+<td>0</td>
+</tr>
+<tr class="even">
+<td>Saturn</td>
+<td>0</td>
+<td>0</td>
+<td>1</td>
+<td>Mars</td>
+<td>1</td>
+<td>1</td>
+<td>1</td>
+</tr>
+<tr class="odd">
+<td>Ceres</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>Minerva</td>
+<td>1</td>
+<td>1</td>
+<td>1</td>
+</tr>
+<tr class="even">
+<td>Pluto</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>Vulcan</td>
+<td>1</td>
+<td>1</td>
+<td>1</td>
+</tr>
+<tr class="odd">
+<td>Vesta</td>
+<td>0</td>
+<td>1</td>
+<td>0</td>
+<td>Venus</td>
+<td>1</td>
+<td>1</td>
+<td>1</td>
+</tr>
+<tr class="even">
+<td>Neptune</td>
+<td>0</td>
+<td>1</td>
+<td>0</td>
+<td>Seneca</td>
+<td>1</td>
+<td>1</td>
+<td>1</td>
+</tr>
+<tr class="odd">
+<td>Juno</td>
+<td>0</td>
+<td>1</td>
+<td>1</td>
+<td>Proserpina</td>
+<td>1</td>
+<td>1</td>
+<td>1</td>
+</tr>
+<tr class="even">
+<td>Jupiter</td>
+<td>0</td>
+<td>1</td>
+<td>1</td>
+<td>Mercury</td>
+<td>1</td>
+<td>1</td>
+<td>0</td>
+</tr>
+<tr class="odd">
+<td>Diana</td>
+<td>1</td>
+<td>0</td>
+<td>0</td>
+<td>Juventas</td>
+<td>1</td>
+<td>1</td>
+<td>0</td>
+</tr>
+<tr class="even">
+<td>Phoebus</td>
+<td>1</td>
+<td>0</td>
+<td>1</td>
+<td>Bacchus</td>
+<td>1</td>
+<td>1</td>
+<td>0</td>
+</tr>
+</tbody>
+</table>
+<p>In the whole population of 40, <span class="math inline">\(\Pr[Y^{a=1} = 1] = 0.55\)</span> and <span class="math inline">\(\Pr[Y^{a=0} = 1] = 0.40\)</span>: a risk difference of <span class="math inline">\(0.15\)</span> and a risk ratio of <span class="math inline">\(0.55/0.40 = 1.375\)</span>.</p>
+<aside class="notes">
+<p>The calculation is the same if the data came from an observational study in which we believe <span class="math inline">\(Y^a \perp\!\!\!\perp A \mid L\)</span> holds (Chapter 3).</p>
+<p>The book leaves these risks to the reader. Pooling Greeks and Romans: 16 individuals have <span class="math inline">\(L = 0\)</span> and 24 have <span class="math inline">\(L = 1\)</span>, so <span class="math inline">\(\Pr[L = 0] = 0.4\)</span> and <span class="math inline">\(\Pr[L = 1] = 0.6\)</span>. The stratum-specific risks are <span class="math inline">\(\Pr[Y = 1 \mid A = 1, L = 0] = 3/8\)</span>, <span class="math inline">\(\Pr[Y = 1 \mid A = 1, L = 1] = 12/18 = 2/3\)</span>, <span class="math inline">\(\Pr[Y = 1 \mid A = 0, L = 0] = 2/8\)</span>, and <span class="math inline">\(\Pr[Y = 1 \mid A = 0, L = 1] = 3/6\)</span>. Standardizing,</p>
+<p><span class="math display">\[
+\begin{aligned}
+\Pr[Y^{a=1} = 1] &amp;= (3/8)(0.4) + (2/3)(0.6) = 0.15 + 0.40 = 0.55, \\
+\Pr[Y^{a=0} = 1] &amp;= (2/8)(0.4) + (3/6)(0.6) = 0.10 + 0.30 = 0.40.
+\end{aligned}
+\]</span></p>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside>
+</section>
+<section class="slide level2 scrollable">
+
+<p>To estimate <span class="math inline">\(\Pr[Y^{a} = 1 \mid V = v]\)</span> in each stratum, use two stages:</p>
+<ol type="1">
+<li><strong>stratify</strong> by <span class="math inline">\(V\)</span>;</li>
+<li><strong>standardize</strong> by <span class="math inline">\(L\)</span> (or, equivalently, IP weight with weights depending on <span class="math inline">\(L\)</span>) within each stratum.</li>
+</ol>
+<p>Step 2 can be skipped when <span class="math inline">\(V\)</span> is itself the set of variables needed for conditional exchangeability (Section 4.4).</p>
+<div id="exm-greeks-romans" class="theorem example">
+<p><span class="theorem-title"><strong>Example 3 (Effect modification by nationality)</strong></span> <strong>Greeks</strong> (<span class="math inline">\(V = 1\)</span>): as computed in Chapter 2, causal risk difference 0, risk ratio 1.</p>
+<p><strong>Romans</strong> (<span class="math inline">\(V = 0\)</span>): from Table 4.2, 8 Romans have <span class="math inline">\(L = 0\)</span> and 12 have <span class="math inline">\(L = 1\)</span>, so <span class="math inline">\(\Pr[L = 0 \mid V = 0] = 0.4\)</span> and <span class="math inline">\(\Pr[L = 1 \mid V = 0] = 0.6\)</span>, and</p>
+<p><span class="math display">\[
+\begin{aligned}
+\Pr[Y^{a=1} = 1 \mid V = 0] &amp;= \Pr[Y = 1 \mid A = 1, L = 0, V = 0](0.4) + \Pr[Y = 1 \mid A = 1, L = 1, V = 0](0.6) \\
+&amp;= (2/4)(0.4) + (6/9)(0.6) = 0.2 + 0.4 = 0.6, \\
+\Pr[Y^{a=0} = 1 \mid V = 0] &amp;= \Pr[Y = 1 \mid A = 0, L = 0, V = 0](0.4) + \Pr[Y = 1 \mid A = 0, L = 1, V = 0](0.6) \\
+&amp;= (1/4)(0.4) + (1/3)(0.6) = 0.1 + 0.2 = 0.3.
+\end{aligned}
+\]</span></p>
+<p>Causal risk difference <span class="math inline">\(0.6 - 0.3 = 0.3\)</span>, risk ratio <span class="math inline">\(0.6/0.3 = 2\)</span>.</p>
+<p>The effects differ between strata, so nationality modifies the effect on both the additive and multiplicative scales. The modification is <strong>not qualitative</strong>: the effect is harmful or null in both strata.</p>
+</div>
+</section>
+<section id="surrogate-and-causal-effect-modifiers" class="slide level2">
+<h2>Surrogate and causal effect modifiers</h2>
+</section>
+<section class="slide level2">
+
+<p>Nationality may only be a <strong>marker</strong> for the factor truly responsible. If heart surgery is better in Greece than in Rome, an intervention that improved surgery in Rome could remove the modification by passport-defined nationality.</p>
+<ul>
+<li><strong>surrogate effect modifier</strong>: nationality</li>
+<li><strong>causal effect modifier</strong>: quality of care</li>
+</ul>
+<p>“Effect modification by <span class="math inline">\(V\)</span>” does not imply that <span class="math inline">\(V\)</span> plays a causal role; some authors prefer the more neutral “effect heterogeneity across strata of <span class="math inline">\(V\)</span>”. Chapter 5’s <strong>interaction</strong> does attribute a causal role to the variables involved.</p>
+<div title="Fine Point 4.1: Effect in the treated">
+<div class="callout callout-note callout-titled callout-style-default">
+<div class="callout-body">
+<div class="callout-title">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<p><strong>Fine Point 4.1: Effect in the treated</strong></p>
+</div>
+<div class="callout-content">
+<p>The average causal effect can also be defined in one particular subset, the treated (<span class="math inline">\(A = 1\)</span>). By consistency, the average causal effect in the treated is non-null if</p>
+<p><span class="math display">\[\Pr[Y = 1 \mid A = 1] \neq \Pr[Y^{a=0} = 1 \mid A = 1].\]</span></p>
+<p>The causal risk difference in the treated is <span class="math inline">\(\Pr[Y = 1 \mid A = 1] - \Pr[Y^{a=0} = 1 \mid A = 1]\)</span>, and the causal risk ratio in the treated, also called the <strong>standardized morbidity ratio (SMR)</strong>, is <span class="math inline">\(\Pr[Y = 1 \mid A = 1] / \Pr[Y^{a=0} = 1 \mid A = 1]\)</span>; effects in the untreated replace <span class="math inline">\(A = 1\)</span> by <span class="math inline">\(A = 0\)</span> (book Figure 4.1).</p>
+<p>The effect in the treated differs from the population effect if the distribution of individual effects differs between treated and untreated. Treatment group then acts as a marker for the true modifiers, but we would not say the effect of <span class="math inline">\(A\)</span> is “modified by <span class="math inline">\(A\)</span>”; the modification is by unidentified variables distributed differently between treatment groups. The book focuses on population effects because effects in the treated or untreated do not generalize directly to time-varying treatments (Part III).</p>
+</div>
+</div>
+</div>
+</div>
 </section></section>
 <section>
-<section id="stratification-as-a-form-of-adjustment-pp.-42-43" class="title-slide slide level1 center" data-number="4">
-<h1><span class="header-section-number">4</span> 4.4 Stratification as a Form of Adjustment (pp.&nbsp;42-43)</h1>
+<section id="why-care-about-effect-modification-pp.-51-53" class="title-slide slide level1 center" data-number="3">
+<h1><span class="header-section-number">3</span> 4.3 Why Care About Effect Modification (pp.&nbsp;51-53)</h1>
 
 </section>
 <section class="slide level2 scrollable">
 
-<p>Stratification serves two related but distinct purposes:</p>
+<p>Reasons to identify effect modification, and to collect pre-treatment descriptors <span class="math inline">\(V\)</span> even in randomized experiments:</p>
 <ol type="1">
-<li><strong>Identifying effect modification</strong>: Are effects different across strata of <span class="math inline">\(V\)</span>?</li>
-<li><strong>Controlling for confounding</strong>: Is <span class="math inline">\(V\)</span> a confounder that biases the marginal (unstratified) effect?</li>
+<li>the average effect <strong>differs between populations</strong> with different prevalence of <span class="math inline">\(V\)</span> (transportability);</li>
+<li>it identifies <strong>who would benefit most</strong> from an intervention;</li>
+<li>it may help understand <strong>mechanisms</strong>.</li>
 </ol>
-<p>These are different scientific questions with different implications.</p>
-<div id="def-confounder-vs-modifier" class="theorem definition">
-<p><span class="theorem-title"><strong>Definition 2 (Confounder vs.&nbsp;Effect Modifier)</strong></span> &nbsp;</p>
-<ul>
-<li>A <strong>confounder</strong> is a variable that, if not adjusted for, biases the estimate of the average causal effect</li>
-<li>An <strong>effect modifier</strong> is a variable across which the causal effect differs</li>
-</ul>
-<p>A variable can be:</p>
-<ul>
-<li>A confounder only</li>
-<li>An effect modifier only<br>
-</li>
-<li>Both a confounder and effect modifier</li>
-<li>Neither</li>
-</ul>
-</div>
 </section>
-<section id="example-confounder-vs.-modifier" class="slide level2">
-<h2>Example: Confounder vs.&nbsp;Modifier</h2>
-<p><strong>Confounder only</strong>: Age affects both treatment and outcome, but the treatment effect is the same at all ages.</p>
+<section id="populations-with-different-mixes-of-modifiers" class="slide level2">
+<h2>1. Populations with different mixes of modifiers</h2>
+</section>
+<section class="slide level2">
+
+<p>In Table 4.1 the effect is harmful in women and beneficial in men, and the population effect is null only because each sex is 50%. In a population with more women (e.g., graduating college students), the average effect would be harmful.</p>
 <ul>
-<li>We must adjust for age to get an unbiased marginal effect</li>
-<li>But we don’t need to report age-specific effects (they’re all the same)</li>
+<li>With non-qualitative effect modification, the <strong>magnitude</strong> (but not the direction) of the average effect varies across populations, e.g., the effects of asbestos exposure (different in smokers and nonsmokers) or of universal health care (different in low- and high-income families).</li>
 </ul>
-<p><strong>Effect modifier only</strong>: In a randomized trial, sex does not confound (randomization handles that), but the treatment effect differs by sex.</p>
+<p>There is no such thing as “the average causal effect of <span class="math inline">\(A\)</span> on <span class="math inline">\(Y\)</span> (period)”, only “the average causal effect of <span class="math inline">\(A\)</span> on <span class="math inline">\(Y\)</span> in a population with a particular mix of causal effect modifiers.”</p>
+</section>
+<section id="transportability" class="slide level2">
+<h2>Transportability</h2>
+</section>
+<section class="slide level2">
+
+<p>Extrapolating an effect from one population to another is <strong>transportability</strong> (lack of it is sometimes called lack of external validity). The effect in the population of Greeks and Romans may not transport to a population with a different mix of sex and nationality.</p>
 <ul>
-<li>No need to adjust for confounding</li>
-<li>But we should report sex-specific effects</li>
-</ul>
-<p><strong>Both</strong>: In an observational study of surgery, age affects who gets surgery (confounding) and how well surgery works (effect modification).</p>
-<ul>
-<li>We must adjust for age</li>
-<li>We should report age-specific effects</li>
+<li>Conditional effects within strata of modifiers may transport better, but there is no guarantee: other unmeasured modifiers may be distributed differently.</li>
+<li>Those unmeasured modifiers are not variables needed for exchangeability; they are just risk factors for the outcome, about which we have much less information.</li>
+<li>So transportability is harder than identification within one population, and is an <strong>unverifiable assumption</strong> resting on subject-matter knowledge.</li>
 </ul>
 <aside class="notes">
-<p><strong>Key distinction</strong>:</p>
+<p>The book’s examples: most experts would agree that the health effects of raising a household’s annual income by $100 in Niger cannot be transported to the Netherlands, but that the effects of cholesterol-lowering drugs in Europeans can be transported to Canadians. Smith and Pell (2003) found no major modifiers of the effect of parachute use on death after “gravitational challenge”, so trials restricted to one group would not compromise transportability. The book cites Hernán and VanderWeele (2011), Pearl and Bareinboim (2014), and Dahabreh and Hernán (2019) on effect modification and transportability <span class="citation" data-cites="hernan2020causal">(<a href="#/references" role="doc-biblioref" onclick="">Hernán and Robins 2020, 52</a>)</span>.</p>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside>
+<div title="Fine Point 4.2: Transportability">
+<div class="callout callout-note callout-titled callout-style-default">
+<div class="callout-body">
+<div class="callout-title">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<p><strong>Fine Point 4.2: Transportability</strong></p>
+</div>
+<div class="callout-content">
+<p>Effects may be transported if the two populations are similar with respect to:</p>
 <ul>
-<li><strong>Confounding is a bias</strong> to be removed through adjustment</li>
-<li><strong>Effect modification is a finding</strong> to be reported and understood</li>
+<li><strong>effect modification</strong>: the distribution of effect modifiers;</li>
+<li><strong>the definition of treatment</strong>: different versions of treatment can have different effects;</li>
+<li><strong>interference</strong> (Fine Point 1.1): e.g., a socially active person may bring friends along to exercise, so contact patterns affect the magnitude of an exercise intervention’s effect.</li>
 </ul>
-<p>When a variable is both a confounder and an effect modifier: 1. We must adjust for it to eliminate bias 2. We should present stratum-specific effects (not just an overall adjusted effect)</p>
-<p><strong>Common mistake</strong>: Treating an effect modifier as if it were only a confounder, adjusting for it and reporting only an overall effect, thereby obscuring important heterogeneity.</p>
+<p>Stratum-specific effects can be combined in a weighted average to reconstruct the effect in a target population, with weights equal to the target population’s proportions in each stratum (e.g., Roman women, Greek women, Roman men, Greek men). The result still need not equal the true target effect because of unmeasured modifiers, interference patterns, and treatment definitions. Methods for transporting effects are discussed by Westreich et al.&nbsp;(2017), Rudolph and van der Laan (2017), and Dahabreh et al.&nbsp;(2020b).</p>
+</div>
+</div>
+</div>
+</div>
+<div title="Technical Point 4.1: Computing the effect in the treated">
+<div class="callout callout-note callout-titled callout-style-default">
+<div class="callout-body">
+<div class="callout-title">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<p><strong>Technical Point 4.1: Computing the effect in the treated</strong></p>
+</div>
+<div class="callout-content">
+<p>The population effect required <span class="math inline">\(Y^a \perp\!\!\!\perp A \mid L\)</span> for both <span class="math inline">\(a = 0\)</span> and <span class="math inline">\(a = 1\)</span>. The effect in the treated needs only <strong>partial exchangeability</strong> <span class="math inline">\(Y^{a=0} \perp\!\!\!\perp A \mid L\)</span>; the effect in the untreated needs only <span class="math inline">\(Y^{a=1} \perp\!\!\!\perp A \mid L\)</span>. Counterfactual means of the form <span class="math inline">\(\text{E}{\left[Y^a \mid A = a'\right]}\)</span> can be computed by</p>
+<ul>
+<li>standardization: <span class="math inline">\(\text{E}{\left[Y^a \mid A = a'\right]} = \sum_l \text{E}{\left[Y \mid A = a, L = l\right]} \Pr[L = l \mid A = a']\)</span>;</li>
+<li>IP weighting, with weights <span class="math inline">\(\Pr[A = a' \mid L] / f(A \mid L)\)</span>: <span class="math display">\[
+\text{E}{\left[Y^a \mid A = a'\right]} = \frac{\text{E}{\left[\dfrac{I(A = a)\, Y}{f(A \mid L)} \Pr[A = a' \mid L]\right]}}{\text{E}{\left[\dfrac{I(A = a)}{f(A \mid L)} \Pr[A = a' \mid L]\right]}}.
+\]</span> For dichotomous <span class="math inline">\(A\)</span>, this equality was derived by Sato and Matsuyama (2003).</li>
+</ul>
+</div>
+</div>
+</div>
+</div>
+</section>
+<section id="who-benefits-most" class="slide level2">
+<h2>2. Who benefits most</h2>
+</section>
+<section class="slide level2">
+
+<p>If physicians knew of the qualitative modification by sex in Table 4.1, then, lacking other information, they would treat the next patient only if he is a man.</p>
+<p>In the second study (<a href="#/exm-multiplicative-not-additive" class="quarto-xref">Example&nbsp;2</a>), treatment changes the risk by the same 0.1 in both strata, so treating everyone would change risk equally in both strata, despite the multiplicative effect modification.</p>
+<ul>
+<li><strong>Additive</strong>, not multiplicative, effect modification is the scale for identifying the groups that would benefit most from intervention.</li>
+<li>If there is a nonzero effect in at least one stratum and <span class="math inline">\(\Pr[Y^{a=0} = 1 \mid V = v]\)</span> varies with <span class="math inline">\(v\)</span>, effect modification is guaranteed on at least one of the two scales.</li>
+</ul>
+<aside class="notes">
+<p>Several authors (e.g., Blot and Day 1979; Rothman et al.&nbsp;1980; Saracci 1980) have called additive effect modification the scale of interest for public health.</p>
+<p>In the second study, multiplicative modification is expected: with <span class="math inline">\(\Pr[Y^{a=0} = 1 \mid V = 1] = 0.8\)</span>, the causal risk ratio in that stratum can be at most <span class="math inline">\(1/0.8 = 1.25\)</span>, so it must differ from the risk ratio of 2 in the <span class="math inline">\(V = 0\)</span> stratum. Multiplicative modification here arises from differences in the untreated risk across levels of <span class="math inline">\(V\)</span>. As a general rule, it is more informative to report the absolute counterfactual risks <span class="math inline">\(\Pr[Y^{a=1} = 1 \mid V = v]\)</span> and <span class="math inline">\(\Pr[Y^{a=0} = 1 \mid V = v]\)</span> in every stratum than only their ratio or difference.</p>
+<p>(The book’s text says that treatment “reduces” the risk by 10% in this example; in its numbers, 0.8 to 0.9 and 0.1 to 0.2, treatment increases the risk by 0.1 in both strata. The argument is unaffected.)</p>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside>
+</section>
+<section id="mechanisms" class="slide level2">
+<h2>3. Mechanisms</h2>
+</section>
+<section class="slide level2">
+
+<p>Effect modification may give clues about biological, social, or other mechanisms: for example, a greater risk of HIV infection in uncircumcised compared with circumcised men. It can also be a first step towards characterizing interactions between two treatments, a related but distinct causal concept (Chapter 5).</p>
+</section></section>
+<section>
+<section id="stratification-as-a-form-of-adjustment-pp.-53-55" class="title-slide slide level1 center" data-number="4">
+<h1><span class="header-section-number">4</span> 4.4 Stratification as a Form of Adjustment (pp.&nbsp;53-55)</h1>
+
+</section>
+<section class="slide level2">
+
+<p>Two different goals, two different tools:</p>
+<ul>
+<li><strong>standardization</strong> (or IP weighting) adjusts for the variables <span class="math inline">\(L\)</span> needed for conditional exchangeability;</li>
+<li><strong>stratification</strong> by <span class="math inline">\(V\)</span> identifies effect modification.</li>
+</ul>
+<p>In practice, stratification is often used <em>instead of</em> standardization to adjust for <span class="math inline">\(L\)</span>, so much so that many investigators treat “stratification” and “adjustment” as synonyms.</p>
+<div id="exm-stratified-adjustment" class="theorem example">
+<p><span class="theorem-title"><strong>Example 4 (Stratification as adjustment in Table 2.2)</strong></span> Asked to “adjust for <span class="math inline">\(L\)</span>”, an epidemiologist splits Table 2.2 (the same data as Table 3.1) into <span class="math inline">\(L = 0\)</span> and <span class="math inline">\(L = 1\)</span> and reports</p>
+<p><span class="math display">\[\Pr[Y = 1 \mid A = 1, L = l] / \Pr[Y = 1 \mid A = 0, L = l] = 1 \quad \text{for } l = 0, 1\]</span></p>
+<p>(<span class="math inline">\(1/4 \div 1/4\)</span> for <span class="math inline">\(l = 0\)</span> and <span class="math inline">\(2/3 \div 2/3\)</span> for <span class="math inline">\(l = 1\)</span>). Under <span class="math inline">\(Y^a \perp\!\!\!\perp A \mid L\)</span>, each is the causal risk ratio in its stratum, because then <span class="math inline">\(\Pr[Y = 1 \mid A = a, L = l] = \Pr[Y^a = 1 \mid L = l]\)</span>.</p>
+</div>
+</section>
+<section id="conditional-versus-marginal-effect-measures" class="slide level2">
+<h2>Conditional versus marginal effect measures</h2>
+</section>
+<section class="slide level2">
+
+<ul>
+<li>The two stratum-specific risk ratios are <strong>conditional</strong> effect measures; the risk ratio of 1 from Chapter 2 is a <strong>marginal</strong> (unconditional) one. All three equal 1 here only because <span class="math inline">\(L\)</span> does not modify the effect.</li>
+<li>Each stratum-specific measure describes a nonoverlapping subset; in general none of them is the population effect. That is why Chapter 2 used standardization and IP weighting rather than stratification.</li>
+<li>Stratification as adjustment must be done within <strong>every combination</strong> of the variables in <span class="math inline">\(L\)</span>: Romans with <span class="math inline">\(L = 1\)</span>, Greeks with <span class="math inline">\(L = 1\)</span>, Romans with <span class="math inline">\(L = 0\)</span>, Greeks with <span class="math inline">\(L = 0\)</span>. The association in the stratum <span class="math inline">\(V = 0\)</span> alone does not give the effect in Romans, because <span class="math inline">\(V\)</span> by itself does not guarantee conditional exchangeability.</li>
+</ul>
+<p>So stratification forces one to evaluate effect modification by all variables in <span class="math inline">\(L\)</span>, whether or not that is of interest. Stratifying by <span class="math inline">\(V\)</span> and then standardizing or IP weighting for <span class="math inline">\(L\)</span> handles exchangeability and effect modification separately.</p>
+<aside class="notes">
+<p>Other problems with stratification:</p>
+<ul>
+<li><strong>noncollapsibility</strong> of some effect measures such as the odds ratio (Fine Point 4.3);</li>
+<li>with time-varying treatments, inappropriate adjustment for time-varying <span class="math inline">\(L\)</span> affected by prior treatment (Part III); stratum-specific measures may then lack a causal interpretation even under exchangeability, positivity, and well-defined interventions (Robins 1986, 1987; Chapter 20);</li>
+<li>stratification requires <strong>positivity</strong> as well as exchangeability: no effect can be computed in a stratum <span class="math inline">\(L = l\)</span> containing only treated or only untreated individuals.</li>
+</ul>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside>
+</section>
+<section id="restriction" class="slide level2">
+<h2>Restriction</h2>
+</section>
+<section class="slide level2">
+
+<p>Computing the effect in only some strata of <span class="math inline">\(L\)</span> is <strong>restriction</strong>. Stratification is restriction applied to several comprehensive, mutually exclusive subsets, with exchangeability in each. When positivity fails in some strata, restriction limits the inference to the strata where positivity holds (Chapter 3).</p>
+</section></section>
+<section>
+<section id="matching-as-another-form-of-adjustment-pp.-55-56" class="title-slide slide level1 center" data-number="5">
+<h1><span class="header-section-number">5</span> 4.5 Matching as Another Form of Adjustment (pp.&nbsp;55-56)</h1>
+
+</section>
+<section class="slide level2">
+
+<p>The goal of <strong>matching</strong> is to build a subset of the population in which <span class="math inline">\(L\)</span> has the same distribution among the treated and the untreated.</p>
+<div id="exm-matching-table-2-2" class="theorem example">
+<p><span class="theorem-title"><strong>Example 5 (Matching in Table 2.2)</strong></span> For each untreated individual, randomly select a treated individual with the same <span class="math inline">\(L\)</span> (the <strong>matching factor</strong>). One possible set of 7 <strong>matched pairs</strong> (untreated first):</p>
+<ul>
+<li><span class="math inline">\(L = 0\)</span>: Rheia-Hestia, Kronos-Poseidon, Demeter-Hera, Hades-Zeus</li>
+<li><span class="math inline">\(L = 1\)</span>: Artemis-Ares, Apollo-Aphrodite, Leto-Hermes</li>
+</ul>
+<p>All untreated but only some treated are selected. In the matched population, the proportion with <span class="math inline">\(L = 1\)</span> is <span class="math inline">\(3/7\)</span> in both groups by design. The risk is <span class="math inline">\(3/7\)</span> in the treated (Zeus, Ares, Aphrodite died) and <span class="math inline">\(3/7\)</span> in the untreated (Kronos, Artemis, Apollo died), so the causal risk ratio is <span class="math inline">\(1\)</span>.</p>
+</div>
+<aside class="notes">
+<p>Under conditional exchangeability given <span class="math inline">\(L\)</span>, replacing the treated by a subset with the same distribution of <span class="math inline">\(L\)</span> as the untreated yields (unconditional) exchangeability in the matched population, so average outcomes can be compared directly. Matching also ensures positivity in the matched population, because strata containing only treated or only untreated individuals are excluded.</p>
+<p>This discussion applies to cohort studies. In case-control designs (Chapter 8), cases and non-cases are matched; even if the matching factors suffice for conditional exchangeability, this does not produce unconditional exchangeability of treated and untreated, and adjusting for the matching factors via stratification is needed to estimate conditional effect measures.</p>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside>
+</section>
+<section id="which-population-does-matching-describe" class="slide level2">
+<h2>Which population does matching describe?</h2>
+</section>
+<section class="slide level2">
+
+<ul>
+<li>The group used as the reference for finding matches defines the population in which the effect is computed. Matching each untreated individual to a treated one estimates the <strong>effect in the untreated</strong>; with fewer treated than untreated in every stratum of <span class="math inline">\(L\)</span>, one usually estimates the <strong>effect in the treated</strong>.</li>
+<li>Matching need not be one-to-one (pairs); it can be one-to-many (matched sets).</li>
+<li>With several variables in <span class="math inline">\(L\)</span>, matches come from the same stratum of the combination of all of them.</li>
+<li><strong>Frequency matching</strong> creates any chosen distribution of <span class="math inline">\(L\)</span>, e.g., selecting treated individuals so that 70% have <span class="math inline">\(L = 1\)</span>, then doing the same for the untreated.</li>
+</ul>
+<p>Because the matched population is a subset of the original one, its distribution of effect modifiers generally differs, which is the topic of Section 4.6.</p>
+<aside class="notes">
+<p>As the number of matching factors grows, so does the chance that no exact match exists. The literature on approximate matching is beyond the book’s scope; Stuart (2010) is an introduction.</p>
 <style type="text/css">
         span.MJX_Assistive_MathML {
           position:absolute!important;
@@ -470,57 +915,203 @@
       }</style></aside>
 </section></section>
 <section>
-<section id="matching-as-another-form-of-adjustment-pp.-43-45" class="title-slide slide level1 center" data-number="5">
-<h1><span class="header-section-number">5</span> 4.5 Matching as Another Form of Adjustment (pp.&nbsp;43-45)</h1>
+<section id="effect-modification-and-adjustment-methods-pp.-56-60" class="title-slide slide level1 center" data-number="6">
+<h1><span class="header-section-number">6</span> 4.6 Effect Modification and Adjustment Methods (pp.&nbsp;56-60)</h1>
 
 </section>
 <section class="slide level2">
 
-<p>In addition to stratification, <strong>matching</strong> is another method for adjustment that can also reveal effect modification.</p>
+<p>Standardization, IP weighting, stratification/restriction, and matching estimate <strong>different types</strong> of causal effects:</p>
+<ul>
+<li>standardization and IP weighting can compute <strong>marginal or conditional</strong> effects;</li>
+<li>stratification/restriction and matching compute only <strong>conditional</strong> effects in certain subsets.</li>
+</ul>
+<p>All four require exchangeability and positivity, but only in the subset to which the effect refers: for the effect among <span class="math inline">\(L = l\)</span>, only in that subset; for the marginal effect, in all levels of <span class="math inline">\(L\)</span>.</p>
+<p>Without effect modification all four give the same answer: in Table 2.2 the causal risk ratio was 1 in the population, in each stratum of <span class="math inline">\(L\)</span>, and in the untreated.</p>
 </section>
-<section id="matching-methods" class="slide level2 scrollable">
-<h2>Matching Methods</h2>
-<p><strong>Matching</strong> creates treatment and control groups that are similar with respect to measured covariates <span class="math inline">\(L\)</span>. Common approaches:</p>
-<ol type="1">
-<li><strong>Individual matching</strong>: For each treated individual, find one (or more) untreated individuals with similar values of <span class="math inline">\(L\)</span></li>
-<li><strong>Caliper matching</strong>: Match treated and untreated individuals whose <span class="math inline">\(L\)</span> values are within some distance threshold</li>
-<li><strong>Propensity score matching</strong>: Match on the probability of treatment given <span class="math inline">\(L\)</span> (covered in Chapter 15)</li>
-</ol>
-<div id="exm-matching" class="theorem example">
-<p><span class="theorem-title"><strong>Example 4 (Matching Example)</strong></span> Suppose we want to study the effect of smoking on lung cancer. We: 1. Identify 1000 smokers 2. For each smoker, find a non-smoker matched on age, sex, occupation, and family history 3. Compare lung cancer rates in smokers vs.&nbsp;their matched non-smokers</p>
-<p>If matching successfully balances confounders, the comparison estimates the causal effect.</p>
+<section id="table-4.3-four-correct-answers" class="slide level2">
+<h2>Table 4.3: four correct answers</h2>
+</section>
+<section class="slide level2">
+
+<p>Outcome <span class="math inline">\(Z\)</span> = high blood pressure. Assume <span class="math inline">\(Z^a \perp\!\!\!\perp A \mid L\)</span> and positivity.</p>
+<table class="caption-top">
+<thead>
+<tr class="header">
+<th>Name</th>
+<th><span class="math inline">\(L\)</span></th>
+<th><span class="math inline">\(A\)</span></th>
+<th><span class="math inline">\(Z\)</span></th>
+<th>Name</th>
+<th><span class="math inline">\(L\)</span></th>
+<th><span class="math inline">\(A\)</span></th>
+<th><span class="math inline">\(Z\)</span></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Rheia</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>Leto</td>
+<td>1</td>
+<td>0</td>
+<td>0</td>
+</tr>
+<tr class="even">
+<td>Kronos</td>
+<td>0</td>
+<td>0</td>
+<td>1</td>
+<td>Ares</td>
+<td>1</td>
+<td>1</td>
+<td>1</td>
+</tr>
+<tr class="odd">
+<td>Demeter</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>Athena</td>
+<td>1</td>
+<td>1</td>
+<td>1</td>
+</tr>
+<tr class="even">
+<td>Hades</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>Hephaestus</td>
+<td>1</td>
+<td>1</td>
+<td>1</td>
+</tr>
+<tr class="odd">
+<td>Hestia</td>
+<td>0</td>
+<td>1</td>
+<td>0</td>
+<td>Aphrodite</td>
+<td>1</td>
+<td>1</td>
+<td>0</td>
+</tr>
+<tr class="even">
+<td>Poseidon</td>
+<td>0</td>
+<td>1</td>
+<td>0</td>
+<td>Polyphemus</td>
+<td>1</td>
+<td>1</td>
+<td>0</td>
+</tr>
+<tr class="odd">
+<td>Hera</td>
+<td>0</td>
+<td>1</td>
+<td>1</td>
+<td>Persephone</td>
+<td>1</td>
+<td>1</td>
+<td>0</td>
+</tr>
+<tr class="even">
+<td>Zeus</td>
+<td>0</td>
+<td>1</td>
+<td>1</td>
+<td>Hermes</td>
+<td>1</td>
+<td>1</td>
+<td>0</td>
+</tr>
+<tr class="odd">
+<td>Artemis</td>
+<td>1</td>
+<td>0</td>
+<td>1</td>
+<td>Hebe</td>
+<td>1</td>
+<td>1</td>
+<td>0</td>
+</tr>
+<tr class="even">
+<td>Apollo</td>
+<td>1</td>
+<td>0</td>
+<td>1</td>
+<td>Dionysus</td>
+<td>1</td>
+<td>1</td>
+<td>0</td>
+</tr>
+</tbody>
+</table>
+<div id="exm-four-risk-ratios" class="theorem example">
+<p><span class="theorem-title"><strong>Example 6 (Four causal risk ratios from Table 4.3)</strong></span> Stratum-specific risks: <span class="math inline">\(\Pr[Z = 1 \mid A = 1, L = 0] = 2/4\)</span>, <span class="math inline">\(\Pr[Z = 1 \mid A = 0, L = 0] = 1/4\)</span>, <span class="math inline">\(\Pr[Z = 1 \mid A = 1, L = 1] = 3/9 = 1/3\)</span>, <span class="math inline">\(\Pr[Z = 1 \mid A = 0, L = 1] = 2/3\)</span>; <span class="math inline">\(\Pr[L = 0] = 0.4\)</span>.</p>
+<ul>
+<li><strong>Stratification</strong>: risk ratio <span class="math inline">\(\dfrac{2/4}{1/4} = 2.0\)</span> in <span class="math inline">\(L = 0\)</span> and <span class="math inline">\(\dfrac{1/3}{2/3} = 0.5\)</span> in <span class="math inline">\(L = 1\)</span>.</li>
+<li><strong>Standardization / IP weighting</strong> (population): <span class="math display">\[
+\begin{aligned}
+\Pr[Z^{a=1} = 1] &amp;= (2/4)(0.4) + (1/3)(0.6) = 0.2 + 0.2 = 0.4, \\
+\Pr[Z^{a=0} = 1] &amp;= (1/4)(0.4) + (2/3)(0.6) = 0.1 + 0.4 = 0.5,
+\end{aligned}
+\]</span> so the risk ratio is <span class="math inline">\(0.4/0.5 = 0.8\)</span>.</li>
+<li><strong>Matching</strong> (the matched pairs of Section 4.5; effect in the untreated): <span class="math inline">\(\Pr[Z^{a=1} = 1 \mid A = 0] / \Pr[Z = 1 \mid A = 0] = (3/7)/(3/7) = 1.0\)</span>.</li>
+</ul>
+<p>Four different numbers, 0.8, 2.0, 0.5, and 1.0, and all of them are correct.</p>
 </div>
 </section>
-<section id="matching-and-effect-modification" class="slide level2">
-<h2>Matching and Effect Modification</h2>
-<p>Like stratification, matching can identify effect modification:</p>
+<section class="slide level2">
+
+<p>The explanation (leaving aside random variability) is <strong>qualitative effect modification</strong> by <span class="math inline">\(L\)</span>: treatment doubles the risk when <span class="math inline">\(L = 0\)</span> and halves it when <span class="math inline">\(L = 1\)</span>.</p>
 <ul>
-<li>Match separately within subgroups defined by <span class="math inline">\(V\)</span></li>
-<li>Estimate effects within each subgroup</li>
-<li>Compare effects across subgroups</li>
+<li>The population effect (0.8) is beneficial because the ratio <span class="math inline">\(\Pr[Z^{a=0} = 1 \mid L = 1] / \Pr[Z^{a=0} = 1 \mid L = 0] = (2/3)/(1/4) = 8/3\)</span> exceeds 2 times the odds of being noncritical, <span class="math inline">\(2 \Pr[L = 0]/\Pr[L = 1] = 2(0.4/0.6) = 4/3\)</span> (Technical Point 4.3).</li>
+<li>The effect in the untreated is null (1.0) because the untreated contain a larger proportion of noncritical individuals (<span class="math inline">\(4/7\)</span>) than the population (<span class="math inline">\(0.4\)</span>).</li>
 </ul>
+<p>The lesson: always specify the population, or subset, to which an effect measure corresponds.</p>
+<div id="prp-marginal-rr-condition" class="theorem proposition">
+<p><span class="theorem-title"><strong>Proposition 1 (When is the marginal risk ratio below 1? (Technical Point 4.3))</strong></span> Let <span class="math inline">\(\text{RR}_l \stackrel{\text{def}}{=}\Pr[Z^{a=1} = 1 \mid L = l] / \Pr[Z^{a=0} = 1 \mid L = l]\)</span>, <span class="math inline">\(p_l \stackrel{\text{def}}{=}\Pr[Z^{a=0} = 1 \mid L = l]\)</span>, and <span class="math inline">\(\pi_l \stackrel{\text{def}}{=}\Pr[L = l]\)</span>. With <span class="math inline">\(\text{RR}_0 = 2\)</span> and <span class="math inline">\(\text{RR}_1 = 0.5\)</span>, the marginal risk ratio is below 1 if and only if</p>
+<p><span class="math display">\[\frac{p_1}{p_0} &gt; \frac{2 \pi_0}{\pi_1}.\]</span></p>
+</div>
+<div class="proof">
+<p><span class="proof-title"><em>Proof</em>. </span>The marginal risk ratio is a weighted average of the conditional ones:</p>
+<p><span class="math display">\[
+\begin{aligned}
+\frac{\Pr[Z^{a=1} = 1]}{\Pr[Z^{a=0} = 1]}
+&amp;= \frac{\sum_l \Pr[Z^{a=1} = 1 \mid L = l]\, \pi_l}{\Pr[Z^{a=0} = 1]} &amp;&amp; \text{(law of total probability)} \\
+&amp;= \sum_l \text{RR}_l \frac{p_l \pi_l}{\Pr[Z^{a=0} = 1]} &amp;&amp; \text{(multiply and divide by } p_l\text{)} \\
+&amp;= \sum_l \text{RR}_l\, w(l), &amp;&amp; w(l) \stackrel{\text{def}}{=}\frac{p_l \pi_l}{\Pr[Z^{a=0} = 1]},\ \textstyle\sum_l w(l) = 1.
+\end{aligned}
+\]</span></p>
+<p>Substituting <span class="math inline">\(\text{RR}_0 = 2\)</span>, <span class="math inline">\(\text{RR}_1 = 0.5\)</span>, and <span class="math inline">\(w(1) = 1 - w(0)\)</span>:</p>
+<p><span class="math display">\[
+\begin{aligned}
+2\, w(0) + 0.5\,(1 - w(0)) &lt; 1
+&amp;\iff 1.5\, w(0) &lt; 0.5 \\
+&amp;\iff w(0) &lt; 1/3 \\
+&amp;\iff 3 p_0 \pi_0 &lt; p_0 \pi_0 + p_1 \pi_1 &amp;&amp; \text{(definition of } w(0)\text{; } \Pr[Z^{a=0} = 1] = p_0 \pi_0 + p_1 \pi_1\text{)} \\
+&amp;\iff 2 p_0 \pi_0 &lt; p_1 \pi_1 \\
+&amp;\iff \frac{p_1}{p_0} &gt; \frac{2 \pi_0}{\pi_1}.
+\end{aligned}
+\]</span></p>
+<p>In Table 4.3, <span class="math inline">\(w(0) = (1/4)(0.4)/0.5 = 0.2 &lt; 1/3\)</span>, and indeed <span class="math inline">\(2(0.2) + 0.5(0.8) = 0.8\)</span>.</p>
+</div>
+</section>
+<section id="a-well-characterized-target-population" class="slide level2">
+<h2>A well-characterized target population</h2>
+</section>
+<section class="slide level2">
+
+<p>Chapter 3 argued that a well-defined causal effect is a prerequisite for meaningful causal inference. A <strong>well-characterized target population</strong> is another. Experiments that compare interventions in a population meeting a priori eligibility criteria have both automatically; observational studies must define them explicitly.</p>
 <aside class="notes">
-<p><strong>Matching vs.&nbsp;Stratification</strong>:</p>
-<p><strong>Similarities</strong>:</p>
-<ul>
-<li>Both create comparable treatment and control groups</li>
-<li>Both can identify effect modification</li>
-<li>Both can eliminate confounding</li>
-</ul>
-<p><strong>Differences</strong>:</p>
-<ul>
-<li><strong>Stratification</strong> uses all data, dividing into non-overlapping strata</li>
-<li><strong>Matching</strong> may discard data (unmatched individuals), creating matched pairs/sets</li>
-<li><strong>Matching</strong> can be more efficient when controls far outnumber treated individuals</li>
-<li><strong>Stratification</strong> is conceptually simpler and more transparent</li>
-</ul>
-<p><strong>Modern approach</strong>: Matching has largely been superseded by more flexible methods like:</p>
-<ul>
-<li>Regression adjustment</li>
-<li>Inverse probability weighting (Chapter 12)</li>
-<li>Propensity score methods (Chapter 15)</li>
-</ul>
-<p>However, matching is still useful pedagogically and in certain applications (e.g., case-control studies in epidemiology).</p>
+<p>An investigator who used IP weighting (population effect) and one who used matching (effect in the untreated) need not debate which method is better: their answers differ because they asked different causal questions. The second could have used IP weighting to compute the effect in the untreated (Technical Point 4.1).</p>
+<p>Part II shows how standardization, IP weighting, and stratification combine with parametric or semiparametric models. Standard regression models are a form of stratification: the treatment-outcome association is estimated within levels of all the other covariates in the model.</p>
+<p>Finally, stratification yields average effects in subsets, not individual effects, which are identified only under extreme assumptions (Fine Points 2.1 and 3.2).</p>
 <style type="text/css">
         span.MJX_Assistive_MathML {
           position:absolute!important;
@@ -532,70 +1123,221 @@
           overflow: hidden!important;
           display:block!important;
       }</style></aside>
-</section></section>
-<section>
-<section id="effect-modification-and-adjustment-methods-pp.-45-46" class="title-slide slide level1 center" data-number="6">
-<h1><span class="header-section-number">6</span> 4.6 Effect Modification and Adjustment Methods (pp.&nbsp;45-46)</h1>
-
-</section>
-<section class="slide level2">
-
-<p>When both confounding and effect modification are present, we need methods that can: 1. Adjust for confounders 2. Allow treatment effects to vary across modifiers</p>
-</section>
-<section id="stratification-with-confounding" class="slide level2">
-<h2>Stratification with Confounding</h2>
-<p>If <span class="math inline">\(V\)</span> is both a confounder and effect modifier, simple stratification may not suffice if there are additional confounders <span class="math inline">\(L\)</span>.</p>
-<p><strong>Solution</strong>: Adjust for <span class="math inline">\(L\)</span> within each stratum of <span class="math inline">\(V\)</span>. This can be done via:</p>
-<ul>
-<li><strong>Stratification on both <span class="math inline">\(V\)</span> and <span class="math inline">\(L\)</span></strong>: Creates many narrow strata</li>
-<li><strong>Regression within strata</strong>: Fit separate regression models for each level of <span class="math inline">\(V\)</span></li>
-<li><strong>Inverse probability weighting within strata</strong>: Weight by propensity score within each <span class="math inline">\(V\)</span> stratum</li>
-</ul>
-<div id="exm-stratification-with-confounding" class="theorem example">
-<p><span class="theorem-title"><strong>Example 5 (Stratification with Additional Confounders)</strong></span> To estimate the effect of exercise on heart disease, modified by age, while adjusting for sex and smoking:</p>
-<p><strong>Approach 1</strong>: Stratify by age, sex, and smoking</p>
-<ul>
-<li>Too many strata (e.g., 3 age groups × 2 sexes × 2 smoking status = 12 strata)</li>
-<li>Sample sizes become small</li>
-</ul>
-<p><strong>Approach 2</strong>: Stratify by age, then adjust for sex and smoking within each age stratum</p>
-<ul>
-<li>Fit regression model within young, middle-aged, and elderly separately</li>
-<li>Each model controls for sex and smoking</li>
-<li>Compare effects across age groups</li>
-</ul>
+<div title="Technical Point 4.2: Pooling stratum-specific effect measures">
+<div class="callout callout-note callout-titled callout-style-default">
+<div class="callout-body">
+<div class="callout-title">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
 </div>
-</section>
-<section id="regression-models-for-effect-modification" class="slide level2">
-<h2>Regression Models for Effect Modification</h2>
-<p>Regression models provide a flexible framework for handling effect modification:</p>
-<p><strong>Model with effect modification</strong>: <span class="math display">\[\text{E}{\left[Y | A, V, L\right]} = \beta_0 + \beta_1 A + \beta_2 V + \beta_3 A \times V + \beta_4^T L\]</span></p>
-<p>The <strong>interaction term</strong> <span class="math inline">\(\beta_3 A \times V\)</span> captures effect modification:</p>
-<ul>
-<li>If <span class="math inline">\(\beta_3 = 0\)</span>: No effect modification by <span class="math inline">\(V\)</span></li>
-<li>If <span class="math inline">\(\beta_3 \neq 0\)</span>: Effect of <span class="math inline">\(A\)</span> differs by <span class="math inline">\(V\)</span></li>
-</ul>
+<p><strong>Technical Point 4.2: Pooling stratum-specific effect measures</strong></p>
+</div>
+<div class="callout-content">
 <aside class="notes">
-<p><strong>Important distinctions</strong>:</p>
-<p><strong>Statistical interaction</strong> (in regression models):</p>
-<ul>
-<li>Refers to product terms like <span class="math inline">\(A \times V\)</span> in a model</li>
-<li>Is model-dependent and scale-dependent</li>
-<li>Does not have an inherent causal interpretation</li>
-</ul>
-<p><strong>Effect modification</strong> (in causal inference):</p>
-<ul>
-<li>Refers to heterogeneity of causal effects across subgroups</li>
-<li>Is defined in terms of potential outcomes</li>
-<li>Has a clear causal interpretation</li>
-</ul>
-<p>These concepts are related but not identical:</p>
-<ul>
-<li>Effect modification on the risk difference scale corresponds to interaction in a linear model</li>
-<li>Effect modification on the risk ratio scale corresponds to interaction in a log-linear model</li>
-<li>Absence of statistical interaction does NOT guarantee absence of effect modification (it depends on the model and scale)</li>
-</ul>
-<p><strong>Best practice</strong>: Report stratum-specific effects directly rather than relying solely on interaction terms. This makes the findings more transparent and interpretable.</p>
+<p>Until Chapter 10, the book works with whole populations and so talks of computing, not estimating, effects. With samples, a common way to reduce the variability of stratum-specific estimates is to <strong>pool</strong> them (Woolf, Mantel-Haenszel, maximum likelihood), or to fit regression models saturated with respect to <span class="math inline">\(L\)</span> with no product terms between <span class="math inline">\(A\)</span> and <span class="math inline">\(L\)</span>. Pooling targets a narrower confidence interval around a <em>common</em> stratum-specific effect; the pooled measure is still conditional.</p>
+<p>In Table 4.3, the Mantel-Haenszel risk ratio for <span class="math inline">\(Z\)</span> is</p>
+<p><span class="math display">\[
+\text{RR}_{\text{MH}} = \frac{\sum_l a_l n_{0l} / N_l}{\sum_l b_l n_{1l} / N_l}
+= \frac{(2 \cdot 4)/8 + (3 \cdot 3)/12}{(1 \cdot 4)/8 + (2 \cdot 9)/12}
+= \frac{1 + 0.75}{0.5 + 1.5} = \frac{1.75}{2} \approx 0.88,
+\]</span></p>
+<p>where <span class="math inline">\(a_l, b_l\)</span> are the numbers of cases among the treated and untreated in stratum <span class="math inline">\(l\)</span>, <span class="math inline">\(n_{1l}, n_{0l}\)</span> the numbers treated and untreated, and <span class="math inline">\(N_l\)</span> the stratum size. This is meaningful only if the stratum-specific estimates 2.0 and 0.5 estimate the same effect (e.g., a true risk ratio of 0.9 in both strata, with small-sample noise); if the true stratum effects really are 0.5 and 2.0, the pooled value is hard to interpret. The same issue arises in meta-analyses of heterogeneous studies (Dahabreh et al.&nbsp;2020a). The finer the stratification, the harder it is to tell sampling variability from effect-measure modification.</p>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside>
+</div>
+</div>
+</div>
+</div>
+<div title="Fine Point 4.3: Collapsibility and the odds ratio">
+<div class="callout callout-note callout-titled callout-style-default">
+<div class="callout-body">
+<div class="callout-title">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<p><strong>Fine Point 4.3: Collapsibility and the odds ratio</strong></p>
+</div>
+<div class="callout-content">
+<p>An effect measure is <strong>collapsible</strong> when its population value is a weighted average of its stratum-specific values. In follow-up studies the risk ratio and risk difference are collapsible, but the odds ratio (and the rarely used odds difference) is not (Greenland 1987).</p>
+<p><strong>Table 4.4</strong>: effect of moving to high altitude <span class="math inline">\(A\)</span> (top of Mount Olympus) on depression <span class="math inline">\(Y\)</span>; <span class="math inline">\(V = 1\)</span> for women. The decision to move was random, so <span class="math inline">\(Y^a \perp\!\!\!\perp A\)</span>.</p>
+<table class="caption-top">
+<thead>
+<tr class="header">
+<th>Name</th>
+<th><span class="math inline">\(V\)</span></th>
+<th><span class="math inline">\(A\)</span></th>
+<th><span class="math inline">\(Y\)</span></th>
+<th>Name</th>
+<th><span class="math inline">\(V\)</span></th>
+<th><span class="math inline">\(A\)</span></th>
+<th><span class="math inline">\(Y\)</span></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Rheia</td>
+<td>1</td>
+<td>0</td>
+<td>0</td>
+<td>Kronos</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+</tr>
+<tr class="even">
+<td>Demeter</td>
+<td>1</td>
+<td>0</td>
+<td>0</td>
+<td>Hades</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+</tr>
+<tr class="odd">
+<td>Hestia</td>
+<td>1</td>
+<td>0</td>
+<td>0</td>
+<td>Poseidon</td>
+<td>0</td>
+<td>0</td>
+<td>1</td>
+</tr>
+<tr class="even">
+<td>Hera</td>
+<td>1</td>
+<td>0</td>
+<td>0</td>
+<td>Zeus</td>
+<td>0</td>
+<td>0</td>
+<td>1</td>
+</tr>
+<tr class="odd">
+<td>Artemis</td>
+<td>1</td>
+<td>0</td>
+<td>1</td>
+<td>Apollo</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+</tr>
+<tr class="even">
+<td>Leto</td>
+<td>1</td>
+<td>1</td>
+<td>0</td>
+<td>Ares</td>
+<td>0</td>
+<td>1</td>
+<td>1</td>
+</tr>
+<tr class="odd">
+<td>Athena</td>
+<td>1</td>
+<td>1</td>
+<td>1</td>
+<td>Hephaestus</td>
+<td>0</td>
+<td>1</td>
+<td>1</td>
+</tr>
+<tr class="even">
+<td>Aphrodite</td>
+<td>1</td>
+<td>1</td>
+<td>1</td>
+<td>Polyphemus</td>
+<td>0</td>
+<td>1</td>
+<td>1</td>
+</tr>
+<tr class="odd">
+<td>Persephone</td>
+<td>1</td>
+<td>1</td>
+<td>0</td>
+<td>Hermes</td>
+<td>0</td>
+<td>1</td>
+<td>0</td>
+</tr>
+<tr class="even">
+<td>Hebe</td>
+<td>1</td>
+<td>1</td>
+<td>1</td>
+<td>Dionysus</td>
+<td>0</td>
+<td>1</td>
+<td>1</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+</div>
+<div id="exm-odds-ratio-noncollapsible" class="theorem example">
+<p><span class="theorem-title"><strong>Example 7 (The odds ratio is not collapsible)</strong></span> &nbsp;</p>
+<table class="caption-top">
+<colgroup>
+<col style="width: 20%">
+<col style="width: 20%">
+<col style="width: 20%">
+<col style="width: 20%">
+<col style="width: 20%">
+</colgroup>
+<thead>
+<tr class="header">
+<th></th>
+<th>risk if <span class="math inline">\(A = 1\)</span></th>
+<th>risk if <span class="math inline">\(A = 0\)</span></th>
+<th>risk ratio</th>
+<th>odds ratio</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>men (<span class="math inline">\(V = 0\)</span>)</td>
+<td><span class="math inline">\(4/5\)</span></td>
+<td><span class="math inline">\(2/5\)</span></td>
+<td><span class="math inline">\(2\)</span></td>
+<td><span class="math inline">\(\dfrac{4/1}{2/3} = 6\)</span></td>
+</tr>
+<tr class="even">
+<td>women (<span class="math inline">\(V = 1\)</span>)</td>
+<td><span class="math inline">\(3/5\)</span></td>
+<td><span class="math inline">\(1/5\)</span></td>
+<td><span class="math inline">\(3\)</span></td>
+<td><span class="math inline">\(\dfrac{3/2}{1/4} = 6\)</span></td>
+</tr>
+<tr class="odd">
+<td>population</td>
+<td><span class="math inline">\(7/10\)</span></td>
+<td><span class="math inline">\(3/10\)</span></td>
+<td><span class="math inline">\(7/3 \approx 2.3\)</span></td>
+<td><span class="math inline">\(\dfrac{7/3}{3/7} = 49/9 \approx 5.4\)</span></td>
+</tr>
+</tbody>
+</table>
+<p>The population risk ratio (2.3) lies between the stratum-specific ones (2 and 3). The population odds ratio (5.4) is closer to the null than <strong>both</strong> stratum-specific odds ratios (6), even though there is no confounding.</p>
+</div>
+<aside class="notes">
+<p>Noncollapsibility of the odds ratio is a special case of Jensen’s inequality (Samuels 1981). The population odds ratio can be closer to the null than the non-null stratum-specific odds ratios when <span class="math inline">\(V\)</span> is an independent risk factor for <span class="math inline">\(Y\)</span> and <span class="math inline">\(A\)</span> is independent of <span class="math inline">\(V\)</span>, as here (Miettinen and Cook 1981).</p>
+<p>The odds ratio is collapsible under the sharp null, and approximately collapsible (and approximately equal to the risk ratio) when the outcome is rare (say, under 10%) in every stratum of a follow-up study.</p>
+<p>A consequence: “lack of exchangeability” cannot be equated with “a change in the conditional odds ratio compared with the unconditional one”. Here the odds ratio changes by about 10% (<span class="math inline">\(6/5.4 \approx 1.1\)</span>) although the treated and untreated are exchangeable. Greenland, Robins, and Pearl (1999) review the relation between noncollapsibility and lack of exchangeability.</p>
 <style type="text/css">
         span.MJX_Assistive_MathML {
           position:absolute!important;
@@ -613,37 +1355,23 @@
 <h1><span class="header-section-number">7</span> Summary</h1>
 
 </section>
-<section class="slide level2 scrollable">
+<section class="slide level2">
 
-<p>This chapter introduced <strong>effect modification</strong>: the phenomenon where causal effects differ across levels of another variable.</p>
-<p><strong>Key concepts</strong>:</p>
-<ol type="1">
-<li><p><strong>Definition</strong>: Effect modification exists when <span class="math inline">\(\text{E}{\left[Y^{a=1} - Y^{a=0} | V\right]}\)</span> differs across levels of <span class="math inline">\(V\)</span></p></li>
-<li><p><strong>Scale dependence</strong>: Whether effect modification exists depends on the scale (risk difference, risk ratio, etc.)</p></li>
-<li><p><strong>Identification</strong>: Stratification and matching can identify effect modification by estimating effects separately in subgroups</p></li>
-<li><p><strong>Importance</strong>: Effect modification is crucial for:</p>
 <ul>
-<li>Targeting interventions</li>
-<li>Improving precision</li>
-<li>Understanding mechanisms</li>
-</ul></li>
-<li><p><strong>Confounding vs.&nbsp;modification</strong>:</p>
-<ul>
-<li>Confounders bias marginal effects (we adjust for them)</li>
-<li>Modifiers create heterogeneous effects (we report them)</li>
-<li>Variables can be both</li>
-</ul></li>
-<li><p><strong>Regression models</strong>: Interaction terms in regression models can capture effect modification, but must be interpreted carefully with respect to scale</p></li>
-</ol>
+<li><span class="math inline">\(V\)</span> <strong>modifies</strong> the effect of <span class="math inline">\(A\)</span> on <span class="math inline">\(Y\)</span> when the average causal effect varies across levels of <span class="math inline">\(V\)</span>; whether it does depends on the effect measure (additive vs.&nbsp;multiplicative). Qualitative modification (opposite directions) appears on both scales.</li>
+<li>In a marginally randomized experiment, stratum-specific associations identify stratum-specific effects; otherwise, <strong>stratify by <span class="math inline">\(V\)</span>, then standardize or IP weight for <span class="math inline">\(L\)</span></strong>.</li>
+<li>Effect modifiers may be <strong>surrogate</strong> rather than causal.</li>
+<li>Effect modification matters for <strong>transportability</strong>, for deciding <strong>who benefits</strong> (on the additive scale), and for <strong>mechanisms</strong>. Report absolute counterfactual risks in each stratum.</li>
+<li><strong>Stratification/restriction</strong> and <strong>matching</strong> adjust for <span class="math inline">\(L\)</span> but estimate conditional effects (in strata, or in the treated/untreated); <strong>standardization</strong> and <strong>IP weighting</strong> can estimate marginal effects. Under effect modification these differ, and all can be correct: specify the target population.</li>
+<li>The <strong>odds ratio is noncollapsible</strong>.</li>
+</ul>
 <aside class="notes">
 <p><strong>Looking ahead</strong>:</p>
 <ul>
-<li><strong>Chapter 5</strong> introduces <strong>interaction</strong> between two treatments (different from effect modification by baseline variables)</li>
-<li><strong>Chapter 6</strong> introduces <strong>causal diagrams</strong>, which help identify confounders and understand when stratification is appropriate</li>
-<li><strong>Chapter 13</strong> covers the <strong>parametric g-formula</strong>, a flexible method for estimating effects while accounting for both confounding and effect modification</li>
-<li><strong>Chapter 15</strong> discusses <strong>propensity scores</strong>, which can be combined with stratification to handle confounding while preserving effect modification</li>
+<li>Chapter 5 introduces <strong>interaction</strong> between two treatments, which, unlike effect modification, attributes a causal role to both variables</li>
+<li>Chapter 6 introduces causal diagrams; Section 6.6 represents surrogate and causal effect modifiers graphically</li>
+<li>Part II combines standardization, IP weighting, and stratification with models</li>
 </ul>
-<p><strong>Practical takeaway</strong>: When analyzing observational data: 1. Think carefully about which variables might modify effects (use subject-matter knowledge) 2. Stratify or use regression with interactions to assess effect modification 3. Report stratum-specific effects when they differ meaningfully 4. Don’t hide important heterogeneity behind an average effect</p>
 <style type="text/css">
         span.MJX_Assistive_MathML {
           position:absolute!important;
