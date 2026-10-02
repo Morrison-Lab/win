@@ -457,7 +457,7 @@ Assume
 - conditional exchangeability: $Y^{a=1} \ind A \mid L$;
 - positivity: $\pi(l) > 0$ for every $l$ in the support of $L$;
 - consistency: $Y^{a=1} = Y$ for every individual with $A = 1$;
-- $\E{\abs{Y}} < \infty$.
+- $\E{\abs{Y}} < \infty$ and $\E{\abs{Y^{a=1}}} < \infty$.
 
 Let $b^*$ and $\pi^*$ be any functions of $L$ with $\E{\abs{b^*(L)}} < \infty$ and $\pi^*(l) \geq \epsilon$ for some $\epsilon > 0$ and every $l$ in the support of $L$.
 Then
@@ -468,7 +468,6 @@ $$
 $$
 
 which is zero if $\pi^* = \pi$ **or** $b^* = b$.
-This identity is what makes the AIPW estimator of @def-aipw doubly robust in the sense of @def-doubly-robust.
 :::
 
 ::: {.proof}
@@ -499,7 +498,8 @@ Then, subtracting $\E{Y^{a=1}} = \E{b(L)}$:
 $$
 \begin{aligned}
 &\E{b^*(L) + \frac{A\{Y - b^*(L)\}}{\pi^*(L)}} - \E{Y^{a=1}} \\
-&= \E{b^*(L) - b(L) + \frac{\pi(L)}{\pi^*(L)}\{b(L) - b^*(L)\}} && \text{(law of total expectation)} \\
+&= \E{b^*(L)} + \E{\frac{\pi(L)\{b(L) - b^*(L)\}}{\pi^*(L)}} - \E{b(L)} && \text{(linearity; iterated expectation and the first display; the identification display)} \\
+&= \E{b^*(L) - b(L) + \frac{\pi(L)}{\pi^*(L)}\{b(L) - b^*(L)\}} && \text{(linearity)} \\
 &= \E{\paren{\frac{\pi(L)}{\pi^*(L)} - 1} \{b(L) - b^*(L)\}} && \text{(factor out } b(L) - b^*(L)\text{)} \\
 &= \E{\pi(L) \paren{\frac{1}{\pi^*(L)} - \frac{1}{\pi(L)}} \{b(L) - b^*(L)\}} && \text{(factor out } \pi(L)\text{)}
 \end{aligned}
@@ -507,11 +507,11 @@ $$
 :::
 
 ::: {.notes}
-The book [@hernan2020causal, Technical Point 13.2, p. 184] displays this bias with the opposite sign, $(1/\pi(L) - 1/\pi^*(L))$;
+The book [@hernan2020causal, Technical Point 13.2, p. 184] displays this difference with the opposite sign, $(1/\pi(L) - 1/\pi^*(L))$;
 the derivation here gives the sign shown, which does not affect the conclusion.
 
 **Second-order bias.**
-The bias depends on the *product* of the errors in $1/\pi$ and in $b$.
+This difference depends on the *product* of the errors in $1/\pi$ and in $b$.
 This property lets doubly robust estimators that use machine learning for $\pi$ and $b$ achieve small bias in high-dimensional settings (Chapter 18), where no parametric model is expected to be correct.
 :::
 
