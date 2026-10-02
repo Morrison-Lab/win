@@ -110,7 +110,6 @@ In both Figures 8.1 and 8.2 the bias comes from conditioning on a common effect 
 ::: {.notes}
 A structure that produces bias under the null also produces bias when the treatment has a non-null effect.
 Confounding (common causes of treatment and outcome) and selection bias (conditioning on common effects of treatment and outcome) are both biases under the null.
-Figures 8.3-8.6 show that selection bias under the null (@def-selection-bias-under-null) can be defined more generally than conditioning on a common effect of treatment and outcome.
 :::
 
 ---
@@ -120,21 +119,21 @@ Figures 8.3-8.6 show that selection bias under the null (@def-selection-bias-und
 ::: {#exm-differential-loss-to-follow-up}
 ## Differential loss to follow-up in an HIV study
 
-Figure 8.3 depicts a follow-up study of individuals with HIV infection, estimating the effect of an antiretroviral treatment $A$ on 3-year risk of death $Y$ (the diagram omits the arrow $A \rightarrow Y$ to reduce clutter).
+Figure 8.3 depicts a follow-up study of individuals with HIV infection, estimating the effect of an antiretroviral treatment $A$ on 3-year risk of death $Y$.
+The diagram has no arrow $A \rightarrow Y$: we assume the null of no treatment effect.
 
 - $U$ (unmeasured): high level of immunosuppression (1: yes, 0: no);
   $U = 1$ raises the risk of death.
 - $C$: censoring, i.e., dropout or other loss to follow-up ($C = 1$).
   Sicker individuals ($U = 1$) are more likely to be censored.
 - $L$: symptoms (fever, weight loss, diarrhea, ...), CD4 count, and viral load, which mediate the effect of $U$ on $C$.
-  In this section $L$ is treated as unmeasured;
-  Section 8.5 discusses the role of a measured $L$.
+  $L$ is treated as unmeasured here.
 - $A \rightarrow C$: treated individuals have more side effects, which can lead them to drop out.
 - The square around $C$: only uncensored individuals ($C = 0$) can have $Y$ ascertained, so the analysis is restricted to them.
 
 By d-separation, conditioning on the collider $C$ opens the path
 $$A \rightarrow C \leftarrow L \leftarrow U \rightarrow Y,$$
-so the associational risk ratio generically (that is, under faithfulness) differs from 1 even though the causal risk ratio equals 1.
+so, under the null (no arrow $A \rightarrow Y$), the associational risk ratio generically (that is, under faithfulness) differs from 1, the causal value.
 :::
 
 ::: {.notes}
@@ -160,13 +159,17 @@ Three further structures lead to the same kind of bias through differential loss
 
 - **Figure 8.4**: prior treatment $A$ directly affects symptoms $L$.
   Restricting to the uncensored again conditions on a common effect $C$ of $A$ and $U$.
-- **Figures 8.5 and 8.6**: variations of Figures 8.3 and 8.4 with an unmeasured common cause $W$ of treatment and another variable. $W$ stands for lifestyle, personality, or educational factors that affect treatment ($W \rightarrow A$) and either attitudes toward attending study visits ($W \rightarrow C$, Figure 8.5) or the threshold for reporting symptoms ($W \rightarrow L$, Figure 8.6).
-  The book notes that Figures 8.5 and 8.6 are examples of **M-bias**.
+- **Figures 8.5 and 8.6**: variations of Figures 8.3 and 8.4 with an unmeasured common cause $W$ of treatment and another variable.
+  $W$ stands for lifestyle, personality, or educational factors that affect treatment ($W \rightarrow A$) and either attitudes toward attending study visits ($W \rightarrow C$, Figure 8.5) or the threshold for reporting symptoms ($W \rightarrow L$, Figure 8.6).
+  The book notes that Figures 8.5 and 8.6 are examples of M-bias:
+  bias from conditioning on (a descendant of) a collider whose two parents are a cause of treatment ($W$) and a cause of the outcome ($U$),
+  named for the M shape the diagram takes when drawn with those two causes on top.
 
 :::
 
 ::: {.notes}
 In all of Figures 8.1-8.6, the bias results from selection on a collider, so each is selection bias in the sense of @def-selection-bias.
+Figures 8.3-8.6 thus show that selection bias under the null (@def-selection-bias-under-null) can arise from more than conditioning on a common effect of treatment and outcome.
 :::
 
 ## 8.2 Examples of Selection Bias (pp. 111-112)
@@ -238,7 +241,8 @@ None of Figures 8.3-8.6 can represent volunteer bias in a randomized trial:
 
 ::: {.callout-note title="Fine Point 8.1: Selection Bias in Case-Control Studies"}
 Figure 8.1 can represent selection bias in a case-control study.
-An investigator wants the effect of postmenopausal estrogen treatment $A$ on coronary heart disease $Y$. $C$ indicates whether a woman in the underlying cohort is selected into the case-control study (1: no, 0: yes).
+An investigator wants the effect of postmenopausal estrogen treatment $A$ on coronary heart disease $Y$.
+$C$ indicates whether a woman in the underlying cohort is selected into the case-control study (1: no, 0: yes).
 The arrow $Y \rightarrow C$ (cases are more likely to be selected than noncases) is the defining feature of a case-control design.
 
 Suppose controls ($Y = 0$) are selected preferentially among women with a hip fracture.
@@ -426,7 +430,10 @@ that some no-direct-effect intervention could set censoring $C$ to 0 [@hernan202
 
 Censoring often has no causal effect on the outcome (an exception: loss to follow-up that prevents people from receiving further treatment).
 One might then drop the superscript $c = 0$, but keeping it makes clear that confounding for the effect of $C$ becomes central when estimating the effect of $A$ under selection.
-In a causal diagram with no arrow from $C$ to the observed $Y$, one can replace $Y$ by $Y^{c=0}$ and add arrows $Y^{c=0} \rightarrow Y$ and $C \rightarrow Y$.
+Even then, the observed $Y$ depends on $C$:
+it equals $Y^{c=0}$ when $C = 0$ and is missing when $C = 1$.
+So a causal diagram in which $C$ has no effect on the outcome can still replace $Y$ by $Y^{c=0}$ and add arrows $Y^{c=0} \rightarrow Y$ and $C \rightarrow Y$,
+where $C \rightarrow Y$ encodes only that censoring determines whether the outcome is observed.
 :::
 
 ---
@@ -629,7 +636,7 @@ In Figure 8.3, conditioning on $L$ blocks the backdoor path from $C$ to $Y$, so 
 $$\frac{\Pr[Y = 1 \mid A = 1, C = 0, L = l]}{\Pr[Y = 1 \mid A = 0, C = 0, L = l]}$$
 
 can be interpreted as the effect of treatment among the uncensored with $L = l$.
-For the same reason, under the null, stratification also works under Figure 8.5.
+For the same reason, stratification also works under Figure 8.5.
 :::
 
 ::: {.callout-warning title="Stratification Can Open a Collider Path"}
@@ -736,7 +743,19 @@ and the step that replaced conditioning on $Y$ by conditioning on $(Y_A, Y_E, Y_
 Generically (that is, under faithfulness), $A$ and $E$ are associated given $Y = 1$.
 :::
 
-When the data can be summarized by Figure 8.13, they follow a **multiplicative survival model** (Technical Point 8.2).
+---
+
+::: {#def-multiplicative-survival-model}
+## Multiplicative survival model
+
+Treatment $A$ and another cause $E$ of $Y$ follow a **multiplicative survival model** if there are functions $g$ and $h$ such that, for all $a$ and $e$,
+
+$$\Pr[Y = 0 \mid E = e, A = a] = g(e) h(a),$$
+
+that is, the probability of survival is a factor depending only on $e$ times a factor depending only on $a$.
+:::
+
+When the data can be summarized by Figure 8.13, they follow a multiplicative survival model (@def-multiplicative-survival-model).
 
 ::: {.notes}
 $A$ and $E$ are in general (under faithfulness) dependent given $Y = 0$ (in fact within both strata of $Y$) when any of these hold:
@@ -758,10 +777,7 @@ Restricting the analysis to a single level of a common effect does not necessari
 :::
 
 ::: {.callout-note title="Technical Point 8.2: Multiplicative Survival Model"}
-A **multiplicative survival model** holds when survival given $A$ and $E$ factors into a function of $e$ times a function of $a$:
-
-$$\Pr[Y = 0 \mid E = e, A = a] = g(e) h(a).$$
-
+Under a multiplicative survival model (@def-multiplicative-survival-model), $\Pr[Y = 0 \mid E = e, A = a] = g(e) h(a)$.
 Equivalently, the survival ratio $\Pr[Y = 0 \mid E = e, A = a] / \Pr[Y = 0 \mid E = e, A = 0]$ equals $g(e)h(a) / [g(e)h(0)] = h(a)/h(0)$, which does not depend on $e$: there is no interaction between $A$ and $E$ for $Y = 0$ on the multiplicative scale.
 
 Proof that Figure 8.13 implies this model:
@@ -777,7 +793,15 @@ $$
 Set $g(e) = \Pr[Y_E = 0 \mid E = e]$ and $h(a) = \Pr[Y_O = 0] \Pr[Y_A = 0 \mid A = a]$.
 
 If survival follows $g(e)h(a)$, then mortality $\Pr[Y = 1 \mid E = e, A = a] = 1 - g(e)h(a)$ does not, in general, factor in the same way, i.e., it does not, in general, follow a multiplicative mortality model (it does only when $g$ or $h$ is constant).
-Hence, when $A$ and $E$ are conditionally independent given $Y = 0$, they will in general be conditionally dependent given $Y = 1$.
+Bayes' rule shows what this means for $A$ and $E$.
+Because $A \ind E$ in Figure 8.13, for each $y$
+
+$$\Pr[A = a, E = e \mid Y = y] \propto \Pr[A = a] \Pr[E = e] \Pr[Y = y \mid E = e, A = a].$$
+
+For $y = 0$ the right side is $\{\Pr[A = a] h(a)\} \{\Pr[E = e] g(e)\}$, a function of $a$ times a function of $e$,
+so $A$ and $E$ are conditionally independent given $Y = 0$.
+For $y = 1$ the right side is $\Pr[A = a] \Pr[E = e] \{1 - g(e) h(a)\}$, which in general does not factor in this way,
+so $A$ and $E$ are, generically, conditionally dependent given $Y = 1$.
 :::
 
 ::: {.callout-note title="Fine Point 8.2: The Strength and Direction of Selection Bias"}
@@ -829,9 +853,9 @@ This chapter examined **selection bias**: lack of exchangeability that arises fr
    The target becomes $Y^{a,c=0}$, and censoring $C$ is treated as another treatment.
 
 5. **Adjustment**: IP weighting with $W^C = 1 / \Pr[C = 0 \mid L, A]$ creates a pseudo-population with no censoring.
-   Under the null, stratification on $L$ works in Figures 8.3 and 8.5 but not in Figures 8.4 and 8.6.
+   Stratification on $L$ works in Figures 8.3 and 8.5 but not in Figures 8.4 and 8.6.
 
-6. **Selection without bias**: when the data follow a multiplicative survival model (Figure 8.13), $A$ and $E$ remain independent among survivors ($Y = 0$; @prp-independence-among-survivors), though not among the dead ($Y = 1$).
+6. **Selection without bias**: when the data follow a multiplicative survival model (@def-multiplicative-survival-model; Figure 8.13), $A$ and $E$ remain independent among survivors ($Y = 0$; @prp-independence-among-survivors), though not among the dead ($Y = 1$).
 
 ::: {.notes}
 **Practical implications**:
