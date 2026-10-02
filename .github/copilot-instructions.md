@@ -224,7 +224,11 @@ spelling::spell_check_files("README.md")
   :::
   ```
   Always add the actual callout content; never leave a dangling reference to a Technical/Fine Point that has no corresponding callout in the file.
-- **Reflow paragraphs --- one line per major phrase**: In `.qmd` chapter files, write prose with one sentence (or major clause) per source line. Single newlines within a paragraph render as a space in HTML/PDF, so this does not affect output but makes git diffs much easier to read. Example:
+- **Reflow paragraphs --- one line per major phrase**:
+  In `.qmd` chapter files, write prose with one sentence (or major clause) per source line.
+  Single newlines within a paragraph render as a space in HTML/PDF,
+  so this does not affect output but makes git diffs much easier to read.
+  Example:
   ```markdown
   This is the first sentence of the paragraph.
   This is the second sentence, which is on its own line.
@@ -258,10 +262,13 @@ spelling::spell_check_files("README.md")
 win/
 ├── .github/
 │   ├── workflows/              # GitHub Actions workflows
+│   │   ├── check-links.yml     # Link checking (uses lychee.toml)
+│   │   ├── check-non-standard-chars.yaml # Non-ASCII punctuation check
+│   │   ├── check-new-line-breaks.yml # Semantic-line-break check on added lines
 │   │   ├── check-spelling.yaml # Spell checking
 │   │   ├── lint-changed-files.yaml # R code linting (uses .lintr.R)
 │   │   ├── preview.yml         # PR preview deployment
-│   │   └── quarto-publish.yml  # GitHub Pages publishing (d-morrison/gha reusable workflow)
+│   │   └── quarto-publish.yml  # GitHub Pages publishing (Morrison-Lab/gha reusable workflow)
 │   └── copilot-instructions.md # This file
 ├── chapters/
 │   ├── 01-introduction.qmd     # Chapter 1: Introduction
