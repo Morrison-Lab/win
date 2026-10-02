@@ -20,7 +20,8 @@ which is why the book presents them only after the g-methods.
 ::: {.notes}
 This chapter is based on @hernan2020causal [Chapter 15, pp. 199-208].
 
-**Key theme**: outcome regression and propensity score methods need the same identifying conditions as every other method (exchangeability, positivity, and consistency / well-defined interventions), plus correct models for their nuisance parameters.
+**Key theme**: outcome regression and propensity score methods need the same identifying conditions as every other method (exchangeability, positivity, and consistency / well-defined interventions),
+plus correctly specified models for the quantities they estimate along the way.
 Unlike the g-methods of Chapters 12-14, they have limited applicability to complex longitudinal data [@hernan2020causal, p. 199].
 :::
 
@@ -41,7 +42,7 @@ we can use a structural model that also has parameters for $L$.
 The **structural model with parameters for $L$** states that, for each $a \in \{0, 1\}$,
 
 $$
-\E{Y^{a,c=0} \mid L} = \beta_0 + \beta_1 a + \beta_2 a L + \beta_3 L,
+\E{Y^{a,c=0} \mid L} = \beta_0 + \beta_1 a + a \tp{\beta_2} L + \tp{\beta_3} L,
 $$
 
 where $\beta_0$ and $\beta_1$ are scalar parameters and $\beta_2$ and $\beta_3$ are vector parameters.
@@ -64,7 +65,7 @@ it only describes how the mean of $Y^{a=0,c=0}$ varies with $L$.
 ::: {#prp-conditional-effect}
 ## Stratum-Specific Effect
 
-Under the structural model of @def-structural-model-with-l, the average causal effect in stratum $L = l$ is $\beta_1 + \beta_2 l$.
+Under the structural model of @def-structural-model-with-l, the average causal effect in stratum $L = l$ is $\beta_1 + \tp{\beta_2} l$.
 :::
 
 ::: {.proof}
@@ -73,9 +74,9 @@ Evaluate the model at $a = 1$ and $a = 0$ and subtract:
 $$
 \begin{aligned}
 &\E{Y^{a=1,c=0} \mid L = l} - \E{Y^{a=0,c=0} \mid L = l} \\
-&\quad = (\beta_0 + \beta_1 \cdot 1 + \beta_2 \cdot 1 \cdot l + \beta_3 l) - (\beta_0 + \beta_1 \cdot 0 + \beta_2 \cdot 0 \cdot l + \beta_3 l) \\
-&\quad = (\beta_0 + \beta_1 + \beta_2 l + \beta_3 l) - (\beta_0 + \beta_3 l) \\
-&\quad = \beta_1 + \beta_2 l.
+&\quad = (\beta_0 + \beta_1 \cdot 1 + 1 \cdot \tp{\beta_2} l + \tp{\beta_3} l) - (\beta_0 + \beta_1 \cdot 0 + 0 \cdot \tp{\beta_2} l + \tp{\beta_3} l) \\
+&\quad = (\beta_0 + \beta_1 + \tp{\beta_2} l + \tp{\beta_3} l) - (\beta_0 + \tp{\beta_3} l) \\
+&\quad = \beta_1 + \tp{\beta_2} l.
 \end{aligned}
 $$
 :::
@@ -107,15 +108,17 @@ and that consistency (well-defined interventions) holds: $Y = Y^{a,c=0}$ wheneve
 
 2. Suppose further that the structural model of @def-structural-model-with-l holds.
    Let $X \eqdef \tp{(1, A, A \tp{L}, \tp{L})}$ be the regressor vector,
+   and stack the structural parameters as $\beta \eqdef \tp{(\beta_0, \beta_1, \tp{\beta_2}, \tp{\beta_3})}$,
    and suppose that $\E{Y^2 \mid C = 0} < \infty$,
    that $\E{\normsq{X} \mid C = 0} < \infty$,
    and that the second-moment matrix $\E{X \tp{X} \mid C = 0}$ is invertible.
    Then the outcome regression model
 
    $$
-   \E{Y \mid A, C = 0, L} = \alpha_0 + \alpha_1 A + \alpha_2 A L + \alpha_3 L
+   \E{Y \mid A, C = 0, L} = \alpha_0 + \alpha_1 A + A \tp{\alpha_2} L + \tp{\alpha_3} L
    $$
 
+   with stacked coefficients $\alpha \eqdef \tp{(\alpha_0, \alpha_1, \tp{\alpha_2}, \tp{\alpha_3})}$
    is correctly specified,
    and its population least-squares coefficients satisfy $\alpha = \beta$.
 :::
@@ -132,7 +135,7 @@ $$
 $$
 
 Part 2: by part 1 and the structural model,
-$\E{Y \mid A = a, C = 0, L = l} = \beta_0 + \beta_1 a + \beta_2 a l + \beta_3 l$
+$\E{Y \mid A = a, C = 0, L = l} = \beta_0 + \beta_1 a + a \tp{\beta_2} l + \tp{\beta_3} l$
 for every $(a, l)$ with positive probability among the uncensored,
 so the linear model with $\alpha = \beta$ equals the conditional mean and is correctly specified;
 in vector form, $\E{Y \mid A, L, C = 0} = \tp{X} \beta$.
@@ -196,13 +199,19 @@ so plugging the rounded values into that formula reproduces the reported effect 
 
 ---
 
-::: {.callout-note title="Fine Point 15.1: Nuisance Parameters"}
+::: {#def-nuisance-parameter}
+## Nuisance Parameter
+
 A **nuisance parameter** is a parameter that a model must contain
 but that is not itself the target of inference.
+:::
 
-- **Outcome regression** for $\beta_1, \beta_2$: consistent (in general) only if $\beta_0 + \beta_3 L$ correctly models how $\E{Y^{a=0,c=0} \mid L}$ depends on $L$.
+::: {.callout-note title="Fine Point 15.1: Nuisance Parameters"}
+Two methods for the same effect rely on different nuisance parameters (@def-nuisance-parameter):
+
+- **Outcome regression** for $\beta_1, \beta_2$: consistent (in general) only if $\beta_0 + \tp{\beta_3} L$ correctly models how $\E{Y^{a=0,c=0} \mid L}$ depends on $L$.
   The nuisance parameters are $\beta_0$ and $\beta_3$.
-- **G-estimation** of the structural nested model $\E{Y^{a,c=0} - Y^{a=0,c=0} \mid L} = \beta_1 a + \beta_2 a L$:
+- **G-estimation** of the structural nested model $\E{Y^{a,c=0} - Y^{a=0,c=0} \mid L} = \beta_1 a + a \tp{\beta_2} L$:
   consistent (in general) only if the treatment model for $\Pr[A = 1 \mid L]$ is correct.
   The nuisance parameters are those of the treatment model, e.g., $\alpha_0, \alpha_1$ in $\logit \Pr[A = 1 \mid L] = \alpha_0 + \alpha_1 L$.
 
@@ -266,7 +275,6 @@ they overlap over most of the range.
 :::
 
 ::: {.notes}
-If the distribution of $\pi(L)$ were the same in the treated and the untreated, there would be no association between $L$ and $A$.
 Quitters having a higher average estimated probability of quitting is exactly what we expect when $L$ predicts quitting.
 :::
 
@@ -321,9 +329,12 @@ The two probabilities are equal, so $A$ does not depend on $L$ once $\pi(L)$ is 
 In words: individuals with the same $\pi(L)$ may differ in $L$ (e.g., smoking intensity and exercise),
 but among all individuals with a given value of $\pi(L)$ in the super-population,
 the distribution of $L$ is the same in the treated and the untreated.
-The propensity score is the simplest balancing score.
+The propensity score is the coarsest balancing score (Rosenbaum and Rubin 1983):
+a function $b(L)$ is a balancing score exactly when $\pi(L)$ can be written as a function of $b(L)$.
 
 ::: {.notes}
+If the distribution of $\pi(L)$ were the same in the treated and the untreated, there would be no association between $L$ and $A$:
+then $A \ind \pi(L)$, and combining this with $A \ind L \mid \pi(L)$ from @prp-ps-balancing gives $A \ind L$.
 
 ::: {.callout-warning title="Limits of Propensity Score Balance"}
 Two caveats from the book [@hernan2020causal, pp. 201-202]:
@@ -390,8 +401,8 @@ which is the same condition.
 :::
 
 ::: {.notes}
-Hence, if $L$ is sufficient to adjust for confounding, so is $\pi(L)$ [@hernan2020causal, p. 202].
-Positivity given the propensity score means $\Pr[A = a \mid \pi(L) = s] > 0$ for every $s$ with $\Pr[\pi(L) = s]$ nonzero [@hernan2020causal, p. 204].
+Hence, if $L$ is sufficient to adjust for confounding, so is $\pi(L)$ [@hernan2020causal, p. 202];
+part 2 of @thm-ps-exchangeability states the positivity condition given $\pi(L)$.
 :::
 
 ---
@@ -445,9 +456,10 @@ Subtracting the $a = 0$ line from the $a = 1$ line gives the result.
 :::
 
 For treatment alone, without censoring, @thm-ps-exchangeability shows that exchangeability and positivity given $L$ carry over to $\pi(L)$.
-The joint $(A, C)$ conditions of @prp-ps-stratum-effect need more:
-either a balancing score for $\Pr[A = a, C = 0 \mid L]$ in place of $\pi(L)$,
-or the assumption that there is no selection bias (no censoring).
+When no one is censored, the joint $(A, C)$ conditions of @prp-ps-stratum-effect reduce to these treatment-only conditions, so they are met.
+With censoring, $\pi(L)$ alone need not suffice;
+one would instead condition on a score $b(L)$ with $(A, C) \ind L \mid b(L)$,
+for example the vector of joint probabilities $\Pr[A = a, C = c \mid L]$ over all $(a, c)$.
 
 ::: {.callout-warning title="Few Individuals Share a Propensity Score Value"}
 In practice $\pi(L)$ is generally continuous, so almost no two individuals share a value $s$
@@ -469,8 +481,7 @@ Classify individuals into 10 strata (deciles) of the estimated $\pi(L)$, about 1
 :::
 
 ::: {.notes}
-Decile-specific estimates that differ suggest effect modification by $\pi(L)$;
-such modification is hard to act on because $\pi(L)$ is not itself a measured variable [@hernan2020causal, p. 206].
+With wide confidence intervals, differences between deciles cannot be distinguished from chance.
 :::
 
 ---
@@ -519,11 +530,15 @@ For the population average causal effect $\E{Y^{a=1,c=0}} - \E{Y^{a=0,c=0}}$, st
 the Chapter 13 procedure with $\pi(L)$ in place of $L$.
 Let $\hat m(a, s)$ be the fitted value at $A = a$ and propensity score $s$
 of an outcome model for $\E{Y \mid A, C = 0, \pi(L)}$ fitted among the uncensored with $\hat\pi(L)$ as the covariate.
-Then, for each $a \in \{0, 1\}$,
+For each $a \in \{0, 1\}$:
 
-$$
-\hE{Y^{a,c=0}} = \frac{1}{n} \sumin \hat m(a, \hat\pi(L_i)).
-$$
+1. Fit the outcome model for $\E{Y \mid A, C = 0, \pi(L)}$ among the uncensored, with $\hat\pi(L)$ as the covariate.
+2. For each individual $i = 1, \ldots, n$, compute the prediction $\hat m(a, \hat\pi(L_i))$ at $A = a$ and $\hat\pi(L_i)$.
+3. Average the predictions:
+
+   $$
+   \hE{Y^{a,c=0}} = \frac{1}{n} \sumin \hat m(a, \hat\pi(L_i)).
+   $$
 :::
 
 ::: {#exm-ps-standardization}
@@ -543,12 +558,13 @@ Matching on $\pi(L)$ is analogous to matching on a single continuous variable (C
 ## Propensity-Matched Population
 
 A **propensity-matched population** is a subset of the study population, possibly reweighted,
-in which the distribution of $\pi(L)$ is the same among the treated and the untreated.
+in which the distribution of $\pi(L)$ is the same among the treated and the untreated,
+or approximately the same when matches need only fall within a caliper.
 :::
 
 - E.g., pair each treated individual with one (or more) untreated individuals with the same, or a close, propensity score.
-- Under exchangeability and positivity given $\pi(L)$, the treated and the untreated in a propensity-matched population are exchangeable,
-  so association measures in the matched population consistently estimate the effect measures **in the matched population**.
+- Under exchangeability and positivity given $\pi(L)$ and a correctly specified propensity model, the treated and the untreated in a propensity-matched population are exchangeable,
+  so, under consistency, association measures in the matched population consistently estimate the effect measures **in the matched population**.
 
 ::: {.notes}
 The matched population can be given the $\pi(L)$ distribution of the treated, of the untreated, or any other distribution [@hernan2020causal, p. 204].
@@ -669,7 +685,8 @@ Part II used two kinds of models for causal inference.
 ::: {#rem-propensity-structural-parameters}
 ## Which Parameters Have a Causal Interpretation
 
-The parameters of a propensity model are nuisance parameters (Fine Point 15.1) with no causal interpretation.
+We fit a propensity model only to compute the score,
+so its coefficients describe how treatment depends on $L$, not what treatment does (@def-nuisance-parameter).
 The treatment parameters of a structural model **do** have a causal interpretation.
 :::
 
@@ -734,7 +751,7 @@ Applied to propensity or structural models, they can add superfluous or harmful 
 :::
 
 ::: {.callout-tip title="A Propensity Model Need Not Predict Treatment Well"}
-A common mistaken belief is that a propensity model should predict $A$ as well as possible.
+It is tempting to judge a propensity model by how accurately it predicts $A$.
 It need not; it only needs to include the $L$ that guarantee exchangeability.
 :::
 
@@ -788,9 +805,9 @@ Chapter 16 presents a method that does not require exchangeability of treatment.
 
 ::: {#tbl-ch15-methods-summary}
 
-| Method | Model used | Additional modelling requirement |
+| Method | Model used | Additional modeling requirement |
 |--------|------------|----------|
-| **Outcome regression** (faux MSM) | $\E{Y \mid A, C = 0, L}$ | Correct outcome model (nuisance $\beta_0, \beta_3$) |
+| **Outcome regression** (faux MSM) | $\E{Y \mid A, C = 0, L}$ | Correct outcome model (nuisance parameters $\beta_0, \beta_3$; @def-nuisance-parameter) |
 | **G-estimation** (SNM) | $\Pr[A = 1 \mid L]$ | Correct treatment model and correct structural nested model |
 | **Propensity stratification / outcome regression on $\pi(L)$** | $\pi(L)$ and $\E{Y \mid A, C = 0, \pi(L)}$ | Correct propensity model and correct $\pi(L)$-$Y$ relation |
 | **Propensity standardization** | as above | as above; targets the population effect |
@@ -814,7 +831,7 @@ NHEFS estimates of the effect of smoking cessation on weight gain (kg):
 ::: {.notes}
 **Takeaways** [@hernan2020causal, pp. 199-208]:
 
-- Outcome regression and propensity score methods need the same identifying conditions as the g-methods, plus correct nuisance models.
+- Outcome regression and propensity score methods need the same identifying conditions as the g-methods, plus correct models for their nuisance parameters (@def-nuisance-parameter).
 - The propensity score balances measured covariates only.
 - Matching guarantees positivity automatically but can produce a target population that is hard to characterize;
   restricting on real-world variables is preferable.
