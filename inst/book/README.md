@@ -2,7 +2,9 @@
 
 The lecture notes follow
 [*Causal Inference: What If*](https://miguelhernan.org/whatifbook)
-by Miguel A. Hernán and James M. Robins.
+by Miguel A.
+Hernán and James M.
+Robins.
 `VERSION` records the revision the notes are compared against
 ([the checker](#checking-the-notes-against-the-book) reports how closely they match it).
 
