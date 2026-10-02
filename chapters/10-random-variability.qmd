@@ -104,14 +104,17 @@ A different random sample of 20 individuals would give a different estimate.
 An estimator is **consistent** for an estimand if its estimates get arbitrarily close to the estimand as the sample size $n$ grows.
 :::
 
-::: {#exm-sample-proportion-consistent}
-## The sample proportion is consistent
+This statistical property of an estimator is unrelated to the identifiability condition also called [consistency](03-observational-studies.qmd#def-consistency),
+which links each individual's observed outcome to the counterfactual outcome under the treatment actually received.
 
-The sample proportion $\widehat{\Pr}[Y = 1 \mid A = a]$ is consistent for $\Pr[Y = 1 \mid A = a]$:
+::: {#exm-sample-proportion-consistent}
+## The sample proportion is a consistent estimator
+
+The sample proportion $\widehat{\Pr}[Y = 1 \mid A = a]$ is a consistent estimator of $\Pr[Y = 1 \mid A = a]$:
 the larger $n$, the smaller we expect $\abs{\Pr[Y = 1 \mid A = a] - \widehat{\Pr}[Y = 1 \mid A = a]}$ to be.
 :::
 
-::: {.callout-warning title="Consistency Does Not Protect a Small Study"}
+::: {.callout-warning title="A Consistent Estimator Does Not Protect a Small Study"}
 Even a consistent estimator (@def-consistent-estimator-sample-size) can produce a point estimate far from the super-population value, especially in small samples.
 So we should have more confidence in estimates from larger studies, and we quantify that confidence with **confidence intervals**.
 :::
@@ -219,9 +222,9 @@ Small-sample valid intervals for $p$ exist but are not often used in practice.
 ## Coverage over repeated studies
 
 Validity is a statement about coverage over repeated samples from the super-population.
-If we and our colleagues construct valid 95% intervals in every study we ever conduct,
-then the parameters of interest will be covered in at least 95% of those studies,
-though we cannot tell which (up to) 5% of the intervals missed.
+Picture every study that we and other researchers will ever run, each reporting a valid 95% interval.
+Looking back over that whole collection, at least 95% of the intervals would contain their targets,
+but nothing in the data would reveal which intervals, at most 5% of them, missed.
 :::
 
 ::: {.callout-warning title="A Confidence Interval Is Not a Probability Statement About the Estimand"}
@@ -272,10 +275,10 @@ Confidence intervals quantify only random error, so they can overstate our confi
 ::: {.callout-note title="Technical Point 10.1: Bias and Consistency in Statistical Inference"}
 Suppose we observe $n$ i.i.d. copies of a random vector whose distribution $P$ lies in a model $\mathcal{M}$.
 
-- $\hth_n$ is consistent (@def-consistent-estimator-sample-size) for $\theta = \theta(P)$ in $\mathcal{M}$ if, formally, for every $P \in \mathcal{M}$ and every $\varepsilon > 0$,
+- $\hth_n$ is a consistent estimator (@def-consistent-estimator-sample-size) of $\theta = \theta(P)$ in $\mathcal{M}$ if, formally, for every $P \in \mathcal{M}$ and every $\varepsilon > 0$,
   $$\Pr_P\sb{\abs{\hth_n - \theta(P)} > \varepsilon} \to 0 \text{ as } n \to \infty.$$
-- $\hth_n$ is **exactly unbiased** in $\mathcal{M}$ if $E_P[\hth_n] = \theta(P)$ for every $P \in \mathcal{M}$;
-  the exact bias under $P$ is $E_P[\hth_n] - \theta(P)$.
+- $\hth_n$ is **exactly unbiased** in $\mathcal{M}$ if $\Expfc{P}{\hth_n} = \theta(P)$ for every $P \in \mathcal{M}$;
+  the exact bias under $P$ is $\Expfc{P}{\hth_n} - \theta(P)$.
   For many parameters, such as the risk ratio $\Pr[Y=1 \mid A=1]/\Pr[Y=1 \mid A=0]$, no exactly unbiased estimator exists.
 - A **systematically biased** estimator is neither consistent nor exactly unbiased.
 
@@ -597,7 +600,36 @@ Our ignorance of chance correlations between unmeasured baseline risk factors an
 - Nonsmokers: $20/40 - 40/80 = 0.50 - 0.50 = 0$.
 
 The adjusted (stratified) analysis finds no effect in either stratum, although the marginal estimate suggested a benefit.
-The Wald interval centered at the adjusted estimate is $(-0.076, 0.076)$.
+The inverse-variance (MLE) Wald interval centered at the adjusted estimate is $(-0.076, 0.076)$.
+:::
+
+::: {.notes}
+
+::: {#exm-adjusted-interval-arithmetic}
+## Computing the adjusted interval $(-0.076, 0.076)$
+
+Assume the risk difference is the same in both strata of $L$.
+The adjusted estimate is the maximum likelihood estimator (MLE) of the common risk difference,
+which in large samples weights the two stratum-specific estimates by their inverse variances.
+Its estimated variance is $\widehat V_0 \widehat V_1 / (\widehat V_0 + \widehat V_1)$ [@hernan2020causal, Technical Point 10.5],
+where $\widehat V_l$ is the estimated variance of the risk difference in stratum $L = l$,
+computed from the observed number of individuals in each arm:
+
+$$
+\begin{aligned}
+\widehat V_0 &= \frac{(20/40)(20/40)}{40} + \frac{(40/80)(40/80)}{80} = \frac{0.25}{40} + \frac{0.25}{80} = 0.009375, \\
+\widehat V_1 &= \frac{(4/80)(76/80)}{80} + \frac{(2/40)(38/40)}{40} = \frac{0.0475}{80} + \frac{0.0475}{40} = 0.00178125, \\
+\hVar{\widehat{\text{sRD}}}
+&= \frac{\widehat V_0 \widehat V_1}{\widehat V_0 + \widehat V_1}
+= \frac{0.009375 \times 0.00178125}{0.009375 + 0.00178125}
+= \frac{1.670 \times 10^{-5}}{0.01116} \approx 0.001497, \\
+1.96 \sqrt{0.001497} &= 1.96 \times 0.0387 \approx 0.076.
+\end{aligned}
+$$
+
+With point estimate 0 in both strata, the pooled estimate is 0 and the interval is $(-0.076, 0.076)$, matching the book.
+:::
+
 :::
 
 ::: {#rem-retraction-debate}
@@ -678,14 +710,16 @@ The quotation marks around "principle" in the section title anticipate this poin
 
 ::: {.callout-note title="Technical Point 10.2: A Formal Statement of the Conditionality Principle"}
 Take one dichotomous $L$, exchangeability $Y^a \ind A \mid L$, and a stratum-specific risk difference
-$\text{sRD} = \Pr(Y = 1 \mid L = l, A = 1) - \Pr(Y = 1 \mid L = l, A = 0)$ known to be constant across strata and of interest.
+$\text{sRD} = \Pr[Y = 1 \mid L = l, A = 1] - \Pr[Y = 1 \mid L = l, A = 0]$ known to be constant across strata and of interest.
 The likelihood factors as
 
 $$
 \prod_{i=1}^n f(Y_i \mid L_i, A_i; \text{sRD}, p_0) \times f(A_i \mid L_i; \alpha) \times f(L_i; \rho),
 $$
 
-where $p_{0l} = \Pr(Y = 1 \mid L = l, A = 0)$, and $p_0$, $\alpha$, $\rho$ are nuisance parameters.
+where $p_{0l} = \Pr[Y = 1 \mid L = l, A = 0]$ is the risk among the untreated in stratum $l$,
+$p_0 = (p_{00}, p_{01})$ collects these two baseline risks,
+and $p_0$, $\alpha$, $\rho$ are nuisance parameters.
 
 The data on $(A, L)$ are **S-ancillary** for sRD: the conditional distribution of the data given $(A, L)$ depends on sRD,
 but the joint density of $(A, L)$ shares no parameters with $f(Y \mid L, A; \text{sRD}, p_0)$.
@@ -698,10 +732,10 @@ An **exact ancillary** is an S-ancillary statistic with known marginal distribut
 If the stratum-specific risk differences $\text{sRD}_l$ vary over $L$, the population causal risk difference is the standardized risk difference
 
 $$
-\text{RD}_{std} = \sum_l \sb{\Pr(Y = 1 \mid L = l, A = 1; \upsilon) - \Pr(Y = 1 \mid L = l, A = 0; \upsilon)} f(l; \rho),
+\text{RD}_{std} = \sum_l \sb{\Pr[Y = 1 \mid L = l, A = 1; \upsilon] - \Pr[Y = 1 \mid L = l, A = 0; \upsilon]} f(l; \rho),
 $$
 
-with $\upsilon = \{\text{sRD}_l, p_{0,l}; l = 0, 1\}$.
+with $\upsilon = \{\text{sRD}_l, p_{0l}; l = 0, 1\}$.
 In an unconditionally randomized experiment $A \ind L$, so $\text{RD}_{std}$ equals the associational risk difference.
 Because $\text{RD}_{std}$ depends on $\rho$, $\{A_i, L_i\}$ is no longer exactly ancillary, and no exact ancillary exists.
 
@@ -718,7 +752,7 @@ the **extended conditionality principle**.
 
 ::: {.callout-note title="Technical Point 10.4: Adjusted Versus Unadjusted Estimators"}
 The adjusted estimator $\widehat{\text{RD}}_{MLE}$ replaces the population proportions in $\text{RD}_{std}$ by sample proportions;
-the unadjusted estimator is $\widehat{\text{RD}}_{UN} = \widehat{\Pr}(Y = 1 \mid A = 1) - \widehat{\Pr}(Y = 1 \mid A = 0)$.
+the unadjusted estimator is $\widehat{\text{RD}}_{UN} = \widehat{\Pr}[Y = 1 \mid A = 1] - \widehat{\Pr}[Y = 1 \mid A = 0]$.
 Unconditionally, both are asymptotically normal and unbiased for $\text{RD}_{std}$.
 
 @robins1987foundations show that
@@ -748,35 +782,12 @@ $$
 
 $\widehat V_1^{obs}$ uses the observed numbers per arm (80 and 40; **observed information**),
 $\widehat V_1^{exp}$ the expected number (60 per arm under $A \ind L$; **expected information**).
-Nearly all researchers would choose $\widehat V_1^{obs}$.
+Nearly all researchers would choose $\widehat V_1^{obs}$, the choice used in @exm-adjusted-interval-arithmetic.
 Results of @efron1978assessing and @robins1987foundations imply that this choice amounts to conditioning on the approximate ancillary $\widehat S$,
 i.e., following the extended conditionality principle.
 (The conditional and unconditional variances of the MLE differ by order $n^{-3/2}$;
 the observed-information estimator is closer than that to the conditional variance,
 the expected-information estimator closer than that to the unconditional variance.)
-:::
-
-::: {.notes}
-
-::: {#exm-adjusted-interval-arithmetic}
-## Checking the adjusted interval $(-0.076, 0.076)$
-
-Our arithmetic, using $\widehat V^{obs}$ in both strata:
-
-$$
-\begin{aligned}
-\widehat V_0^{obs} &= \frac{(20/40)(20/40)}{40} + \frac{(40/80)(40/80)}{80} = \frac{0.25}{40} + \frac{0.25}{80} = 0.009375, \\
-\widehat V_1^{obs} &= 0.00178125, \\
-\hVar{\widehat{\text{sRD}}}
-&= \frac{\widehat V_0 \widehat V_1}{\widehat V_0 + \widehat V_1}
-= \frac{0.009375 \times 0.00178125}{0.009375 + 0.00178125}
-= \frac{1.670 \times 10^{-5}}{0.01116} \approx 0.001497, \\
-1.96 \sqrt{0.001497} &= 1.96 \times 0.0387 \approx 0.076.
-\end{aligned}
-$$
-
-With point estimate 0, the interval is $(-0.076, 0.076)$, matching the book.
-:::
 :::
 
 ## 10.5 The Curse of Dimensionality (pp. 148-150)
@@ -805,8 +816,10 @@ $\Pr[Y = 1 \mid A = 1, L = l] - \Pr[Y = 1 \mid A = 0, L = l]$ is constant, and e
 ## One informative stratum
 
 Suppose exactly one stratum contains one treated and one untreated individual, and no other stratum contains both.
-A stratum with one person per arm carries no usable information about the common risk difference,
-so no valid 95% interval can be narrower than the parameter space $(-1, 1)$: the adjusted interval is completely uninformative.
+In that stratum the empirical risk difference can only be $-1$, $0$, or $1$, depending on the two outcomes,
+so the stratum carries no usable information about the common risk difference.
+The 95% interval based on the adjusted estimator is $(-1, 1)$,
+the whole parameter space, so it is completely uninformative.
 The unadjusted interval is still $(-0.26, -0.04)$, since its width does not depend on how many covariates were measured.
 :::
 
@@ -859,13 +872,14 @@ If $Z \ind Y \mid A$ held in the super-population, faithfulness would leave only
 so $\E{Y \mid A = 1} - \E{Y \mid A = 0}$ would be the average causal effect.
 
 But @robins2003uniform showed that faithfulness-based inferences are **non-uniform**:
-for any $n$, there are faithful distributions in which the true conditional $Z$-$Y$ odds ratios are so close to 1 that empirical values of 1 are unsurprising,
-yet the average causal effect of $A$ on $Y$ is zero.
-So no honest 95% frequentist interval for that effect can exclude 0, even if the empirical risk difference is large (say 0.2) and many (say 30) times its standard error.
+however large $n$ is, some faithful distributions have conditional $Z$-$Y$ odds ratios near enough to 1 that sample values of exactly 1 are to be expected,
+while $A$ has no average causal effect on $Y$.
+An honest 95% frequentist interval for that effect must therefore always include 0,
+however large the empirical risk difference is relative to its standard error (for instance, 0.2 at 30 standard errors).
 
 A Bayesian who believes in faithfulness may obtain a narrow credible interval that excludes 0,
 but such inferences are very sensitive to the prior;
-the authors argue that the prior probability of any observational-study diagram without a common cause of $A$ and $Y$ should be essentially zero.
+Hernan and Robins argue that the prior probability of any observational-study diagram without a common cause of $A$ and $Y$ should be essentially zero.
 In finite samples, data alone cannot distinguish $Z \ind Y \mid A$ from near-independence,
 so causal discovery from observational data relies heavily on subject-matter knowledge.
 :::
@@ -877,12 +891,15 @@ so causal discovery from observational data relies heavily on subject-matter kno
 - **Identification** (Part I) assumes effectively infinite data;
   **estimation** deals with random variability in finite samples.
 - Estimands, estimators, and estimates;
-  consistency;
+  consistent estimators;
   Wald confidence intervals and their calibration, validity, and (frequentist) interpretation.
 - In the book, an estimator is **unbiased** if it can center a valid Wald interval (formally, uniformly asymptotically normal and unbiased, UANU);
   confidence intervals ignore systematic bias.
 - Standard binomial intervals implicitly assume random sampling from a **super-population**, usually a fiction, so they are what-if statements.
-- In a trial with a chance imbalance on a measured prognostic factor $L$, the adjusted estimator is conditionally unbiased and unconditionally more efficient: the **conditionality principle** favors adjustment.
+- In a trial with a chance imbalance on a measured factor $L$ that is not independent of $Y$ given $A$,
+  and with a risk difference that is constant across strata of $L$,
+  the adjusted estimator is conditionally unbiased and unconditionally more efficient:
+  the **conditionality principle** favors adjustment.
 - With high-dimensional $L$, conditioning makes estimates uninformative while the unadjusted estimator stays conditionally biased: the **curse of dimensionality**, which motivates the models of Part II.
 
 ::: {.notes}
