@@ -50,15 +50,15 @@ g-methods (Chapter 21) avoid both problems.
 ## Treatment-Confounder Feedback
 
 Consider a time-varying treatment $A_k$ and a time-varying confounder $L_k$, measured at times $k = 0, 1, \ldots$.
-Write $(\bar{L}_{k-1}, \bar{A}_{k-2})$ for the measured past of treatment $A_{k-1}$.
+For $j \ge 0$, write $(\bar{L}_j, \bar{A}_{j-1})$ for the measured past of treatment $A_j$.
 There is **treatment-confounder feedback** when, for some $k \ge 1$,
 the time-varying confounder affects treatment ($L_k \to A_k$)
-*and* either
+*and*, for some earlier treatment $A_j$ with $j < k$, either
 
-- $L_k$ is affected by earlier treatment $A_{k-1}$, or
-- $L_k$ and $A_{k-1}$ share a common cause outside the measured past,
-  through a path between them (such as $A_{k-1} \leftarrow W \to L_k$ with $W$ unmeasured)
-  that conditioning on the measured past does not block.
+- $L_k$ is affected by $A_j$, or
+- $L_k$ and $A_j$ share a common cause outside the measured past of $A_j$,
+  through a path between them (such as $A_j \leftarrow W \to L_k$ with $W$ unmeasured)
+  that conditioning on that measured past does not block.
 
 :::
 
@@ -269,9 +269,10 @@ The trial is built so that all three identifiability conditions hold
 - **positivity**:
   each of the eight rows of the table contains individuals;
 - **consistency**:
-  the trial is an ideal one, with full adherence and no loss to follow-up,
-  so each person's recorded treatment is the treatment the protocol assigned,
-  and each person's observed outcome is their counterfactual outcome under that treatment.
+  each treatment history $\bar{a} = (a_0, a_1)$ is a well-defined intervention,
+  so a person whose observed history is $\bar{a}$ has observed outcome $Y = Y^{\bar{a}}$.
+  In this ideal trial the recorded history is the treatment actually received,
+  and every outcome is observed.
 
 Had the trial run past month 1, with each month's treatment assigned using that month's CD4 count,
 each of those later CD4 measurements would be a time-varying confounder as well.
@@ -629,10 +630,12 @@ The price is a new threat to validity: misspecification of the dose-response mod
 
 :::
 
-::: {.callout-warning title="Regression Does Not Remove the Bias"}
-Paying the price of a dose-response model buys no protection:
-regression **is** a conventional stratification-based method,
+::: {.callout-warning title="Conventional Outcome Regression Does Not Remove the Bias"}
+Paying the price of a dose-response model buys no protection
+when the model regresses the outcome on treatment history and conditions on the time-varying confounder:
+that conventional outcome regression **is** a stratification-based method,
 so it cannot remove the bias of stratification under treatment-confounder feedback (@def-treatment-confounder-feedback).
+Regression models can still be used inside the g-methods, which handle feedback differently.
 
 :::
 
@@ -845,9 +848,9 @@ When treatment does have an effect, the same partial adjustment can overstate it
 
 - **Treatment-confounder feedback** (@def-treatment-confounder-feedback):
   a time-varying confounder $L_k$ affects later treatment $A_k$
-  and either is affected by earlier treatment $A_{k-1}$
-  or shares with $A_{k-1}$ a cause outside the measured past,
-  through a path that conditioning on the measured past does not block.
+  and, for some earlier treatment $A_j$ ($j < k$), either is affected by $A_j$
+  or shares with $A_j$ a cause outside the measured past of $A_j$,
+  through a path that conditioning on that measured past does not block.
 - In @tbl-hiv-feedback-trial the true effect of "always treat" vs. "never treat" is 0,
   yet the unadjusted analysis gives $-13.3$ and stratification on $L_1$ gives $-8$.
 - Stratification on $L_1$ removes confounding for $A_1$
