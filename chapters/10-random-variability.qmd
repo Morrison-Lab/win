@@ -72,7 +72,7 @@ A **super-population** is a population so large that we can regard it as infinit
 from which the study individuals are a random sample.
 :::
 
-Suppose the 20 study individuals are a random sample from a super-population (@def-super-population),
+Suppose the 20 individuals of the heart transplant study in [Chapter 2](02-randomized-experiments.qmd) (Table 2.2) are a random sample from a super-population (@def-super-population),
 and we want to make inferences about that super-population.
 
 ::: {#def-estimand-estimator}
@@ -175,8 +175,9 @@ A 95% confidence interval is
 - **anticonservative** otherwise.
 
 It is **valid** if, for every value of the true parameter, it is calibrated or conservative (coverage of at least 95%).
-Among valid intervals, we prefer the narrowest.
 :::
+
+Among valid intervals, we prefer the narrowest.
 
 ::: {#def-small-large-sample-valid}
 ## Small-sample and large-sample validity
@@ -188,10 +189,11 @@ An interval is
 - **large-sample (asymptotically) valid** if, for every value $\theta$ of the true parameter,
   $\liminf_{n \to \infty} \Pr_\theta[\theta \in \text{CI}_n] \ge 0.95$,
   where $\text{CI}_n$ is the interval computed from a sample of size $n$.
-  Coverage may still dip below 95% at infinitely many sample sizes,
-  provided the dips shrink to nothing as $n$ grows.
 
 :::
+
+A large-sample valid interval may still have coverage below 95% at infinitely many sample sizes,
+provided the shortfall shrinks to nothing as $n$ grows.
 
 ::: {#rem-book-ci-convention}
 ## What the book means by a 95% confidence interval
@@ -264,13 +266,13 @@ Most users of statistics use @def-unbiased-estimator,
 and the book adopts it for now.
 
 ::: {.callout-warning title="Confidence Intervals Ignore Systematic Bias"}
-Confidence intervals quantify only random error, so they can overstate our confidence when systematic biases may be present (Fine Point 10.2).
+Confidence intervals quantify only random error, so they can overstate our confidence when systematic biases may be present.
 :::
 
 ::: {.callout-note title="Technical Point 10.1: Bias and Consistency in Statistical Inference"}
 Suppose we observe $n$ i.i.d. copies of a random vector whose distribution $P$ lies in a model $\mathcal{M}$.
 
-- $\hth_n$ is **consistent** for $\theta = \theta(P)$ in $\mathcal{M}$ if, for every $P \in \mathcal{M}$ and every $\varepsilon > 0$,
+- $\hth_n$ is consistent (@def-consistent-estimator-sample-size) for $\theta = \theta(P)$ in $\mathcal{M}$ if, formally, for every $P \in \mathcal{M}$ and every $\varepsilon > 0$,
   $$\Pr_P\sb{\abs{\hth_n - \theta(P)} > \varepsilon} \to 0 \text{ as } n \to \infty.$$
 - $\hth_n$ is **exactly unbiased** in $\mathcal{M}$ if $E_P[\hth_n] = \theta(P)$ for every $P \in \mathcal{M}$;
   the exact bias under $P$ is $E_P[\hth_n] - \theta(P)$.
@@ -393,7 +395,6 @@ We are often not interested in the first target.
 In a trial comparing two first-line cancer treatments, learning which is better comes too late to help the trial participants;
 the study is meant to guide treatment for a larger group of individuals similar to those studied.
 So far we have assumed that this larger group is a super-population from which participants were randomly sampled.
-Section 10.3 examines that assumption.
 :::
 
 ::: {.callout-note title="Fine Point 10.2: Uncertainty from Systematic Biases"}
@@ -596,7 +597,7 @@ Our ignorance of chance correlations between unmeasured baseline risk factors an
 - Nonsmokers: $20/40 - 40/80 = 0.50 - 0.50 = 0$.
 
 The adjusted (stratified) analysis finds no effect in either stratum, although the marginal estimate suggested a benefit.
-The Wald interval centered at the adjusted estimate is $(-0.076, 0.076)$ (see Technical Point 10.5 for the variance).
+The Wald interval centered at the adjusted estimate is $(-0.076, 0.076)$.
 :::
 
 ::: {#rem-retraction-debate}
@@ -648,12 +649,12 @@ The adjusted estimator is unconditionally more efficient because it is the maxim
 An **ancillary statistic** for a parameter is a statistic whose distribution does not depend on that parameter.
 :::
 
-The observed $L$-$A$ association is an ancillary statistic (@def-ancillary-statistic) for the causal risk difference.
+When the risk difference is constant across strata of $L$, the observed $L$-$A$ association is an ancillary statistic (@def-ancillary-statistic) for the causal risk difference.
 
 ::: {#def-conditionality-principle}
 ## Conditionality principle
 
-Inference on a parameter should be performed conditional on ancillary statistics (@def-ancillary-statistic).
+The **conditionality principle** is the principle that inference on a parameter should be performed conditional on ancillary statistics (@def-ancillary-statistic) for that parameter.
 :::
 
 ::: {#def-conditionally-unbiased}
@@ -671,7 +672,7 @@ why should $L$-$A$ associations in hypothetical other studies matter, when in *m
 
 ::: {.callout-warning title="Conditionality Breaks Down With Many Confounders"}
 The conditional reply (that the observed $L$-$A$ association in *my* study is what matters) is convincing in randomized and observational studies **as long as the number of measured confounders is not large**.
-With many confounders, strictly following the conditionality principle stops being wise (Section 10.5).
+With many confounders, strictly following the conditionality principle stops being wise.
 The quotation marks around "principle" in the section title anticipate this point.
 :::
 
@@ -804,8 +805,8 @@ $\Pr[Y = 1 \mid A = 1, L = l] - \Pr[Y = 1 \mid A = 0, L = l]$ is constant, and e
 ## One informative stratum
 
 Suppose exactly one stratum contains one treated and one untreated individual, and no other stratum contains both.
-The empirical risk difference in that stratum can only be $-1$, $0$, or $1$,
-so the adjusted 95% interval for the common risk difference is $(-1, 1)$: completely uninformative.
+A stratum with one person per arm carries no usable information about the common risk difference,
+so no valid 95% interval can be narrower than the parameter space $(-1, 1)$: the adjusted interval is completely uninformative.
 The unadjusted interval is still $(-0.26, -0.04)$, since its width does not depend on how many covariates were measured.
 :::
 
@@ -878,7 +879,7 @@ so causal discovery from observational data relies heavily on subject-matter kno
 - Estimands, estimators, and estimates;
   consistency;
   Wald confidence intervals and their calibration, validity, and (frequentist) interpretation.
-- In the book, an estimator is **unbiased** if it can center a valid Wald interval (formally, UANU);
+- In the book, an estimator is **unbiased** if it can center a valid Wald interval (formally, uniformly asymptotically normal and unbiased, UANU);
   confidence intervals ignore systematic bias.
 - Standard binomial intervals implicitly assume random sampling from a **super-population**, usually a fiction, so they are what-if statements.
 - In a trial with a chance imbalance on a measured prognostic factor $L$, the adjusted estimator is conditionally unbiased and unconditionally more efficient: the **conditionality principle** favors adjustment.
