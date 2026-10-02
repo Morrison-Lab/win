@@ -118,7 +118,7 @@ $$\Pr[T = k \mid T > k - 1]$$
 ::: {#rem-discrete-time-hazard}
 ## Discrete-time hazards
 
-Strictly speaking this is a discrete-time hazard, defined for time measured in intervals rather than continuously.
+Strictly speaking, the hazard of @def-survival-risk-hazard-time is a discrete-time hazard, defined for time measured in intervals rather than continuously.
 Since real data always record time in units such as years, months, or days,
 we simply call it the hazard.
 :::
@@ -253,7 +253,8 @@ so the survival at $k$ is the product of the interval-specific conditional survi
 ::: {#prp-survival-product-of-hazards}
 ## Survival as a product of conditional survivals
 
-For every $k \geq 1$ such that the conditioning events have positive probability,
+Suppose $D_0 = 0$ for everyone and that $D_{m-1} = 1$ implies $D_m = 1$ for every $m \geq 1$.
+Then for every $k \geq 1$ such that the conditioning events have positive probability,
 
 $$\Pr[D_k = 0] = \prod_{m=1}^k \Pr[D_m = 0 \mid D_{m-1} = 0]$$
 :::
@@ -421,10 +422,12 @@ Then the hazard-based procedure is more than needed:
 $\Pr[D_{k+1} = 0 \mid A = a]$ can be estimated directly as the proportion of people with treatment $a$ still alive at $k + 1$,
 or with a separate logistic model for $\Pr[D_{k+1} = 0 \mid A]$ at each $k = 0, 1, \ldots, k_\text{end}$.
 
+Things change with staggered entry.
+
 ::: {#def-staggered-entry}
 ## Staggered entry
 
-Things change with **staggered entry**, where people enter the study on different dates while the study closes on one date.
+Under **staggered entry**, people enter the study on different dates while the study closes on one date.
 Each person's administrative censoring time is the closing date minus their entry date,
 so it now varies across individuals.
 :::
@@ -434,12 +437,13 @@ so it now varies across individuals.
 ::: {#def-time-varying-censoring-indicator}
 ## Time-varying censoring indicator
 
-We therefore add a time-varying **censoring indicator** $C_k$,
-equal to 0 if the person's administrative end of follow-up lies beyond $k$ and 1 otherwise.
+The time-varying **censoring indicator** $C_k$
+equals 0 if the person's administrative end of follow-up lies beyond $k$ and 1 otherwise.
 In the person-time format, the row for an individual at time $k$ includes $C_{k+1}$.
+:::
+
 The NHEFS dataset omits this variable because $C_{k+1} = 0$ for everyone at all $k$ before 120 months;
 with individual-specific administrative censoring, $C_{k+1}$ switches from 0 to 1 at different times for different people.
-:::
 
 ::: {#def-survival-without-censoring}
 ## Survival without censoring
@@ -483,9 +487,36 @@ the survival would be $1 \times 0.9 \times 1 \times 0.9 = 0.81$.
 ::: {#prp-survival-random-censoring}
 ## Survival under as-if random censoring
 
-If censoring is (as if) randomly assigned, the survival $\Pr[D_k = 0 \mid A = a]$ at $k$ is:
+Let $C_0 = 0$ for everyone, and fix a treatment level $a$ and a time $k \in \{1, \ldots, k_\text{end}\}$.
+Suppose that, for every $m = 1, \ldots, k$:
 
-$$\Pr[D_k = 0 \mid A = a] = \prod_{m=1}^k \Pr[D_m = 0 \mid D_{m-1} = 0, C_m = 0, A = a] \quad \text{for } k < k_\text{end}$$
+- **Censoring as if randomly assigned**: given $A$ and survival without censoring through $m - 1$,
+  being censored by $m$ is independent of the event at $m$ without censoring,
+  $C_m \ind D^{\bar{c}=0}_m \mid A = a, D^{\bar{c}=0}_{m-1} = 0$;
+- **Positivity**: $\Pr[C_m = 0 \mid A = a, D^{\bar{c}=0}_{m-1} = 0] > 0$ and $\Pr[D^{\bar{c}=0}_{m-1} = 0 \mid A = a] > 0$;
+- **Consistency**: for anyone with $C_m = 0$, $D_m = D^{\bar{c}=0}_m$ and $D_{m-1} = D^{\bar{c}=0}_{m-1}$.
+
+Then the survival without censoring (@def-survival-without-censoring) at $k$ is
+
+$$\Pr[D^{\bar{c}=0}_k = 0 \mid A = a] = \prod_{m=1}^k \Pr[D_m = 0 \mid D_{m-1} = 0, C_m = 0, A = a]$$
+
+For $k = 1, \ldots, k_\text{end}$ this covers the same times as $D_{k+1}$ for $k = 0, \ldots, k_\text{end} - 1$.
+:::
+
+::: {.proof}
+The uncensored event indicators $D^{\bar{c}=0}_m$ start at 0 and stay at 1 once they reach 1, as the observed ones do.
+Applying @prp-survival-product-of-hazards to them, within the stratum $A = a$, gives
+
+$$\Pr[D^{\bar{c}=0}_k = 0 \mid A = a] = \prod_{m=1}^k \Pr[D^{\bar{c}=0}_m = 0 \mid D^{\bar{c}=0}_{m-1} = 0, A = a]$$
+
+Fix one factor $m$.
+By the independence assumption, and positivity so that the extra conditioning event has positive probability,
+adding $C_m = 0$ to the conditioning event leaves the factor unchanged:
+it equals $\Pr[D^{\bar{c}=0}_m = 0 \mid D^{\bar{c}=0}_{m-1} = 0, C_m = 0, A = a]$.
+Among people with $C_m = 0$, consistency replaces $D^{\bar{c}=0}_m$ by $D_m$ and $D^{\bar{c}=0}_{m-1}$ by $D_{m-1}$,
+so the factor equals $\Pr[D_m = 0 \mid D_{m-1} = 0, C_m = 0, A = a]$,
+which involves only observed data.
+Multiplying the $k$ factors gives the result.
 :::
 
 ::: {#def-cause-specific-hazard}
@@ -562,7 +593,6 @@ and $1 - \widehat{\Pr}[A = 1 \mid L]$ for the untreated;
 the numerator is $\widehat{\Pr}[A = 1]$ for the treated and $1 - \widehat{\Pr}[A = 1]$ for the untreated,
 with $\widehat{\Pr}[A = 1]$ estimated nonparametrically or by a logistic model without covariates.
 In the weighted pseudo-population $L$ and $A$ are independent, so $L$ no longer confounds.
-The estimated weights averaged 1, as they should, and ranged from 0.33 to 4.21.
 
 **Step 2**: In the person-time data, fit the hazards model
 
@@ -580,6 +610,8 @@ are turned into survival estimates
 $\Pr[D^a_{k+1} = 0] = \prod_{m=0}^k (1 - \Pr[D^a_{m+1} = 1 \mid D^a_m = 0])$
 for $a = 1$ and $a = 0$ (the book's Figure 17.6).
 :::
+
+In the NHEFS, the estimated weights averaged 1, as they should, and ranged from 0.33 to 4.21.
 
 ::: {.notes}
 
@@ -625,7 +657,7 @@ $$\Pr[D^a_{k+1} = 0] = \sum_l \Pr[D_{k+1} = 0 \mid L = l, A = a]\, \Pr[L = l]$$
 :::
 
 ::: {.proof}
-For a formal proof, see Section 2.3.
+For a formal proof, see [Section 2.3](02-randomized-experiments.qmd#def-standardization).
 In outline:
 
 $$
