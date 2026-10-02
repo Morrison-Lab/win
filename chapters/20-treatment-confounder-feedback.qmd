@@ -19,7 +19,9 @@ so the measured time-varying confounders suffice to estimate the effect of any t
 Which confounding adjustment method should we then use?
 The answer exposes a central problem for time-varying treatments:
 a time-varying confounder can drive later treatment
-while itself being affected by, or sharing an unmeasured cause with, earlier treatment.
+while itself being affected by earlier treatment,
+or while sharing with earlier treatment a cause outside the measured past,
+through a path that conditioning on the measured past does not block.
 When that happens, traditional adjustment methods can be biased
 even though all the information needed for valid estimation is available.
 This chapter describes the structure of the problem
@@ -29,7 +31,9 @@ and explains why traditional methods fail.
 This chapter is based on @hernan2020causal [Chapter 20, pp. 267-275].
 
 **Key insight**: when a time-varying confounder $L_1$ that affects later treatment $A_1$
-is also affected by (or shares an unmeasured cause with) earlier treatment $A_0$,
+is also affected by earlier treatment $A_0$,
+or shares with $A_0$ a cause outside the measured past
+through a path that conditioning on the measured past does not block,
 stratifying on $L_1$ removes confounding for the later treatment $A_1$
 but opens a collider path that creates selection bias for $A_0$.
 Not adjusting for $L_1$ leaves $A_1$ confounded.
@@ -62,8 +66,8 @@ The book's one-line description is the arrow form ($A_{k-1} \to L_k$):
 "the confounder affects the treatment and the treatment affects the confounder"
 [@hernan2020causal, p. 267].
 The book gives the same name to the case in which $L_1$ shares an unmeasured cause $W_0$ with $A_0$ (its Figures 20.4 and 20.6),
-because the observed data cannot tell that case apart from the arrow form
-and it produces the same bias [@hernan2020causal, pp. 269 and 272].
+because conditioning on $L_1$ produces the same bias in that case as in the arrow form;
+the observed data also cannot tell the two cases apart [@hernan2020causal, pp. 269 and 272].
 The second clause of @def-treatment-confounder-feedback covers that case only.
 It excludes a common cause in the measured past,
 such as an earlier confounder $L_{k-1}$ that affects both $A_{k-1}$ and $L_k$;
@@ -131,7 +135,7 @@ and time is usually recorded in discrete units anyway [@hernan2020causal, Fine P
 
 The smallest diagram that shows treatment-confounder feedback in a two-time-point
 sequentially randomized trial is the book's Figure 20.3.
-Its arrows include, among others,
+Its arrows are
 
 $$A_0 \to L_1, \qquad L_1 \to A_1, \qquad U_1 \to L_1, \qquad U_1 \to Y.$$
 
@@ -175,7 +179,7 @@ should identify this effect as 0.
 
 The same problem arises when the time-varying confounder is not affected by prior treatment
 but **shares an unmeasured cause** $W_0$ with it (the book's Figure 20.4, a subset of Figure 19.4).
-Its arrows include, among others,
+Its arrows are
 
 $$W_0 \to A_0, \qquad W_0 \to L_1, \qquad L_1 \to A_1, \qquad U_1 \to L_1, \qquad U_1 \to Y.$$
 
@@ -255,8 +259,8 @@ The identifiability conditions hold by design:
 there are no confounders for $A_0$,
 $L_1$ is the only confounder for $A_1$ (so sequential exchangeability holds given $L_1$),
 and positivity holds because no row of the table is empty.
-If treatment at later times $k$ were also affected by $L_k$,
-then $L_k$ would be a time-varying confounder too.
+Had the trial run past month 1, with each month's treatment assigned using that month's CD4 count,
+each of those later CD4 measurements would be a time-varying confounder as well.
 Random variability is ignored throughout.
 
 :::
@@ -286,7 +290,9 @@ $\E{Y^{a_1=1} \mid A_0 = 0, L_1 = 0} - \E{Y^{a_1=0} \mid A_0 = 0, L_1 = 0}$.
 ::: {#exm-no-effect-a0}
 ## No Effect of $A_0$
 
-Because $A_0$ is randomized, $\E{Y \mid A_0 = 1} - \E{Y \mid A_0 = 0}$
+Because $A_0$ is randomized (so exchangeability holds for $A_0$ without adjustment),
+and positivity and consistency also hold (@rem-identifiability-by-design),
+$\E{Y \mid A_0 = 1} - \E{Y \mid A_0 = 0}$
 estimates $\E{Y^{a_0=1}} - \E{Y^{a_0=0}}$.
 Averaging rows 1-4 (16,000 individuals with $A_0 = 0$):
 
@@ -320,12 +326,12 @@ With two time points, sequential exchangeability for all $Y^g$ then reads
 $Y \ind A_0 \mid L_0$ and $Y \ind A_1 \mid A_0, L_0, L_1$
 (using the fact that for any $a_0$ and $l_0$ some strategy $g$ has $a_0 = g(l_0)$).
 Under sequential exchangeability, testing these conditional independencies is a test of the sharp null:
-the **g-null test** (Robins 1986).
+the **g-null test** [@robins1986new].
 The first independence says $A_0$ has no effect within strata of $L_0$;
 the second says $A_1$ has no effect within strata of $(A_0, L_0, L_1)$
 (in Figure 20.3, which has no $L_0$, within strata of $(A_0, L_1)$).
 
-More generally, the **g-null theorem** (Robins 1986) states that,
+More generally, the **g-null theorem** [@robins1986new] states that,
 under sequential randomization for all $g$,
 these two independencies hold if and only if the distribution of $Y^g$
 (and therefore $\E{Y^g}$) is the same for all $g$
@@ -338,9 +344,14 @@ and equal to the distribution (and mean) of the observed $Y$
 
 ### Analyzing the Joint Treatment
 
-The effects of $A_0$ and $A_1$ are each null,
-and the mean outcome under every static strategy $(a_0, a_1)$ follows directly.
-Because $A_0$ is randomized, $L_1$ is the only confounder for $A_1$, and the identifiability conditions hold,
+The effects of $A_0$ and $A_1$ are each null.
+Each null taken alone does not establish the joint null for the strategy $(a_0, a_1)$;
+the g-null theorem of Technical Point 20.1 does,
+and so does computing the mean outcome under each static strategy with the g-formula.
+That computation uses all three identifiability conditions (@rem-identifiability-by-design):
+sequential exchangeability (unconditionally for the randomized $A_0$, and given $(A_0, L_1)$ for $A_1$),
+positivity, and consistency.
+Under these conditions,
 
 $$
 \begin{aligned}
@@ -410,7 +421,7 @@ The analysis adjusted for the confounder also gives the wrong answer.
 Because the stratum-specific difference is $-8$ in *both* strata of $L_1$,
 no weighted average of the stratum-specific differences can equal the correct value 0.
 This estimate reflects the bias of traditional methods
-when there is treatment-confounder feedback [@hernan2020causal, p. 271].
+when there is treatment-confounder feedback (@def-treatment-confounder-feedback) [@hernan2020causal, p. 271].
 
 :::
 
@@ -438,7 +449,8 @@ All three identifiability conditions hold in @tbl-hiv-feedback-trial;
 the unmeasured $U_1$ (immunosuppression level) is not needed
 because we have data on $L_1$.
 Yet neither analysis gave the correct answer.
-The problem is the **adjustment method**: stratification cannot handle treatment-confounder feedback.
+The problem is the **adjustment method**:
+stratification cannot handle treatment-confounder feedback (@def-treatment-confounder-feedback).
 
 :::
 
@@ -500,8 +512,9 @@ conditioning on the collider $L_1$ opens
 
 $$A_0 \leftarrow W_0 \to L_1 \leftarrow U_1 \to Y.$$
 
-The settings of Figures 20.3 and 20.4 cannot be distinguished using the observed data,
-which is why both are called treatment-confounder feedback.
+Because conditioning on $L_1$ creates the same bias in Figure 20.4 as in Figure 20.3,
+both settings are called treatment-confounder feedback;
+the observed data also cannot tell them apart.
 
 :::
 
@@ -513,8 +526,9 @@ which is why both are called treatment-confounder feedback.
 
 - The bias is not limited to the sharp null.
   With a non-null effect (the book's Figure 20.7, where $A_0 \to L_1 \to Y$),
-  arrows from $A_0$, $A_1$, or $L_1$ into $Y$ do not change the fact
-  that conditioning on $L_1$ generically (that is, under faithfulness) creates a noncausal association between $A_0$ and $Y$.
+  adding arrows into $Y$ from $A_0$, $A_1$, or $L_1$ leaves the collider path through $L_1$ in place,
+  so conditioning on $L_1$ still generically (that is, under faithfulness) associates $A_0$ with $Y$
+  in a way that has no causal interpretation.
 - With many time points and variables, the bias still arises;
   confounders affected by prior treatment at multiple times
   increase the possibility of a large bias.
@@ -588,7 +602,7 @@ The price is a new threat to validity: misspecification of the dose-response mod
 ::: {.callout-warning title="Regression Does Not Remove the Bias"}
 Paying the price of a dose-response model buys no protection:
 regression **is** a conventional stratification-based method,
-so it cannot remove the bias of stratification under treatment-confounder feedback.
+so it cannot remove the bias of stratification under treatment-confounder feedback (@def-treatment-confounder-feedback).
 
 :::
 
@@ -677,7 +691,7 @@ Now suppose doctors use past treatment history $\bar{A}_{k-1}$
 when deciding on treatment $A_k$.
 Adding $A_0 \to A_1$ to Figures 20.3 and 20.4 gives the book's Figures 20.8 and 20.9.
 
-With treatment-confounder feedback, conditioning on $L_1$ alone no longer blocks
+With treatment-confounder feedback (@def-treatment-confounder-feedback), conditioning on $L_1$ alone no longer blocks
 all backdoor paths between $A_1$ and $Y$; it opens
 
 $$
@@ -711,20 +725,22 @@ conditions on treatment history.
 ## Short-Term Effect
 
 In a two-time-point treatment $\bar{A} = (A_0, A_1)$,
-the **short-term effect** of $A_1$ is the effect of $A_1$ on $Y$
-with $A_0$ left at whatever value it naturally takes,
-that is, the effect of $A_1$ when $A_1$ is treated as a time-fixed treatment.
+the **short-term effect** of $A_1$ is the contrast
+$$\E{Y^{a_1=1}} - \E{Y^{a_1=0}},$$
+in which only $A_1$ is set by intervention
+and $A_0$ is not intervened on, so it keeps whatever value it would naturally take.
+That is, it is the effect of $A_1$ when $A_1$ is treated as a time-fixed treatment.
 
 :::
 
-Suppose the target is the short-term effect,
+Suppose the target is the short-term effect of $A_1$ (@def-short-term-effect),
 treating $A_1$ as a time-fixed treatment.
 
 ::: {.callout-warning title="Ignoring Past Treatment Biases the Short-Term Effect"}
 Without adjustment for $A_0$:
 
-- with treatment-confounder feedback, there is selection bias;
-- if $A_0$ affects $Y$ directly, there is confounding.
+- with treatment-confounder feedback, there is generically (under faithfulness) selection bias;
+- if $A_0$ affects $Y$ directly, there is generically confounding.
 
 So $\E{Y \mid A_1 = 1, L_1} - \E{Y \mid A_1 = 0, L_1}$ need not be zero
 even if $A_1$ has no effect on anyone's outcome (Figures 20.8-20.10).
@@ -753,7 +769,7 @@ the restriction to new users would be unnecessary.
 
 ::: {.callout-warning title="Mismeasured Past Treatment"}
 The need to adjust for past treatment matters when past treatment is **mismeasured**.
-As in Section 9.3, adjusting for a mismeasured confounder can leave bias in either direction.
+As in [Section 9.3](09-measurement-bias.qmd#mismeasured-confounders-and-colliders-pp.-128-130), adjusting for a mismeasured confounder can leave bias in either direction.
 
 :::
 
@@ -773,12 +789,13 @@ although $A_1$ has no effect on $Y$.
 ::: {.notes}
 
 ::: {.callout-warning title="Measurement Error Can Bias Even Under the Null"}
-Contrary to a widespread belief, mismeasurement of a time-varying treatment
-(even independent, non-differential measurement error) **may cause bias under the null**,
-because past treatment confounds the effect of later treatment
-even when past treatment has no effect on the outcome.
-Under the alternative, the imperfect adjustment may exaggerate the effect estimate.
-Robins (1987) showed that randomly mismeasured treatment may lead to bias away from the null
+With a time-varying treatment, errors in recording treatment **can bias the estimate when treatment has no effect**,
+even if the errors are independent and non-differential,
+although such errors are often assumed to be harmless under the null.
+Earlier treatment confounds later treatment whether or not it affects the outcome,
+and an error-prone record of earlier treatment removes that confounding only in part.
+When treatment does have an effect, the same partial adjustment can overstate it.
+@robins1987addendum showed that random errors in measured treatment can push estimates away from the null
 [@hernan2020causal, p. 275].
 
 :::
@@ -789,8 +806,11 @@ Robins (1987) showed that randomly mismeasured treatment may lead to bias away f
 
 ---
 
-- **Treatment-confounder feedback**: a time-varying confounder $L_k$ affects later treatment $A_k$
-  and is affected by (or shares an unmeasured cause with) earlier treatment.
+- **Treatment-confounder feedback** (@def-treatment-confounder-feedback):
+  a time-varying confounder $L_k$ affects later treatment $A_k$
+  and either is affected by earlier treatment $A_{k-1}$
+  or shares with $A_{k-1}$ a cause outside the measured past,
+  through a path that conditioning on the measured past does not block.
 - In @tbl-hiv-feedback-trial the true effect of "always treat" vs. "never treat" is 0,
   yet the unadjusted analysis gives $-13.3$ and stratification on $L_1$ gives $-8$.
 - Stratification on $L_1$ removes confounding for $A_1$
