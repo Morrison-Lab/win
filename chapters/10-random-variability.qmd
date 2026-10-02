@@ -91,10 +91,10 @@ So we should have more confidence in estimates from larger studies, and we quant
 A 95% **Wald confidence interval** for a parameter $\theta$ based on an estimator $\hth$ is
 
 $$
-\hth \pm 1.96 \times \widehat{\text{se}}(\hth),
+\hth \pm 1.96 \times \hse{\hth},
 $$
 
-where $\widehat{\text{se}}(\hth)$ estimates the (exact or large-sample) standard error of $\hth$,
+where $\hse{\hth}$ estimates the (exact or large-sample) standard error of $\hth$,
 and 1.96 is the upper 97.5% quantile of the standard normal distribution.
 
 ::: {#exm-wald-binomial}
@@ -105,7 +105,7 @@ The standard error of a binomial proportion is $\sqrt{p(1-p)/n}$, so
 
 $$
 \begin{aligned}
-\widehat{\text{se}}(\hat p)
+\hse{\hat p}
 &= \sqrt{\frac{\hat p (1 - \hat p)}{n}}
 = \sqrt{\frac{(7/13)(6/13)}{13}} \\
 &= \sqrt{\frac{42/169}{13}}
@@ -537,7 +537,7 @@ In an unconditionally randomized experiment $A \ind L$, so $\text{RD}_{std}$ equ
 Because $\text{RD}_{std}$ depends on $\rho$, $\{A_i, L_i\}$ is no longer exactly ancillary, and no exact ancillary exists.
 
 Let $\widetilde S = \widehat{\OR}_{AL} - \OR_{AL}$, the sample minus the super-population $A$-$L$ odds ratio,
-and $\widehat S = \widetilde S / \widehat{\text{se}}(\widetilde S)$, which is approximately standard normal in large samples.
+and $\widehat S = \widetilde S / \hse{\widetilde S}$, which is approximately standard normal in large samples.
 When $\OR_{AL}$ is known (e.g., $\OR_{AL} = 1$ in a randomized experiment), $\widehat S$ is an **approximate (large-sample) ancillary**:
 it can be computed from the data, has approximately known distribution, is governed by the $f(A \mid L; \alpha)$ factor of the likelihood only,
 and conditional on it the adjusted estimate of $\text{RD}_{std}$ is unbiased while the unadjusted one is biased.
@@ -594,7 +594,7 @@ $$
 \begin{aligned}
 \widehat V_0^{obs} &= \frac{(20/40)(20/40)}{40} + \frac{(40/80)(40/80)}{80} = \frac{0.25}{40} + \frac{0.25}{80} = 0.009375, \\
 \widehat V_1^{obs} &= 0.00178125, \\
-\widehat{\text{Var}}(\widehat{\text{sRD}})
+\hVar{\widehat{\text{sRD}}}
 &= \frac{\widehat V_0 \widehat V_1}{\widehat V_0 + \widehat V_1}
 = \frac{0.009375 \times 0.00178125}{0.009375 + 0.00178125}
 = \frac{1.670 \times 10^{-5}}{0.01116} \approx 0.001497, \\
@@ -661,7 +661,7 @@ Chapter 18 shows that this is sometimes possible.
 Fine Point 6.3 showed that, under faithfulness and with infinite data, the causal structure can sometimes be learned.
 Suppose variables $Z$, $A$, $Y$ occur in that order, the empirical $Z$-$Y$ odds ratio is 1 at every level of $A$, and all other odds ratios are far from 1.
 If $Z \ind Y \mid A$ held in the super-population, faithfulness would leave only $Z \to A \to Y$ (possibly with a common cause of $Z$ and $A$),
-so $E[Y \mid A = 1] - E[Y \mid A = 0]$ would be the average causal effect.
+so $\E{Y \mid A = 1} - \E{Y \mid A = 0}$ would be the average causal effect.
 
 But @robins2003uniform showed that faithfulness-based inferences are **non-uniform**:
 for any $n$, there are faithful distributions in which the true conditional $Z$-$Y$ odds ratios are so close to 1 that empirical values of 1 are unsurprising,

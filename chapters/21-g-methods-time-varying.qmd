@@ -238,7 +238,7 @@ For $K = 1$: $W^{\bar{A}} = \dfrac{1}{f(A_0 \mid L_0)} \times \dfrac{1}{f(A_1 \m
 :::
 
 Under the identifiability conditions, $\E{Y^{a_0, a_1}}$ equals the mean
-$\text{E}_{ps}[Y \mid A_0 = a_0, A_1 = a_1]$ in the pseudo-population created by either set of weights.
+$\Expfc{ps}{Y \mid A_0 = a_0, A_1 = a_1}$ in the pseudo-population created by either set of weights.
 
 ::: {.notes}
 As in Technical Point 12.2, the pseudo-population mean equals
@@ -251,7 +251,7 @@ In the pseudo-population, the probability of treatment at each $k$ is
 the constant $1/2$ (nonstabilized weights)
 or depends at most on past treatment (stabilized weights),
 so sequential *unconditional* exchangeability holds there,
-and $\E{Y^{\bar{a}}} - \E{Y^{\bar{a}'}} = \text{E}_{ps}[Y \mid \bar{A} = \bar{a}] - \text{E}_{ps}[Y \mid \bar{A} = \bar{a}']$.
+and $\E{Y^{\bar{a}}} - \E{Y^{\bar{a}'}} = \Expfc{ps}{Y \mid \bar{A} = \bar{a}} - \Expfc{ps}{Y \mid \bar{A} = \bar{a}'}$.
 In a true sequentially randomized trial the treatment probabilities are known by design,
 so nonstabilized-weight estimates are unbiased;
 in observational studies they must be estimated,
@@ -280,7 +280,7 @@ The 32,000 pseudo-individuals with $(A_0, A_1) = (0, 0)$ give
 
 $$
 \begin{aligned}
-\text{E}_{ps}[Y \mid A_0 = 0, A_1 = 0]
+\Expfc{ps}{Y \mid A_0 = 0, A_1 = 0}
 &= 84 \times \frac{8000}{32000} + 52 \times \frac{24000}{32000} \\
 &= 21 + 39 = 60.
 \end{aligned}
@@ -443,8 +443,8 @@ and the outcome model is correct for times $m + 1$ to $K$
 [@hernan2020causal, p. 288].
 
 ::: {.callout-note title="Technical Point 21.4: A K+2 Robust Augmented IP Weighted Estimator"}
-For $K = 1$, let $\hat{b}_1(L_0, L_1) = \hat{\mathrm{E}}[Y \mid L_0, A_0 = 1, L_1, A_1 = 1]$
-and $\hat{b}_0(L_0) = \hat{\mathrm{E}}[\hat{b}_1(L_0, L_1) \mid A_0 = 1, L_0]$
+For $K = 1$, let $\hat{b}_1(L_0, L_1) = \hE{Y \mid L_0, A_0 = 1, L_1, A_1 = 1}$
+and $\hat{b}_0(L_0) = \hE{\hat{b}_1(L_0, L_1) \mid A_0 = 1, L_0}$
 (the iterated conditional expectation, ICE, plug-in estimator of the g-formula averages $\hat{b}_0$),
 and let $\hat{\pi}_0, \hat{\pi}_1$ estimate $\Pr[A_0 = 1 \mid L_0]$ and $\Pr[A_1 = 1 \mid L_0, L_1, A_0 = 1]$.
 The augmented IP weighted estimator of Robins et al. (1994) is the sample average of
@@ -708,7 +708,7 @@ but for an SNMM linear in $\beta$ the estimating equation has a closed-form solu
 - $\E{Y^{\bar{0}}}$: the sample average of $H_0(\hb)$.
 - If there is no effect modification by past covariates,
   $\gamma_k(\bar{a}_{k-1}, \bar{l}_k, \beta) = \gamma_k(\bar{a}_{k-1}, \beta)$, and for a static $\bar{a}$
-  $$\hat{\mathrm{E}}[Y^{\bar{a}}] = \hat{\mathrm{E}}[Y^{\bar{0}}] + \sum_{k=0}^{K} a_k \gamma_k(\bar{a}_{k-1}, \hb).$$
+  $$\hE{Y^{\bar{a}}} = \hE{Y^{\bar{0}}} + \sum_{k=0}^{K} a_k \gamma_k(\bar{a}_{k-1}, \hb).$$
 - If $\gamma_k$ depends on $\bar{l}_k$, or $g$ is dynamic,
   simulate $L_k$ from a model for $f(l_k \mid \bar{a}_{k-1}, \bar{l}_{k-1})$ (Technical Point 21.9).
 
@@ -716,7 +716,7 @@ but for an SNMM linear in $\beta$ the estimating equation has a closed-form solu
 Estimate $\E{Y^{\bar{0}}}$ by the average of $H_0(\hb)$;
 fit a model for $f(l_k \mid \bar{a}_{k-1}, \bar{l}_{k-1})$;
 simulate covariate histories under $g$;
-and add to $\hat{\mathrm{E}}[Y^{\bar{0}}]$ the average over simulations of
+and add to $\hE{Y^{\bar{0}}}$ the average over simulations of
 $\sum_{j=0}^{K} a_{v,j} \gamma_j(\bar{a}_{v,j-1}, \bar{l}_{v,j}, \hb)$.
 The result is consistent for $\E{Y^g}$ if the covariate model and the SNMM are correct
 and either the treatment model or the outcome model $\E{Y^{\bar{A}_{k-1}, \underline{0}_k} \mid \bar{L}_k, \bar{A}_{k-1}}$ is correct.
