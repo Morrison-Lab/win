@@ -13,7 +13,7 @@ format:
 {{< include ../latex-macros/macros.qmd >}}
 
 Part I described causal inference from observational data
-as an attempt to emulate a hypothetical randomized trial, the **target trial**,
+as an attempt to emulate a hypothetical randomized trial, the **[target trial](03-observational-studies.qmd#def-target-trial)**,
 but only for simple target trials comparing time-fixed treatments.
 With the g-methods of Chapters 19-21 in hand,
 we can now specify realistic target trials that compare **sustained treatment strategies**,
@@ -129,11 +129,14 @@ so taking the ratio of the $z = 1$ and $z = 0$ expressions gives the risk ratio 
 ::: {#def-itt-analysis}
 ## Intention-to-treat analysis
 
-Estimating the ITT effect by this unadjusted association (@prp-itt-association) is an **intention-to-treat analysis**.
+Estimating the ITT effect by the unadjusted associational risk ratio
+$\Pr[Y = 1 \mid Z = 1] / \Pr[Y = 1 \mid Z = 0]$ (@prp-itt-association),
+or another unadjusted contrast of the randomized groups,
+is an **intention-to-treat analysis**.
 :::
 
 ::: {.callout-note title="Fine Point 22.2: Pseudo- and Modified Intention-to-Treat Analyses"}
-An ITT analysis is unbiased because it includes *all* randomized individuals;
+An ITT analysis (@def-itt-analysis) is unbiased because it includes *all* randomized individuals;
 variations that include only a subset may be biased.
 
 - **Pseudo-intention-to-treat analysis**:
@@ -201,7 +204,7 @@ and require adjustment for confounding and selection bias
 
 ---
 
-::: {.callout-warning title="Two Justifications for the ITT Effect Need a Grain of Salt"}
+::: {.callout-warning title="The ITT Effect Need Not Preserve the Null or Be Conservative"}
 The ITT effect is privileged largely because it is unconfounded,
 not because it is the effect we want.
 Two common justifications deserve "a grain of salt" [@hernan2020causal, p. 307]:
@@ -263,11 +266,13 @@ The ITT comparison then wrongly suggests ibuprofen is less effective
 
 ---
 
+Because the goal is to emulate target trials with real-world data,
+we consider pragmatic trials.
+
 ::: {#def-pragmatic-trial}
 ## Pragmatic trial
 
-Because the goal is to emulate target trials with real-world data,
-we consider **pragmatic** trials:
+A **pragmatic trial** is a trial in which:
 
 - treatment assignment is not blinded;
 - nobody receives a placebo (strategies involve active treatments or no treatment);
@@ -302,6 +307,8 @@ the outcome here is a failure time, time to death (see Technical Point 21.10).
 
 ::: {#def-itt-pp-sustained}
 ## ITT and PP effects for sustained strategies
+
+With the strategies and notation of @exm-target-trial-hiv:
 
 **ITT effect at time $k$**: a contrast of the static strategies
 "be assigned to $g_1$ (or $g_0$) at baseline, with no loss to follow-up":
@@ -349,7 +356,7 @@ This limitation is why the ITT effect should be complemented with the PP effect.
 
 Sensible protocols do not mandate treatment no matter what:
 $g_1$ requires stopping therapy when a contraindication or toxicity arises.
-So the PP effect generally compares **dynamic** strategies
+So the PP effect generally compares [dynamic](19-time-varying-treatments.qmd#def-dynamic-static) strategies
 ("do this; if X happens, do this other thing").
 :::
 
@@ -447,13 +454,14 @@ Chapter 23 presents yet another type of direct effect
 
 ---
 
-::: {#def-target-trial-protocol}
-## Target trial
-
-When a pragmatic trial is not possible,
+When a pragmatic trial (@def-pragmatic-trial) is not possible,
 we emulate it with existing observational data;
-the trial is then the **target trial** of the observational analysis.
-At a minimum, its protocol specifies:
+the trial is then the target trial of the observational analysis.
+
+::: {#def-target-trial-protocol}
+## Target trial protocol
+
+At a minimum, the **protocol** of a target trial specifies:
 
 - eligibility criteria;
 - start and end of follow-up;
@@ -500,7 +508,7 @@ the contrast refers to interventions taken soon after baseline.
 
 With prescription (rather than dispensing) data,
 a comparison by whether therapy was prescribed at baseline
-would come a little closer to the target trial's ITT analysis.
+would come a little closer to the target trial's ITT analysis (@def-itt-analysis).
 :::
 :::
 
@@ -599,11 +607,15 @@ Two problems cause errors in emulating time zero:
   A woman eligible continuously from age 51 to 65 could start follow-up at 51, 52, 53, ...
 :::
 
+Options for time zero: (a) the first eligible time, (b) a random eligible time,
+or (c) **every** eligible time.
+
 ::: {#def-sequential-target-trials}
 ## Sequential target trials
 
-Options for time zero: (a) the first eligible time, (b) a random eligible time,
-or (c) **every** eligible time, which means emulating **sequential target trials**.
+Emulating **sequential target trials** means starting a new emulated trial
+at every time an individual meets the eligibility criteria,
+as in option (c).
 :::
 
 ::: {.notes}
@@ -646,8 +658,10 @@ but those who did not are compatible with both 2 and 3.
 ::: {#alg-cloning-censoring-weighting}
 ## Cloning, censoring, and weighting
 
-**Cloning + censoring + weighting**: copy each such individual (@exm-several-compatible-strategies) into two **clones**,
-one per strategy, and censor each clone when its data stop being consistent with its strategy.
+Copy each individual whose data are compatible with more than one strategy
+(as in @exm-several-compatible-strategies)
+into one **clone** per compatible strategy,
+and censor each clone when its data stop being consistent with its strategy.
 The likely informative censoring is corrected by IP weighting for time-varying factors.
 :::
 
@@ -699,12 +713,16 @@ Consequences:
 
 ---
 
+The book's chapter does not use the term,
+but immortal time bias is a classic consequence of misaligned time zero.
+
 ::: {#def-immortal-time}
 ## Immortal time
 
-The book's chapter does not use the term, but a classic consequence of misaligned time zero
-is **immortal time bias**: a period of follow-up during which,
+**Immortal time** is a period of follow-up during which,
 by the way groups are defined, the treated cannot experience the outcome.
+The bias that results from counting such a period in the treated group's follow-up
+is **immortal time bias**.
 :::
 
 ::: {#exm-immortal-time}
@@ -714,7 +732,7 @@ Define "statin users" as people who filled a statin prescription at any time
 during a one-year window, and compare their mortality over that year with "non-users."
 Anyone who dies before filling a prescription is automatically a non-user,
 and users must survive until their first fill.
-The time from the start of follow-up to the first fill is "immortal" for users,
+The time from the start of follow-up to the first fill is "immortal" for users (@def-immortal-time),
 which produces a spurious survival advantage.
 Starting follow-up when eligibility is met and strategies are assigned,
 as the target trial requires, avoids this bias
@@ -802,7 +820,7 @@ the covariates the strategies use to decide treatment form such a set (Robins, 1
 ---
 
 ::: {.callout-warning title="ITT Analyses Can Suffer Selection Bias"}
-**ITT analysis** (unadjusted comparison of randomized groups):
+**ITT analysis** (@def-itt-analysis; unadjusted comparison of randomized groups):
 randomization rules out baseline and post-randomization confounding for the effect of assignment,
 but not selection bias from **loss to follow-up**.
 Valid ITT estimation may need adjustment for time-varying prognostic factors,
