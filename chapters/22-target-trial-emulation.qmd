@@ -101,29 +101,35 @@ It is "the effect of having the intention of treating with $A$,"
 not "the effect of treating with $A$" [@hernan2020causal, p. 306].
 :::
 
+Because $Z$ is randomized, there are no backdoor paths from $Z$ to $Y$,
+so $Y^z \ind Z$.
+
 ::: {#prp-itt-association}
 ## The ITT effect equals the association between assignment and outcome
 
 Suppose $Z$ is randomized, so that $Y^z \ind Z$ for $z = 0, 1$,
 that consistency holds for $Z$ ($Y = Y^z$ whenever $Z = z$),
 and that $\Pr[Z = z] > 0$ for $z = 0, 1$.
-Then the associational risk ratio equals the ITT risk ratio:
+Then, for $z = 0, 1$,
+$$\Pr[Y = 1 \mid Z = z] = \Pr[Y^z = 1].$$
+Hence, whenever $\Pr[Y = 1 \mid Z = 0] > 0$ (equivalently, $\Pr[Y^{z=0} = 1] > 0$),
+the associational risk ratio equals the ITT risk ratio:
 $$\frac{\Pr[Y = 1 \mid Z = 1]}{\Pr[Y = 1 \mid Z = 0]} = \frac{\Pr[Y^{z=1} = 1]}{\Pr[Y^{z=0} = 1]}.$$
 :::
 
 ::: {.proof}
-Because $Z$ is randomized, there are no backdoor paths from $Z$ to $Y$,
-so $Y^z \ind Z$.
 For each $z$,
 $\Pr[Y = 1 \mid Z = z] = \Pr[Y^z = 1 \mid Z = z]$ by consistency,
 and $\Pr[Y^z = 1 \mid Z = z] = \Pr[Y^z = 1]$ by $Y^z \ind Z$.
-Taking the ratio of the $z = 1$ and $z = 0$ expressions gives the result.
+This proves the per-arm equality.
+When $\Pr[Y = 1 \mid Z = 0] > 0$, the per-arm equality makes the two denominators equal and nonzero,
+so taking the ratio of the $z = 1$ and $z = 0$ expressions gives the risk ratio equality.
 :::
 
 ::: {#def-itt-analysis}
 ## Intention-to-treat analysis
 
-Estimating the ITT effect by this unadjusted association is an **intention-to-treat analysis**.
+Estimating the ITT effect by this unadjusted association (@prp-itt-association) is an **intention-to-treat analysis**.
 :::
 
 ::: {.callout-note title="Fine Point 22.2: Pseudo- and Modified Intention-to-Treat Analyses"}
@@ -155,10 +161,11 @@ or, under the exclusion restriction,
 of $\Pr[Y^{a=1} = 1]$ versus $\Pr[Y^{a=0} = 1]$.
 :::
 
+Unlike the ITT effect, the PP effect is generally **confounded**.
+
 ::: {#exm-pp-confounding}
 ## Confounding of the per-protocol effect
 
-Unlike the ITT effect, the PP effect is generally **confounded**.
 Suppose $U$ is high risk of infection,
 and high-risk people assigned $Z=0$ seek vaccination outside the study.
 Then the backdoor path $A \leftarrow U \rightarrow Y$ makes
@@ -338,7 +345,7 @@ This limitation is why the ITT effect should be complemented with the PP effect.
 ---
 
 ::: {#rem-pp-dynamic}
-## Per-protocol strategies are usually dynamic
+## Dynamic strategies
 
 Sensible protocols do not mandate treatment no matter what:
 $g_1$ requires stopping therapy when a contraindication or toxicity arises.
@@ -441,7 +448,7 @@ Chapter 23 presents yet another type of direct effect
 ---
 
 ::: {#def-target-trial-protocol}
-## Target trial protocol
+## Target trial
 
 When a pragmatic trial is not possible,
 we emulate it with existing observational data;
@@ -501,7 +508,7 @@ would come a little closer to the target trial's ITT analysis.
 
 ---
 
-::: {#def-observational-pp-analog}
+::: {#rem-observational-pp-analog}
 ## Observational analog of the PP effect
 
 The observational analog of the PP effect is defined exactly as in the target trial.
@@ -517,7 +524,8 @@ unless we are willing to extrapolate with models such as dose-response structura
 
 ::: {.notes}
 
-::: {.callout-tip title="Why Explicit Strategies Help"}
+::: {#rem-why-explicit-strategies}
+## Why explicit strategies help
 
 - they prevent bias, by exposing analyses whose comparisons cannot be translated
   into a contrast between hypothetical interventions (Sections 3.5 and 3.6);
@@ -612,7 +620,7 @@ The choice of time unit matters: if treatment and confounders change more than o
 for many individuals, a week or month unit introduces bias that a daily unit could eliminate;
 without daily data the bias cannot be fully corrected.
 
-Strategy (c) can be more efficient because it uses more of the data,
+Strategy (c) (@def-sequential-target-trials) can be more efficient because it uses more of the data,
 but individuals contribute to multiple trials,
 so the variance must be adjusted, e.g., by bootstrapping the entire analysis.
 :::
@@ -638,7 +646,7 @@ but those who did not are compatible with both 2 and 3.
 ::: {#alg-cloning-censoring-weighting}
 ## Cloning, censoring, and weighting
 
-**Cloning + censoring + weighting**: copy each such individual into two **clones**,
+**Cloning + censoring + weighting**: copy each such individual (@exm-several-compatible-strategies) into two **clones**,
 one per strategy, and censor each clone when its data stop being consistent with its strategy.
 The likely informative censoring is corrected by IP weighting for time-varying factors.
 :::
@@ -691,8 +699,8 @@ Consequences:
 
 ---
 
-::: {#def-immortal-time-bias}
-## Immortal time bias
+::: {#def-immortal-time}
+## Immortal time
 
 The book's chapter does not use the term, but a classic consequence of misaligned time zero
 is **immortal time bias**: a period of follow-up during which,
@@ -757,7 +765,7 @@ that lead to well-defined counterfactuals.
 ---
 
 ::: {#rem-trials-observational-differ}
-## Trials and observational studies differ only by baseline randomization
+## Randomization is the only difference
 
 A randomized trial is a follow-up study with baseline randomization;
 observational longitudinal data form a follow-up study without it.
