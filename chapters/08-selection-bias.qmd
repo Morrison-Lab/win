@@ -22,8 +22,22 @@ Among the consenting pedestrians, those in front of whom the investigator looked
 The selection process alone produces an association between the investigator's looking up and the pedestrians' looking up, whether or not there is any causal effect.
 :::
 
-An association created by the process that selects individuals into the analysis is called **selection bias**.
-Unlike confounding, it does not require common causes of treatment and outcome, and it can occur in randomized experiments as well as in observational studies.
+The pedestrian example shows an association created by the process that selects individuals into the analysis.
+Such associations are the subject of this chapter.
+
+::: {#def-selection-bias}
+## Selection Bias
+
+**Selection bias** refers to all biases that arise from conditioning on a common effect of two variables, one of which is either the treatment or a cause of treatment, and the other is either the outcome or a cause of the outcome [@hernan2020causal, p. 111].
+:::
+
+::: {.notes}
+A margin note in the book gives the more general version: one variable is either the treatment or associated with the treatment, and the other is either the outcome or associated with the outcome (Hernán, Hernández-Díaz, and Robins 2004).
+Conditioning on a descendant of such a collider (Figure 8.2) has the same effect.
+In the pedestrian example, consent is a common effect of the investigator's looking up (the treatment) and of shyness (a cause of the outcome).
+:::
+
+Unlike confounding, selection bias does not require common causes of treatment and outcome, and it can occur in randomized experiments as well as in observational studies.
 Like confounding, it is a form of lack of exchangeability between the treated and the untreated.
 The chapter defines selection bias and reviews methods to adjust for it.
 
@@ -37,11 +51,13 @@ This chapter is based on @hernan2020causal [Chapter 8, pp. 109-123].
 
 "Selection bias" covers various biases that arise from how individuals are selected into the analysis.
 
-::: {#rem-selection-bias-under-null}
+::: {#def-selection-bias-under-null}
 ## Selection bias under the null
 
-The chapter focuses on bias that would arise even if treatment had no effect on the outcome, i.e., **selection bias under the null** ([Section 6.5](06-graphical-representation.qmd#bias-under-the-null)).
+**Selection bias under the null** is selection bias (@def-selection-bias) that would arise even if treatment had no effect on the outcome ([Section 6.5](06-graphical-representation.qmd#bias-under-the-null)).
 :::
+
+The chapter focuses on selection bias under the null.
 
 Causal diagrams make the structure of selection bias explicit.
 
@@ -66,8 +82,8 @@ The diagram shows two sources of association between treatment and outcome:
 1. The open path $A \rightarrow Y$, the causal effect of $A$ on $Y$.
 2. The path $A \rightarrow C \leftarrow Y$, which is opened by conditioning on the common effect $C$.
 
-The association induced through the second path is **selection bias due to conditioning on $C$**.
-Because of it, the associational risk ratio $\Pr[Y = 1 \mid A = 1, C = 0] / \Pr[Y = 1 \mid A = 0, C = 0]$ does not equal the causal risk ratio $\Pr[Y^{a=1} = 1] / \Pr[Y^{a=0} = 1]$.
+The association induced through the second path is **selection bias due to conditioning on $C$** (@def-selection-bias).
+Because of it, the associational risk ratio $\Pr[Y = 1 \mid A = 1, C = 0] / \Pr[Y = 1 \mid A = 0, C = 0]$ generically (that is, under faithfulness) does not equal the causal risk ratio $\Pr[Y^{a=1} = 1] / \Pr[Y^{a=0} = 1]$.
 Without conditioning on the collider $C$, the only open path would be $A \rightarrow Y$, and the associational risk ratio $\Pr[Y = 1 \mid A = 1] / \Pr[Y = 1 \mid A = 0]$ would equal the causal risk ratio.
 :::
 
@@ -86,13 +102,13 @@ Figure 8.2 adds a node $S$, parental grief (1: yes, 0: no), which is affected by
 If only nongrieving parents ($S = 0$) agreed to participate, the analysis conditions on $S = 0$.
 As shown in Chapter 6, conditioning on a variable affected by the collider $C$ also opens the path $A \rightarrow C \leftarrow Y$.
 
-In both Figures 8.1 and 8.2 the bias comes from conditioning on a common effect of treatment and outcome ($C$ or $S$), and it is present whether or not there is an arrow $A \rightarrow Y$: it is selection bias under the null (@rem-selection-bias-under-null).
+In both Figures 8.1 and 8.2 the bias comes from conditioning on a common effect of treatment and outcome ($C$ or $S$), and it is present whether or not there is an arrow $A \rightarrow Y$: it is selection bias under the null (@def-selection-bias-under-null).
 :::
 
 ::: {.notes}
 A structure that produces bias under the null also produces bias when the treatment has a non-null effect.
 Confounding (common causes of treatment and outcome) and selection bias (conditioning on common effects of treatment and outcome) are both biases under the null.
-Figures 8.3-8.6 show that selection bias under the null (@rem-selection-bias-under-null) can be defined more generally than conditioning on a common effect of treatment and outcome.
+Figures 8.3-8.6 show that selection bias under the null (@def-selection-bias-under-null) can be defined more generally than conditioning on a common effect of treatment and outcome.
 :::
 
 ---
@@ -116,7 +132,7 @@ Figure 8.3 depicts a follow-up study of individuals with HIV infection, estimati
 
 By d-separation, conditioning on the collider $C$ opens the path
 $$A \rightarrow C \leftarrow L \leftarrow U \rightarrow Y,$$
-so the associational risk ratio differs from 1 even though the causal risk ratio equals 1.
+so the associational risk ratio generically (that is, under faithfulness) differs from 1 even though the causal risk ratio equals 1.
 :::
 
 ::: {.notes}
@@ -147,16 +163,8 @@ Three further structures lead to the same kind of bias through differential loss
 
 :::
 
-::: {#def-selection-bias}
-## Selection Bias
-
-**Selection bias** refers to all biases that arise from conditioning on a common effect of two variables, one of which is either the treatment or a cause of treatment, and the other is either the outcome or a cause of the outcome [@hernan2020causal, p. 111].
-:::
-
 ::: {.notes}
-In all of Figures 8.1-8.6, the bias results from selection on a collider.
-A margin note in the book gives the more general version: one variable is either the treatment or associated with the treatment, and the other is either the outcome or associated with the outcome (Hernán, Hernández-Díaz, and Robins 2004).
-Conditioning on a descendant of such a collider (Figure 8.2) has the same effect.
+In all of Figures 8.1-8.6, the bias results from selection on a collider, so each is selection bias in the sense of @def-selection-bias.
 :::
 
 ## 8.2 Examples of Selection Bias (pp. 111-112)
@@ -252,7 +260,7 @@ Other selection biases in case-control studies, including some described by Berk
 Chapters 7 and 8 describe two reasons the treated and the untreated may not be exchangeable:
 
 1. **Common causes** of treatment and outcome: **confounding**.
-2. **Conditioning on common effects** of treatment and outcome, or of causes of them: **selection bias**.
+2. **Conditioning on common effects** of treatment and outcome, or of causes of them: **selection bias** (@def-selection-bias).
 
 This structural classification is clear-cut, though it does not always match the terminology of other disciplines.
 Statisticians and econometricians often call both biases "selection bias," because both arise from selection: of individuals into the analysis (structural selection bias) or into a treatment (structural confounding).
@@ -279,7 +287,7 @@ Assume, unknown to the investigators, that $A$ does not cause $Y$.
 - $U$ does not affect $Y$, and $L$ does not affect $A$.
 
 There is no confounding: $A$ and $Y$ have no common cause, so in the full population $\Pr[Y = 1 \mid A = 1] / \Pr[Y = 1 \mid A = 0]$ is expected to equal $\Pr[Y^{a=1} = 1] / \Pr[Y^{a=0} = 1] = 1$.
-Among firefighters ($C = 0$), however, the two ratios differ: conditioning on $C$, a common effect of causes of treatment ($U$) and of outcome ($L$), opens $A \leftarrow U \rightarrow C \leftarrow L \rightarrow Y$.
+Among firefighters ($C = 0$), however, the two ratios generically (that is, under faithfulness) differ: conditioning on $C$, a common effect of causes of treatment ($U$) and of outcome ($L$), opens $A \leftarrow U \rightarrow C \leftarrow L \rightarrow Y$.
 :::
 
 ---
@@ -325,8 +333,8 @@ Drawing the causal diagram removes the confusion that comes from using one name 
 
 ::: {.notes}
 
-::: {.callout-warning title="Selection Bias Is Not All or Nothing"}
-All of this ignores magnitude and direction.
+::: {.callout-note title="Selection Bias Is Not All or Nothing"}
+The structural analysis of Sections 8.1-8.3 ignores the magnitude and direction of the bias.
 A noncausal path opened by conditioning on a collider may be weak and induce little bias;
 selection bias is not an "all or nothing" issue (Fine Point 8.2).
 :::
@@ -380,7 +388,7 @@ Among the uncensored,
 
 $$\frac{\Pr[Y = 1 \mid A = 1, C = 0]}{\Pr[Y = 1 \mid A = 0, C = 0]} = \frac{4/9}{11/22} = \frac{0.444}{0.5} = 0.89.$$
 
-The 0.89 among the uncensored differs from the causal risk ratio of 1: there is selection bias from conditioning on the common effect $C$.
+The 0.89 among the uncensored differs from the causal risk ratio of 1: there is selection bias (@def-selection-bias) from conditioning on the common effect $C$.
 :::
 
 ::: {.notes}
@@ -402,12 +410,13 @@ Selection bias would not exist if nobody were censored, so we target what would 
 ## Counterfactual outcome under no censoring
 
 Let $Y^{a,c=0}$ be an individual's counterfactual outcome had they received treatment $a$ and remained uncensored ($C = 0$).
+:::
+
 The causal contrast of interest becomes
 
 $$\Pr[Y^{a=1,c=0} = 1] \quad \text{versus} \quad \Pr[Y^{a=0,c=0} = 1],$$
 
 for example the risk ratio $\E{Y^{a=1,c=0}} / \E{Y^{a=0,c=0}}$ or the risk difference $\E{Y^{a=1,c=0}} - \E{Y^{a=0,c=0}}$.
-:::
 
 ::: {.notes}
 Using counterfactuals such as $Y^{a,c=0}$ presupposes, as in [Chapter 3](03-observational-studies.qmd),
@@ -530,12 +539,6 @@ In that pseudo-population the associational risk ratio is 1, equal to $\Pr[Y^{a=
 
 ### Identifiability Conditions for IP Weighting
 
-::: {#def-competing-event}
-## Competing event
-
-A **competing event** is an event that prevents the outcome of interest from happening, typically death.
-:::
-
 ::: {#prp-ipw-selection-identification}
 ## Identifiability conditions for IP weighting of selection
 
@@ -567,6 +570,7 @@ Conditioning on $A$ and $L$, and summing over the $l$ with $\Pr[A = a, L = l] > 
 $$
 \begin{aligned}
 \E{I(A = a)\, (1 - C)\, W^C\, Y}
+&= \sum_l \Pr[A = a, L = l]\, \E{(1 - C)\, W^C\, Y \mid A = a, L = l} && \text{(law of total expectation)} \\
 &= \sum_l \Pr[A = a, L = l]\, \frac{\E{(1 - C)\, Y \mid A = a, L = l}}{\pi(a, l)} && \text{(definition of } W^C\text{)} \\
 &= \sum_l \Pr[A = a, L = l]\, \E{Y \mid A = a, C = 0, L = l} && \text{(conditioning on } C\text{)} \\
 &= \sum_l \Pr[A = a, L = l]\, \E{Y^{a,c=0} \mid A = a, C = 0, L = l} && \text{(consistency)} \\
@@ -576,20 +580,27 @@ $$
 \end{aligned}
 $$
 
-The second line uses $\E{(1 - C)\, Y \mid A = a, L = l} = \pi(a, l)\, \E{Y \mid A = a, C = 0, L = l}$.
-Replacing $Y$ by 1 in the first two lines shows that the denominator is $\sum_l \Pr[A = a, L = l] = \Pr[A = a]$.
+The third line uses $\E{(1 - C)\, Y \mid A = a, L = l} = \pi(a, l)\, \E{Y \mid A = a, C = 0, L = l}$.
+Replacing $Y$ by 1 in the first three lines shows that the denominator is $\sum_l \Pr[A = a, L = l] = \Pr[A = a]$.
 Dividing the two gives the result.
 :::
 
-In words, exchangeability for censoring says that the average outcome of the uncensored equals the (unobserved) average outcome of the censored with the same $A$ and $L$.
+Exchangeability for censoring implies that the average counterfactual outcome $Y^{a,c=0}$ of the uncensored equals that of the censored with the same $A$ and $L$
+(mean exchangeability, which is all the proof uses).
 It holds if $\Pr[C = 0 \mid L, A]$ conditions on treatment and on all factors that independently predict both selection and the outcome, i.e., if $A$ and $L$ block all backdoor paths between $C$ and $Y$.
 
 ::: {.callout-warning title="Exchangeability for Censoring Is Untestable"}
-We can never be sure that $L$ contains all such factors, so this assumption is untestable.
+We can never be sure that $L$ contains all common causes of censoring and the outcome, so this assumption is untestable.
 :::
 
 Positivity is required for being uncensored, not for being censored: we do not want a pseudo-population in which everybody is censored.
 In Figure 8.10, $\Pr[C = 1 \mid L = 0, A = 0] = 0$, and that zero does not prevent constructing a pseudo-population in which nobody is censored.
+
+::: {#def-competing-event}
+## Competing event
+
+A **competing event** is an event that prevents the outcome of interest from happening, typically death.
+:::
 
 Consistency, including sufficiently well-defined interventions, makes the pseudo-population effect the effect had nobody been censored.
 That is reasonably well defined when censoring is loss to follow-up or nonresponse, but not when censoring is a competing event (@def-competing-event).
@@ -643,7 +654,7 @@ Figure 8.12 depicts a study with dichotomous surgery $A$, genetic haplotype $E$,
 By d-separation, $A$ and $E$ are:
 
 1. marginally independent: surgery is equally likely with and without the haplotype;
-2. associated conditionally on $Y$: e.g., among survivors ($Y = 0$), the probability of surgery varies by haplotype.
+2. generically (that is, under faithfulness) associated conditionally on $Y$, i.e., in at least one stratum of $Y$.
 
 :::
 
@@ -678,7 +689,11 @@ only $A$, $E$, $Y$ are recorded.
 ## Augmented causal diagram
 
 Adding to a causal diagram unmeasured variables, such as $Y_A$, $Y_E$, $Y_O$, that functionally determine one of its nodes, such as $Y$, gives an **augmented causal diagram**.
+:::
+
 Figure 8.13 is the augmented version of Figure 8.12 (@exm-separate-death-mechanisms).
+
+::: {.notes}
 Augmented causal DAGs were introduced by Hernán, Hernández-Díaz, and Robins (2004) and can be extended to represent the sufficient causes of Chapter 5 (VanderWeele and Robins 2007c).
 :::
 
@@ -720,13 +735,13 @@ the path through $Y$ stays open and, generically (that is, under faithfulness), 
 When the data can be summarized by Figure 8.13, they follow a **multiplicative survival model** (Technical Point 8.2).
 
 ::: {.notes}
-$A$ and $E$ are dependent given $Y = 0$ (in fact within both strata of $Y$) when any of these hold:
+$A$ and $E$ are in general (under faithfulness) dependent given $Y = 0$ (in fact within both strata of $Y$) when any of these hold:
 
 - $A$ and $E$ act through a common mechanism: an arrow from $A$ to $Y_E$ or from $E$ to $Y_A$ (Figure 8.14);
 - $Y_A$ and $Y_E$ share a common cause $V$ (Figure 8.15);
 - $Y_A$ and $Y_O$, and $Y_E$ and $Y_O$, share common causes $W_1$ and $W_2$ (Figure 8.16).
 
-The augmented causal diagram (@def-augmented-causal-diagram) represents both the independence of $A$ and $E$ given $Y = 0$ and their dependence given $Y = 1$.
+The augmented causal diagram (@def-augmented-causal-diagram) represents both the independence of $A$ and $E$ given $Y = 0$ and their generic dependence given $Y = 1$.
 :::
 
 ---
