@@ -130,7 +130,7 @@ The choice defines the target population of the causal effect.
 
 ::: {.callout-note title="Fine Point 13.1: Structural Positivity"}
 
-- Positivity is needed for standardization too: if $\Pr[A = a \mid L = l] = 0$ while $\Pr[L = l] \neq 0$, then $\E{Y \mid A = a, L = l}$ is undefined.
+- Positivity is needed for standardization too: if $\Pr[A = a, C = 0 \mid L = l] = 0$ while $\Pr[L = l] \neq 0$, then $\E{Y \mid A = a, C = 0, L = l}$ is undefined.
 - With a parametric outcome model, one *can* ignore structural nonpositivity by **extrapolating** over the empty strata, at the cost of bias (95% confidence intervals then cover the truth less than 95% of the time).
 - Near positivity violations, standardization typically has a smaller standard error than IP weighting, but differences in bias may outweigh differences in standard error.
 
@@ -372,7 +372,9 @@ Part III defines the g-formula for time-varying treatments.
 An estimator of a counterfactual mean such as $\E{Y^{a=1}}$ that combines a treatment model and an outcome model is **doubly robust** if,
 under the identifying conditions (conditional exchangeability and positivity given $L$, and consistency),
 it is consistent for that counterfactual mean when **either** model is correctly specified, without our knowing which.
-An estimator of a causal contrast, such as $\E{Y^{a=1}} - \E{Y^{a=0}}$, built from doubly robust estimators of each counterfactual mean is then consistent for that contrast under the same conditions.
+An estimator of a causal contrast, such as $\E{Y^{a=1}} - \E{Y^{a=0}}$, built from doubly robust estimators of each counterfactual mean is then consistent for that contrast,
+provided the identifying conditions hold for every treatment level in the contrast (here both $a = 1$ and $a = 0$).
+(With censoring, replace $Y^{a}$ by $Y^{a,c=0}$ and $A$ by the joint treatment $(A, C)$ throughout.)
 :::
 
 ::: {.callout-tip title="Use Both Methods, and Doubly Robust Ones"}
@@ -399,16 +401,6 @@ Including $R$ makes the fitted model's residuals, weighted by $R$, sum to zero, 
 :::
 :::
 
-::: {.callout-note title="Technical Point 13.2: The Augmented IP Weighted Estimator"}
-For dichotomous $A$, write $b(L) = \E{Y \mid A = 1, L}$ and $\pi(L) = \Pr[A = 1 \mid L]$.
-Under the identifiability conditions,
-
-$$\E{Y^{a=1}} = \E{b(L)} = \E{\frac{AY}{\pi(L)}}.$$
-
-- Plug-in g-formula estimator: $\frac{1}{n}\sum_i \hat b(L_i)$
-- Horvitz-Thompson IP weighted estimator: $\frac{1}{n}\sum_i A_i Y_i / \hat\pi(L_i)$
-:::
-
 ::: {#def-aipw}
 ## Augmented IP weighted (AIPW) estimator
 
@@ -426,9 +418,19 @@ $$
 $$
 :::
 
+::: {.callout-note title="Technical Point 13.2: The Augmented IP Weighted Estimator"}
+For dichotomous $A$ and no censoring, with $b$, $\pi$, $\hat b$ and $\hat\pi$ as in @def-aipw,
+under the identifiability conditions,
+
+$$\E{Y^{a=1}} = \E{b(L)} = \E{\frac{AY}{\pi(L)}}.$$
+
+- Plug-in g-formula estimator: $\frac{1}{n}\sum_i \hat b(L_i)$
+- Horvitz-Thompson IP weighted estimator: $\frac{1}{n}\sum_i A_i Y_i / \hat\pi(L_i)$
+:::
+
 ::: {.notes}
 **Two equivalent forms.**
-Expanding the summand:
+Expanding the summand of the AIPW estimator (@def-aipw):
 
 $$
 \begin{aligned}
@@ -447,20 +449,26 @@ the second is the Horvitz-Thompson estimator plus an outcome-model correction ("
 ---
 
 ::: {#thm-aipw-doubly-robust}
-## The AIPW estimator is doubly robust
+## Double robustness of the AIPW functional
 
-Let $A$ be dichotomous, with no censoring, and let $b$, $\pi$, $\hat b$ and $\hat\pi$ be as in @def-aipw.
-Assume conditional exchangeability $Y^{a=1} \ind A \mid L$, positivity $\pi(L) > 0$, and consistency $Y^{a=1} = Y$ when $A = 1$.
-Let $b^*$ and $\pi^*$ be the functions that $\hat b$ and $\hat\pi$ converge to in probability, with $\pi^*(L) > 0$;
-$b^* = b$ when the outcome model is correctly specified, and $\pi^* = \pi$ when the treatment model is.
-Then the AIPW estimator of @def-aipw converges to $\E{b^*(L) + A\{Y - b^*(L)\}/\pi^*(L)}$,
-and its asymptotic bias as an estimator of $\E{Y^{a=1}}$ (that limit minus $\E{Y^{a=1}}$) is
+Let $A$ be dichotomous, with no censoring, and let $b$ and $\pi$ be as in @def-aipw.
+Assume
+
+- conditional exchangeability: $Y^{a=1} \ind A \mid L$;
+- positivity: $\pi(l) > 0$ for every $l$ in the support of $L$;
+- consistency: $Y^{a=1} = Y$ for every individual with $A = 1$;
+- $\E{\abs{Y}} < \infty$.
+
+Let $b^*$ and $\pi^*$ be any functions of $L$ with $\E{\abs{b^*(L)}} < \infty$ and $\pi^*(l) \geq \epsilon$ for some $\epsilon > 0$ and every $l$ in the support of $L$.
+Then
 
 $$
-\E{\pi(L) \paren{\frac{1}{\pi^*(L)} - \frac{1}{\pi(L)}} \paren{b(L) - b^*(L)}},
+\E{b^*(L) + \frac{A\{Y - b^*(L)\}}{\pi^*(L)}} - \E{Y^{a=1}}
+= \E{\pi(L) \paren{\frac{1}{\pi^*(L)} - \frac{1}{\pi(L)}} \paren{b(L) - b^*(L)}},
 $$
 
-which is zero if $\pi^* = \pi$ (treatment model correct) **or** $b^* = b$ (outcome model correct).
+which is zero if $\pi^* = \pi$ **or** $b^* = b$.
+This identity is what makes the AIPW estimator of @def-aipw doubly robust in the sense of @def-doubly-robust.
 :::
 
 ::: {.proof}
@@ -474,11 +482,23 @@ $$
 \end{aligned}
 $$
 
+Next, identify the counterfactual mean:
+
+$$
+\begin{aligned}
+\E{Y^{a=1}}
+&= \E{\E{Y^{a=1} \mid L}} && \text{(iterated expectation)} \\
+&= \E{\E{Y^{a=1} \mid A = 1, L}} && \text{(exchangeability; positivity, so the conditioning is defined)} \\
+&= \E{\E{Y \mid A = 1, L}} && \text{(consistency)} \\
+&= \E{b(L)} && \text{(definition of } b\text{)}
+\end{aligned}
+$$
+
 Then, subtracting $\E{Y^{a=1}} = \E{b(L)}$:
 
 $$
 \begin{aligned}
-\text{bias}
+&\E{b^*(L) + \frac{A\{Y - b^*(L)\}}{\pi^*(L)}} - \E{Y^{a=1}} \\
 &= \E{b^*(L) - b(L) + \frac{\pi(L)}{\pi^*(L)}\{b(L) - b^*(L)\}} && \text{(law of total expectation)} \\
 &= \E{\paren{\frac{\pi(L)}{\pi^*(L)} - 1} \{b(L) - b^*(L)\}} && \text{(factor out } b(L) - b^*(L)\text{)} \\
 &= \E{\pi(L) \paren{\frac{1}{\pi^*(L)} - \frac{1}{\pi(L)}} \{b(L) - b^*(L)\}} && \text{(factor out } \pi(L)\text{)}
@@ -487,12 +507,24 @@ $$
 :::
 
 ::: {.notes}
-The book [@hernan2020causal, Technical Point 13.2, p. 184] displays this limit with the opposite sign, $(1/\pi(L) - 1/\pi^*(L))$;
+The book [@hernan2020causal, Technical Point 13.2, p. 184] displays this bias with the opposite sign, $(1/\pi(L) - 1/\pi^*(L))$;
 the derivation here gives the sign shown, which does not affect the conclusion.
 
 **Second-order bias.**
 The bias depends on the *product* of the errors in $1/\pi$ and in $b$.
 This property lets doubly robust estimators that use machine learning for $\pi$ and $b$ achieve small bias in high-dimensional settings (Chapter 18), where no parametric model is expected to be correct.
+:::
+
+::: {#rem-aipw-consistency}
+## From the functional to the estimator
+
+Suppose $\hat b$ and $\hat\pi$ are predictions from parametric models whose parameter estimates converge in probability,
+so that $\hat b$ and $\hat\pi$ settle down to fixed functions $b^*$ and $\pi^*$, with $\pi^*$ bounded away from 0.
+Then, under the usual regularity conditions, the AIPW estimator of @def-aipw converges in probability to the functional in @thm-aipw-doubly-robust, evaluated at these limits.
+A correctly specified outcome model gives $b^* = b$, and a correctly specified treatment model gives $\pi^* = \pi$;
+either one makes the difference in @thm-aipw-doubly-robust vanish.
+So the AIPW estimator is consistent for $\E{Y^{a=1}}$ whenever at least one of the two models is correct:
+it is doubly robust in the sense of @def-doubly-robust.
 :::
 
 ::: {.callout-note title="Technical Point 13.3: The Augmented IP Weighted Estimator and the Doubly Robust Plug-In Estimator"}
@@ -576,7 +608,7 @@ The book's closing message: skepticism of observational causal inferences should
 4. **Bootstrap**: resample individuals with replacement to estimate the standard error
 5. **IP weighting vs standardization**: equal without models;
    with models they rely on different assumptions, so compare them
-6. **Doubly robust estimators**: consistent if either the treatment or the outcome model is correct
+6. **Doubly robust estimators** (@def-doubly-robust): consistent if either the treatment or the outcome model is correct
 7. **Conditions for causal interpretation**: identifiability, no measurement error, no model misspecification
 
 ::: {.notes}
