@@ -45,7 +45,8 @@ The problem is purely the small size of the study population.
 
 **Identification problems** are problems in which we can act as if the study population were effectively infinite.
 
-**Estimation** asks how to learn about a causal effect from a *finite* sample, in the presence of random variability.
+**Estimation** is the problem of learning about a causal effect from a *finite* sample,
+in the presence of random variability.
 :::
 
 Part I reduced causal inference to an identification problem:
@@ -182,9 +183,11 @@ Among valid intervals, we prefer the narrowest.
 
 An interval is
 
-- **small-sample valid** if it is valid at every sample size for which it is defined
+- **small-sample valid** if it is valid (@def-valid-ci) at every sample size for which it is defined
   (small-sample calibrated intervals are sometimes called **exact**);
-- **large-sample (asymptotically) valid** if it is valid at every sufficiently large sample size.
+- **large-sample (asymptotically) valid** if, for every value of the true parameter,
+  its coverage is at least 95% at all sufficiently large sample sizes,
+  where how large is large enough may depend on the true parameter.
 
 :::
 
@@ -254,7 +257,8 @@ Any small-sample valid interval is automatically honest for all $n$ at which it 
 An estimator is **unbiased** if it can center a valid Wald interval and **biased** if it cannot.
 :::
 
-Not every consistent estimator can center a valid Wald interval, even in large samples.
+Not every consistent estimator can center a valid Wald interval, even in large samples:
+Technical Point 10.1 gives the formal condition, and Chapter 18 gives consistent estimators that fail it.
 Most users of statistics use @def-unbiased-estimator,
 and the book adopts it for now.
 
@@ -290,16 +294,16 @@ In the book, "unbiased" without qualification means UANU.
 ---
 
 Suppose the heart transplant study were a marginally randomized experiment
-whose 20 individuals are a random sample from a near-infinite super-population,
-and in which everyone in the super-population was randomized.
+whose 20 individuals are a random sample from a near-infinite super-population.
 
 ::: {#prp-randomized-super-population}
 ## Identification in a randomized super-population
 
 Suppose that in a near-infinite super-population
 
-- *everyone* was randomly assigned to $A = 1$ or $A = 0$,
-  each with positive probability,
+- *everyone* was randomly assigned to $A = 1$ or $A = 0$
+  with the same assignment probabilities for every individual (marginal randomization),
+  each probability positive,
 - everyone adhered to their assigned treatment, and
 - consistency holds: $Y = Y^a$ for everyone with $A = a$.
 
@@ -312,7 +316,8 @@ $$
 :::
 
 ::: {.proof}
-Random assignment of everyone in the super-population makes the assigned treatment independent of the counterfactual outcomes,
+Marginal randomization of everyone in the super-population, with the same assignment probabilities for every individual,
+makes the assigned treatment independent of the counterfactual outcomes,
 and full adherence makes the treatment received equal to the treatment assigned,
 so $Y^a \ind A$.
 Because each arm has positive probability, the conditional probabilities given $A = a$ are defined, and
@@ -481,8 +486,8 @@ The subtracted sum of squares is positive unless all $p_i$ equal $\bar p$.
 ## Heterogeneous risks rule out Scenario 2
 
 The risks $p_i^{a=1}$ almost certainly vary between individuals (for example, with genetic make-up).
-If they are not constant, the natural estimand for the study population is their average, say $p$,
-but the number of treated with the outcome is then **not** binomial with success probability $p$,
+If they are not constant, the natural estimand for the study population is their average, say $\bar p$,
+but the number of treated with the outcome is then **not** binomial with success probability $\bar p$,
 and the binomial interval is not calibrated but **conservative**:
 by @prp-poisson-binomial-variance the binomial formula overstates the variance of the count,
 so the interval is too wide.
@@ -636,18 +641,24 @@ The adjusted estimator is unconditionally more efficient because it is the maxim
 
 ### The Conditionality Principle
 
-The observed $L$-$A$ association is an **ancillary statistic** for the causal risk difference.
+::: {#def-ancillary-statistic}
+## Ancillary statistic
+
+An **ancillary statistic** for a parameter is a statistic whose distribution does not depend on that parameter.
+:::
+
+The observed $L$-$A$ association is an ancillary statistic (@def-ancillary-statistic) for the causal risk difference.
 
 ::: {#def-conditionality-principle}
 ## Conditionality principle
 
-Inference on a parameter should be performed conditional on ancillary statistics.
+Inference on a parameter should be performed conditional on ancillary statistics (@def-ancillary-statistic).
 :::
 
 ::: {#def-conditionally-unbiased}
 ## Conditionally unbiased estimator
 
-An estimator is **conditionally unbiased** if it can center a valid Wald interval *conditional on* ancillary statistics.
+An estimator is **conditionally unbiased** if it can center a valid Wald interval *conditional on* ancillary statistics (@def-ancillary-statistic).
 :::
 
 Investigators who intuitively follow the conditionality principle (@def-conditionality-principle)
@@ -817,7 +828,7 @@ so that few strata contain both treated and untreated individuals
 and estimators conditional on all of $L$ are uninformative.
 :::
 
-In @exm-hundred-covariates, conditional on all 100 covariates, the marginal estimator is still biased, but the conditional estimator is now uninformative (@exm-curse).
+In @exm-hundred-covariates, conditional on all 100 covariates, the marginal estimator is still conditionally biased, but the conditional estimator is now uninformative (@exm-curse).
 
 ::: {.callout-warning title="Conditionality Should Not Be a Principle"}
 Conditionality is compelling in simple examples, but it cannot be carried through in high-dimensional models, so it should not be raised to a principle [@robins1997toward].
