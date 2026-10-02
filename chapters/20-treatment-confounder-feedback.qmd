@@ -20,8 +20,8 @@ Which confounding adjustment method should we then use?
 The answer exposes a central problem for time-varying treatments:
 a time-varying confounder can drive later treatment
 while itself being affected by earlier treatment,
-or while sharing with earlier treatment a cause outside the measured past,
-through a path that conditioning on the measured past does not block.
+or while sharing with earlier treatment a cause outside that treatment's measured past,
+through a path that conditioning on that measured past does not block.
 When that happens, traditional adjustment methods can be biased
 even though all the information needed for valid estimation is available.
 This chapter describes the structure of the problem
@@ -32,8 +32,8 @@ This chapter is based on @hernan2020causal [Chapter 20, pp. 267-275].
 
 **Key insight**: when a time-varying confounder $L_1$ that affects later treatment $A_1$
 is also affected by earlier treatment $A_0$,
-or shares with $A_0$ a cause outside the measured past
-through a path that conditioning on the measured past does not block,
+or shares with $A_0$ a cause outside the measured past of $A_0$
+through a path that conditioning on that measured past does not block,
 stratifying on $L_1$ removes confounding for the later treatment $A_1$
 but opens a collider path that creates selection bias for $A_0$.
 Not adjusting for $L_1$ leaves $A_1$ confounded.
@@ -62,7 +62,7 @@ the time-varying confounder affects treatment ($L_k \to A_k$)
 
 :::
 
-The book's one-line description is the arrow form ($A_{k-1} \to L_k$):
+The book's one-line description is the arrow form ($A_j \to L_k$ for some $j < k$):
 "the confounder affects the treatment and the treatment affects the confounder"
 [@hernan2020causal, p. 267].
 The book gives the same name to the case in which $L_1$ shares an unmeasured cause $W_0$ with $A_0$ (its Figures 20.4 and 20.6),
@@ -103,12 +103,12 @@ As in Chapter 19, the example has no censoring, so we can focus on confounding.
 ## Time-Varying Confounding Without Feedback
 
 Time-varying confounding can occur *without* treatment-confounder feedback (@def-treatment-confounder-feedback).
-In the book's Figure 20.2, the arrows from $A_{k-1}$ to $L_k$ and to $U_k$ are deleted:
+In the book's Figure 20.2, the arrows from treatment to later $L$ and $U$ variables are deleted:
 $L_k$ still confounds the effect of $A_k$,
-but it is not affected by prior treatment.
-Nor do $L_k$ and $A_{k-1}$ share a common cause outside the measured past in the sense of @def-treatment-confounder-feedback:
+but no earlier treatment $A_j$ ($j < k$) affects it.
+Nor does $L_k$ share with any earlier $A_j$ a common cause outside the measured past of $A_j$ in the sense of @def-treatment-confounder-feedback:
 the diagram is a sequentially randomized trial, so the unmeasured $U$ variables have no arrows into treatment,
-and every path from a common cause to $A_{k-1}$ passes through the measured confounders $\bar{L}_{k-1}$, which block it.
+and every path from a common cause to $A_j$ passes through the measured confounders $\bar{L}_j$, which block it.
 There is time-varying confounding but no feedback.
 
 :::
@@ -270,9 +270,8 @@ The trial is built so that all three identifiability conditions hold
   each of the eight rows of the table contains individuals;
 - **consistency**:
   each treatment history $\bar{a} = (a_0, a_1)$ is a well-defined intervention,
-  so a person whose observed history is $\bar{a}$ has observed outcome $Y = Y^{\bar{a}}$.
-  In this ideal trial the recorded history is the treatment actually received,
-  and every outcome is observed.
+  and a person whose observed history is $\bar{a}$ has observed outcome $Y = Y^{\bar{a}}$;
+  in this ideal trial the recorded history is the treatment actually received.
 
 Had the trial run past month 1, with each month's treatment assigned using that month's CD4 count,
 each of those later CD4 measurements would be a time-varying confounder as well.
@@ -632,10 +631,13 @@ The price is a new threat to validity: misspecification of the dose-response mod
 
 ::: {.callout-warning title="Conventional Outcome Regression Does Not Remove the Bias"}
 Paying the price of a dose-response model buys no protection
-when the model regresses the outcome on treatment history and conditions on the time-varying confounder:
-that conventional outcome regression **is** a stratification-based method,
+if we read the treatment coefficients of an outcome regression as the effect
+while the model conditions on the time-varying confounder.
+That conventional use of regression **is** a stratification-based method,
 so it cannot remove the bias of stratification under treatment-confounder feedback (@def-treatment-confounder-feedback).
-Regression models can still be used inside the g-methods, which handle feedback differently.
+The g-formula (@exm-gformula-preview) can fit the same kind of outcome model,
+but it averages the model's predictions over the distribution of $L_1$ given $A_0$
+instead of reading the effect off the coefficients.
 
 :::
 
@@ -856,7 +858,8 @@ When treatment does have an effect, the same partial adjustment can overstate it
 - Stratification on $L_1$ removes confounding for $A_1$
   but opens the collider path $A_0 \to L_1 \leftarrow U_1 \to Y$,
   creating selection bias for $A_0$.
-- Outcome regression and matching are stratification-based too,
+- Conventional outcome regression (reading the effect off treatment coefficients in a model that conditions on $L_1$)
+  and matching are stratification-based too,
   so they are biased even when the regression model is correct.
 - Sequential exchangeability generally requires conditioning on past treatment;
   mismeasured past treatment can bias estimates even under the null.
