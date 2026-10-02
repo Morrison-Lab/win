@@ -224,7 +224,7 @@ spelling::spell_check_files("README.md")
   :::
   ```
   Always add the actual callout content; never leave a dangling reference to a Technical/Fine Point that has no corresponding callout in the file.
-- **Reflow paragraphs — one line per major phrase**: In `.qmd` chapter files, write prose with one sentence (or major clause) per source line. Single newlines within a paragraph render as a space in HTML/PDF, so this does not affect output but makes git diffs much easier to read. Example:
+- **Reflow paragraphs --- one line per major phrase**: In `.qmd` chapter files, write prose with one sentence (or major clause) per source line. Single newlines within a paragraph render as a space in HTML/PDF, so this does not affect output but makes git diffs much easier to read. Example:
   ```markdown
   This is the first sentence of the paragraph.
   This is the second sentence, which is on its own line.
