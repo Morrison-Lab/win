@@ -324,7 +324,8 @@ and with probability 1 to those treated the previous month ($A_{k-1} = 1$).
 - So under Figure 19.1 (where treatment is randomized at each time),
   association is causation for static strategies:
   the counterfactual mean under a static strategy $\bar{a}$
-  is the mean outcome among those who followed $\bar{a}$.
+  is the mean outcome among those who followed $\bar{a}$
+  (provided some individuals followed $\bar{a}$, and under consistency).
 
 ::: {.notes}
 
@@ -332,7 +333,7 @@ and with probability 1 to those treated the previous month ($A_{k-1} = 1$).
 The equality $\E{Y^{\bar{a}}} = \E{Y \mid \bar{A} = \bar{a}}$
 does **not** in general extend to dynamic strategies.
 Under a dynamic strategy $g$ that depends on $L$,
-$\E{Y^g}$ equals the mean outcome among those who followed $g$
+$\E{Y^g}$ in general equals the mean outcome among those who followed $g$
 only if the probability of $A_k = 1$ is exactly 0.5 at every time $k$
 at which treatment under $g$ depends on $L_k$.
 Otherwise, identifying $\E{Y^g}$ requires g-methods applied to data on $L$, $A$, and $Y$,
@@ -368,7 +369,8 @@ under the Section 19.2 coding, high CD4 is $L_k = 0$ and low CD4 is $L_k = 1$.
 ::: {#def-seq-randomized}
 ## Sequentially randomized experiment
 
-An experiment in which treatment is randomly assigned to each individual at each time $k$
+An experiment in which treatment is randomly assigned to each individual at each time $k$,
+with assignment probabilities that depend only on the measured history $(\bar{A}_{k-1}, \bar{L}_k)$,
 is a **sequentially randomized experiment**.
 :::
 
@@ -428,7 +430,7 @@ $$Y^g \ind A_k \mid \bar{A}_{k-1} = g(\bar{A}_{k-2}, \bar{L}_{k-1}), \bar{L}_k
 \quad \text{for all strategies } g \text{ and } k = 0, 1, \ldots, K.$$
 
 That is, at each time $k$, the treated and untreated are exchangeable for $Y^g$
-given prior covariate history $\bar{L}_k$
+given the covariate history $\bar{L}_k$ through time $k$
 and any observed treatment history compatible with $g$.
 :::
 
@@ -463,7 +465,9 @@ which also equals the counterfactual outcome under the static strategy $(a_0, a_
   implies sequential exchangeability for $Y^g$ (@def-seq-exchangeability).
 - More generally, it holds in any causal graph that, like Figure 19.2,
   has **no arrows from unmeasured $U$ into treatment**.
-- So under Figure 19.2, $\E{Y^g}$ is identified for **all** strategies $g$.
+- So under Figure 19.2, $\E{Y^g}$ is identified for **all** strategies $g$,
+  provided that every treatment level compatible with $g$ has positive probability given each history,
+  and under consistency.
 - Under Figure 19.3, sequential exchangeability for $Y^g$ does not hold
   (generically, that is, under [faithfulness](06-graphical-representation.qmd#from-d-separation-to-independence),
   which rules out exact cancellations of effects).
@@ -553,9 +557,11 @@ Figure 19.4 includes an unmeasured $W_0$ that causes both $A_0$ and the measured
 e.g. an unrecorded scheduled clinic visit at time 0;
 $U_1$ is the true (unknown) CD4 count, which $L_1$ measures with error.
 
-- $\E{Y^{\bar{a}}}$ is still identified for every **static** strategy $\bar{a}$ (@def-dynamic-static).
-- $\E{Y^g}$ is **not** identified for any **dynamic** strategy $g$ (@def-dynamic-static)
-  whose assignment depends on $L_1$.
+- $\E{Y^{\bar{a}}}$ is still identified for every **static** strategy $\bar{a}$ (@def-dynamic-static),
+  given sequential positivity and consistency.
+- The book states that $\E{Y^g}$ is **not** identified for any **dynamic** strategy $g$ (@def-dynamic-static)
+  whose assignment depends on $L_1$
+  [@hernan2020causal, Section 19.4].
 
 :::
 
@@ -609,8 +615,9 @@ so are all static and dynamic strategies built from them.
 ## A generalized backdoor criterion
 
 The backdoor criterion of Chapter 7 generalizes to time-varying treatments.
-For static strategies, a sufficient condition for identification is that,
-**at each time $k$, all backdoor paths into $A_k$ that do not go through any future treatment are blocked**.
+For static strategies, a sufficient condition for identification
+(given sequential positivity and consistency) is that,
+**for every $k$, conditioning blocks each backdoor path into $A_k$ except those through later treatments**.
 :::
 
 But this generalized criterion works on causal DAGs,
@@ -646,11 +653,8 @@ The outcome $Y$ has parents including $U_1$ and $A_1$, but not $L_1$.
 :::
 
 ::: {.notes}
-For $L_1$ and $Y$ we list only the parents the book's text relies on
-(the backdoor paths $A_1 \leftarrow L_1 \leftarrow U_1 \to Y$ and
-$A_1 \leftarrow A_0 \to L_1 \leftarrow U_1 \to Y$ of Section 19.6,
-and the SWIG paths of this section);
-consult the book's figures for the complete diagrams.
+For $L_1$ and $Y$ we list only the parents that later arguments use;
+the book's figures give the complete diagrams.
 :::
 
 ---
@@ -710,7 +714,8 @@ Y^{a_0, a_1} \ind A_1^{a_0} \mid A_0, L_1^{a_0}.$$
 The path $A_1^{a_0} \leftarrow a_0 \to L_1^{a_0} \leftarrow U_1 \to Y^{a_0, a_1}$ looks open,
 but it is blocked:
 $a_0$ is a constant in the counterfactual world,
-and constants are always implicitly conditioned on (Fine Point 19.2).
+and a path through a constant intervention node is always blocked,
+because a constant is implicitly conditioned on.
 :::
 
 ::: {#prp-swig-to-observed-exchangeability}
@@ -750,9 +755,11 @@ $$Y^{\bar{a}} \ind A_k \mid \bar{A}_{k-1} = \bar{a}_{k-1}, \bar{L}_k
   than sequential exchangeability for $Y^g$ (@def-seq-exchangeability):
   it concerns only counterfactual outcomes indexed by static strategies $g = \bar{a}$.
 - When it holds for every static $\bar{a}$,
-  it suffices to identify $\E{Y^{\bar{a}}}$ for every static strategy.
+  it suffices, given sequential positivity and consistency,
+  to identify $\E{Y^{\bar{a}}}$ for every static strategy.
 - It holds in Figure 19.6 (@exm-figures-19-5-19-6) too (check d-separation on its SWIG, Figure 19.8),
-  so under Figure 19.6 every static strategy is identified.
+  so under Figure 19.6 (and given sequential positivity and consistency)
+  every static strategy is identified.
 
 :::
 
@@ -767,7 +774,8 @@ $$Y^{\bar{a}} \ind A_k \mid \bar{A}_{k-1} = \bar{a}_{k-1}, \bar{L}_k
 - With an added arrow $U_1 \to A_1$, the SWIG would have $U_1 \to A_1^{a_0}$,
   no form of sequential exchangeability would hold
   (generically, that is, under faithfulness),
-  and no strategy would be identified.
+  and the book states that no strategy would be identified
+  [@hernan2020causal, Section 19.5].
 
 :::
 :::
@@ -795,7 +803,7 @@ Although it mentions only static strategies, it is equivalent to
 $$\paren{Y^{g}, \underline{L}_{k+1}^{g}} \ind A_k \mid \bar{A}_{k-1} = g(\bar{A}_{k-2}, \bar{L}_{k-1}), \bar{L}_k
 \quad \text{for all } g,$$
 
-and so, with positivity, it identifies the outcome and covariate distributions
+and so, with positivity and consistency, it identifies the outcome and covariate distributions
 under every static and dynamic strategy (Robins 1986).
 This rests on the *joint* independence of $(Y^{\bar{a}}, \underline{L}_{k+1}^{\bar{a}})$ and $A_k$;
 for dynamic strategies, the two *separate* independences of $Y^{\bar{a}}$ and of $\underline{L}_{k+1}^{\bar{a}}$
@@ -804,7 +812,8 @@ from $A_k$ do not suffice.
 A sequentially randomized trial implies still stronger conditions,
 which cannot be read from SWIGs and are not needed for identification, e.g.
 
-- $\cb{\paren{Y^{\bar{a}}, \underline{L}_{k+1}^{\bar{a}}}; \text{all } \bar{a}} \ind A_k \mid \bar{A}_{k-1}, \bar{L}_k$;
+- $\cb{\paren{Y^{\bar{a}}, \underline{L}_{k+1}^{\bar{a}}}; \text{all } \bar{a}}
+  \ind A_k \mid \bar{A}_{k-1}, \bar{L}_k$;
 - **full sequential exchangeability**:
   $\paren{Y^{\bar{\mathcal{A}}}, \bar{L}^{\bar{\mathcal{A}}}} \ind A_k \mid \bar{A}_{k-1}, \bar{L}_k$,
   where $\bar{\mathcal{A}}$ is the set of all $2^{K+1}$ static strategies,
@@ -858,7 +867,8 @@ So $g_0 = 0$ for everybody, $g_1(L_1^g) = 1$ when $L_1^g = 1$, and $g_1(L_1^g) =
   Restricting the second to those with $A_0 = g_0$ and applying consistency
   ($L_1^g = L_1$ and $A_1^g = A_1$ whenever $A_0 = g_0$)
   gives $Y^g \ind A_1 \mid A_0 = g_0, L_1$.
-  Sequential exchangeability for $Y^g$ holds:
+  Sequential exchangeability for $Y^g$ holds,
+  so (given sequential positivity and consistency)
   **all strategies, static and dynamic, are identified**.
 - **Figure 19.10** (from Figure 19.6):
   because of the open path
@@ -886,7 +896,8 @@ even though in a single intervention world $a$ is a constant that cannot affect 
 
 - The arrows record which variables $A$ directly affects in the original DAG.
 - Without them, the SWIGs of Figure 7.14 and of Figure 7.14 plus an arrow $A \to Y$ would be identical,
-  and we could not tell that the effect is identified (by the front door formula) in the first DAG but not the second.
+  and we could not tell that the effect is identified (by the front door formula)
+  in the first DAG but not the second.
 
 So when applying d-separation to a SWIG,
 **every path through an intervention node is blocked**,
@@ -900,9 +911,10 @@ $Y^g \ind A_1 \mid A_0 = g(L_0), L_0, L_1$.
 
 For a **random** strategy that draws $A_0^{+,g}$ from a distribution that may depend on $L_0$,
 $A_0^{+,g}$ appears on the SWIG and must be conditioned on explicitly.
-Richardson and Robins (2013) showed that
+The book reports that Richardson and Robins (2013) showed that
 $Y^g \ind A_1^g \mid A_0, A_0^{+,g}, L_0, L_1^g$
-is necessary for identification by the g-formula for such a strategy.
+is a necessary condition for identification by the g-formula for such a strategy
+[@hernan2020causal, Fine Point 19.2].
 They also treated strategies that depend on the *natural value of treatment* $A_t^g$ (Robins et al. 2004),
 recently called "modified treatment policies" (Diaz et al. 2021).
 :::
@@ -991,17 +1003,19 @@ That path can be blocked by also conditioning on prior treatment $A_0$, if it is
 
 ---
 
-::: {#def-tv-confounders}
-## Time-varying confounders
-
-Consider the long diagram over all times $k = 0, 1, 2, \ldots$,
+Now consider the long diagram over all times $k = 0, 1, 2, \ldots$,
 in which each $L_k$ affects later treatments $A_k, A_{k+1}, \ldots$
 and shares unmeasured causes $U_k$ with $Y$.
 To estimate the effects of strategies defined by interventions on $A_0, A_1, A_2, \ldots$,
-the covariate history $\bar{L}_k$, together with $\bar{A}_{k-1}$,
-is needed at each $k$ to block the backdoor paths between $A_k$ and $Y$.
-The covariates in $\bar{L}_k$ are then called **time-varying confounders**
-for the effect of $\bar{A}$ on $Y$.
+we must condition at each $k$ on the covariate history $\bar{L}_k$, together with $\bar{A}_{k-1}$,
+to block the backdoor paths between $A_k$ and $Y$.
+
+::: {#def-tv-confounders}
+## Time-varying confounders
+
+Covariates $\bar{L}_k$ that, together with $\bar{A}_{k-1}$,
+must be conditioned on at each time $k$ to block the backdoor paths into $A_k$
+are **time-varying confounders** for the effect of $\bar{A}$ on $Y$.
 :::
 
 - No unmeasured confounding for $\bar{A}$ requires that $\bar{L}_k$ be measured for everyone.
@@ -1030,7 +1044,9 @@ Assume no selection bias.
 - If the identifiability conditions hold but
   $\E{Y^{\bar{a}} \mid L_0} \neq \E{Y \mid \bar{A} = \bar{a}, L_0}$,
   there is **time-varying confounding**.
-- If the identifiability conditions fail, as in Figure 19.3, there is **unmeasured confounding**.
+- If the identifiability conditions fail,
+  as they generically do in Figure 19.3 (under faithfulness),
+  there is **unmeasured confounding**.
 
 A sufficient condition for no time-varying confounding is
 unconditional sequential exchangeability (@def-unconditional-seq-exchangeability),
@@ -1069,7 +1085,8 @@ and it is that feedback that makes conventional adjustment fail.
   given $(\bar{A}_{k-1}, \bar{L}_k)$;
   such randomization implies **sequential exchangeability** (@def-seq-exchangeability).
 - Identification needs sequential exchangeability, sequential positivity, and consistency.
-- **Static sequential exchangeability** (@def-static-seq-exchangeability) is weaker and identifies only static strategies;
+- **Static sequential exchangeability** (@def-static-seq-exchangeability) is weaker
+  and identifies only static strategies;
   SWIGs show when a diagram (e.g., Figure 19.6) supports static but not dynamic strategies.
 - **Time-varying confounders** are covariates $\bar{L}_k$ needed at each time to block backdoor paths;
   Chapter 20 explains why conventional methods fail to adjust for them.
