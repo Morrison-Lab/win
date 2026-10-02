@@ -18,7 +18,7 @@ Suppose a study satisfies the strongest form of sequential exchangeability,
 so the measured time-varying confounders suffice to estimate the effect of any treatment strategy.
 Which confounding adjustment method should we then use?
 The answer exposes a central problem for time-varying treatments:
-**treatment-confounder feedback**.
+treatment-confounder feedback.
 When it is present, traditional adjustment methods can be biased
 even though all the information needed for valid estimation is available.
 This chapter describes the structure of treatment-confounder feedback
@@ -41,6 +41,17 @@ g-methods (Chapter 21) avoid both problems.
 
 ---
 
+::: {#def-treatment-confounder-feedback}
+## Treatment-Confounder Feedback
+
+Consider a time-varying treatment $A_k$ and a time-varying confounder $L_k$, measured at times $k = 0, 1, \ldots$.
+There is **treatment-confounder feedback** when the time-varying confounder affects treatment
+($L_k \to A_k$) *and* earlier treatment affects the confounder ($A_{k-1} \to L_k$):
+"the confounder affects the treatment and the treatment affects the confounder"
+[@hernan2020causal, p. 267].
+
+:::
+
 ::: {#exm-hiv-trial-time-varying}
 ## The Sequentially Randomized HIV Trial
 
@@ -53,16 +64,7 @@ Return to the sequentially randomized HIV trial of Chapter 19:
 The time-varying covariates $L_k$ are time-varying confounders:
 CD4 count $L_k$ affects treatment $A_k$.
 In addition, treatment $A_{k-1}$ raises future CD4 count $L_k$.
-
-:::
-
-::: {#def-treatment-confounder-feedback}
-## Treatment-Confounder Feedback
-
-There is **treatment-confounder feedback** when the time-varying confounder affects treatment
-($L_k \to A_k$) *and* earlier treatment affects the confounder ($A_{k-1} \to L_k$):
-"the confounder affects the treatment and the treatment affects the confounder"
-[@hernan2020causal, p. 267].
+So the trial has treatment-confounder feedback (@def-treatment-confounder-feedback).
 
 :::
 
@@ -79,7 +81,7 @@ As in Chapter 19, the example has no censoring, so we can focus on confounding.
 ::: {#rem-confounding-without-feedback}
 ## Time-Varying Confounding Without Feedback
 
-Time-varying confounding can occur *without* treatment-confounder feedback.
+Time-varying confounding can occur *without* treatment-confounder feedback (@def-treatment-confounder-feedback).
 In the book's Figure 20.2, the arrows from $A_{k-1}$ to $L_k$ and to $U_k$ are deleted:
 $L_k$ still confounds the effect of $A_k$,
 but it is not affected by prior treatment.
@@ -118,7 +120,7 @@ It makes four simplifications relative to Figure 20.1:
 - no baseline node $L_0$: $A_0$ is marginally randomized and $A_1$ is randomized conditional on $L_1$;
 - no unmeasured $U_0$;
 - no arrow $A_0 \to A_1$: treatment at time 1 is assigned using $L_1$ only;
-- no arrows from $A_0$, $L_1$, or $A_1$ into $Y$: the **sharp null** holds.
+- no arrows from $A_0$, $L_1$, or $A_1$ into $Y$: the [sharp null](01-introduction.qmd#def-sharp-null) holds.
 
 :::
 
@@ -159,7 +161,7 @@ $$W_0 \to A_0, \qquad W_0 \to L_1, \qquad L_1 \to A_1, \qquad U_1 \to L_1, \qqua
 
 Figure 20.4 represents an observational study.
 The book refers to both Figures 20.3 and 20.4 (and 19.2 and 19.4)
-as examples of treatment-confounder feedback.
+as examples of treatment-confounder feedback (@def-treatment-confounder-feedback).
 
 :::
 
@@ -372,7 +374,7 @@ when there is treatment-confounder feedback [@hernan2020causal, p. 271].
 The correct answer can be recovered from the same table by the g-formula,
 which standardizes over the distribution of $L_1$ *given* $A_0$
 rather than conditioning on $L_1$.
-From Table 20.1, $\Pr[L_1 = 0 \mid A_0 = 1] = 8000/16000 = 0.5$
+From @tbl-hiv-feedback-trial, $\Pr[L_1 = 0 \mid A_0 = 1] = 8000/16000 = 0.5$
 and $\Pr[L_1 = 0 \mid A_0 = 0] = 4000/16000 = 0.25$, so
 
 $$
@@ -471,7 +473,7 @@ which is why both are called treatment-confounder feedback.
 
 ### Beyond the Null and Beyond Two Time Points
 
-::: {.callout-warning title="The Bias Is Not Limited to the Null or to Two Time Points"}
+::: {.callout-note title="The Bias Is Not Limited to the Null or to Two Time Points"}
 
 - The bias is not limited to the sharp null.
   With a non-null effect (the book's Figure 20.7, where $A_0 \to L_1 \to Y$),
@@ -548,7 +550,7 @@ The price is a new threat to validity: misspecification of the dose-response mod
 :::
 
 ::: {.callout-warning title="Regression Does Not Remove the Bias"}
-Paying that price buys no protection.
+Paying the price of a dose-response model buys no protection against this bias.
 Regression **is** a conventional stratification-based method,
 so it cannot remove the bias of stratification under treatment-confounder feedback.
 
@@ -672,10 +674,12 @@ conditions on treatment history.
 ::: {#def-short-term-effect}
 ## Short-Term Effect
 
-Suppose the target is the effect of the time-fixed treatment $A_1$ alone on $Y$
-(sometimes called the **short-term effect** of $\bar{A}$).
+The **short-term effect** of $\bar{A}$ is the effect of $A_1$ alone on $Y$.
 
 :::
+
+Suppose the target is the short-term effect,
+treating $A_1$ as a time-fixed treatment.
 
 ::: {.callout-warning title="Ignoring Past Treatment Biases the Short-Term Effect"}
 Without adjustment for $A_0$:
