@@ -34,7 +34,9 @@ and the second is the outcome or one of its causes [@hernan2020causal, p. 111].
 :::
 
 ::: {.notes}
-A margin note in the book gives the more general version: one variable is either the treatment or associated with the treatment, and the other is either the outcome or associated with the outcome (Hernán, Hernández-Díaz, and Robins 2004).
+A margin note in the book, crediting Hernán, Hernández-Díaz, and Robins (2004), widens the definition:
+the two variables whose common effect is conditioned on need only be associated with treatment and with outcome, respectively,
+rather than being treatment (or one of its causes) and outcome (or one of its causes) [@hernan2020causal, p. 111].
 Conditioning on a descendant of such a collider has the same effect.
 In the pedestrian example, consent is a common effect of the investigator's looking up (the treatment) and of shyness (a cause of the outcome).
 :::
@@ -85,7 +87,9 @@ The diagram shows two sources of association between treatment and outcome:
 2. The path $A \rightarrow C \leftarrow Y$, which is opened by conditioning on the common effect $C$.
 
 The association induced through the second path is **selection bias due to conditioning on $C$** (@def-selection-bias).
-Because of it, the associational risk ratio $\Pr[Y = 1 \mid A = 1, C = 0] / \Pr[Y = 1 \mid A = 0, C = 0]$ generically (that is, under [faithfulness](06-graphical-representation.qmd#from-d-separation-to-independence)) does not equal the causal risk ratio $\Pr[Y^{a=1} = 1] / \Pr[Y^{a=0} = 1]$.
+Because of it, the associational risk ratio $\Pr[Y = 1 \mid A = 1, C = 0] / \Pr[Y = 1 \mid A = 0, C = 0]$
+generically (that is, under [faithfulness](06-graphical-representation.qmd#from-d-separation-to-independence))
+does not equal the causal risk ratio $\Pr[Y^{a=1} = 1] / \Pr[Y^{a=0} = 1]$.
 Without conditioning on the collider $C$, the only open path would be $A \rightarrow Y$, and the associational risk ratio $\Pr[Y = 1 \mid A = 1] / \Pr[Y = 1 \mid A = 0]$ would equal the causal risk ratio.
 :::
 
@@ -104,7 +108,9 @@ Figure 8.2 adds a node $S$, parental grief (1: yes, 0: no), which is affected by
 If only nongrieving parents ($S = 0$) agreed to participate, the analysis conditions on $S = 0$.
 As shown in Chapter 6, conditioning on a variable affected by the collider $C$ also opens the path $A \rightarrow C \leftarrow Y$.
 
-In both Figures 8.1 and 8.2 the bias comes from conditioning on a common effect of treatment and outcome ($C$ or $S$), and, generically (that is, under faithfulness), it is present whether or not there is an arrow $A \rightarrow Y$: it is selection bias under the null (@def-selection-bias-under-null).
+In both Figures 8.1 and 8.2 the bias comes from conditioning on a common effect of treatment and outcome ($C$ or $S$).
+Generically (that is, under faithfulness), it is present whether or not there is an arrow $A \rightarrow Y$:
+it is selection bias under the null (@def-selection-bias-under-null).
 :::
 
 ::: {.notes}
@@ -151,6 +157,15 @@ Because $U$ is positively associated with death $Y$, restricting to the uncensor
 
 ---
 
+::: {#def-m-bias}
+## M-bias
+
+**M-bias** is selection bias that comes from conditioning on a common effect of a cause of treatment and a cause of the outcome,
+or on a descendant of such a common effect [@hernan2020causal, pp. 97 and 111].
+:::
+
+The name refers to the M shape of the diagram when the two causes are drawn on top.
+
 ::: {#exm-loss-to-follow-up-variants}
 ## Further structures of differential loss to follow-up
 
@@ -161,9 +176,8 @@ Three further structures lead to the same kind of bias through differential loss
   Restricting to the uncensored again conditions on a common effect $C$ of $A$ and $U$.
 - **Figures 8.5 and 8.6**: variations of Figures 8.3 and 8.4 with an unmeasured common cause $W$ of treatment and another variable.
   $W$ stands for lifestyle, personality, or educational factors that affect treatment ($W \rightarrow A$) and either attitudes toward attending study visits ($W \rightarrow C$, Figure 8.5) or the threshold for reporting symptoms ($W \rightarrow L$, Figure 8.6).
-  The book notes that Figures 8.5 and 8.6 are examples of M-bias:
-  bias from conditioning on (a descendant of) a collider whose two parents are a cause of treatment ($W$) and a cause of the outcome ($U$),
-  named for the M shape the diagram takes when drawn with those two causes on top.
+  The book notes that Figures 8.5 and 8.6 are examples of M-bias (@def-m-bias),
+  with $W$ as the cause of treatment and $U$ as the cause of the outcome.
 
 :::
 
@@ -293,7 +307,9 @@ Assume, unknown to the investigators, that $A$ does not cause $Y$.
 - $U$ does not affect $Y$, and $L$ does not affect $A$.
 
 There is no confounding: $A$ and $Y$ have no common cause, so in the full population $\Pr[Y = 1 \mid A = 1] / \Pr[Y = 1 \mid A = 0]$ is expected to equal $\Pr[Y^{a=1} = 1] / \Pr[Y^{a=0} = 1] = 1$.
-Among firefighters ($C = 0$), however, the two ratios generically (that is, under faithfulness) differ: conditioning on $C$, a common effect of causes of treatment ($U$) and of outcome ($L$), opens $A \leftarrow U \rightarrow C \leftarrow L \rightarrow Y$.
+Among firefighters ($C = 0$), however, the two ratios generically (that is, under faithfulness) differ:
+conditioning on $C$, a common effect of causes of treatment ($U$) and of outcome ($L$),
+opens $A \leftarrow U \rightarrow C \leftarrow L \rightarrow Y$.
 :::
 
 ---
@@ -308,7 +324,7 @@ Advantages of the structural classification anyway:
 
 1. The structure guides the choice of method.
    With time-varying treatments it reveals when stratification-based adjustment for confounding would introduce selection bias, so that g-methods are needed (Part III).
-2. It can inform design even when it does not change the analysis: investigators restricting to firefighters should collect joint risk factors for $Y$ and $C$ (as in the first example of Section 7.1).
+2. It can inform design even when it does not change the analysis: investigators restricting to firefighters should collect joint risk factors for $Y$ and $C$ (as in the first example of [Section 7.1](07-confounding.qmd#the-structure-of-confounding-pp.-91-93)).
 3. Selection on pre-treatment variables (like being a firefighter) explains why a variable such as $L$ can act as a "confounder" in some studies but not in others, e.g., studies not restricted to firefighters.
 4. Causal diagrams improve communication and reduce misunderstandings.
 
@@ -346,6 +362,21 @@ selection bias is not an "all or nothing" issue.
 :::
 :::
 
+---
+
+::: {#def-frailty}
+## Frailty
+
+A **frailty** is an unmeasured cause of the outcome, often of death, that is marginally independent of treatment [@hernan2020causal, p. 114].
+:::
+
+::: {#def-noncollapsibility}
+## Noncollapsibility
+
+An effect measure is **noncollapsible** with respect to a covariate when its value in the whole population is not a weighted average of its values within the strata of that covariate.
+**Noncollapsibility** is this property.
+:::
+
 ::: {.callout-note title="Technical Point 8.1: The Built-in Selection Bias of Hazard Ratios"}
 Figure 8.8 describes a randomized experiment of heart transplant $A$ and death at times 1 ($Y_1$) and 2 ($Y_2$).
 Transplant lowers the risk of death at time 1 ($A \rightarrow Y_1$) but has no direct effect on death at time 2 (no arrow $A \rightarrow Y_2$).
@@ -356,12 +387,13 @@ the second is less than 1 because it reflects total mortality through time 2.
 In discrete time the hazard at time 1 is just the risk at time 1, but the hazard at time 2 conditions on surviving time 1:
 $$\frac{\Pr[Y_2 = 1 \mid A = 1, Y_1 = 0]}{\Pr[Y_2 = 1 \mid A = 0, Y_1 = 0]}.$$
 Treated survivors of time 1 are less likely than untreated survivors to carry the protective $U$ (treatment can explain their survival), so they are more likely to die at time 2.
-The hazard ratio is below 1 at time 1 and above 1 at time 2: the hazards cross.
+In this example, the hazard ratio is below 1 at time 1 and, generically (under faithfulness), above 1 at time 2,
+so the hazards cross.
 The time-2 hazard ratio is biased for the (null) direct effect because conditioning on $Y_1$, a common effect of $A$ and $U$, opens $A \rightarrow Y_1 \leftarrow U \rightarrow Y_2$.
-An unmeasured cause of death that is marginally unassociated with treatment, like $U$, is often called a **frailty**.
+The haplotype $U$ is a frailty (@def-frailty).
 
 Within strata of $U$ the hazard ratio at time 2 is 1, because conditioning on the non-collider $U$ blocks that path.
-That the unconditional hazard ratio differs from these stratum-specific ratios even though $U$ is independent of $A$ shows the **noncollapsibility** of the hazard ratio.
+That the unconditional hazard ratio differs from these stratum-specific ratios even though $U$ is independent of $A$ shows the noncollapsibility (@def-noncollapsibility) of the hazard ratio.
 Since $U$ is unobserved, the data cannot tell whether $A$ has a direct effect on $Y_2$ (Figure 8.8 versus Figure 8.9).
 This applies to observational studies and randomized experiments alike.
 :::
@@ -441,7 +473,9 @@ where $C \rightarrow Y$ encodes only that censoring determines whether the outco
 ::: {#rem-censoring-as-treatment}
 ## Censoring as another treatment
 
-With the contrast written in terms of $Y^{a,c=0}$ (@def-counterfactual-no-censoring), **censoring $C$ is just another treatment**, and the goal is the effect of a joint intervention on $A$ and $C$.
+With the contrast written in terms of $Y^{a,c=0}$ (@def-counterfactual-no-censoring),
+**censoring $C$ is just another treatment**,
+and the goal is the effect of a joint intervention on $A$ and $C$.
 To eliminate selection bias for the effect of $A$, we adjust for confounding for the effect of $C$.
 That requires:
 
@@ -536,16 +570,6 @@ With those numbers, the risk ratio in the entire population is 1 and the risk ra
 
 ---
 
-::: {#exm-wasabi-pseudo-population}
-## The wasabi trial pseudo-population
-
-In the $L = 1, A = 1$ branch, the 16 censored individuals get weight 0 (they do not contribute) and each of the 4 uncensored individuals gets weight $1/0.2 = 5$: IP weighting replaces the 20 original individuals by 5 copies of each of the 4 uncensored ones.
-Repeating this for every branch (Figure 8.11) creates a pseudo-population of the original size in which nobody is lost to follow-up.
-In that pseudo-population the associational risk ratio is 1, equal to $\Pr[Y^{a=1,c=0} = 1] / \Pr[Y^{a=0,c=0} = 1]$ (@def-counterfactual-no-censoring), the risk ratio had nobody been censored.
-:::
-
----
-
 ### Identifiability Conditions for IP Weighting
 
 ::: {#prp-ipw-selection-identification}
@@ -594,9 +618,33 @@ Replacing $Y$ by 1 in the first three lines shows that the denominator is $\sum_
 Dividing the two gives the result.
 :::
 
+---
+
+::: {#exm-wasabi-pseudo-population}
+## The wasabi trial pseudo-population
+
+In the $L = 1, A = 1$ branch, the 16 censored individuals get weight 0 (they do not contribute)
+and each of the 4 uncensored individuals gets weight $1/0.2 = 5$:
+IP weighting replaces the 20 original individuals by 5 copies of each of the 4 uncensored ones.
+Repeating this for every branch (Figure 8.11) creates a pseudo-population of the original size in which nobody is lost to follow-up.
+In that pseudo-population the associational risk ratio is 1.
+
+The wasabi trial meets the conditions of @prp-ipw-selection-identification:
+
+- exchangeability for censoring holds because, in Figure 8.3, $A$ and $L$ block every backdoor path between $C$ and $Y$;
+- positivity holds because every $\Pr[C = 0 \mid L, A]$ in @tbl-wasabi-censoring-weights is positive;
+- consistency is assumed, with well-defined interventions on $A$ and $C$ and no measurement error;
+- treatment was marginally randomized, so there is no confounding for $A$.
+
+So the pseudo-population risk ratio of 1 equals $\Pr[Y^{a=1,c=0} = 1] / \Pr[Y^{a=0,c=0} = 1]$ (@def-counterfactual-no-censoring),
+the risk ratio had nobody been censored.
+:::
+
 Exchangeability for censoring implies that the average counterfactual outcome $Y^{a,c=0}$ of the uncensored equals that of the censored with the same $A$ and $L$
 (mean exchangeability, which is all the proof uses).
-It holds if $\Pr[C = 0 \mid L, A]$ conditions on treatment and on all factors that independently predict both selection and the outcome, i.e., if $A$ and $L$ block all backdoor paths between $C$ and $Y$.
+It holds if $\Pr[C = 0 \mid L, A]$ conditions on treatment
+and on all factors that independently predict both selection and the outcome,
+i.e., if $A$ and $L$ block all backdoor paths between $C$ and $Y$.
 
 ::: {.callout-warning title="Exchangeability for Censoring Is Untestable"}
 We can never be sure that $A$ and $L$ block every backdoor path between censoring and the outcome, so this assumption is untestable.
@@ -631,7 +679,10 @@ Could we instead estimate effects within levels of $L$?
 ::: {#rem-stratification-figure-8-3}
 ## Stratification when $L$ only blocks a backdoor path
 
-In Figure 8.3, conditioning on $L$ blocks the backdoor path from $C$ to $Y$, so the conditional risk ratio
+In Figure 8.3, conditioning on $L$ blocks the backdoor path from $C$ to $Y$,
+so exchangeability for censoring holds within levels of $L$,
+and treatment is randomized.
+If positivity and consistency also hold, the conditional risk ratio
 
 $$\frac{\Pr[Y = 1 \mid A = 1, C = 0, L = l]}{\Pr[Y = 1 \mid A = 0, C = 0, L = l]}$$
 
@@ -642,7 +693,7 @@ For the same reason, stratification also works under Figure 8.5.
 ::: {.callout-warning title="Stratification Can Open a Collider Path"}
 Stratification fails under Figures 8.4 and 8.6.
 In Figure 8.4, conditioning on $L$ blocks the backdoor path from $C$ to $Y$ but opens $A \rightarrow L \leftarrow U \rightarrow Y$, because $L$ is a collider on that path;
-even with a null effect, the $L$-conditional risk ratio generally differs from 1.
+even with a null effect, the $L$-conditional risk ratio generically (under faithfulness) differs from 1.
 Figure 8.6 behaves the same way.
 IP weighting adjusts correctly under all of Figures 8.3-8.6 because it estimates unconditional effects after reweighting by treatment and $L$, rather than conditioning on $L$.
 :::
@@ -772,7 +823,8 @@ The augmented causal diagram (@def-augmented-causal-diagram) represents both the
 ::: {#rem-collider-stratification-without-bias}
 ## Selection without bias
 
-**Summary of Section 8.6**: conditioning on a collider generically (under faithfulness) induces an association between its causes, but the association may be confined to some levels of the collider.
+**Summary of Section 8.6**: conditioning on a collider generically (under faithfulness) induces an association between its causes,
+but the association may be confined to some levels of the collider.
 Restricting the analysis to a single level of a common effect does not necessarily produce selection bias: collider stratification is not always a source of selection bias.
 :::
 
@@ -855,9 +907,10 @@ This chapter examined **selection bias**: lack of exchangeability that arises fr
 5. **Adjustment**: IP weighting with $W^C = 1 / \Pr[C = 0 \mid L, A]$ creates a pseudo-population with no censoring.
    Stratification on $L$ works in Figures 8.3 and 8.5 but not in Figures 8.4 and 8.6.
 
-6. **Selection without bias**: when the data follow a multiplicative survival model (@def-multiplicative-survival-model, Figure 8.13),
+6. **Selection without bias**: when $A$ and $E$ are marginally independent
+   and the data follow a multiplicative survival model (@def-multiplicative-survival-model, Figure 8.13),
    $A$ and $E$ remain independent among survivors ($Y = 0$, by @prp-independence-among-survivors),
-   though not among the dead ($Y = 1$).
+   but are generically (under faithfulness) dependent among the dead ($Y = 1$).
 
 ::: {.notes}
 **Practical implications**:
