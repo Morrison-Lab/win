@@ -144,26 +144,6 @@ The book uses the example deliberately to illustrate a common problem in observa
 
 ---
 
-IP weighting creates a pseudo-population in which the arrow from $L$ to $A$ is removed.
-
-::: {#prp-pseudo-population}
-## Properties of the IP Weighted Pseudo-Population
-
-In the pseudo-population:
-
-1. $A$ and $L$ are statistically independent, and
-2. the mean $\Expfc{ps}{Y \mid A = a}$ equals the standardized mean $\sum_l \E{Y \mid A = a, L = l} \Pr[L = l]$ in the actual population.
-
-These two properties hold even if conditional exchangeability fails.
-If $Y^a \ind A \mid L$ does hold in the actual population, then additionally:
-
-- unconditional exchangeability (no confounding) holds in the pseudo-population,
-- $\E{Y^a} = \Expfc{ps}{Y \mid A = a}$, and
-- association is causation in the pseudo-population.
-:::
-
----
-
 ### IP Weights Definition
 
 ::: {#def-ip-weights}
@@ -187,6 +167,98 @@ So only $\Pr[A = 1 \mid L]$ needs to be estimated.
 The conditional probability of treatment $\Pr[A = 1 \mid L]$ is the **propensity score**;
 Chapter 15 discusses propensity scores in detail [@hernan2020causal, Chapter 12, p. 165].
 Note that the propensity score is $\Pr[A = 1 \mid L]$, not $f(A \mid L)$: for an untreated individual, the denominator of $W^A$ is one minus the propensity score.
+:::
+
+---
+
+IP weighting creates a pseudo-population in which the arrow from $L$ to $A$ is removed.
+To make that statement precise, give each individual the weight $W^A$ of @def-ip-weights,
+and define the **pseudo-population** by its expectations:
+for any function $h$,
+$$\Expfc{ps}{h(L, A, Y)} \eqdef \frac{\E{W^A \, h(L, A, Y)}}{\E{W^A}}.$$
+Chapter 2 built the same pseudo-population by hand ([IP weights in Chapter 2](02-randomized-experiments.qmd#def-ip-weights)).
+
+::: {#prp-pseudo-population}
+## Properties of the IP Weighted Pseudo-Population
+
+Suppose that
+
+- $A$ takes finitely many values, $L$ is discrete, and the weights are $W^A = 1/f(A \mid L)$ (@def-ip-weights);
+- **positivity** holds: $f(a \mid l) = \Pr[A = a \mid L = l] > 0$ for every treatment level $a$ and every $l$ with $\Pr[L = l] > 0$.
+
+Then, in the pseudo-population:
+
+1. $A$ and $L$ are statistically independent, and
+2. the mean $\Expfc{ps}{Y \mid A = a}$ equals the standardized mean $\sum_l \E{Y \mid A = a, L = l} \Pr[L = l]$ in the actual population.
+
+These two properties need no exchangeability.
+If, in addition, **conditional exchangeability** $Y^a \ind A \mid L$ holds in the actual population for every $a$,
+and **consistency** holds ($Y = Y^a$ for every individual with $A = a$),
+then:
+
+- unconditional exchangeability $Y^a \ind A$ holds in the pseudo-population,
+- $\E{Y^a} = \Expfc{ps}{Y \mid A = a}$ for every $a$, and
+- association is causation in the pseudo-population: any contrast of the means $\Expfc{ps}{Y \mid A = a}$ across levels $a$ equals the same contrast of the counterfactual means $\E{Y^a}$.
+:::
+
+::: {.proof}
+Let $k$ be the number of treatment levels.
+**Step 0 (the weights cancel the treatment probability).**
+For every level $a$ and every $l$ with $\Pr[L = l] > 0$,
+$$
+\begin{aligned}
+\E{W^A \indicp{A = a} \indicp{L = l}}
+&= \frac{\Pr[A = a, L = l]}{f(a \mid l)} && \text{(} W^A = 1/f(a \mid l) \text{ whenever } A = a, L = l\text{; positivity)}\\
+&= \frac{f(a \mid l) \Pr[L = l]}{f(a \mid l)} && \text{(definition of } f(a \mid l)\text{)}\\
+&= \Pr[L = l] && \text{(cancel } f(a \mid l)\text{)}.
+\end{aligned}
+$$
+Summing over all $k$ levels $a$ and all $l$ gives $\E{W^A} = k \sum_l \Pr[L = l] = k$.
+
+**Property 1.**
+By the definition of the pseudo-population and Step 0,
+$\Pr_{ps}[A = a, L = l] = \Pr[L = l] / k$.
+Summing over $l$ gives $\Pr_{ps}[A = a] = 1/k$;
+summing over $a$ gives $\Pr_{ps}[L = l] = \Pr[L = l]$.
+So $\Pr_{ps}[A = a, L = l] = \Pr_{ps}[A = a] \Pr_{ps}[L = l]$ for all $a$ and $l$, which is independence.
+
+**Property 2.**
+$$
+\begin{aligned}
+\Expfc{ps}{Y \mid A = a}
+&= \frac{\Expfc{ps}{Y \indicp{A = a}}}{\Pr_{ps}[A = a]} && \text{(definition of a conditional mean)}\\
+&= \frac{\E{W^A Y \indicp{A = a}} / k}{1/k} && \text{(definition of the pseudo-population; Property 1)}\\
+&= \sum_l \frac{\E{Y \indicp{A = a} \mid L = l}}{f(a \mid l)} \Pr[L = l] && \text{(cancel } k\text{; law of total expectation over } L\text{)}\\
+&= \sum_l \frac{\E{Y \mid A = a, L = l} f(a \mid l)}{f(a \mid l)} \Pr[L = l] && \text{(} \E{Y \indicp{A = a} \mid L = l} = \E{Y \mid A = a, L = l} \Pr[A = a \mid L = l]\text{)}\\
+&= \sum_l \E{Y \mid A = a, L = l} \Pr[L = l] && \text{(cancel } f(a \mid l)\text{)}.
+\end{aligned}
+$$
+
+**Exchangeability in the pseudo-population.**
+Fix a level $a$, a set $B$ of outcome values, and a level $a'$.
+Conditional exchangeability gives $\Pr[Y^a \in B, A = a' \mid L = l] = \Pr[Y^a \in B \mid L = l] f(a' \mid l)$, so
+$$
+\begin{aligned}
+\Pr_{ps}[Y^a \in B, A = a']
+&= \frac{1}{k} \sum_l \frac{\Pr[Y^a \in B, A = a' \mid L = l]}{f(a' \mid l)} \Pr[L = l] && \text{(definition of the pseudo-population; } \E{W^A} = k\text{)}\\
+&= \frac{1}{k} \sum_l \Pr[Y^a \in B \mid L = l] \Pr[L = l] && \text{(conditional exchangeability; cancel } f(a' \mid l)\text{)}\\
+&= \frac{1}{k} \Pr[Y^a \in B] && \text{(law of total probability)}.
+\end{aligned}
+$$
+Summing over the $k$ levels $a'$ gives $\Pr_{ps}[Y^a \in B] = \Pr[Y^a \in B]$:
+$Y^a$ has the same distribution in the pseudo-population as in the actual population.
+Hence $\Pr_{ps}[Y^a \in B, A = a'] = \Pr_{ps}[Y^a \in B] \Pr_{ps}[A = a']$, which is $Y^a \ind A$ in the pseudo-population.
+
+**Causal mean.**
+$$
+\begin{aligned}
+\Expfc{ps}{Y \mid A = a}
+&= \Expfc{ps}{Y^a \mid A = a} && \text{(consistency: } Y = Y^a \text{ when } A = a\text{)}\\
+&= \Expfc{ps}{Y^a} && \text{(} Y^a \ind A \text{ in the pseudo-population)}\\
+&= \E{Y^a} && \text{(same distribution of } Y^a \text{ in both populations)}.
+\end{aligned}
+$$
+This holds for every $a$, so every contrast of the pseudo-population means equals the matching causal contrast.
 :::
 
 ---
@@ -620,9 +692,10 @@ Use the reported 0.9 kg, not this back-of-the-envelope value.
 
 For a dichotomous outcome $D$ (1: yes, 0: no), a **marginal structural logistic model** is a model for the counterfactual risk on the logit scale, such as
 $$\logit \Pr[D^a = 1] = \alpha_0 + \alpha_1 a.$$
-For a dichotomous treatment, $\exp{\alpha_1}$ is the causal odds ratio comparing $a = 1$ with $a = 0$.
-It is estimated by fitting $\logit \Pr[D = 1 \mid A] = \theta_0 + \theta_1 A$ to the IP weighted pseudo-population.
 :::
+
+For a dichotomous treatment, $\exp{\alpha_1}$ in @def-msm-logistic is the causal odds ratio comparing $a = 1$ with $a = 0$.
+It is estimated by fitting $\logit \Pr[D = 1 \mid A] = \theta_0 + \theta_1 A$ to the IP weighted pseudo-population.
 
 ::: {#exm-nhefs-death}
 ## NHEFS: Quitting Smoking and Death by 1992
@@ -686,7 +759,7 @@ The parameter $\beta_3$ does not generally have a causal interpretation as the e
 
 $$SW^A(V) \eqdef \frac{f[A \mid V]}{f[A \mid L]}$$
 
-They are estimated like $SW^A$, but with $V$ added to the numerator's logistic model.
+The stabilized weights $SW^A(V)$ are estimated like $SW^A$, but with $V$ added to the numerator's logistic model.
 :::
 
 Either $SW^A$ or $SW^A(V)$ (@def-stabilized-weights-v) can be used to fit the model.
@@ -721,10 +794,12 @@ The 95% confidence interval for $\hth_2$ (the product-term coefficient) was $(-2
 ::: {#def-faux-msm}
 ## Faux Marginal Structural Model
 
-A marginal structural model that includes all of $L$ as covariates has $SW^A(L) = 1$, so no weighting is done:
-it is the unweighted outcome regression that fully adjusts for $L$ (Chapter 15).
-The book calls this, half-jokingly, a **faux marginal structural model**.
+A **faux marginal structural model** is a marginal structural model that includes all of $L$ as covariates.
+The book coins the name half-jokingly.
 :::
+
+For a faux marginal structural model (@def-faux-msm), $SW^A(L) = f[A \mid L] / f[A \mid L] = 1$, so no weighting is done:
+the model is fit as the unweighted outcome regression that fully adjusts for $L$ (Chapter 15).
 
 ::: {.notes}
 
