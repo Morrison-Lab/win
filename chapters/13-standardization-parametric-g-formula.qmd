@@ -372,10 +372,11 @@ Part III defines the g-formula for time-varying treatments.
 An estimator of a counterfactual mean such as $\E{Y^{a=1}}$ that combines a treatment model and an outcome model is **doubly robust** if,
 under the identifying conditions (conditional exchangeability and positivity given $L$, and consistency),
 it is consistent for that counterfactual mean when **either** model is correctly specified, without our knowing which.
-An estimator of a causal contrast, such as $\E{Y^{a=1}} - \E{Y^{a=0}}$, built from doubly robust estimators of each counterfactual mean is then consistent for that contrast,
-provided the identifying conditions hold for every treatment level in the contrast (here both $a = 1$ and $a = 0$).
 (With censoring, replace $Y^{a}$ by $Y^{a,c=0}$ and $A$ by the joint treatment $(A, C)$ throughout.)
 :::
+
+An estimator of a causal contrast, such as $\E{Y^{a=1}} - \E{Y^{a=0}}$, built from doubly robust estimators (@def-doubly-robust) of each counterfactual mean is then consistent for that contrast,
+provided the identifying conditions hold for every treatment level in the contrast (here both $a = 1$ and $a = 0$).
 
 ::: {.callout-tip title="Use Both Methods, and Doubly Robust Ones"}
 
@@ -493,17 +494,28 @@ $$
 \end{aligned}
 $$
 
-Then, subtracting $\E{Y^{a=1}} = \E{b(L)}$:
+Each term below is integrable:
+$b^*(L)$ by assumption;
+$A\{Y - b^*(L)\}/\pi^*(L)$ because its absolute value is at most $\paren{\abs{Y} + \abs{b^*(L)}}/\epsilon$;
+and $b(L)$ because the identification display gives $b(L) = \E{Y^{a=1} \mid L}$,
+so $\abs{b(L)} \leq \E{\abs{Y^{a=1}} \mid L}$, whose expectation $\E{\abs{Y^{a=1}}}$ is finite.
+Then:
 
 $$
 \begin{aligned}
 &\E{b^*(L) + \frac{A\{Y - b^*(L)\}}{\pi^*(L)}} - \E{Y^{a=1}} \\
-&= \E{b^*(L)} + \E{\frac{\pi(L)\{b(L) - b^*(L)\}}{\pi^*(L)}} - \E{b(L)} && \text{(linearity; iterated expectation and the first display; the identification display)} \\
+&= \E{b^*(L) + \frac{A\{Y - b^*(L)\}}{\pi^*(L)}} - \E{b(L)} && \text{(identification display)} \\
+&= \E{b^*(L)} + \E{\frac{A\{Y - b^*(L)\}}{\pi^*(L)}} - \E{b(L)} && \text{(linearity; each term integrable)} \\
+&= \E{b^*(L)} + \E{\frac{\pi(L)\{b(L) - b^*(L)\}}{\pi^*(L)}} - \E{b(L)} && \text{(iterated expectation and the first display)} \\
 &= \E{b^*(L) - b(L) + \frac{\pi(L)}{\pi^*(L)}\{b(L) - b^*(L)\}} && \text{(linearity)} \\
 &= \E{\paren{\frac{\pi(L)}{\pi^*(L)} - 1} \{b(L) - b^*(L)\}} && \text{(factor out } b(L) - b^*(L)\text{)} \\
 &= \E{\pi(L) \paren{\frac{1}{\pi^*(L)} - \frac{1}{\pi(L)}} \{b(L) - b^*(L)\}} && \text{(factor out } \pi(L)\text{)}
 \end{aligned}
 $$
+
+If $\pi^* = \pi$, the factor $1/\pi^*(L) - 1/\pi(L)$ is 0;
+if $b^* = b$, the factor $b(L) - b^*(L)$ is 0.
+Either way the expectation is zero.
 :::
 
 ::: {.notes}
