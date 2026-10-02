@@ -295,8 +295,13 @@
 </section>
 <section id="baseline-characteristics-table-12.1" class="slide level2">
 <h2>Baseline Characteristics (Table 12.1)</h2>
+<div id="tbl-nhefs-baseline" class="quarto-float quarto-figure quarto-figure-center">
+<figure class="quarto-float quarto-float-tbl">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-nhefs-baseline-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Table&nbsp;1: Mean baseline characteristics of quitters and non-quitters in the NHEFS. Source: <span class="citation" data-cites="hernan2020causal">Hernán and Robins (<a href="#/references" role="doc-biblioref" onclick="">2020</a>, Table 12.1, p.&nbsp;163)</span>.
+</figcaption>
+<div aria-describedby="tbl-nhefs-baseline-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 <table class="caption-top">
-<caption>Source: <span class="citation" data-cites="hernan2020causal">Hernán and Robins (<a href="#/references" role="doc-biblioref" onclick="">2020</a>, Table 12.1, p.&nbsp;163)</span>.</caption>
 <colgroup>
 <col style="width: 33%">
 <col style="width: 33%">
@@ -357,10 +362,14 @@
 </tr>
 </tbody>
 </table>
+</div>
+</figure>
+</div>
 </section>
 <section id="measured-confounders" class="slide level2">
 <h2>Measured Confounders</h2>
-<p>We assume that these 9 baseline variables, collected in the vector <span class="math inline">\(L\)</span>, suffice to adjust for confounding:</p>
+<div id="exm-nhefs-confounders" class="theorem example">
+<p><span class="theorem-title"><strong>Example 3 (NHEFS: Measured Confounders)</strong></span> We assume that these 9 baseline variables, collected in the vector <span class="math inline">\(L\)</span>, suffice to adjust for confounding:</p>
 <ul>
 <li>Sex (0: male, 1: female)</li>
 <li>Age (years)</li>
@@ -373,6 +382,7 @@
 <li>Weight (kg)</li>
 </ul>
 <p><strong>Assumption</strong>: conditional exchangeability given <span class="math inline">\(L\)</span>: <span class="math display">\[Y^a \perp\!\!\!\perp A \mid L\]</span></p>
+</div>
 <aside class="notes">
 <p>Chapter 18 discusses how to select confounders; here the 9-variable adjustment set is taken as given <span class="citation" data-cites="hernan2020causal">(<a href="#/references" role="doc-biblioref" onclick="">Hernán and Robins 2020, chap. 12</a>, p.&nbsp;164)</span>.</p>
 <style type="text/css">
@@ -472,30 +482,32 @@
 </section>
 <section id="why-modeling-is-needed" class="slide level2">
 <h2>Why Modeling Is Needed</h2>
-<p>In Section 2.4, <span class="math inline">\(\Pr[A = 1 \mid L]\)</span> was estimated nonparametrically, by the proportion treated within each stratum of <span class="math inline">\(L\)</span>. That is impossible here:</p>
+<div id="rem-why-model-weights" class="proof remark">
+<p><span class="proof-title"><em>Remark 1</em> (Nonparametric Weights Are Infeasible Here). </span>In Section 2.4, <span class="math inline">\(\Pr[A = 1 \mid L]\)</span> was estimated nonparametrically, by the proportion treated within each stratum of <span class="math inline">\(L\)</span>. That is impossible here:</p>
 <ul>
 <li>Even recoding all 9 confounders except age to at most 6 categories each gives a tree with over 2 million branches.</li>
 <li>With the actual ranges of smoking intensity, duration, and weight, there are many millions of strata.</li>
 <li>1566 individuals cannot yield meaningful stratum-specific estimates across millions of strata.</li>
 </ul>
 <p>This is the curse of dimensionality introduced in Chapter 10, so we resort to a model.</p>
+</div>
 </section>
 <section id="the-treatment-model" class="slide level2 scrollable">
 <h2>The Treatment Model</h2>
 <div id="alg-estimate-ip-weights" class="theorem algorithm">
 <p><span class="theorem-title"><strong>Algorithm 1 (Estimating IP Weights with a Treatment Model)</strong></span> &nbsp;</p>
 <ol type="1">
-<li>Fit a logistic regression model for <span class="math inline">\(\Pr[A = 1 \mid L]\)</span> including all 9 confounders:
+<li><p>Fit a logistic regression model for <span class="math inline">\(\Pr[A = 1 \mid L]\)</span> including all 9 confounders:</p>
 <ul>
 <li>linear and quadratic terms for the (quasi-)continuous covariates age, weight, intensity of smoking, and duration of smoking;</li>
 <li>no product terms between covariates.</li>
 </ul></li>
-<li>For each individual, compute
+<li><p>For each individual, compute</p>
 <ul>
 <li><span class="math inline">\(\hat{f}(1 \mid L) = \hat{\Pr}[A = 1 \mid L]\)</span> if <span class="math inline">\(A = 1\)</span>,</li>
 <li><span class="math inline">\(\hat{f}(0 \mid L) = 1 - \hat{\Pr}[A = 1 \mid L]\)</span> if <span class="math inline">\(A = 0\)</span>.</li>
 </ul></li>
-<li>Set <span class="math inline">\(\hat{W}^A = 1 / \hat{f}(A \mid L)\)</span>.</li>
+<li><p>Set <span class="math inline">\(\hat{W}^A = 1 / \hat{f}(A \mid L)\)</span>.</p></li>
 </ol>
 </div>
 <aside class="notes">
@@ -536,7 +548,7 @@
 <section class="slide level2">
 
 <div id="exm-nhefs-ipw" class="theorem example">
-<p><span class="theorem-title"><strong>Example 3 (NHEFS: Nonstabilized IP Weighting)</strong></span> &nbsp;</p>
+<p><span class="theorem-title"><strong>Example 4 (NHEFS: Nonstabilized IP Weighting)</strong></span> &nbsp;</p>
 <ul>
 <li>Estimated weights <span class="math inline">\(\hat{W}^A\)</span> ranged from 1.05 to 16.7, with mean 2.00.</li>
 <li><span class="math inline">\(\hat\theta_1 = 3.4\)</span> kg: under our assumptions, quitting smoking increases weight by 3.4 kg on average.</li>
@@ -561,7 +573,7 @@
 <section id="confidence-intervals-for-ip-weighted-estimates" class="slide level2 scrollable">
 <h2>Confidence Intervals for IP Weighted Estimates</h2>
 <div id="rem-ipw-confidence-intervals" class="proof remark">
-<p><span class="proof-title"><em>Remark 1</em> (Confidence Intervals Must Account for the Weighting). </span>Three options <span class="citation" data-cites="hernan2020causal">(<a href="#/references" role="doc-biblioref" onclick="">Hernán and Robins 2020, chap. 12</a>, p.&nbsp;166)</span>:</p>
+<p><span class="proof-title"><em>Remark 2</em> (Confidence Intervals Must Account for the Weighting). </span>Three options <span class="citation" data-cites="hernan2020causal">(<a href="#/references" role="doc-biblioref" onclick="">Hernán and Robins 2020, chap. 12</a>, p.&nbsp;166)</span>:</p>
 <ol type="1">
 <li><strong>Derive the variance analytically</strong> from statistical theory; the analyst must program the estimator, which standard software generally does not provide.</li>
 <li><strong>Nonparametric bootstrap</strong>; requires computing resources (or patience) for large data sets.</li>
@@ -639,11 +651,14 @@
 <section class="slide level2">
 
 <p>The goal of IP weighting is a pseudo-population in which <span class="math inline">\(L\)</span> does not predict <span class="math inline">\(A\)</span>. The weights <span class="math inline">\(1/f(A \mid L)\)</span> are only one way to get there.</p>
+<div id="rem-other-weights" class="proof remark">
+<p><span class="proof-title"><em>Remark 3</em> (Other Weights Give the Same Pseudo-Population Contrast). </span></p>
 <ul>
 <li>With weights <span class="math inline">\(1/f(A \mid L)\)</span>, a dichotomous treatment yields a pseudo-population twice the size of the study population (mean weight 2): one treated copy and one untreated copy.</li>
 <li>With weights <span class="math inline">\(0.5/f(A \mid L)\)</span>, everyone has probability 0.5 of each treatment level regardless of <span class="math inline">\(L\)</span>; this pseudo-population is the same size as the study population (mean weight 1).</li>
 <li>More generally, any weights <span class="math inline">\(p/f(A \mid L)\)</span> with <span class="math inline">\(0 &lt; p \leq 1\)</span> give the <strong>same effect estimate</strong>.</li>
 </ul>
+</div>
 </section>
 <section id="why-rescaling-does-not-change-the-estimate" class="slide level2">
 <h2>Why Rescaling Does Not Change the Estimate</h2>
@@ -690,13 +705,16 @@
 </section>
 <section id="estimation" class="slide level2">
 <h2>Estimation</h2>
+<div id="alg-estimate-stabilized-weights" class="theorem algorithm">
+<p><span class="theorem-title"><strong>Algorithm 2 (Estimating Stabilized IP Weights)</strong></span> &nbsp;</p>
 <ul>
 <li><strong>Denominator</strong>: same logistic model for <span class="math inline">\(\Pr[A = 1 \mid L]\)</span> as in Section 12.2.</li>
 <li><strong>Numerator</strong>: <span class="math inline">\(\hat{\Pr}[A = 1] = 403/1566\)</span>, equivalently a saturated (intercept-only) logistic model.</li>
 <li>Fit <span class="math inline">\(\text{E}{\left[Y \mid A\right]} = \theta_0 + \theta_1 A\)</span> by weighted least squares with weights <span class="math inline">\(\hat{\Pr}[A = 1]/\hat{\Pr}[A = 1 \mid L]\)</span> for quitters and <span class="math inline">\((1 - \hat{\Pr}[A = 1])/(1 - \hat{\Pr}[A = 1 \mid L])\)</span> for non-quitters.</li>
 </ul>
+</div>
 <div id="exm-nhefs-sw" class="theorem example">
-<p><span class="theorem-title"><strong>Example 4 (NHEFS: Stabilized IP Weighting)</strong></span> &nbsp;</p>
+<p><span class="theorem-title"><strong>Example 5 (NHEFS: Stabilized IP Weighting)</strong></span> &nbsp;</p>
 <ul>
 <li>Estimated <span class="math inline">\(\hat{SW}^A\)</span> ranged from 0.33 to 4.30, with mean 1.00 (versus 1.05 to 16.7, mean 2.00, for <span class="math inline">\(\hat{W}^A\)</span>).</li>
 <li><span class="math inline">\(\hat\theta_1 = 3.4\)</span> kg (95% CI: 2.4, 4.5), the same estimate as with the nonstabilized weights.</li>
@@ -706,7 +724,7 @@
 <section id="why-stabilize" class="slide level2">
 <h2>Why Stabilize?</h2>
 <div id="rem-why-stabilize" class="proof remark">
-<p><span class="proof-title"><em>Remark 2</em> (When Stabilization Helps). </span>If both kinds of weights give the same estimate, why stabilize?</p>
+<p><span class="proof-title"><em>Remark 4</em> (When Stabilization Helps). </span>If both kinds of weights give the same estimate, why stabilize?</p>
 <ul>
 <li>Stabilized weights typically give <strong>narrower confidence intervals</strong>.</li>
 <li>But this advantage can occur only when the weighted model is <strong>not saturated</strong>.</li>
@@ -781,21 +799,29 @@
 </div>
 <p>So Sections 12.2-12.3 were already estimating <span class="math inline">\(\beta_1\)</span> of a marginal structural model.</p>
 </section>
-<section id="fitting-a-marginal-structural-model-by-ip-weighting" class="slide level2 scrollable">
-<h2>Fitting a Marginal Structural Model by IP Weighting</h2>
+<section class="slide level2 scrollable">
+
 <div id="alg-fit-msm-ipw" class="theorem algorithm">
-<p><span class="theorem-title"><strong>Algorithm 2 (Fitting a Marginal Structural Model by IP Weighting)</strong></span> &nbsp;</p>
+<p><span class="theorem-title"><strong>Algorithm 3 (Fitting a Marginal Structural Model by IP Weighting)</strong></span> &nbsp;</p>
 <ol type="1">
 <li>Use IP weights to create a pseudo-population in which (under our assumptions) association is causation.</li>
 <li>Fit the associational model <span class="math inline">\(\text{E}{\left[Y \mid A\right]} = \theta_0 + \theta_1 A\)</span> to the pseudo-population, i.e., by IP weighted least squares.</li>
 <li><span class="math inline">\(\theta_1\)</span> then has the same causal interpretation as <span class="math inline">\(\beta_1\)</span>, so a consistent estimator <span class="math inline">\(\hat\theta_1\)</span> is a consistent estimator of <span class="math inline">\(\beta_1 = \text{E}{\left[Y^{a=1}\right]} - \text{E}{\left[Y^{a=0}\right]}\)</span>.</li>
 </ol>
 </div>
-<p><strong>Pseudo-code</strong>:</p>
+<div id="lst-msm-wls" class="listing quarto-float quarto-figure quarto-figure-left">
+<figure class="quarto-float quarto-float-lst">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-lst" id="lst-msm-wls-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Listing&nbsp;1: Pseudo-code for fitting a marginal structural model by IP weighted least squares.
+</figcaption>
+<div aria-describedby="lst-msm-wls-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a aria-label="1"></a><span class="co"># weighted least squares; use robust (sandwich) standard errors</span></span>
 <span id="cb1-2"><a aria-label="2"></a>fit <span class="ot">&lt;-</span> <span class="fu">lm</span>(weight_change <span class="sc">~</span> quit_smoking,</span>
 <span id="cb1-3"><a aria-label="3"></a>          <span class="at">weights =</span> stabilized_weights,</span>
 <span id="cb1-4"><a aria-label="4"></a>          <span class="at">data =</span> nhefs)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+</figure>
+</div>
 <aside class="notes">
 <p>The model <span class="math inline">\(\text{E}{\left[Y^a\right]} = \beta_0 + \beta_1 a\)</span> is <strong>saturated</strong> because <span class="math inline">\(A\)</span> is dichotomous: two unknowns on each side (<span class="math inline">\(\text{E}{\left[Y^{a=1}\right]}\)</span> and <span class="math inline">\(\text{E}{\left[Y^{a=0}\right]}\)</span> on the left, <span class="math inline">\(\beta_0\)</span> and <span class="math inline">\(\beta_1\)</span> on the right). That is why sample averages in the pseudo-population sufficed <span class="citation" data-cites="hernan2020causal">(<a href="#/references" role="doc-biblioref" onclick="">Hernán and Robins 2020, chap. 12</a>, p.&nbsp;170)</span>.</p>
 <p><strong>Null preservation</strong> (Chapter 9): if treatment has no average causal effect, any model for the marginal mean <span class="math inline">\(\text{E}{\left[Y^a\right]}\)</span> that has an intercept, with treatment terms whose coefficients can all be 0, is correctly specified. For example, <span class="math inline">\(\text{E}{\left[Y^a\right]} = \beta_0 + \beta_1 a + \beta_2 a^2\)</span> is then correctly specified with <span class="math inline">\(\beta_1 = \beta_2 = 0\)</span> and <span class="math inline">\(\beta_0 = \text{E}{\left[Y^a\right]}\)</span> for every <span class="math inline">\(a\)</span>.</p>
@@ -823,7 +849,7 @@
 <section id="effect-of-increasing-intensity-by-20-cigarettesday" class="slide level2">
 <h2>Effect of Increasing Intensity by 20 Cigarettes/Day</h2>
 <div id="exm-msm-20-cigarettes" class="theorem example">
-<p><span class="theorem-title"><strong>Example 5 (Effect of 20 More Cigarettes per Day under <a href="#/def-msm-continuous" class="quarto-xref">Definition&nbsp;6</a>)</strong></span> <span class="math display">\[
+<p><span class="theorem-title"><strong>Example 6 (Effect of 20 More Cigarettes per Day)</strong></span> Under the model of <a href="#/def-msm-continuous" class="quarto-xref">Definition&nbsp;6</a>, <span class="math display">\[
 \begin{aligned}
 \text{E}{\left[Y^{a=20}\right]} - \text{E}{\left[Y^{a=0}\right]}
 &amp;= (\beta_0 + 20\beta_1 + 20^2 \beta_2) - \beta_0 &amp;&amp; \text{(evaluate the model at } a = 20, 0\text{)}\\
@@ -836,12 +862,24 @@
 <section id="weights-for-a-continuous-treatment" class="slide level2">
 <h2>Weights for a Continuous Treatment</h2>
 <p>For continuous <span class="math inline">\(A\)</span>, <span class="math inline">\(f(A \mid L)\)</span> is a probability <strong>density</strong> function, which is generally hard to estimate when <span class="math inline">\(L\)</span> is high-dimensional.</p>
-<p>In the NHEFS analysis:</p>
+<div id="exm-nhefs-continuous-weights" class="theorem example">
+<p><span class="theorem-title"><strong>Example 7 (NHEFS: Weights for Change in Smoking Intensity)</strong></span> &nbsp;</p>
 <ul>
 <li><span class="math inline">\(f(A \mid L)\)</span>: normal with mean <span class="math inline">\(\mu_L = \text{E}{\left[A \mid L\right]}\)</span> (estimated by linear regression) and constant variance <span class="math inline">\(\sigma^2\)</span> (the residual variance);</li>
 <li><span class="math inline">\(f(A)\)</span> in the numerator: also normal;</li>
 <li>estimated <span class="math inline">\(\hat{SW}^A\)</span> ranged from 0.19 to 5.10, with mean 1.00.</li>
 </ul>
+</div>
+<div title="IP Weights for Continuous Treatments Are Fragile">
+<div class="callout callout-warning callout-titled callout-style-default">
+<div class="callout-body">
+<div class="callout-title">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<p><strong>IP Weights for Continuous Treatments Are Fragile</strong></p>
+</div>
+<div class="callout-content">
 <aside class="notes">
 <p>IP weighting for continuous treatments is often dangerous: the estimates can change a great deal with the choice of model or algorithm for the conditional density <span class="math inline">\(f(A \mid L)\)</span>. The constant-variance assumption seemed reasonable after inspecting a residuals plot, and other choices (e.g., a truncated normal with heteroscedasticity) gave similar estimates. Finding more stable ways to estimate these weights is ongoing research <span class="citation" data-cites="hernan2020causal">(<a href="#/references" role="doc-biblioref" onclick="">Hernán and Robins 2020, chap. 12</a>, pp.&nbsp;170-171)</span>.</p>
 <style type="text/css">
@@ -855,11 +893,15 @@
           overflow: hidden!important;
           display:block!important;
       }</style></aside>
+</div>
+</div>
+</div>
+</div>
 </section>
 <section class="slide level2">
 
 <div id="exm-nhefs-continuous" class="theorem example">
-<p><span class="theorem-title"><strong>Example 6 (NHEFS: Change in Smoking Intensity)</strong></span> IP weighted estimates: <span class="math inline">\(\hat \beta_0 = 2.005\)</span>, <span class="math inline">\(\hat \beta_1 = -0.109\)</span>, <span class="math inline">\(\hat \beta_2 = 0.003\)</span>.</p>
+<p><span class="theorem-title"><strong>Example 8 (NHEFS: Change in Smoking Intensity)</strong></span> IP weighted estimates: <span class="math inline">\(\hat \beta_0 = 2.005\)</span>, <span class="math inline">\(\hat \beta_1 = -0.109\)</span>, <span class="math inline">\(\hat \beta_2 = 0.003\)</span>.</p>
 <table class="caption-top">
 <thead>
 <tr class="header">
@@ -883,6 +925,16 @@
 </tbody>
 </table>
 </div>
+<div title="Rounded Coefficients">
+<div class="callout callout-warning callout-titled callout-style-default">
+<div class="callout-body">
+<div class="callout-title">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<p><strong>Rounded Coefficients</strong></p>
+</div>
+<div class="callout-content">
 <aside class="notes">
 <p>The book reports these quantities from the unrounded coefficients. Plugging in the <strong>rounded</strong> coefficients gives a slightly different value: <span class="math display">\[
 \begin{aligned}
@@ -903,6 +955,10 @@
           overflow: hidden!important;
           display:block!important;
       }</style></aside>
+</div>
+</div>
+</div>
+</div>
 </section>
 <section id="dichotomous-outcome-marginal-structural-logistic-model" class="slide level2">
 <h2>Dichotomous Outcome: Marginal Structural Logistic Model</h2>
@@ -910,7 +966,7 @@
 <p><span class="theorem-title"><strong>Definition 7 (Marginal Structural Logistic Model)</strong></span> For a dichotomous outcome <span class="math inline">\(D\)</span> (1: yes, 0: no), a <strong>marginal structural logistic model</strong> is a model for the counterfactual risk on the logit scale, such as <span class="math display">\[\text{logit}\Pr[D^a = 1] = \alpha_0 + \alpha_1 a.\]</span> For a dichotomous treatment, <span class="math inline">\(\text{exp}{\left\{\alpha_1\right\}}\)</span> is the causal odds ratio comparing <span class="math inline">\(a = 1\)</span> with <span class="math inline">\(a = 0\)</span>. It is estimated by fitting <span class="math inline">\(\text{logit}\Pr[D = 1 \mid A] = \theta_0 + \theta_1 A\)</span> to the IP weighted pseudo-population.</p>
 </div>
 <div id="exm-nhefs-death" class="theorem example">
-<p><span class="theorem-title"><strong>Example 7 (NHEFS: Quitting Smoking and Death by 1992)</strong></span> With <span class="math inline">\(A\)</span> = quitting smoking and <span class="math inline">\(D\)</span> = death by 1992, the IP weighted estimate of the causal odds ratio was <span class="math inline">\(\text{exp}{\left\{\hat\theta_1\right\}} = 1.0\)</span> (95% CI: 0.8, 1.4).</p>
+<p><span class="theorem-title"><strong>Example 9 (NHEFS: Quitting Smoking and Death by 1992)</strong></span> With <span class="math inline">\(A\)</span> = quitting smoking and <span class="math inline">\(D\)</span> = death by 1992, the IP weighted estimate of the causal odds ratio was <span class="math inline">\(\text{exp}{\left\{\hat\theta_1\right\}} = 1.0\)</span> (95% CI: 0.8, 1.4).</p>
 </div>
 <aside class="notes">
 <p>This model is saturated for a dichotomous treatment; for a continuous treatment one would specify a nonsaturated logistic model <span class="citation" data-cites="hernan2020causal">(<a href="#/references" role="doc-biblioref" onclick="">Hernán and Robins 2020, chap. 12</a>, p.&nbsp;171)</span>.</p>
@@ -965,15 +1021,19 @@
 </section>
 <section id="fitting-the-model" class="slide level2">
 <h2>Fitting the Model</h2>
+<div id="alg-fit-msm-effect-modifier" class="theorem algorithm">
+<p><span class="theorem-title"><strong>Algorithm 4 (Fitting a Marginal Structural Model with an Effect Modifier)</strong></span> &nbsp;</p>
 <ul>
 <li>Fit <span class="math inline">\(\text{E}{\left[Y \mid A, V\right]} = \theta_0 + \theta_1 A + \theta_2 V A + \theta_3 V\)</span> by weighted least squares with weights <span class="math inline">\(W^A\)</span> or <span class="math inline">\(SW^A\)</span>.</li>
 <li>In most settings <span class="math inline">\(L\)</span> should include <span class="math inline">\(V\)</span>; even when <span class="math inline">\(V\)</span> is not needed for exchangeability, including it generally improves efficiency.</li>
-<li>Because the model is within levels of <span class="math inline">\(V\)</span>, the numerator can be <span class="math inline">\(f[A \mid V]\)</span> (<a href="#/def-stabilized-weights-v" class="quarto-xref">Definition&nbsp;9</a>).</li>
+<li>Because the model is within levels of <span class="math inline">\(V\)</span>, the numerator can be <span class="math inline">\(f[A \mid V]\)</span>.</li>
 </ul>
+</div>
 <div id="def-stabilized-weights-v" class="theorem definition">
 <p><span class="theorem-title"><strong>Definition 9 (Stabilized IP Weights Given <span class="math inline">\(V\)</span>)</strong></span> <span class="math display">\[SW^A(V) \stackrel{\text{def}}{=}\frac{f[A \mid V]}{f[A \mid L]}\]</span></p>
 <p>They are estimated like <span class="math inline">\(SW^A\)</span>, but with <span class="math inline">\(V\)</span> added to the numerator’s logistic model.</p>
 </div>
+<p>Either <span class="math inline">\(SW^A\)</span> or <span class="math inline">\(SW^A(V)\)</span> (<a href="#/def-stabilized-weights-v" class="quarto-xref">Definition&nbsp;9</a>) can be used to fit the model.</p>
 <aside class="notes">
 <p><span class="math inline">\(SW^A(V)\)</span> generally gives narrower confidence intervals than <span class="math inline">\(SW^A\)</span>; some intuition is that the variance of <span class="math inline">\(SW^A(V)\)</span> is smaller than that of <span class="math inline">\(SW^A\)</span> <span class="citation" data-cites="hernan2020causal">(<a href="#/references" role="doc-biblioref" onclick="">Hernán and Robins 2020, chap. 12</a>, pp.&nbsp;171-172)</span>.</p>
 <style type="text/css">
@@ -991,18 +1051,31 @@
 <section id="example-effect-modification-by-sex" class="slide level2">
 <h2>Example: Effect Modification by Sex</h2>
 <div id="exm-nhefs-sex" class="theorem example">
-<p><span class="theorem-title"><strong>Example 8 (NHEFS: Does the Effect of Quitting Vary by Sex?)</strong></span> Let <span class="math inline">\(V\)</span> = sex (0: male, 1: female). The 95% confidence interval for <span class="math inline">\(\hat\theta_2\)</span> (the product-term coefficient) was <span class="math inline">\((-2.2, 1.9)\)</span>: no strong evidence of additive effect modification by sex.</p>
+<p><span class="theorem-title"><strong>Example 10 (NHEFS: Does the Effect of Quitting Vary by Sex?)</strong></span> Let <span class="math inline">\(V\)</span> = sex (0: male, 1: female). The 95% confidence interval for <span class="math inline">\(\hat\theta_2\)</span> (the product-term coefficient) was <span class="math inline">\((-2.2, 1.9)\)</span>: no strong evidence of additive effect modification by sex.</p>
 </div>
 </section>
 <section id="which-covariates-to-put-in-the-model" class="slide level2">
 <h2>Which Covariates to Put in the Model?</h2>
+<div id="rem-which-covariates" class="proof remark">
+<p><span class="proof-title"><em>Remark 5</em> (Choosing the Covariates of a Marginal Structural Model). </span></p>
 <ul>
 <li>The subset <span class="math inline">\(V\)</span> of <span class="math inline">\(L\)</span> included in the marginal structural model should reflect only <strong>substantive interest</strong>: include <span class="math inline">\(V\)</span> if you believe it may modify the effect and you care more about effects within levels of <span class="math inline">\(V\)</span> than in the whole population.</li>
-<li>If all of <span class="math inline">\(L\)</span> is included, IP weighting is unnecessary (<a href="#/def-faux-msm" class="quarto-xref">Definition&nbsp;10</a>).</li>
+<li>If all of <span class="math inline">\(L\)</span> is included, IP weighting is unnecessary.</li>
 </ul>
+</div>
 <div id="def-faux-msm" class="theorem definition">
 <p><span class="theorem-title"><strong>Definition 10 (Faux Marginal Structural Model)</strong></span> A marginal structural model that includes all of <span class="math inline">\(L\)</span> as covariates has <span class="math inline">\(SW^A(L) = 1\)</span>, so no weighting is done: it is the unweighted outcome regression that fully adjusts for <span class="math inline">\(L\)</span> (Chapter 15). The book calls this, half-jokingly, a <strong>faux marginal structural model</strong>.</p>
 </div>
+<div title="Confounding and Effect Modification Use Different Tools">
+<div class="callout callout-tip callout-titled callout-style-default">
+<div class="callout-body">
+<div class="callout-title">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<p><strong>Confounding and Effect Modification Use Different Tools</strong></p>
+</div>
+<div class="callout-content">
 <aside class="notes">
 <p><strong>Teaching point</strong>: confounding and effect modification are logically distinct, but students often conflate them because stratification (Chapter 4) and regression (Chapter 15) are used for both. With marginal structural models the two tasks use distinct tools: IP weighting for confounder adjustment, and treatment-covariate product terms in the model for effect modification <span class="citation" data-cites="hernan2020causal">(<a href="#/references" role="doc-biblioref" onclick="">Hernán and Robins 2020, chap. 12</a>, p.&nbsp;172)</span>.</p>
 <p><strong>Interaction versus effect modification</strong>: to study the interaction between two treatments <span class="math inline">\(A\)</span> and <span class="math inline">\(B\)</span> (Chapter 5), include parameters for both in the marginal structural model, use the joint probability of both treatments in the denominator of the IP weights, and assume exchangeability, positivity, and consistency for both <span class="math inline">\(A\)</span> and <span class="math inline">\(B\)</span>.</p>
@@ -1017,6 +1090,10 @@
           overflow: hidden!important;
           display:block!important;
       }</style></aside>
+</div>
+</div>
+</div>
+</div>
 </section></section>
 <section>
 <section id="censoring-and-missing-data-pp.-172-174" class="title-slide slide level1 center" data-number="6">
@@ -1033,11 +1110,13 @@
 </section>
 <section id="can-censoring-cause-selection-bias-here" class="slide level2">
 <h2>Can Censoring Cause Selection Bias Here?</h2>
-<p>Restricting to uncensored individuals is expected to induce bias, even under the null, when <span class="math inline">\(C\)</span> is a collider on a pathway between <span class="math inline">\(A\)</span> and <span class="math inline">\(Y\)</span>, or a descendant of one (Figures 8.3-8.6). The NHEFS data are consistent with that structure:</p>
+<div id="exm-nhefs-censoring-structure" class="theorem example">
+<p><span class="theorem-title"><strong>Example 11 (NHEFS: Censoring as a Possible Source of Selection Bias)</strong></span> Restricting to uncensored individuals is expected to induce bias, even under the null, when <span class="math inline">\(C\)</span> is a collider on a pathway between <span class="math inline">\(A\)</span> and <span class="math inline">\(Y\)</span>, or a descendant of one (Figures 8.3-8.6). The NHEFS data are consistent with that structure:</p>
 <ul>
 <li>treatment predicts censoring: 5.8% of quitters versus 3.2% of non-quitters were censored;</li>
 <li>a predictor of <span class="math inline">\(Y\)</span> predicts censoring: mean baseline weight was 76.6 kg in the censored versus 70.8 kg in the uncensored.</li>
 </ul>
+</div>
 </section>
 <section id="the-target-a-joint-effect" class="slide level2">
 <h2>The Target: A Joint Effect</h2>
@@ -1054,7 +1133,7 @@
 <p>using the factorization <span class="math inline">\(f(A, C = 0 \mid L) = f(A \mid L) \times \Pr[C = 0 \mid L, A]\)</span>.</p>
 </div>
 <div id="def-identifiability-a-c" class="theorem definition">
-<p><span class="theorem-title"><strong>Definition 14 (Identifiability Conditions for the Joint Treatment <span class="math inline">\((A, C)\)</span>)</strong></span> &nbsp;</p>
+<p><span class="theorem-title"><strong>Definition 14 (Identifiability Conditions for the Joint Treatment <span class="math inline">\((A, C)\)</span>)</strong></span> The <strong>identifiability conditions</strong> for the joint treatment <span class="math inline">\((A, C)\)</span> are:</p>
 <ul>
 <li>exchangeability: <span class="math inline">\(Y^{a, c=0} \perp\!\!\!\perp(A, C) \mid L\)</span>;</li>
 <li>positivity for <span class="math inline">\((A = a, C = 0)\)</span>;</li>
@@ -1113,7 +1192,7 @@
 </tr>
 </tbody>
 </table>
-<p>With either, fit the weighted model <span class="math inline">\(\text{E}{\left[Y \mid A, C = 0\right]} = \theta_0 + \theta_1 A\)</span> to estimate the marginal structural model <span class="math inline">\(\text{E}{\left[Y^{a, c=0}\right]} = \beta_0 + \beta_1 a\)</span>; the stabilized version uses <span class="math inline">\(SW^{A,C} = SW^A \times SW^C\)</span>.</p>
+<p>With either, fit the weighted model <span class="math inline">\(\text{E}{\left[Y \mid A, C = 0\right]} = \theta_0 + \theta_1 A\)</span> to estimate the marginal structural model <span class="math inline">\(\text{E}{\left[Y^{a, c=0}\right]} = \beta_0 + \beta_1 a\)</span>; the stabilized version uses <span class="math inline">\(SW^{A,C}\)</span> (<a href="#/def-stabilized-censoring-weights" class="quarto-xref">Definition&nbsp;15</a>).</p>
 <aside class="notes">
 <p>The estimated <span class="math inline">\(SW^C\)</span> have mean 1 when the model for <span class="math inline">\(\Pr[C = 0 \mid A]\)</span> is correctly specified <span class="citation" data-cites="hernan2020causal">(<a href="#/references" role="doc-biblioref" onclick="">Hernán and Robins 2020, chap. 12</a>, p.&nbsp;173)</span>.</p>
 <style type="text/css">
@@ -1131,7 +1210,7 @@
 <section class="slide level2">
 
 <div id="exm-nhefs-censoring" class="theorem example">
-<p><span class="theorem-title"><strong>Example 9 (NHEFS: Adjusting for Censoring)</strong></span> &nbsp;</p>
+<p><span class="theorem-title"><strong>Example 12 (NHEFS: Adjusting for Censoring)</strong></span> &nbsp;</p>
 <ul>
 <li>Fit a logistic model for <span class="math inline">\(\Pr[C = 0 \mid L, A]\)</span> to all 1629 individuals, with the same covariates as the treatment model; obtain <span class="math inline">\(\hat{SW}^C\)</span> for the 1566 uncensored individuals.</li>
 <li><span class="math inline">\(\hat{SW}^{A,C} = \hat{SW}^A \times \hat{SW}^C\)</span> ranged from 0.35 to 4.09, with mean 1.00.</li>
@@ -1210,13 +1289,26 @@
 <li><strong>Censoring weights</strong>: <span class="math inline">\(W^{A,C} = W^A \times W^C\)</span> target the joint effect <span class="math inline">\(\text{E}{\left[Y^{a, c=0}\right]}\)</span></li>
 </ol>
 <p><strong>NHEFS results</strong>: unadjusted 2.5 kg; IP weighted 3.4 kg (95% CI: 2.4, 4.5); also adjusting for censoring 3.5 kg (95% CI: 2.5, 4.5).</p>
-<p><strong>Cautions</strong>:</p>
+<div title="Cautions">
+<div class="callout callout-warning callout-titled callout-style-default">
+<div class="callout-body">
+<div class="callout-title">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<p><strong>Cautions</strong></p>
+</div>
+<div class="callout-content">
 <ul>
 <li>Requires a correctly specified model for treatment (and censoring)</li>
 <li>Positivity violations; parametric models assume random nonpositivity</li>
 <li>Weights for continuous treatments can be very sensitive to the density model</li>
 <li>Robust-variance confidence intervals are conservative</li>
 </ul>
+</div>
+</div>
+</div>
+</div>
 <aside class="notes">
 <p><strong>Looking ahead</strong>: Chapter 13 estimates the same effect by standardization (the parametric g-formula), and Part III extends IP weighting and marginal structural models to time-varying treatments.</p>
 <style type="text/css">
