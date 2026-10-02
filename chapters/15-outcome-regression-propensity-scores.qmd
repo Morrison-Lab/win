@@ -32,6 +32,10 @@ Unlike the g-methods of Chapters 12-14, they have limited applicability to compl
 
 Structural nested models (Chapter 14) contain parameters for $A$ and for $A \times L$ product terms only,
 so g-estimation is agnostic about the $L$-$Y$ relation.
+
+::: {#def-structural-model-with-l}
+## Structural Model with Parameters for $L$
+
 If instead we are willing to specify the $L$-$Y$ relation within levels of $A$, we can use the structural model
 
 $$
@@ -39,6 +43,7 @@ $$
 $$
 
 where $\beta_2$ and $\beta_3$ are vector parameters.
+:::
 
 ::: {.notes}
 In Chapter 12 this model was called a **faux marginal structural model**: it has the form of a marginal structural model,
@@ -57,7 +62,7 @@ it only describes how the mean of $Y^{a=0,c=0}$ varies with $L$.
 ::: {#prp-conditional-effect}
 ## Stratum-Specific Effect
 
-Under the structural model, the average causal effect in stratum $L = l$ is $\beta_1 + \beta_2 l$.
+Under the structural model of @def-structural-model-with-l, the average causal effect in stratum $L = l$ is $\beta_1 + \beta_2 l$.
 :::
 
 ::: {.proof}
@@ -80,19 +85,55 @@ the counterfactual means under no treatment depend on $(\beta_0, \beta_3)$.
 
 ### Estimating the Structural Model by Outcome Regression
 
-Under exchangeability, positivity, and well-defined interventions,
+::: {#prp-outcome-regression-identification}
+## Outcome Regression Identifies the Structural Model
+
+Suppose that $L$ suffices to adjust for confounding and selection bias,
+that is, conditional exchangeability $Y^{a,c=0} \ind (A, C) \mid L$ holds for $a \in \{0, 1\}$;
+that positivity $\Pr[A = a, C = 0 \mid L = l] > 0$ holds for $a \in \{0, 1\}$ and every $l$ with $\Pr[L = l] > 0$;
+and that consistency (well-defined interventions) holds: $Y = Y^{a,c=0}$ whenever $A = a$ and $C = 0$.
+
+1. The conditional counterfactual mean is identified:
+
+   $$
+   \E{Y^{a,c=0} \mid L = l} = \E{Y \mid A = a, C = 0, L = l},
+   $$
+
+   for $a \in \{0, 1\}$ and every $l$ with $\Pr[L = l] > 0$.
+
+2. Suppose further that the structural model of @def-structural-model-with-l holds,
+   and that the regressor vector $(1, A, A L, L)$ among the uncensored has an invertible second-moment matrix.
+   Then the outcome regression model
+
+   $$
+   \E{Y \mid A, C = 0, L} = \alpha_0 + \alpha_1 A + \alpha_2 A L + \alpha_3 L
+   $$
+
+   is correctly specified,
+   and its population least-squares coefficients satisfy $\alpha = \beta$.
+:::
+
+::: {.proof}
+Part 1:
 
 $$
-\E{Y^{a,c=0} \mid L = l} = \E{Y \mid A = a, C = 0, L = l},
+\begin{aligned}
+\E{Y^{a,c=0} \mid L = l}
+&= \E{Y^{a,c=0} \mid A = a, C = 0, L = l} && \text{(conditional exchangeability; positivity makes the conditioning event non-null)} \\
+&= \E{Y \mid A = a, C = 0, L = l} && \text{(consistency)}.
+\end{aligned}
 $$
 
-so the structural parameters can be estimated by ordinary least squares, fitting the outcome regression model
+Part 2: by part 1 and the structural model,
+$\E{Y \mid A = a, C = 0, L = l} = \beta_0 + \beta_1 a + \beta_2 a l + \beta_3 l$
+for every $(a, l)$ with positive probability among the uncensored,
+so the linear model with $\alpha = \beta$ equals the conditional mean and is correctly specified.
+When the conditional mean is linear in the regressors,
+the population least-squares coefficients solve the normal equations,
+which have the unique solution $\beta$ because the second-moment matrix of the regressors is invertible.
+:::
 
-$$
-\E{Y \mid A, C = 0, L} = \alpha_0 + \alpha_1 A + \alpha_2 A L + \alpha_3 L .
-$$
-
-If $L$ suffices to adjust for confounding and selection bias and the outcome model is correctly specified, then $\alpha = \beta$.
+So the structural parameters can be estimated by ordinary least squares, fitting the outcome regression model of @prp-outcome-regression-identification.
 
 ::: {.notes}
 Like stratification (Chapter 3), outcome regression adjusts for confounding by estimating the effect **within strata of $L$**.
@@ -100,7 +141,9 @@ In Section 13.2, the outcome regression was an intermediate step toward a standa
 here the regression is the end of the procedure:
 we compare conditional means instead of standardizing them [@hernan2020causal, p. 200].
 
+::: {.callout-tip title="Discrete Outcomes"}
 The same approach works for discrete outcomes, e.g., a logistic model for $\Pr[Y = 1 \mid A = a, C = 0, L]$ when $Y$ is dichotomous.
+:::
 :::
 
 ---
@@ -119,10 +162,15 @@ the book reports $\hb_1 = 2.6$ and $\hb_2 = 0.05$ [@hernan2020causal, p. 200].
 :::
 
 ::: {.notes}
+
+::: {#rem-nhefs-rounded-coefficients}
+## Rounded Coefficients
+
 By @prp-conditional-effect, each stratum-specific estimate is $\hb_1 + \hb_2 \times (\text{cigarettes/day})$.
 The book reports the coefficients rounded to one or two decimals,
 so plugging the rounded values into that formula reproduces the reported effect estimates only approximately
 (e.g., $2.6 + 0.05 \times 40 = 4.6$ versus the reported 4.4).
+:::
 :::
 
 ---
@@ -156,12 +204,26 @@ $$
 $$
 :::
 
+::: {#exm-propensity-score-randomized-trial}
+## Propensity Score in a Randomized Trial
+
 - In an ideal randomized trial assigning half the individuals to $A = 1$, $\pi(L) = 0.5$ for everyone, whatever $L$ is.
+:::
+
+::: {#rem-propensity-score-estimated}
+## The Propensity Score Must Usually Be Estimated
+
 - In an observational study, $\pi(L)$ is unknown and must be estimated, e.g., with the same logistic model used for IP weighting and g-estimation in Chapters 12 and 14.
+:::
 
 ::: {.notes}
+
+::: {#rem-propensity-score-dichotomous}
+## Dichotomous Treatments Only
+
 The book restricts attention to dichotomous treatments:
 propensity score methods other than IP weighting, g-estimation, and related doubly robust estimators are difficult to generalize to non-dichotomous treatments [@hernan2020causal, p. 201].
+:::
 :::
 
 ---
@@ -188,16 +250,24 @@ Quitters having a higher average estimated probability of quitting is exactly wh
 
 ### The Balancing Property
 
+::: {#prp-ps-balancing}
+## The Propensity Score Balances $L$
+
+Let $A$ be dichotomous and $\pi(L)$ its propensity score (@def-propensity-score).
 Individuals with the same $\pi(L)$ may differ in $L$ (e.g., smoking intensity and exercise),
 but among all individuals with a given value of $\pi(L)$ in the super-population, the distribution of $L$ is the same in the treated and the untreated:
 
 $$
 A \ind L \mid \pi(L).
 $$
+:::
 
+The proof is in [An Algebraic Proof of the Balancing Results](#sec-ps-algebraic-proofs).
 We say the propensity score **balances** the covariates.
 
 ::: {.notes}
+
+::: {.callout-warning title="Limits of Propensity Score Balance"}
 Two caveats from the book [@hernan2020causal, pp. 201-202]:
 
 - The propensity score balances only the **measured** covariates $L$;
@@ -205,6 +275,7 @@ Two caveats from the book [@hernan2020causal, pp. 201-202]:
 - In a finite study population the **true** propensity score balances $L$ only approximately, because of sampling variability.
   An estimated propensity score from a correct model generally gives better balance;
   in a randomized experiment, adjusting for the estimated $\pi(L)$ corrects both systematic and chance imbalances, whereas the true $\pi(L)$ ignores the chance imbalances.
+:::
 :::
 
 ---
@@ -231,6 +302,8 @@ see Hansen (2008) and Abadie et al. (2013), as cited in @hernan2020causal [p. 20
 ::: {#thm-ps-exchangeability}
 ## Exchangeability and Positivity Given the Propensity Score
 
+Let $A$ be dichotomous and $\pi(L)$ its propensity score (@def-propensity-score), and fix $a \in \{0, 1\}$.
+
 1. If $Y^a \ind A \mid L$, then $Y^a \ind A \mid \pi(L)$.
 2. Positivity holds within levels of $\pi(L)$ (no individual has $\pi(L)$ equal to 0 or 1) **if and only if** positivity holds within levels of $L$.
 :::
@@ -242,13 +315,13 @@ Positivity given the propensity score means $\Pr[A = a \mid \pi(L) = s] > 0$ for
 
 ---
 
-### Supplement: An Algebraic Proof of the Balancing Results
+### Supplement: An Algebraic Proof of the Balancing Results {#sec-ps-algebraic-proofs}
 
 The book argues graphically (Technical Point 15.1);
 the same results follow from iterated expectations.
 
 ::: {.proof}
-## Proof that $A \ind L \mid \pi(L)$
+## Proof of @prp-ps-balancing
 
 Since $\pi(L)$ is a function of $L$, conditioning on $(L, \pi(L))$ is the same as conditioning on $L$:
 
@@ -286,9 +359,22 @@ $$
 which does not depend on $Y^a$; hence $Y^a \ind A \mid \pi(L)$.
 :::
 
+::: {.proof}
+## Proof of part 2 of @thm-ps-exchangeability
+
+The proof of @prp-ps-balancing showed $\Pr[A = 1 \mid \pi(L)] = \pi(L)$,
+so $\Pr[A = 1 \mid \pi(L) = s] = s$ and $\Pr[A = 0 \mid \pi(L) = s] = 1 - s$ for every value $s$ that $\pi(L)$ takes.
+Positivity within levels of $\pi(L)$ therefore holds if and only if no individual has $\pi(L)$ equal to 0 or 1.
+Positivity within levels of $L$ requires $\Pr[A = 1 \mid L = l] = \pi(l)$ and $\Pr[A = 0 \mid L = l] = 1 - \pi(l)$ to be positive for every $l$ that occurs,
+which is the same condition.
+:::
+
 ---
 
 ### Using the Propensity Score
+
+::: {#alg-propensity-score-adjustment}
+## Adjusting for the Propensity Score
 
 Under exchangeability and positivity given $\pi(L)$, we can estimate causal effects by
 
@@ -297,20 +383,47 @@ Under exchangeability and positivity given $\pi(L)$, we can estimate causal effe
 - matching on $\pi(L)$.
 
 First estimate $\pi(L)$ from the data, then use the estimate in place of $L$.
+:::
 
 ## 15.3 Propensity Stratification and Standardization (pp. 202-204)
 
 ---
 
-Under the identifying conditions, for each value $s$ of the propensity score,
+::: {#prp-ps-stratum-effect}
+## Effects Within Levels of the Propensity Score
+
+Let $A$ be dichotomous and $\pi(L)$ its propensity score.
+Suppose conditional exchangeability given the propensity score, $Y^{a,c=0} \ind (A, C) \mid \pi(L)$ for $a \in \{0, 1\}$;
+positivity, $\Pr[A = a, C = 0 \mid \pi(L) = s] > 0$ for $a \in \{0, 1\}$ and every $s$ with $\Pr[\pi(L) = s] > 0$;
+and consistency, $Y = Y^{a,c=0}$ whenever $A = a$ and $C = 0$.
+Then, for each value $s$ of the propensity score with $\Pr[\pi(L) = s] > 0$,
 
 $$
 \E{Y^{a=1,c=0} \mid \pi(L) = s} - \E{Y^{a=0,c=0} \mid \pi(L) = s}
 = \E{Y \mid A = 1, C = 0, \pi(L) = s} - \E{Y \mid A = 0, C = 0, \pi(L) = s}.
 $$
+:::
 
+::: {.proof}
+For each $a \in \{0, 1\}$,
+
+$$
+\begin{aligned}
+\E{Y^{a,c=0} \mid \pi(L) = s}
+&= \E{Y^{a,c=0} \mid A = a, C = 0, \pi(L) = s} && \text{(exchangeability given } \pi(L)\text{; positivity)} \\
+&= \E{Y \mid A = a, C = 0, \pi(L) = s} && \text{(consistency)}.
+\end{aligned}
+$$
+
+Subtracting the $a = 0$ line from the $a = 1$ line gives the result.
+:::
+
+For treatment alone, without censoring, @thm-ps-exchangeability shows that exchangeability and positivity given $L$ carry over to $\pi(L)$.
+
+::: {.callout-warning title="Few Individuals Share a Propensity Score Value"}
 But $\pi(L)$ is generally continuous, so almost no two individuals share a value $s$
 (e.g., only one NHEFS individual had an estimated $\pi(L)$ of 0.6563).
+:::
 
 ---
 
@@ -334,17 +447,28 @@ See Fine Point 15.2 (Section 15.5) for effect modification by the propensity sco
 
 ### A Problem with Categorized Propensity Scores
 
+::: {.callout-warning title="Residual Imbalance Within Propensity Strata"}
 Within a decile, the distribution of the continuous $\pi(L)$ may still differ between treated and untreated
 (e.g., higher average $\pi(L)$ in the treated), so the groups may not be exchangeable within that decile.
+:::
 
+::: {.callout-tip title="Use the Propensity Score as a Continuous Covariate"}
 Remedy: use the estimated $\pi(L)$ as a **continuous** covariate in the outcome model $\E{Y \mid A, C = 0, \pi(L)}$.
+:::
+
+::: {#exm-nhefs-continuous-ps}
+## Continuous Propensity Score in NHEFS
+
 In NHEFS (linear in $\pi(L)$): 3.6 kg (95% CI: 2.7, 4.5).
+:::
 
 ::: {.notes}
 IP weighting and g-estimation never had this problem, because they used the numerical value of the estimated probability rather than a categorized version [@hernan2020causal, p. 203].
 
+::: {.callout-warning title="The IP Weight Denominator Is a Function of the Propensity Score"}
 **Caution**: for a dichotomous treatment the IP weight denominator is not $\pi(L)$ itself but a function of it:
 $\pi(L)$ for the treated ($A = 1$) and $1 - \pi(L)$ for the untreated ($A = 0$).
+:::
 
 The outcome model now requires a correct specification of the $\pi(L)$-$Y$ relation.
 Because $\pi(L)$ is one-dimensional, this is easy to protect with flexible terms such as cubic splines;
@@ -357,12 +481,17 @@ Note, though, that $\pi(L)$ itself must still be estimated from a model of $A$ o
 ### Standardizing over the Propensity Score
 
 The outcome model on $\pi(L)$ estimates effects **within** levels $s$ of $\pi(L)$.
+
+::: {#alg-ps-standardization}
+## Standardization over the Propensity Score
+
 For the population average causal effect $\E{Y^{a=1,c=0}} - \E{Y^{a=0,c=0}}$, standardize the fitted conditional means over the distribution of the estimated $\pi(L)$:
 the Chapter 13 procedure with $\pi(L)$ in place of $L$.
 
 $$
 \hE{Y^{a,c=0}} = \frac{1}{n} \sumin \hE{Y \mid A = a, C = 0, \pi(L) = \hat\pi(L_i)}
 $$
+:::
 
 ::: {#exm-ps-standardization}
 ## Standardized Estimate in NHEFS
@@ -376,7 +505,12 @@ Standardizing over the estimated propensity score (the outcome model may include
 ---
 
 Matching on $\pi(L)$ is analogous to matching on a single continuous variable (Chapter 4).
+
+::: {#def-ps-matched-population}
+## Propensity-Matched Population
+
 All versions try to build a **matched population** in which treated and untreated have the same distribution of $\pi(L)$, and hence are exchangeable.
+:::
 
 - E.g., pair each treated individual with one (or more) untreated individuals with the same, or a close, propensity score.
 - Under exchangeability and positivity given $\pi(L)$, association measures in the matched population consistently estimate the effect measures **in the matched population**.
@@ -396,21 +530,30 @@ Exact matches on a continuous $\pi(L)$ are rare, so we match on a **close** valu
 e.g., untreated individuals within $\pm 0.05$ of the treated individual's estimated $\pi(L)$
 (e.g., a treated individual with estimated $\pi(L) = 0.6563$ could be matched to an untreated individual with 0.6579).
 
+::: {.callout-tip title="Choosing How Close a Match Must Be"}
 **Bias-variance trade-off**:
 
 - criteria too loose: the $\pi(L)$ distribution differs between matched treated and untreated, so exchangeability fails;
 - criteria too tight: many individuals are excluded;
   approximate exchangeability, but wider confidence intervals.
+:::
 
 ---
 
 ### Matching and Positivity
 
+::: {#exm-nhefs-matching-positivity}
+## Matching and Positivity in NHEFS
+
 - In NHEFS, the estimated $\pi(L)$ distributions overlapped over most of the range;
   only 2 treated individuals had values above those of every untreated individual.
 - Outcome regression on $\pi(L)$ (Section 15.3) kept them, implicitly treating the lack of comparable untreated individuals as **random nonpositivity**.
 - Most matched analyses would drop them.
-  Matching does not distinguish random from structural nonpositivity.
+:::
+
+::: {.callout-warning title="Matching Ignores the Type of Nonpositivity"}
+Matching does not distinguish random from structural nonpositivity.
+:::
 
 ::: {.notes}
 The book also states this count as a percentage of the study population (0.01%);
@@ -421,16 +564,25 @@ that percentage is not reproduced here because it is inconsistent with the count
 
 ### Who Is in the Matched Population?
 
+::: {#rem-matching-target-population}
+## Target Population of a Matched Analysis
+
 - In theory, matching targets a well-characterized population: matching every treated individual and dropping unmatched untreated estimates the **effect in the treated** (Fine Point 15.2).
 - In practice, treated individuals without a close match are excluded too, so the estimate refers to a subset defined by the values of the estimated $\pi(L)$ that found matches.
+:::
 
+::: {.callout-warning title="Propensity-Defined Populations Are Hard to Describe"}
 Restricting to, say, estimated $\pi(L) < 0.67$ yields a population that is hard to describe:
 "individuals do not come with a propensity score tattooed on their forehead" [@hernan2020causal, p. 205],
 so transportability to other populations is hard to judge.
+:::
 
 ---
 
 ### Restrict on Real-World Variables Instead
+
+::: {#exm-nhefs-restrict-real-variables}
+## Restricting on Age and Smoking Duration in NHEFS
 
 In NHEFS, the 2 treated individuals with estimated $\pi(L) > 0.67$ were the only participants over age 50 who had smoked for fewer than 10 years.
 Excluding them gives an estimate for
@@ -439,12 +591,16 @@ Excluding them gives an estimate for
 - smokers 50 and over who had smoked for at least 10 years,
 
 which is a far more natural target population than "estimated $\pi(L) < 0.67$" [@hernan2020causal, p. 205].
+:::
 
 ::: {.notes}
+
+::: {.callout-warning title="Restricting to the Overlap Region"}
 Using propensity scores to **find** the region of overlap can be useful,
 but restricting the study population to that region is a "lazy" way to secure positivity:
 the automatic positivity of matching must be weighed against the difficulty of assessing transportability [@hernan2020causal, p. 205].
 Even if everyone's propensity score were visible, the population could remain ill-characterized, because the same propensity score value can mean different things in different settings.
+:::
 :::
 
 ## 15.5 Propensity Models, Structural Models, Predictive Models (pp. 205-208)
@@ -473,10 +629,14 @@ the association reflects the effect of $L$ on $A$ under the book's Figure 7.1, b
 
 ### Two Classes of Structural Models
 
+::: {#rem-two-classes-structural-models}
+## Marginal and Nested Structural Models
+
 - **Marginal structural models**: parameters for treatment, for chosen effect modifiers $V$, and for $A \times V$ product terms. $V$ reflects only the investigator's interest in effect modification (Section 12.5).
   - No $V$: truly marginal.
   - $V = L$ (all covariates): a **faux** marginal structural model, which is what outcome regression (Section 15.1) estimates.
 - **Structural nested models**: parameters for treatment and for $A \times L$ product terms for those variables in $L$ that are effect modifiers.
+:::
 
 ::: {.notes}
 See Fine Point 14.1 of the book for the relation between structural nested models and faux semiparametric marginal structural models [@hernan2020causal, p. 206].
@@ -497,30 +657,43 @@ See Fine Point 14.1 of the book for the relation between structural nested model
 
 ### Causal Versus Predictive Uses of Outcome Regression
 
+::: {#rem-predictive-outcome-regression}
+## Outcome Regression for Prediction
+
 Outcome regression is also widely used for **prediction**:
 
 - online retailers predicting who will buy;
 - clinical algorithms identifying patients at high risk.
 
 There, no variable is "treatment" and the parameters need not have any causal interpretation.
+:::
 
 ::: {.notes}
+
+::: {#exm-facebook-likes-prediction}
+## Prediction Without Causation
+
 Example from the book's margin: Facebook Likes predict sexual orientation, political views, and personality traits (Kosinski et al. 2013, as cited in @hernan2020causal [p. 206]);
 that is prediction, not necessarily causation.
+:::
 :::
 
 ---
 
 ### Variable Selection: Prediction Tools Misapplied
 
+::: {.callout-warning title="Prediction Tools Can Harm Causal Models"}
 Forward selection, backward elimination, stepwise selection, and machine learning are built to **improve prediction**.
 Applied to propensity or structural models, they can add superfluous or harmful covariates, causing
 
 - inflated variances, and
 - greater bias.
+:::
 
+::: {.callout-tip title="A Propensity Model Need Not Predict Treatment Well"}
 The mistaken belief behind this: that a propensity model should predict $A$ as well as possible.
 It need not; it only needs to include the $L$ that guarantee exchangeability.
+:::
 
 ::: {.notes}
 Reporting predictive measures such as Mallows's $C_p$ for propensity models is common, but their relevance for causal inference is questionable [@hernan2020causal, p. 207].
@@ -551,17 +724,25 @@ there is no overlap and the analysis is impossible [@hernan2020causal, p. 207].
 
 ### Self-Inflicted Bias and Model Specification
 
+::: {.callout-warning title="Good Predictors Can Be Bad Adjustment Variables"}
 - Including **colliders** can cause systematic bias, even though colliders may be good predictors.
 - Including **instruments** (Chapter 16) can amplify bias from unmeasured confounders.
 - Chapter 18 returns to these issues.
+:::
+
+::: {#rem-model-specification-requirements}
+## Requirements Shared by Propensity and Structural Models
 
 Both propensity and structural models require a correctly specified functional form for the covariates (flexible terms such as cubic splines help),
 plus exchangeability, positivity, and well-defined interventions.
 Chapter 16 presents a method that does not require exchangeability of treatment.
+:::
 
 ## Summary
 
 ---
+
+::: {#tbl-ch15-methods-summary}
 
 | Method | Model used | Requires |
 |--------|------------|----------|
@@ -571,12 +752,19 @@ Chapter 16 presents a method that does not require exchangeability of treatment.
 | **Propensity standardization** | as above | as above; targets the population effect |
 | **Propensity matching** | $\pi(L)$ | Correct propensity model; estimate refers to the matched population |
 
+Methods of this chapter and Chapter 14, the models they fit, and what each requires.
+:::
+
+::: {#exm-nhefs-ch15-estimates}
+## NHEFS Estimates Compared
+
 NHEFS estimates of the effect of smoking cessation on weight gain (kg):
 
 - outcome regression, no product terms: 3.5 (2.6, 4.3);
 - propensity deciles, no product terms: 3.5 (2.6, 4.4);
 - continuous propensity score: 3.6 (2.7, 4.5);
 - standardized over the propensity score: 3.6 (2.7, 4.6).
+:::
 
 ::: {.notes}
 **Takeaways** [@hernan2020causal, pp. 199-208]:
