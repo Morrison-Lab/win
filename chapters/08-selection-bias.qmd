@@ -92,7 +92,8 @@ The diagram shows two sources of association between treatment and outcome:
 
 The association induced through the second path is **selection bias due to conditioning on $C$** (@def-selection-bias).
 Because of it, the associational risk ratio $\Pr[Y = 1 \mid A = 1, C = 0] / \Pr[Y = 1 \mid A = 0, C = 0]$
-generically (that is, under [faithfulness](06-graphical-representation.qmd#from-d-separation-to-independence))
+generically (that is, for all but special parameter values;
+[faithfulness](06-graphical-representation.qmd#from-d-separation-to-independence) alone guarantees an association only in at least one stratum of $C$)
 does not equal the causal risk ratio $\Pr[Y^{a=1} = 1] / \Pr[Y^{a=0} = 1]$.
 Without conditioning on the collider $C$, the only open path would be $A \rightarrow Y$, and the associational risk ratio $\Pr[Y = 1 \mid A = 1] / \Pr[Y = 1 \mid A = 0]$ would equal the causal risk ratio.
 :::
@@ -113,7 +114,7 @@ If only nongrieving parents ($S = 0$) agreed to participate, the analysis condit
 As shown in Chapter 6, conditioning on a variable affected by the collider $C$ also opens the path $A \rightarrow C \leftarrow Y$.
 
 In both Figures 8.1 and 8.2 the bias comes from conditioning on a common effect of treatment and outcome ($C$ or $S$).
-Generically (that is, under faithfulness), it is present whether or not there is an arrow $A \rightarrow Y$:
+Generically (for all but special parameter values), it is present whether or not there is an arrow $A \rightarrow Y$:
 it is selection bias under the null (@def-selection-bias-under-null).
 :::
 
@@ -143,7 +144,7 @@ The diagram has no arrow $A \rightarrow Y$: we assume the null of no treatment e
 
 By d-separation, conditioning on the collider $C$ opens the path
 $$A \rightarrow C \leftarrow L \leftarrow U \rightarrow Y,$$
-so, under the null (no arrow $A \rightarrow Y$), the associational risk ratio generically (that is, under faithfulness) differs from 1, the causal value.
+so, under the null (no arrow $A \rightarrow Y$), the associational risk ratio generically (for all but special parameter values) differs from 1, the causal value.
 :::
 
 ::: {.notes}
@@ -322,7 +323,7 @@ Assume, unknown to the investigators, that $A$ does not cause $Y$.
 - $U$ does not affect $Y$, and $L$ does not affect $A$.
 
 There is no confounding: $A$ and $Y$ have no common cause, so in the full population $\Pr[Y = 1 \mid A = 1] / \Pr[Y = 1 \mid A = 0]$ is expected to equal $\Pr[Y^{a=1} = 1] / \Pr[Y^{a=0} = 1] = 1$.
-Among firefighters ($C = 0$), however, the two ratios generically (that is, under faithfulness) differ:
+Among firefighters ($C = 0$), however, the two ratios generically (for all but special parameter values) differ:
 conditioning on $C$, a common effect of causes of treatment ($U$) and of outcome ($L$),
 opens $A \leftarrow U \rightarrow C \leftarrow L \rightarrow Y$.
 :::
@@ -416,13 +417,13 @@ if $\Pr[Y_1 = 0 \mid A, U]$ is a function of $A$ times a function of $U$,
 then $A$ and $U$ stay independent among time-1 survivors.
 When the intuition does hold, the hazard ratio is below 1 at time 1 and above 1 at time 2,
 so the hazards cross.
-The time-2 hazard ratio is generically (under faithfulness) biased for the (null) direct effect,
+The time-2 hazard ratio is generically (for all but special parameter values) biased for the (null) direct effect,
 because conditioning on $Y_1$, a common effect of $A$ and $U$, opens $A \rightarrow Y_1 \leftarrow U \rightarrow Y_2$.
 The haplotype $U$ is a frailty (@def-frailty).
 
 Within strata of $U$ the hazard ratio at time 2 is 1, because conditioning on the non-collider $U$ blocks that path.
 Here $U$ is independent of $A$,
-yet the time-2 hazard ratio ignoring $U$ generically (under faithfulness) differs from the ratio within each level of $U$.
+yet the time-2 hazard ratio ignoring $U$ generically (for all but special parameter values) differs from the ratio within each level of $U$.
 A gap of that kind, with no confounding by $U$ to explain it,
 is the noncollapsibility (@def-noncollapsibility) of the hazard ratio.
 Since $U$ is unobserved, the data cannot tell whether $A$ has a direct effect on $Y_2$ (Figure 8.8 versus Figure 8.9).
@@ -731,8 +732,8 @@ $$\frac{\Pr[Y = 1 \mid A = 1, C = 0, L = l]}{\Pr[Y = 1 \mid A = 0, C = 0, L = l]
 equals $\Pr[Y^{a = 1, c = 0} = 1 \mid L = l] / \Pr[Y^{a = 0, c = 0} = 1 \mid L = l]$,
 the effect of treatment in the stratum $L = l$ had nobody been censored.
 Among the diagram's variables, $Y^{a, c = 0}$ is a function only of $U$ (and of its own independent error),
-and $U$ is independent of $A$ and $C$ given $L$,
-the same ratio is also the effect of treatment among the uncensored with $L = l$.
+and $U$ is independent of $A$ and $C$ given $L$.
+So the same ratio is also the effect of treatment among the uncensored with $L = l$.
 Stratification also works under Figure 8.5,
 where treatment is not randomized,
 because there too $U$ is independent of $A$ and $C$ given $L$.
@@ -741,7 +742,7 @@ because there too $U$ is independent of $A$ and $C$ given $L$.
 ::: {.callout-warning title="Stratification Can Open a Collider Path"}
 Stratification fails under Figures 8.4 and 8.6.
 In Figure 8.4, conditioning on $L$ blocks the backdoor path from $C$ to $Y$ but opens $A \rightarrow L \leftarrow U \rightarrow Y$, because $L$ is a collider on that path;
-even with a null effect, the $L$-conditional risk ratio generically (under faithfulness) differs from 1.
+even with a null effect, the $L$-conditional risk ratio generically (for all but special parameter values) differs from 1.
 Figure 8.6 behaves the same way.
 IP weighting adjusts correctly under all of Figures 8.3-8.6 because it estimates unconditional effects after reweighting by treatment and $L$, rather than conditioning on $L$.
 :::
@@ -839,7 +840,7 @@ Given $Y = 1$ the argument of @prp-independence-among-survivors does not apply:
 the event $Y = 1$ is compatible with 7 combinations of $(Y_A, Y_E, Y_O)$, every combination except $(0, 0, 0)$,
 so it does not determine $(Y_A, Y_E, Y_O)$,
 and the step that replaced conditioning on $Y$ by conditioning on $(Y_A, Y_E, Y_O)$ does not go through.
-Generically (that is, under faithfulness), $A$ and $E$ are associated given $Y = 1$.
+Generically (for all but special parameter values), $A$ and $E$ are associated given $Y = 1$.
 :::
 
 ---
@@ -857,7 +858,7 @@ that is, the probability of survival is a factor depending only on $e$ times a f
 When the data can be summarized by Figure 8.13, they follow a multiplicative survival model (@def-multiplicative-survival-model).
 
 ::: {.notes}
-$A$ and $E$ are in general (under faithfulness) dependent given $Y = 0$ (in fact within both strata of $Y$) when any of these hold:
+$A$ and $E$ are generically (for all but special parameter values) dependent within both strata of $Y$, including $Y = 0$, when any of these hold:
 
 - $A$ and $E$ act through a common mechanism: an arrow from $A$ to $Y_E$ or from $E$ to $Y_A$ (Figure 8.14);
 - $Y_A$ and $Y_E$ share a common cause $V$ (Figure 8.15);
@@ -958,7 +959,7 @@ This chapter examined **selection bias**: lack of exchangeability that arises fr
 6. **Selection without bias**: when $A$ and $E$ are marginally independent
    and the data follow a multiplicative survival model (@def-multiplicative-survival-model, Figure 8.13),
    $A$ and $E$ remain independent among survivors ($Y = 0$, by @prp-independence-among-survivors),
-   but are generically (under faithfulness) dependent among the dead ($Y = 1$).
+   but are generically (for all but special parameter values) dependent among the dead ($Y = 1$).
 
 ::: {.notes}
 **Practical implications**:
