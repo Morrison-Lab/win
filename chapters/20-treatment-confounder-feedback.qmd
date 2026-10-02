@@ -252,18 +252,28 @@ Also, $16{,}000$ of the $32{,}000$ individuals have $A_0 = 1$, matching probabil
 
 :::
 
+:::
+
 ::: {#rem-identifiability-by-design}
 ## Identifiability Holds by Design
 
-The identifiability conditions hold by design:
-there are no confounders for $A_0$,
-$L_1$ is the only confounder for $A_1$ (so sequential exchangeability holds given $L_1$),
-and positivity holds because no row of the table is empty.
+The trial is built so that all three identifiability conditions hold
+[@hernan2020causal, p. 269]:
+
+- **sequential exchangeability**:
+  randomization leaves $A_0$ with no confounders,
+  and $A_1$ is assigned using $L_1$ alone,
+  so exchangeability for $A_1$ holds once we condition on $L_1$;
+- **positivity**:
+  each of the eight rows of the table contains individuals;
+- **consistency**:
+  the trial is an ideal one, with full adherence and no loss to follow-up,
+  so each person's recorded treatment is the treatment the protocol assigned,
+  and each person's observed outcome is their counterfactual outcome under that treatment.
+
 Had the trial run past month 1, with each month's treatment assigned using that month's CD4 count,
 each of those later CD4 measurements would be a time-varying confounder as well.
 Random variability is ignored throughout.
-
-:::
 
 :::
 
@@ -321,22 +331,40 @@ So the average causal effect of $A_0$ is $60 - 60 = 0$.
 :::
 
 ::: {.callout-note title="Technical Point 20.1: G-Null Test"}
-Under the sharp null, every counterfactual outcome $Y^g$ equals the observed $Y$.
-With two time points, sequential exchangeability for all $Y^g$ then reads
-$Y \ind A_0 \mid L_0$ and $Y \ind A_1 \mid A_0, L_0, L_1$
-(using the fact that for any $a_0$ and $l_0$ some strategy $g$ has $a_0 = g(l_0)$).
-Under sequential exchangeability, testing these conditional independencies is a test of the sharp null:
-the **g-null test** [@robins1986new].
-The first independence says $A_0$ has no effect within strata of $L_0$;
-the second says $A_1$ has no effect within strata of $(A_0, L_0, L_1)$
-(in Figure 20.3, which has no $L_0$, within strata of $(A_0, L_1)$).
+The **g-null theorem** [@robins1986new] ties the sharp null
+to two conditional independencies in the observed data.
+With two time points, the independencies are
 
-More generally, the **g-null theorem** [@robins1986new] states that,
-under sequential randomization for all $g$,
-these two independencies hold if and only if the distribution of $Y^g$
-(and therefore $\E{Y^g}$) is the same for all $g$
-and equal to the distribution (and mean) of the observed $Y$
+$$
+Y \ind A_0 \mid L_0
+\quad \text{and} \quad
+Y \ind A_1 \mid A_0, L_0, L_1.
+$$
+
+Assume sequential randomization for every strategy $g$.
+The theorem says that both independencies hold
+exactly when the distribution of $Y^g$ does not depend on $g$
+and coincides with the distribution of the observed $Y$,
+so that in particular $\E{Y^g} = \E{Y}$ for every $g$
 [@hernan2020causal, Technical Point 20.1, p. 270].
+
+To see why the sharp null leads to the independencies,
+note that if no strategy changes anyone's outcome,
+then $Y^g = Y$ for every $g$.
+Sequential exchangeability for the counterfactuals $Y^g$
+then becomes a statement about $Y$ itself.
+That step relies on every pair $(a_0, l_0)$
+being produced by some strategy with $a_0 = g(l_0)$.
+
+Each independency has a causal reading:
+
+- the first says $A_0$ has no effect within any stratum of $L_0$;
+- the second says $A_1$ has no effect within any stratum of $(A_0, L_0, L_1)$,
+  which in Figure 20.3 (where there is no $L_0$) means within strata of $(A_0, L_1)$.
+
+When sequential exchangeability holds,
+checking these independencies in the data therefore tests the sharp null.
+That check is the **g-null test** [@robins1986new].
 
 :::
 
@@ -691,8 +719,10 @@ Now suppose doctors use past treatment history $\bar{A}_{k-1}$
 when deciding on treatment $A_k$.
 Adding $A_0 \to A_1$ to Figures 20.3 and 20.4 gives the book's Figures 20.8 and 20.9.
 
-With treatment-confounder feedback (@def-treatment-confounder-feedback), conditioning on $L_1$ alone no longer blocks
-all backdoor paths between $A_1$ and $Y$; it opens
+Under treatment-confounder feedback (@def-treatment-confounder-feedback),
+adjusting for $L_1$ alone no longer closes every backdoor path from $A_1$ to $Y$.
+$L_1$ is a collider on each of the following paths,
+so conditioning on it opens them:
 
 $$
 \begin{aligned}
@@ -750,14 +780,18 @@ even if $A_1$ has no effect on anyone's outcome (Figures 20.8-20.10).
 ::: {.notes}
 
 ::: {.callout-tip title="Adjust for Treatment History or Restrict to New Users"}
-In practice, the bias from ignoring past treatment can arise in analyses comparing current users ($A_1 = 1$)
-with nonusers ($A_1 = 0$) of a time-fixed treatment.
-It can be avoided by adjusting for prior treatment history
-or by restricting to individuals with a particular treatment history.
-This restriction is the idea behind **new-user designs**:
-restrict the analysis to individuals with no past use of the treatment.
-If past treatment could be correctly adjusted for,
-the restriction to new users would be unnecessary.
+In practice, this bias tends to show up
+when current users ($A_1 = 1$) of a time-fixed treatment are compared with nonusers ($A_1 = 0$).
+Either of two remedies avoids it:
+
+- adjust for the prior treatment history;
+- keep only individuals who share one particular treatment history.
+
+**New-user designs** take the second route,
+keeping only people who have never used the treatment before.
+The restriction is a stand-in for adjustment:
+an analysis that already adjusts correctly for past treatment
+gains nothing by also discarding prevalent users.
 
 :::
 
@@ -778,8 +812,9 @@ As in [Section 9.3](09-measurement-bias.qmd#mismeasured-confounders-and-collider
 
 Suppose HIV investigators lack medical records and ascertain prior treatment by questionnaire,
 so they observe a mismeasured $A_0^*$ rather than $A_0$.
-Adding the arrow $A_0 \to A_0^*$ to Figures 20.8-20.10 shows that
-conditioning on $A_0^*$ cannot block the biasing paths between $A_1$ and $Y$ that pass through $A_0$.
+Adding the arrow $A_0 \to A_0^*$ to Figures 20.8-20.10 shows the problem.
+$A_0^*$ is only a noisy child of $A_0$,
+so conditioning on it leaves open the backdoor paths from $A_1$ to $Y$ on which $A_0$ lies.
 Investigators would generically (under faithfulness) find an association between $A_1$ and $Y$
 even after adjusting for $A_0^*$ and $L_1$,
 although $A_1$ has no effect on $Y$.
