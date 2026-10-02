@@ -234,7 +234,13 @@
 <p>the average of the stratum-specific means, weighted by the prevalence of each stratum <span class="math inline">\(l\)</span> in the study population. When some components of <span class="math inline">\(L\)</span> are continuous, <span class="math inline">\(\Pr[L = l]\)</span> is replaced by the density <span class="math inline">\(f_L(l)\)</span> and the sum becomes an integral, <span class="math inline">\(\int \text{E}{\left[Y \mid A = a, C = 0, L = l\right]} \, dF_L(l)\)</span>, where <span class="math inline">\(F_L\)</span> is the joint cdf of <span class="math inline">\(L\)</span>.</p>
 </div>
 <div id="thm-standardized-mean-identifies" class="theorem">
-<p><span class="theorem-title"><strong>Theorem 1 (Standardization identifies the counterfactual mean)</strong></span> Let <span class="math inline">\(L\)</span> be discrete. Under exchangeability and positivity given <span class="math inline">\(L\)</span> (plus consistency), the standardized mean of <a href="#/def-standardization" class="quarto-xref">Definition&nbsp;1</a> equals <span class="math inline">\(\text{E}{\left[Y^{a,c=0}\right]}\)</span> for each treatment level <span class="math inline">\(a\)</span>.</p>
+<p><span class="theorem-title"><strong>Theorem 1 (Standardization identifies the counterfactual mean)</strong></span> Let <span class="math inline">\(L\)</span> be discrete, and fix a treatment level <span class="math inline">\(a\)</span>. Assume</p>
+<ul>
+<li>conditional exchangeability for the joint treatment <span class="math inline">\((A, C)\)</span>: <span class="math inline">\(Y^{a,c=0} \perp\!\!\!\perp(A, C) \mid L\)</span>;</li>
+<li>positivity: <span class="math inline">\(\Pr[A = a, C = 0 \mid L = l] &gt; 0\)</span> for every <span class="math inline">\(l\)</span> with <span class="math inline">\(\Pr[L = l] &gt; 0\)</span>;</li>
+<li>consistency: <span class="math inline">\(Y^{a,c=0} = Y\)</span> for every individual with <span class="math inline">\(A = a\)</span> and <span class="math inline">\(C = 0\)</span>.</li>
+</ul>
+<p>Then the standardized mean of <a href="#/def-standardization" class="quarto-xref">Definition&nbsp;1</a> equals <span class="math inline">\(\text{E}{\left[Y^{a,c=0}\right]}\)</span>.</p>
 </div>
 <div class="proof">
 <p><span class="proof-title"><em>Proof</em>. </span>For discrete <span class="math inline">\(L\)</span> (Technical Point 2.3 of the book, with <span class="math inline">\(A = a\)</span> replaced by <span class="math inline">\((A = a, C = 0)\)</span>):</p>
@@ -242,7 +248,7 @@
 \begin{aligned}
 \text{E}{\left[Y^{a,c=0}\right]}
 &amp;= \sum_l \text{E}{\left[Y^{a,c=0} \mid L = l\right]} \Pr[L = l] &amp;&amp; \text{(law of total expectation)} \\
-&amp;= \sum_l \text{E}{\left[Y^{a,c=0} \mid A = a, C = 0, L = l\right]} \Pr[L = l] &amp;&amp; \text{(exchangeability given } L\text{; positivity)} \\
+&amp;= \sum_l \text{E}{\left[Y^{a,c=0} \mid A = a, C = 0, L = l\right]} \Pr[L = l] &amp;&amp; \text{(exchangeability for } (A, C) \text{ given } L\text{; positivity)} \\
 &amp;= \sum_l \text{E}{\left[Y \mid A = a, C = 0, L = l\right]} \Pr[L = l] &amp;&amp; \text{(consistency)}
 \end{aligned}
 \]</span></p>
@@ -279,7 +285,7 @@
 </div>
 <div class="callout-content">
 <ul>
-<li>Positivity is needed for standardization too: if <span class="math inline">\(\Pr[A = a \mid L = l] = 0\)</span> while <span class="math inline">\(\Pr[L = l] \neq 0\)</span>, then <span class="math inline">\(\text{E}{\left[Y \mid A = a, L = l\right]}\)</span> is undefined.</li>
+<li>Positivity is needed for standardization too: if <span class="math inline">\(\Pr[A = <mark class="preview-text-changed">a, C = 0</mark> \mid L = l] = 0\)</span> while <span class="math inline">\(\Pr[L = l] \neq 0\)</span>, then <span class="math inline">\(\text{E}{\left[Y \mid A = a, <mark class="preview-text-added">C = 0, </mark>L = l\right]}\)</span> is undefined.</li>
 <li>With a parametric outcome model, one <em>can</em> ignore structural nonpositivity by <strong>extrapolating</strong> over the empty strata, at the cost of bias (95% confidence intervals then cover the truth less than 95% of the time).</li>
 <li>Near positivity violations, standardization typically has a smaller standard error than IP weighting, but differences in bias may outweigh differences in standard error.</li>
 </ul>
@@ -622,8 +628,9 @@
 <section class="slide level2 scrollable">
 
 <div id="def-doubly-robust" class="theorem definition">
-<p><span class="theorem-title"><strong>Definition 4 (Doubly robust estimator)</strong></span> An estimator that combines a treatment model and an outcome model is <strong>doubly robust</strong> if, under exchangeability and positivity given <span class="math inline">\(L\)</span>, it is consistent when <strong>either</strong> model is correct, without our knowing which.</p>
+<p><span class="theorem-title"><strong>Definition 4 (Doubly robust estimator)</strong></span> An estimator of a counterfactual mean such as <span class="math inline">\(\text{E}{\left[Y^{a=1}\right]}\)</span> that combines a treatment model and an outcome model is <strong>doubly robust</strong> if, under the identifying conditions (conditional exchangeability and positivity given <span class="math inline">\(L\)</span>, and consistency), it is consistent for that counterfactual mean when <strong>either</strong> model is correctly specified, without our knowing which. (With censoring, replace <span class="math inline">\(Y^{a}\)</span> by <span class="math inline">\(Y^{a,c=0}\)</span> and <span class="math inline">\(A\)</span> by the joint treatment <span class="math inline">\((A, C)\)</span> throughout.)</p>
 </div>
+<p>An estimator of a causal contrast, such as <span class="math inline">\(\text{E}{\left[Y^{a=1}\right]} - \text{E}{\left[Y^{a=0}\right]}\)</span>, built from doubly robust estimators (<a href="#/def-doubly-robust" class="quarto-xref">Definition&nbsp;4</a>) of each counterfactual mean is then consistent for that contrast, provided the identifying conditions hold for every treatment level in the contrast (here both <span class="math inline">\(a = 1\)</span> and <span class="math inline">\(a = 0\)</span>) and, for each counterfactual mean, at least one of its two models is correctly specified.</p>
 <div title="Use Both Methods, and Doubly Robust Ones">
 <div class="callout callout-tip callout-titled callout-style-default">
 <div class="callout-body">
@@ -677,6 +684,17 @@
 </div>
 </div>
 </div>
+<div id="def-aipw" class="theorem definition">
+<p><span class="theorem-title"><strong>Definition 5 (Augmented IP weighted (AIPW) estimator)</strong></span> Let <span class="math inline">\(A\)</span> be dichotomous, with no censoring, and define</p>
+<ul>
+<li>the outcome regression <span class="math inline">\(b(L) \stackrel{\text{def}}{=}\text{E}{\left[Y \mid A = 1, L\right]}\)</span>;</li>
+<li>the propensity score <span class="math inline">\(\pi(L) \stackrel{\text{def}}{=}\Pr[A = 1 \mid L]\)</span>.</li>
+</ul>
+<p>Let <span class="math inline">\(\hat b(L)\)</span> be the predicted mean outcome under <span class="math inline">\(A = 1\)</span> from a fitted model for <span class="math inline">\(\text{E}{\left[Y \mid A, L\right]}\)</span> (the outcome model), and let <span class="math inline">\(\hat\pi(L)\)</span> be the predicted probability of <span class="math inline">\(A = 1\)</span> from a fitted model for <span class="math inline">\(\Pr[A = 1 \mid L]\)</span> (the treatment model). The <strong>AIPW estimator</strong> of <span class="math inline">\(\text{E}{\left[Y^{a=1}\right]}\)</span> is</p>
+<p><span class="math display">\[
+\hat{\text{E}}{\left[Y^{a=1}\right]}_{DR} = \frac{1}{n} \sum_{i=1}^n{\left[\hat b(L_i) + \frac{A_i}{\hat\pi(L_i)} {\left\{Y_i - \hat b(L_i)\right\}}\right]}
+\]</span></p>
+</div>
 <div title="Technical Point 13.2: The Augmented IP Weighted Estimator">
 <div class="callout callout-note callout-titled callout-style-default">
 <div class="callout-body">
@@ -687,7 +705,7 @@
 <p><strong>Technical Point 13.2: The Augmented IP Weighted Estimator</strong></p>
 </div>
 <div class="callout-content">
-<p>For dichotomous <span class="math inline">\(A\)</span>, write <span class="math inline">\(b(L) = \text{E}{\left[Y \mid A = 1, L\right]}\)</span> and <span class="math inline">\(\pi(L) = \Pr[A = 1 \mid L]\)</span>. Under the identifiability conditions,</p>
+<p>For dichotomous <span class="math inline">\(A\)</span> and no censoring, with <span class="math inline">\(b\)</span>, <span class="math inline">\(\pi\)</span>, <span class="math inline">\(\hat b\)</span> and <span class="math inline">\(\hat\pi\)</span> as in <a href="#/def-aipw" class="quarto-xref">Definition&nbsp;5</a>, under the identifiability conditions,</p>
 <p><span class="math display">\[\text{E}{\left[Y^{a=1}\right]} = \text{E}{\left[b(L)\right]} = \text{E}{\left[\frac{AY}{\pi(L)}\right]}.\]</span></p>
 <ul>
 <li>Plug-in g-formula estimator: <span class="math inline">\(\frac{1}{n}\sum_i \hat b(L_i)\)</span></li>
@@ -697,13 +715,8 @@
 </div>
 </div>
 </div>
-<div id="def-aipw" class="theorem definition">
-<p><span class="theorem-title"><strong>Definition 5 (Augmented IP weighted (AIPW) estimator)</strong></span> <span class="math display">\[
-\hat{\text{E}}{\left[Y^{a=1}\right]}_{DR} = \frac{1}{n} \sum_{i=1}^n{\left[\hat b(L_i) + \frac{A_i}{\hat\pi(L_i)} {\left\{Y_i - \hat b(L_i)\right\}}\right]}
-\]</span></p>
-</div>
 <aside class="notes">
-<p><strong>Two equivalent forms.</strong> Expanding the summand:</p>
+<p><strong>Two equivalent forms.</strong> Expanding the summand of the AIPW estimator (<a href="#/def-aipw" class="quarto-xref">Definition&nbsp;5</a>):</p>
 <p><span class="math display">\[
 \begin{aligned}
 \hat b(L_i) + \frac{A_i}{\hat\pi(L_i)}\{Y_i - \hat b(L_i)\}
@@ -730,11 +743,19 @@
 <section class="slide level2">
 
 <div id="thm-aipw-doubly-robust" class="theorem">
-<p><span class="theorem-title"><strong>Theorem 2 (The AIPW estimator is doubly robust)</strong></span> Assume exchangeability, positivity and consistency, and let <span class="math inline">\(b\)</span> and <span class="math inline">\(\pi\)</span> be as in Technical Point 13.2. Let <span class="math inline">\(\pi^*\)</span> and <span class="math inline">\(b^*\)</span> be the probability limits of <span class="math inline">\(\hat\pi\)</span> and <span class="math inline">\(\hat b\)</span>, with <span class="math inline">\(\pi^*(L) &gt; 0\)</span>. The AIPW estimator of <a href="#/def-aipw" class="quarto-xref">Definition&nbsp;5</a> converges to <span class="math inline">\(\text{E}{\left[b^*(L) + A\{Y - b^*(L)\}/\pi^*(L)\right]}\)</span>, and its asymptotic bias is</p>
+<p><span class="theorem-title"><strong>Theorem 2 (Double robustness of the AIPW functional)</strong></span> Let <span class="math inline">\(A\)</span> be dichotomous, with no censoring, and let <span class="math inline">\(b\)</span> and <span class="math inline">\(\pi\)</span> be as in <a href="#/def-aipw" class="quarto-xref">Definition&nbsp;5</a>. Assume</p>
+<ul>
+<li>conditional exchangeability: <span class="math inline">\(Y^{a=1} \perp\!\!\!\perp A \mid L\)</span>;</li>
+<li>positivity: <span class="math inline">\(\pi(l) &gt; 0\)</span> for every <span class="math inline">\(l\)</span> in the support of <span class="math inline">\(L\)</span>;</li>
+<li>consistency: <span class="math inline">\(Y^{a=1} = Y\)</span> for every individual with <span class="math inline">\(A = 1\)</span>;</li>
+<li><span class="math inline">\(\text{E}{\left[\left|Y\right|\right]} &lt; \infty\)</span> and <span class="math inline">\(\text{E}{\left[\left|Y^{a=1}\right|\right]} &lt; \infty\)</span>.</li>
+</ul>
+<p>Let <span class="math inline">\(b^*\)</span> and <span class="math inline">\(\pi^*\)</span> be any functions of <span class="math inline">\(L\)</span> with <span class="math inline">\(\text{E}{\left[\left|b^*(L)\right|\right]} &lt; \infty\)</span> and <span class="math inline">\(\pi^*(l) \geq \epsilon\)</span> for some <span class="math inline">\(\epsilon &gt; 0\)</span> and every <span class="math inline">\(l\)</span> in the support of <span class="math inline">\(L\)</span>. Then</p>
 <p><span class="math display">\[
-\text{E}{\left[\pi(L) {\left(\frac{1}{\pi^*(L)} - \frac{1}{\pi(L)}\right)} {\left(b(L) - b^*(L)\right)}\right]},
+\text{E}{\left[b^*(L) + \frac{A\{Y - b^*(L)\}}{\pi^*(L)}\right]} - \text{E}{\left[Y^{a=1}\right]}
+= \text{E}{\left[\pi(L) {\left(\frac{1}{\pi^*(L)} - \frac{1}{\pi(L)}\right)} {\left(b(L) - b^*(L)\right)}\right]},
 \]</span></p>
-<p>which is zero if <span class="math inline">\(\pi^* = \pi\)</span> (treatment model correct) <strong>or</strong> <span class="math inline">\(b^* = b\)</span> (outcome model correct).</p>
+<p>which is zero if <span class="math inline">\(\pi^* = \pi\)</span> <strong>or</strong> <span class="math inline">\(b^* = b\)</span>.</p>
 </div>
 <div class="proof">
 <p><span class="proof-title"><em>Proof</em>. </span>First condition on <span class="math inline">\(L\)</span>:</p>
@@ -745,19 +766,33 @@
 &amp;= \frac{\pi(L) \{b(L) - b^*(L)\}}{\pi^*(L)} &amp;&amp; \text{(definitions of } \pi, b\text{)}
 \end{aligned}
 \]</span></p>
-<p>Then, subtracting <span class="math inline">\(\text{E}{\left[Y^{a=1}\right]} = \text{E}{\left[b(L)\right]}\)</span>:</p>
+<p>Next, identify the counterfactual mean:</p>
 <p><span class="math display">\[
 \begin{aligned}
-\text{bias}
-&amp;= \text{E}{\left[b^*(L) - b(L) + \frac{\pi(L)}{\pi^*(L)}\{b(L) - b^*(L)\}\right]} &amp;&amp; \text{(law of total expectation)} \\
+\text{E}{\left[Y^{a=1}\right]}
+&amp;= \text{E}{\left[\text{E}{\left[Y^{a=1} \mid L\right]}\right]} &amp;&amp; \text{(iterated expectation)} \\
+&amp;= \text{E}{\left[\text{E}{\left[Y^{a=1} \mid A = 1, L\right]}\right]} &amp;&amp; \text{(exchangeability; positivity, so the conditioning is defined)} \\
+&amp;= \text{E}{\left[\text{E}{\left[Y \mid A = 1, L\right]}\right]} &amp;&amp; \text{(consistency)} \\
+&amp;= \text{E}{\left[b(L)\right]} &amp;&amp; \text{(definition of } b\text{)}
+\end{aligned}
+\]</span></p>
+<p>Each of the three terms <span class="math inline">\(b^*(L)\)</span>, <span class="math inline">\(A\{Y - b^*(L)\}/\pi^*(L)\)</span> and <span class="math inline">\(b(L)\)</span> is integrable: <span class="math inline">\(b^*(L)\)</span> by assumption; <span class="math inline">\(A\{Y - b^*(L)\}/\pi^*(L)\)</span> because its absolute value is at most <span class="math inline">\({\left(\left|Y\right| + \left|b^*(L)\right|\right)}/\epsilon\)</span>; and <span class="math inline">\(b(L)\)</span> because the steps of the identification display hold conditionally on <span class="math inline">\(L\)</span>, giving <span class="math inline">\(b(L) = \text{E}{\left[Y^{a=1} \mid L\right]}\)</span>, so <span class="math inline">\(\left|b(L)\right| \leq \text{E}{\left[\left|Y^{a=1}\right| \mid L\right]}\)</span>, whose expectation <span class="math inline">\(\text{E}{\left[\left|Y^{a=1}\right|\right]}\)</span> is finite. Then:</p>
+<p><span class="math display">\[
+\begin{aligned}
+&amp;\text{E}{\left[b^*(L) + \frac{A\{Y - b^*(L)\}}{\pi^*(L)}\right]} - \text{E}{\left[Y^{a=1}\right]} \\
+&amp;= \text{E}{\left[b^*(L) + \frac{A\{Y - b^*(L)\}}{\pi^*(L)}\right]} - \text{E}{\left[b(L)\right]} &amp;&amp; \text{(identification display)} \\
+&amp;= \text{E}{\left[b^*(L)\right]} + \text{E}{\left[\frac{A\{Y - b^*(L)\}}{\pi^*(L)}\right]} - \text{E}{\left[b(L)\right]} &amp;&amp; \text{(linearity; each term integrable)} \\
+&amp;= \text{E}{\left[b^*(L)\right]} + \text{E}{\left[\frac{\pi(L)\{b(L) - b^*(L)\}}{\pi^*(L)}\right]} - \text{E}{\left[b(L)\right]} &amp;&amp; \text{(iterated expectation and the first display)} \\
+&amp;= \text{E}{\left[b^*(L) - b(L) + \frac{\pi(L)}{\pi^*(L)}\{b(L) - b^*(L)\}\right]} &amp;&amp; \text{(linearity)} \\
 &amp;= \text{E}{\left[{\left(\frac{\pi(L)}{\pi^*(L)} - 1\right)} \{b(L) - b^*(L)\}\right]} &amp;&amp; \text{(factor out } b(L) - b^*(L)\text{)} \\
 &amp;= \text{E}{\left[\pi(L) {\left(\frac{1}{\pi^*(L)} - \frac{1}{\pi(L)}\right)} \{b(L) - b^*(L)\}\right]} &amp;&amp; \text{(factor out } \pi(L)\text{)}
 \end{aligned}
 \]</span></p>
+<p>If <span class="math inline">\(\pi^* = \pi\)</span>, the factor <span class="math inline">\(1/\pi^*(L) - 1/\pi(L)\)</span> is 0; if <span class="math inline">\(b^* = b\)</span>, the factor <span class="math inline">\(b(L) - b^*(L)\)</span> is 0. Either way the expectation is zero.</p>
 </div>
 <aside class="notes">
-<p>The book <span class="citation" data-cites="hernan2020causal">(<a href="#/references" role="doc-biblioref" onclick="">Hernán and Robins 2020</a>, Technical Point 13.2, p.&nbsp;184)</span> displays this limit with the opposite sign, <span class="math inline">\((1/\pi(L) - 1/\pi^*(L))\)</span>; the derivation here gives the sign shown, which does not affect the conclusion.</p>
-<p><strong>Second-order bias.</strong> The bias depends on the <em>product</em> of the errors in <span class="math inline">\(1/\pi\)</span> and in <span class="math inline">\(b\)</span>. This property lets doubly robust estimators that use machine learning for <span class="math inline">\(\pi\)</span> and <span class="math inline">\(b\)</span> achieve small bias in high-dimensional settings (Chapter 18), where no parametric model is expected to be correct.</p>
+<p>The book <span class="citation" data-cites="hernan2020causal">(<a href="#/references" role="doc-biblioref" onclick="">Hernán and Robins 2020</a>, Technical Point 13.2, p.&nbsp;184)</span> displays this difference with the opposite sign, <span class="math inline">\((1/\pi(L) - 1/\pi^*(L))\)</span>; the derivation here gives the sign shown, which does not affect the conclusion.</p>
+<p><strong>Second-order bias.</strong> This difference depends on the <em>product</em> of the errors in <span class="math inline">\(1/\pi\)</span> and in <span class="math inline">\(b\)</span>. This property lets doubly robust estimators that use machine learning for <span class="math inline">\(\pi\)</span> and <span class="math inline">\(b\)</span> achieve small bias in high-dimensional settings (Chapter 18), where no parametric model is expected to be correct.</p>
 <style type="text/css">
         span.MJX_Assistive_MathML {
           position:absolute!important;
@@ -769,6 +804,9 @@
           overflow: hidden!important;
           display:block!important;
       }</style></aside>
+<div id="rem-aipw-consistency" class="proof remark">
+<p><span class="proof-title"><em>Remark 7</em> (From the functional to the estimator). </span>Suppose <span class="math inline">\(\hat b\)</span> and <span class="math inline">\(\hat\pi\)</span> are predictions from parametric models whose parameter estimates converge in probability, so that <span class="math inline">\(\hat b\)</span> and <span class="math inline">\(\hat\pi\)</span> settle down to fixed functions <span class="math inline">\(b^*\)</span> and <span class="math inline">\(\pi^*\)</span>, with <span class="math inline">\(\pi^*\)</span> bounded away from 0. Then, under the usual regularity conditions, the AIPW estimator of <a href="#/def-aipw" class="quarto-xref">Definition&nbsp;5</a> converges in probability to the functional in <a href="#/thm-aipw-doubly-robust" class="quarto-xref">Theorem&nbsp;2</a>, evaluated at these limits. A correctly specified outcome model gives <span class="math inline">\(b^* = b\)</span>, and a correctly specified treatment model gives <span class="math inline">\(\pi^* = \pi\)</span>; either one makes the difference in <a href="#/thm-aipw-doubly-robust" class="quarto-xref">Theorem&nbsp;2</a> vanish. So the AIPW estimator is consistent for <span class="math inline">\(\text{E}{\left[Y^{a=1}\right]}\)</span> whenever at least one of the two models is correct: it is doubly robust in the sense of <a href="#/def-doubly-robust" class="quarto-xref">Definition&nbsp;4</a>.</p>
+</div>
 <div title="Technical Point 13.3: The Augmented IP Weighted Estimator and the Doubly Robust Plug-In Estimator">
 <div class="callout callout-note callout-titled callout-style-default">
 <div class="callout-body">
@@ -807,7 +845,7 @@
 <section class="slide level2 scrollable">
 
 <div id="rem-conditions-causal-interpretation" class="proof remark">
-<p><span class="proof-title"><em>Remark 7</em> (Conditions for a causal interpretation). </span></p>
+<p><span class="proof-title"><em>Remark 8</em> (Conditions for a causal interpretation). </span></p>
 <ol type="1">
 <li><strong>Identifiability</strong>: exchangeability, positivity, and consistency, so that the observational study emulates the target trial.</li>
 <li><strong>No measurement error</strong> in <span class="math inline">\(A\)</span>, <span class="math inline">\(Y\)</span>, or <span class="math inline">\(L\)</span> (Chapter 9).</li>
@@ -886,7 +924,7 @@
 <li><strong>NHEFS</strong>: standardized means 5.18 kg (quit) and 1.66 kg (did not quit); effect 3.5 kg, essentially the same as IP weighting</li>
 <li><strong>Bootstrap</strong>: resample individuals with replacement to estimate the standard error</li>
 <li><strong>IP weighting vs standardization</strong>: equal without models; with models they rely on different assumptions, so compare them</li>
-<li><strong>Doubly robust estimators</strong>: consistent if either the treatment or the outcome model is correct</li>
+<li><strong>Doubly robust estimators</strong> (<a href="#/def-doubly-robust" class="quarto-xref">Definition&nbsp;4</a>): consistent if either the treatment or the outcome model is correct</li>
 <li><strong>Conditions for causal interpretation</strong>: identifiability, no measurement error, no model misspecification</li>
 </ol>
 <aside class="notes">
