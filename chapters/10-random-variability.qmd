@@ -600,20 +600,19 @@ Our ignorance of chance correlations between unmeasured baseline risk factors an
 - Nonsmokers: $20/40 - 40/80 = 0.50 - 0.50 = 0$.
 
 The adjusted (stratified) analysis finds no effect in either stratum, although the marginal estimate suggested a benefit.
-The inverse-variance (MLE) Wald interval centered at the adjusted estimate is $(-0.076, 0.076)$.
 :::
 
-::: {.notes}
-
 ::: {#exm-adjusted-interval-arithmetic}
-## Computing the adjusted interval $(-0.076, 0.076)$
+## The adjusted Wald interval
 
 Assume the risk difference is the same in both strata of $L$.
 The adjusted estimate is the maximum likelihood estimator (MLE) of the common risk difference,
 which in large samples weights the two stratum-specific estimates by their inverse variances.
-Its estimated variance is $\widehat V_0 \widehat V_1 / (\widehat V_0 + \widehat V_1)$ [@hernan2020causal, Technical Point 10.5],
-where $\widehat V_l$ is the estimated variance of the risk difference in stratum $L = l$,
-computed from the observed number of individuals in each arm:
+For a dichotomous $L$, its estimated variance is
+$\widehat V_0 \widehat V_1 / (\widehat V_0 + \widehat V_1)$
+[@hernan2020causal, p. 148],
+where $\widehat V_l$ is the estimated variance of the risk difference in stratum $L = l$.
+Computing each $\widehat V_l$ from the observed number of individuals in each arm gives
 
 $$
 \begin{aligned}
@@ -627,9 +626,9 @@ $$
 \end{aligned}
 $$
 
-With point estimate 0 in both strata, the pooled estimate is 0 and the interval is $(-0.076, 0.076)$, matching the book.
-:::
-
+The point estimate is 0 in both strata, so the pooled estimate is 0.
+The inverse-variance (MLE) Wald 95% interval centered at the adjusted estimate is therefore $(-0.076, 0.076)$,
+matching the book [@hernan2020causal, p. 145].
 :::
 
 ::: {#rem-retraction-debate}
@@ -661,14 +660,19 @@ Therefore:
 
 - **Conditionally** (over those runs): the adjusted estimate is unbiased;
   the unadjusted estimate is greatly biased.
-- **Unconditionally** (over all runs): both are unbiased, but the adjusted estimate has smaller variance.
+- **Unconditionally** (over all runs): both are unbiased,
+  and the adjusted estimate has smaller variance
+  provided $L$ is not independent of $Y$ given $A$.
 
 Either way, the Wald interval centered on the adjusted estimator is the better analysis.
 **Investigator 2 is right; the article should be retracted.**
 :::
 
 ::: {.notes}
-The adjusted estimator is unconditionally more efficient because it is the maximum likelihood estimator (MLE) of the risk difference when data on $L$ are available.
+When $L$ is not independent of $Y$ given $A$,
+the adjusted estimator is unconditionally more efficient,
+because, once $L$ has been measured, it is the MLE of the risk difference
+[@hernan2020causal, pp. 146-147].
 :::
 
 ---
@@ -879,7 +883,7 @@ however large the empirical risk difference is relative to its standard error (f
 
 A Bayesian who believes in faithfulness may obtain a narrow credible interval that excludes 0,
 but such inferences are very sensitive to the prior;
-Hernan and Robins argue that the prior probability of any observational-study diagram without a common cause of $A$ and $Y$ should be essentially zero.
+Hernán and Robins argue that the prior probability of any observational-study diagram without a common cause of $A$ and $Y$ should be essentially zero.
 In finite samples, data alone cannot distinguish $Z \ind Y \mid A$ from near-independence,
 so causal discovery from observational data relies heavily on subject-matter knowledge.
 :::
