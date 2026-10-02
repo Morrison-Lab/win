@@ -172,19 +172,35 @@ Note that the propensity score is $\Pr[A = 1 \mid L]$, not $f(A \mid L)$: for an
 ---
 
 IP weighting creates a pseudo-population in which the arrow from $L$ to $A$ is removed.
-To make that statement precise, give each individual the weight $W^A$ of @def-ip-weights,
-and define the **pseudo-population** by its expectations:
-for any function $h$,
-$$\Expfc{ps}{h(L, A, Y)} \eqdef \frac{\E{W^A \, h(L, A, Y)}}{\E{W^A}}.$$
-Chapter 2 built the same pseudo-population by hand ([IP weights in Chapter 2](02-randomized-experiments.qmd#def-ip-weights)).
+Chapter 2 built such a pseudo-population by hand ([IP weights in Chapter 2](02-randomized-experiments.qmd#def-ip-weights));
+the next definition makes the idea precise for any positive weight.
+
+::: {#def-pseudo-population}
+## Pseudo-Population
+
+Let each of the $n$ individuals of a study population carry a weight $W > 0$ that is a function of $(L, A)$, with $\E{W} < \infty$.
+The **pseudo-population** created by $W$ is the population in which each individual is replicated $W$ times
+(a non-integer number of copies is allowed).
+Its size is $\sum_{i=1}^n W_i$, whose expected value is $\E{W} \cdot n$.
+Its distribution is defined by its expectations:
+for any random variable $h$ that is a function of $L$, $A$, $Y$ and the counterfactual outcomes $Y^a$, with $\E{W \abs{h}} < \infty$,
+$$\Expfc{ps}{h} \eqdef \frac{\E{W h}}{\E{W}}.$$
+Probabilities are expectations of indicators, $\Pr_{ps}[E] \eqdef \Expfc{ps}{\indicp{E}}$ for any event $E$,
+and conditional means are $\Expfc{ps}{h \mid A = a} \eqdef \Expfc{ps}{h \indicp{A = a}} / \Pr_{ps}[A = a]$ whenever $\Pr_{ps}[A = a] > 0$.
+:::
+
+Different weights create different pseudo-populations:
+$W^A$, the stabilized weights $SW^A$, and the rescaled weights $p/f(A \mid L)$ each give their own.
+@prp-pseudo-population is about the IP weights $W = W^A$ of @def-ip-weights.
 
 ::: {#prp-pseudo-population}
 ## Properties of the IP Weighted Pseudo-Population
 
 Suppose that
 
-- $A$ takes finitely many values, $L$ is discrete, and the weights are $W^A = 1/f(A \mid L)$ (@def-ip-weights);
-- **positivity** holds: $f(a \mid l) = \Pr[A = a \mid L = l] > 0$ for every treatment level $a$ and every $l$ with $\Pr[L = l] > 0$.
+- $A$ and $L$ take finitely many values, and the pseudo-population (@def-pseudo-population) is created by $W = W^A = 1/f(A \mid L)$ (@def-ip-weights);
+- **positivity** holds: $f(a \mid l) = \Pr[A = a \mid L = l] > 0$ for every treatment level $a$ and every $l$ with $\Pr[L = l] > 0$;
+- the outcome is integrable: $\E{\abs{Y}} < \infty$, and $\E{\abs{Y^a}} < \infty$ for every $a$.
 
 Then, in the pseudo-population:
 
@@ -201,14 +217,19 @@ then:
 - association is causation in the pseudo-population: any contrast of the means $\Expfc{ps}{Y \mid A = a}$ across levels $a$ equals the same contrast of the counterfactual means $\E{Y^a}$.
 :::
 
+::: {.notes}
+
 ::: {.proof}
 Let $k$ be the number of treatment levels.
+
 **Step 0 (the weights cancel the treatment probability).**
 For every level $a$ and every $l$ with $\Pr[L = l] > 0$,
 $$
 \begin{aligned}
 \E{W^A \indicp{A = a} \indicp{L = l}}
-&= \frac{\Pr[A = a, L = l]}{f(a \mid l)} && \text{(} W^A = 1/f(a \mid l) \text{ whenever } A = a, L = l\text{; positivity)}\\
+&= \E{\frac{\indicp{A = a} \indicp{L = l}}{f(a \mid l)}} && \text{(} W^A = 1/f(a \mid l) \text{ whenever } A = a \text{ and } L = l\text{)}\\
+&= \frac{\E{\indicp{A = a} \indicp{L = l}}}{f(a \mid l)} && \text{(the constant } 1/f(a \mid l) > 0 \text{ factors out, by positivity)}\\
+&= \frac{\Pr[A = a, L = l]}{f(a \mid l)} && \text{(expectation of an indicator)}\\
 &= \frac{f(a \mid l) \Pr[L = l]}{f(a \mid l)} && \text{(definition of } f(a \mid l)\text{)}\\
 &= \Pr[L = l] && \text{(cancel } f(a \mid l)\text{)}.
 \end{aligned}
@@ -216,8 +237,13 @@ $$
 Summing over all $k$ levels $a$ and all $l$ gives $\E{W^A} = k \sum_l \Pr[L = l] = k$.
 
 **Property 1.**
-By the definition of the pseudo-population and Step 0,
-$\Pr_{ps}[A = a, L = l] = \Pr[L = l] / k$.
+$$
+\begin{aligned}
+\Pr_{ps}[A = a, L = l]
+&= \frac{\E{W^A \indicp{A = a} \indicp{L = l}}}{\E{W^A}} && \text{(definition of the pseudo-population)}\\
+&= \frac{\Pr[L = l]}{k} && \text{(Step 0, twice)}.
+\end{aligned}
+$$
 Summing over $l$ gives $\Pr_{ps}[A = a] = 1/k$;
 summing over $a$ gives $\Pr_{ps}[L = l] = \Pr[L = l]$.
 So $\Pr_{ps}[A = a, L = l] = \Pr_{ps}[A = a] \Pr_{ps}[L = l]$ for all $a$ and $l$, which is independence.
@@ -226,9 +252,12 @@ So $\Pr_{ps}[A = a, L = l] = \Pr_{ps}[A = a] \Pr_{ps}[L = l]$ for all $a$ and $l
 $$
 \begin{aligned}
 \Expfc{ps}{Y \mid A = a}
-&= \frac{\Expfc{ps}{Y \indicp{A = a}}}{\Pr_{ps}[A = a]} && \text{(definition of a conditional mean)}\\
-&= \frac{\E{W^A Y \indicp{A = a}} / k}{1/k} && \text{(definition of the pseudo-population; Property 1)}\\
-&= \sum_l \frac{\E{Y \indicp{A = a} \mid L = l}}{f(a \mid l)} \Pr[L = l] && \text{(cancel } k\text{; law of total expectation over } L\text{)}\\
+&= \frac{\Expfc{ps}{Y \indicp{A = a}}}{\Pr_{ps}[A = a]} && \text{(definition of the pseudo-population)}\\
+&= \frac{\E{W^A Y \indicp{A = a}} / \E{W^A}}{1/k} && \text{(definition of the pseudo-population; Property 1)}\\
+&= \frac{\E{W^A Y \indicp{A = a}} / k}{1/k} && \text{(} \E{W^A} = k \text{, Step 0)}\\
+&= \E{W^A Y \indicp{A = a}} && \text{(cancel } k\text{)}\\
+&= \sum_l \E{W^A Y \indicp{A = a} \mid L = l} \Pr[L = l] && \text{(law of total expectation over } L\text{)}\\
+&= \sum_l \frac{\E{Y \indicp{A = a} \mid L = l}}{f(a \mid l)} \Pr[L = l] && \text{(} W^A = 1/f(a \mid l) \text{ when } A = a \text{ and } L = l\text{; pull the constant out)}\\
 &= \sum_l \frac{\E{Y \mid A = a, L = l} f(a \mid l)}{f(a \mid l)} \Pr[L = l] && \text{(} \E{Y \indicp{A = a} \mid L = l} = \E{Y \mid A = a, L = l} \Pr[A = a \mid L = l]\text{)}\\
 &= \sum_l \E{Y \mid A = a, L = l} \Pr[L = l] && \text{(cancel } f(a \mid l)\text{)}.
 \end{aligned}
@@ -236,30 +265,33 @@ $$
 
 **Exchangeability in the pseudo-population.**
 Fix a level $a$, a set $B$ of outcome values, and a level $a'$.
-Conditional exchangeability gives $\Pr[Y^a \in B, A = a' \mid L = l] = \Pr[Y^a \in B \mid L = l] f(a' \mid l)$, so
 $$
 \begin{aligned}
 \Pr_{ps}[Y^a \in B, A = a']
-&= \frac{1}{k} \sum_l \frac{\Pr[Y^a \in B, A = a' \mid L = l]}{f(a' \mid l)} \Pr[L = l] && \text{(definition of the pseudo-population; } \E{W^A} = k\text{)}\\
-&= \frac{1}{k} \sum_l \Pr[Y^a \in B \mid L = l] \Pr[L = l] && \text{(conditional exchangeability; cancel } f(a' \mid l)\text{)}\\
+&= \frac{\E{W^A \indicp{Y^a \in B} \indicp{A = a'}}}{\E{W^A}} && \text{(definition of the pseudo-population)}\\
+&= \frac{1}{k} \E{W^A \indicp{Y^a \in B} \indicp{A = a'}} && \text{(} \E{W^A} = k \text{, Step 0)}\\
+&= \frac{1}{k} \sum_l \E{W^A \indicp{Y^a \in B} \indicp{A = a'} \mid L = l} \Pr[L = l] && \text{(law of total expectation over } L\text{)}\\
+&= \frac{1}{k} \sum_l \frac{\E{\indicp{Y^a \in B} \indicp{A = a'} \mid L = l}}{f(a' \mid l)} \Pr[L = l] && \text{(} W^A = 1/f(a' \mid l) \text{ when } A = a' \text{ and } L = l\text{; pull the constant out)}\\
+&= \frac{1}{k} \sum_l \frac{\Pr[Y^a \in B, A = a' \mid L = l]}{f(a' \mid l)} \Pr[L = l] && \text{(expectation of an indicator)}\\
+&= \frac{1}{k} \sum_l \frac{\Pr[Y^a \in B \mid L = l] f(a' \mid l)}{f(a' \mid l)} \Pr[L = l] && \text{(conditional exchangeability } Y^a \ind A \mid L\text{)}\\
+&= \frac{1}{k} \sum_l \Pr[Y^a \in B \mid L = l] \Pr[L = l] && \text{(cancel } f(a' \mid l)\text{)}\\
 &= \frac{1}{k} \Pr[Y^a \in B] && \text{(law of total probability)}.
 \end{aligned}
 $$
-Summing over the $k$ levels $a'$ gives $\Pr_{ps}[Y^a \in B] = \Pr[Y^a \in B]$:
-$Y^a$ has the same distribution in the pseudo-population as in the actual population.
+Summing over the $k$ levels $a'$ gives $\Pr_{ps}[Y^a \in B] = \Pr[Y^a \in B]$.
 Hence $\Pr_{ps}[Y^a \in B, A = a'] = \Pr_{ps}[Y^a \in B] \Pr_{ps}[A = a']$, which is $Y^a \ind A$ in the pseudo-population.
 
 **Causal mean.**
-$$
-\begin{aligned}
-\Expfc{ps}{Y \mid A = a}
-&= \Expfc{ps}{Y^a \mid A = a} && \text{(consistency: } Y = Y^a \text{ when } A = a\text{)}\\
-&= \Expfc{ps}{Y^a} && \text{(} Y^a \ind A \text{ in the pseudo-population)}\\
-&= \E{Y^a} && \text{(same distribution of } Y^a \text{ in both populations)}.
-\end{aligned}
-$$
+Under conditional exchangeability, positivity, and consistency,
+the standardization theorem of Chapter 7 ([standardization under conditional exchangeability](07-confounding.qmd#thm-standardization-ch7)) gives
+$\E{Y^a} = \sum_l \E{Y \mid L = l, A = a} \Pr[L = l]$,
+which equals $\Expfc{ps}{Y \mid A = a}$ by Property 2.
 This holds for every $a$, so every contrast of the pseudo-population means equals the matching causal contrast.
 :::
+:::
+
+For $k$ treatment levels the mean IP weight is $\E{W^A} = k$ (Step 0 of the proof of @prp-pseudo-population),
+so for a dichotomous treatment this pseudo-population is twice the size of the study population, as in Chapter 2.
 
 ---
 
@@ -320,7 +352,7 @@ $$\sum_i \hat{W}_i \sb{Y_i - (\theta_0 + \theta_1 A_i)}^2.$$
 The model $\E{Y \mid A} = \theta_0 + \theta_1 A$ is saturated: it has two parameters for the two quantities $\E{Y \mid A = 1}$ and $\E{Y \mid A = 0}$, and $\theta_1 = \E{Y \mid A = 1} - \E{Y \mid A = 0}$.
 With $\hat{W}_i = 1$ for everyone, weighted least squares reduces to the ordinary least squares of Chapter 11 [@hernan2020causal, Chapter 12, pp. 165-166].
 
-If there is no confounding in the pseudo-population and the model for $\Pr[A = 1 \mid L]$ is correct, an unbiased estimator of $\Expfc{ps}{Y \mid A = 1} - \Expfc{ps}{Y \mid A = 0}$ is also an unbiased estimator of $\E{Y^{a=1}} - \E{Y^{a=0}}$.
+If there is no confounding in the pseudo-population (@def-pseudo-population) and the model for $\Pr[A = 1 \mid L]$ is correct, an unbiased estimator of $\Expfc{ps}{Y \mid A = 1} - \Expfc{ps}{Y \mid A = 0}$ is also an unbiased estimator of $\E{Y^{a=1}} - \E{Y^{a=0}}$.
 :::
 
 ---
@@ -336,7 +368,7 @@ Compare with the unadjusted difference of 2.5 kg.
 :::
 
 ::: {.notes}
-The mean of the nonstabilized weights is about 2 because, for a dichotomous treatment, the pseudo-population is approximately twice the size of the study population: one copy in which everyone is treated and one in which everyone is untreated (Section 12.3).
+The mean of the nonstabilized weights is about 2 because, for a dichotomous treatment, the pseudo-population created by $W^A$ (@def-pseudo-population) is approximately twice the size of the study population: one copy in which everyone is treated and one in which everyone is untreated (Section 12.3).
 :::
 
 ---
@@ -409,15 +441,15 @@ Its denominator converges to $\Pr[Q(a)]$ rather than 1, so the ratio of the Horv
 
 ---
 
-The goal of IP weighting is a pseudo-population in which $L$ does not predict $A$.
+The goal of IP weighting is a pseudo-population (@def-pseudo-population) in which $L$ does not predict $A$.
 The weights $1/f(A \mid L)$ are only one way to get there.
 
 ::: {#rem-other-weights}
 ## Other Weights Give the Same Pseudo-Population Contrast
 
-- With weights $1/f(A \mid L)$, a dichotomous treatment yields a pseudo-population twice the size of the study population (mean weight 2): one treated copy and one untreated copy.
+- With weights $1/f(A \mid L)$, a dichotomous treatment yields a pseudo-population of size $\E{W} \cdot n = 2n$, twice the size of the study population: one treated copy and one untreated copy.
 - With weights $0.5/f(A \mid L)$, everyone has probability 0.5 of each treatment level regardless of $L$;
-  this pseudo-population is the same size as the study population (mean weight 1).
+  this pseudo-population has size $\E{W} \cdot n = n$, the same as the study population.
 - More generally, any weights $p/f(A \mid L)$ with $0 < p \leq 1$ give the **same effect estimate**.
 :::
 
@@ -468,7 +500,7 @@ The weights $W^A = 1/f(A \mid L)$ are called **nonstabilized** weights, and $f(A
 Applied to the data of Figure 2.1, where $\Pr[A = 1] = 13/20 = 0.65$ and $\Pr[A = 0] = 7/20 = 0.35$, the weights $f(A)/f(A \mid L)$ produce a pseudo-population (Figure 12.1 of the book) resembling a randomized experiment in which 65% of individuals are assigned to $A = 1$ and 35% to $A = 0$.
 Preserving the 65/35 ratio requires non-integer numbers of individuals in some branches, which is no problem mathematically [@hernan2020causal, Chapter 12, p. 167].
 
-Because the pseudo-population created by $SW^A$ has the same size as the study population, the mean of the stabilized weights is **expected** to be 1.
+Because the pseudo-population created by $SW^A$ (@def-pseudo-population with $W = SW^A$) has the same size as the study population, the mean of the stabilized weights is **expected** to be 1.
 In data analyses one should check this: a mean far from 1 suggests model misspecification or (near) violations of positivity [@hernan2020causal, Chapter 12, p. 168].
 
 To estimate the average causal effect in the treated rather than in the whole population, use $\Pr[A = 1 \mid L]$ as the numerator instead (Technical Point 4.1).
@@ -568,7 +600,7 @@ So Sections 12.2-12.3 were already estimating $\beta_1$ of a marginal structural
 ::: {#alg-fit-msm-ipw}
 ## Fitting a Marginal Structural Model by IP Weighting
 
-1. Use IP weights to create a pseudo-population in which (under our assumptions) association is causation.
+1. Use IP weights to create a pseudo-population (@def-pseudo-population) in which, under the assumptions of @prp-pseudo-population, association is causation.
 2. Fit the associational model $\E{Y \mid A} = \theta_0 + \theta_1 A$ to the pseudo-population, i.e., by IP weighted least squares.
 3. $\theta_1$ then has the same causal interpretation as $\beta_1$, so a consistent estimator $\hth_1$ is a consistent estimator of $\beta_1 = \E{Y^{a=1}} - \E{Y^{a=0}}$.
 :::
@@ -695,7 +727,7 @@ $$\logit \Pr[D^a = 1] = \alpha_0 + \alpha_1 a.$$
 :::
 
 For a dichotomous treatment, $\exp{\alpha_1}$ in @def-msm-logistic is the causal odds ratio comparing $a = 1$ with $a = 0$.
-It is estimated by fitting $\logit \Pr[D = 1 \mid A] = \theta_0 + \theta_1 A$ to the IP weighted pseudo-population.
+$\exp{\alpha_1}$ is estimated by $\exp{\hat\theta_1}$ from fitting $\logit \Pr[D = 1 \mid A] = \theta_0 + \theta_1 A$ to the IP weighted pseudo-population (@def-pseudo-population).
 
 ::: {#exm-nhefs-death}
 ## NHEFS: Quitting Smoking and Death by 1992
@@ -876,8 +908,8 @@ using the factorization $f(A, C = 0 \mid L) = f(A \mid L) \times \Pr[C = 0 \mid 
 The **identifiability conditions** for the joint treatment $(A, C)$ are:
 
 - exchangeability: $Y^{a, c=0} \ind (A, C) \mid L$;
-- positivity for $(A = a, C = 0)$;
-- consistency.
+- positivity: $\Pr[A = a, C = 0 \mid L = l] > 0$ for every $l$ with $\Pr[L = l] > 0$;
+- consistency: $Y = Y^{a, c=0}$ for every individual with $A = a$ and $C = 0$.
 :::
 
 ::: {.notes}
@@ -958,7 +990,7 @@ without it, the solution would average $Y$ over all treatment levels rather than
 Similarly, for $\E{Y^a} = \beta_0 + \beta_1 a$, the weighted least squares estimators with weights $g[A]/f[A \mid L]$ solve
 $$\hE{\frac{g[A]}{f[A \mid L]} \sb{Y - (\beta_0 + \beta_1 A)} \begin{pmatrix} 1 \\ A \end{pmatrix}} = 0,$$
 and $\hb_0$ and $\hb_0 + \hb_1$ are exactly the Hajek estimators of $\E{Y^{a=0}}$ and $\E{Y^{a=1}}$.
-In the pseudo-population created by $g[A]/f[A \mid L]$, the mean of $Y$ given $A = a$ still equals $\E{Y^a}$.
+In the pseudo-population created by $W = g[A]/f[A \mid L]$ (@def-pseudo-population), the mean of $Y$ given $A = a$ still equals $\E{Y^a}$.
 :::
 :::
 
