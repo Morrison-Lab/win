@@ -38,6 +38,9 @@ Part II is organized around one question: on average, how much does quitting smo
 
 ### Research Question
 
+::: {#exm-nhefs-question}
+## NHEFS: Does Quitting Smoking Cause Weight Gain?
+
 **Population**: 1566 cigarette smokers aged 25-74 years who had an NHEFS baseline visit (1971-75) and a follow-up visit about 10 years later (1982).
 
 **Treatment**: $A = 1$ if the individual reported quitting smoking before the follow-up visit, $A = 0$ otherwise.
@@ -46,16 +49,21 @@ Part II is organized around one question: on average, how much does quitting smo
 
 **Causal estimand** (average causal effect on the additive scale):
 $$\E{Y^{a=1}} - \E{Y^{a=0}}$$
+:::
 
 ---
 
 ### Unadjusted Comparison
+
+::: {#exm-nhefs-unadjusted}
+## NHEFS: Unadjusted Comparison
 
 Most people gained weight, but quitters gained more on average:
 
 - $\hE{Y \mid A = 1} = 4.5$ kg among quitters
 - $\hE{Y \mid A = 0} = 2.0$ kg among non-quitters
 - Associational difference: $4.5 - 2.0 = 2.5$ kg (95% CI: 1.7, 3.4)
+:::
 
 The associational difference $\E{Y \mid A = 1} - \E{Y \mid A = 0}$ need not equal the causal difference if quitters and non-quitters differ in characteristics that affect weight gain.
 
@@ -128,6 +136,10 @@ The book uses the example deliberately to illustrate a common problem in observa
 ---
 
 IP weighting creates a pseudo-population in which the arrow from $L$ to $A$ is removed.
+
+::: {#prp-pseudo-population}
+## Properties of the IP Weighted Pseudo-Population
+
 In the pseudo-population:
 
 1. $A$ and $L$ are statistically independent, and
@@ -139,6 +151,7 @@ If $Y^a \ind A \mid L$ does hold in the actual population, then additionally:
 - unconditional exchangeability (no confounding) holds in the pseudo-population,
 - $\E{Y^a} = \Expfc{ps}{Y \mid A = a}$, and
 - association is causation in the pseudo-population.
+:::
 
 ---
 
@@ -184,16 +197,17 @@ This is the curse of dimensionality introduced in Chapter 10, so we resort to a 
 
 ### The Treatment Model
 
-Fit a logistic regression model for $\Pr[A = 1 \mid L]$ including all 9 confounders:
+::: {#alg-estimate-ip-weights}
+## Estimating IP Weights with a Treatment Model
 
-- linear and quadratic terms for the (quasi-)continuous covariates age, weight, intensity of smoking, and duration of smoking;
-- no product terms between covariates.
-
-Then, for each individual:
-
-- $\hat{f}(1 \mid L) = \hat{\Pr}[A = 1 \mid L]$ if $A = 1$,
-- $\hat{f}(0 \mid L) = 1 - \hat{\Pr}[A = 1 \mid L]$ if $A = 0$,
-- $\hat{W}^A = 1 / \hat{f}(A \mid L)$.
+1. Fit a logistic regression model for $\Pr[A = 1 \mid L]$ including all 9 confounders:
+   - linear and quadratic terms for the (quasi-)continuous covariates age, weight, intensity of smoking, and duration of smoking;
+   - no product terms between covariates.
+2. For each individual, compute
+   - $\hat{f}(1 \mid L) = \hat{\Pr}[A = 1 \mid L]$ if $A = 1$,
+   - $\hat{f}(0 \mid L) = 1 - \hat{\Pr}[A = 1 \mid L]$ if $A = 0$.
+3. Set $\hat{W}^A = 1 / \hat{f}(A \mid L)$.
+:::
 
 ::: {.notes}
 **What the model assumes**: on the logit scale, the relation between each continuous covariate and the probability of quitting is a parabola, and each covariate contributes to the logit independently of the others.
@@ -206,8 +220,14 @@ Under these parametric restrictions, we get an estimate $\hat{\Pr}[A = 1 \mid L]
 
 Fit the (saturated) linear mean model
 $$\E{Y \mid A} = \theta_0 + \theta_1 A$$
-by **weighted least squares** with weights $\hat{W}^A$, i.e., choose $\hth_0, \hth_1$ to minimize
+by weighted least squares with weights $\hat{W}^A$.
+
+::: {#def-weighted-least-squares}
+## Weighted Least Squares
+
+Given weights $\hat{W}_i$, the **weighted least squares** estimates $\hth_0, \hth_1$ of the model $\E{Y \mid A} = \theta_0 + \theta_1 A$ are the values that minimize
 $$\sum_i \hat{W}_i \sb{Y_i - (\theta_0 + \theta_1 A_i)}^2.$$
+:::
 
 ::: {.notes}
 The model $\E{Y \mid A} = \theta_0 + \theta_1 A$ is saturated: it has two parameters for the two quantities $\E{Y \mid A = 1}$ and $\E{Y \mid A = 0}$, and $\theta_1 = \E{Y \mid A = 1} - \E{Y \mid A = 0}$.
@@ -236,7 +256,9 @@ The mean of the nonstabilized weights is about 2 because, for a dichotomous trea
 
 ### Confidence Intervals for IP Weighted Estimates
 
-The confidence interval must account for the weighting.
+::: {#rem-ipw-confidence-intervals}
+## Confidence Intervals Must Account for the Weighting
+
 Three options [@hernan2020causal, Chapter 12, p. 166]:
 
 1. **Derive the variance analytically** from statistical theory;
@@ -248,6 +270,7 @@ Three options [@hernan2020causal, Chapter 12, p. 166]:
 
 The robust-variance intervals are valid but **conservative**: their actual coverage of the super-population parameter exceeds the nominal 95%.
 All confidence intervals for IP weighted estimates in this chapter are of this conservative kind.
+:::
 
 ::: {.notes}
 If the model for $\Pr[A = 1 \mid L]$ is misspecified, the estimates of $\theta_0$ and $\theta_1$ will be biased and, as in Chapter 11, the intervals may fall short of their nominal 95% coverage [@hernan2020causal, Chapter 12, p. 167].
@@ -311,7 +334,14 @@ The weights $1/f(A \mid L)$ are only one way to get there.
 
 ### Why Rescaling Does Not Change the Estimate
 
-For a constant $p > 0$, the Hajek (weighted least squares) mean for treatment level $a$ is unchanged:
+::: {#prp-rescaled-weights}
+## Rescaling the Weights Does Not Change the Estimate
+
+For a constant $p > 0$, the Hajek (weighted least squares) mean for treatment level $a$ computed with weights $p/f(A \mid L)$ equals the one computed with weights $1/f(A \mid L)$,
+so the difference between treatment levels is unchanged too.
+:::
+
+::: {.proof}
 $$
 \begin{aligned}
 \frac{\hE{p \, \indicp{A = a} Y / f(A \mid L)}}{\hE{p \, \indicp{A = a} / f(A \mid L)}}
@@ -319,7 +349,8 @@ $$
 &= \frac{\hE{\indicp{A = a} Y / f(A \mid L)}}{\hE{\indicp{A = a} / f(A \mid L)}} && \text{(cancel } p\text{)}
 \end{aligned}
 $$
-so the difference between treatment levels is unchanged too.
+The same holds for every treatment level $a$, so the difference between levels is unchanged.
+:::
 
 ---
 
@@ -371,12 +402,16 @@ To estimate the average causal effect in the treated rather than in the whole po
 
 ### Why Stabilize?
 
+::: {#rem-why-stabilize}
+## When Stabilization Helps
+
 If both kinds of weights give the same estimate, why stabilize?
 
 - Stabilized weights typically give **narrower confidence intervals**.
 - But this advantage can occur only when the weighted model is **not saturated**.
 - Here, $\E{Y \mid A} = \theta_0 + \theta_1 A$ is saturated because $A$ is dichotomous, so the two sets of weights agree.
 - With time-varying or continuous treatments the weighted model cannot be saturated, and stabilized weights are used (Section 12.4).
+:::
 
 ---
 
@@ -414,7 +449,14 @@ $$\E{Y^a} = \beta_0 + \beta_1 a$$
 Because the outcome $Y^a$ is counterfactual (generally unobserved), the model cannot be fit directly to the data of any real-world study.
 :::
 
-The treatment parameters of a structural mean model are average causal effects:
+::: {#prp-msm-parameter-causal}
+## MSM Treatment Parameters Are Average Causal Effects
+
+In the marginal structural model $\E{Y^a} = \beta_0 + \beta_1 a$ of @def-msm,
+$$\beta_1 = \E{Y^{a=1}} - \E{Y^{a=0}}.$$
+:::
+
+::: {.proof}
 $$
 \begin{aligned}
 \E{Y^{a=1}} - \E{Y^{a=0}}
@@ -422,6 +464,7 @@ $$
 &= \beta_1 && \text{(cancel } \beta_0\text{)}
 \end{aligned}
 $$
+:::
 
 So Sections 12.2-12.3 were already estimating $\beta_1$ of a marginal structural model.
 
@@ -429,9 +472,13 @@ So Sections 12.2-12.3 were already estimating $\beta_1$ of a marginal structural
 
 ### Fitting a Marginal Structural Model by IP Weighting
 
+::: {#alg-fit-msm-ipw}
+## Fitting a Marginal Structural Model by IP Weighting
+
 1. Use IP weights to create a pseudo-population in which (under our assumptions) association is causation.
 2. Fit the associational model $\E{Y \mid A} = \theta_0 + \theta_1 A$ to the pseudo-population, i.e., by IP weighted least squares.
 3. $\theta_1$ then has the same causal interpretation as $\beta_1$, so a consistent estimator $\hth_1$ is a consistent estimator of $\beta_1 = \E{Y^{a=1}} - \E{Y^{a=0}}$.
+:::
 
 **Pseudo-code**:
 
@@ -471,6 +518,9 @@ where $\beta_0 = \E{Y^{a=0}}$ is the mean weight gain with no change in smoking 
 
 ### Effect of Increasing Intensity by 20 Cigarettes/Day
 
+::: {#exm-msm-20-cigarettes}
+## Effect of 20 More Cigarettes per Day under @def-msm-continuous
+
 $$
 \begin{aligned}
 \E{Y^{a=20}} - \E{Y^{a=0}}
@@ -478,6 +528,7 @@ $$
 &= 20\beta_1 + 400\beta_2 && \text{(cancel } \beta_0\text{; } 20^2 = 400\text{)}
 \end{aligned}
 $$
+:::
 
 To estimate $\beta_1, \beta_2$: estimate $SW^A$, then fit $\E{Y \mid A} = \theta_0 + \theta_1 A + \theta_2 A^2$ to the pseudo-population.
 
@@ -532,13 +583,20 @@ Use the reported 0.9 kg, not this back-of-the-envelope value.
 
 ### Dichotomous Outcome: Marginal Structural Logistic Model
 
-For the effect of quitting smoking $A$ on death $D$ by 1992 (1: yes, 0: no):
+::: {#def-msm-logistic}
+## Marginal Structural Logistic Model
 
-$$\logit \Pr[D^a = 1] = \alpha_0 + \alpha_1 a$$
+For a dichotomous outcome $D$ (1: yes, 0: no), a **marginal structural logistic model** is a model for the counterfactual risk on the logit scale, such as
+$$\logit \Pr[D^a = 1] = \alpha_0 + \alpha_1 a.$$
+For a dichotomous treatment, $\exp{\alpha_1}$ is the causal odds ratio comparing $a = 1$ with $a = 0$.
+It is estimated by fitting $\logit \Pr[D = 1 \mid A] = \theta_0 + \theta_1 A$ to the IP weighted pseudo-population.
+:::
 
-- $\exp{\alpha_1}$ is the causal odds ratio of death comparing quitting with not quitting.
-- Estimate it by fitting $\logit \Pr[D = 1 \mid A] = \theta_0 + \theta_1 A$ to the IP weighted pseudo-population.
-- NHEFS estimate: $\exp{\hth_1} = 1.0$ (95% CI: 0.8, 1.4).
+::: {#exm-nhefs-death}
+## NHEFS: Quitting Smoking and Death by 1992
+
+With $A$ = quitting smoking and $D$ = death by 1992, the IP weighted estimate of the causal odds ratio was $\exp{\hth_1} = 1.0$ (95% CI: 0.8, 1.4).
+:::
 
 ::: {.notes}
 This model is saturated for a dichotomous treatment;
@@ -585,9 +643,15 @@ The parameter $\beta_3$ does not generally have a causal interpretation as the e
 - Fit $\E{Y \mid A, V} = \theta_0 + \theta_1 A + \theta_2 V A + \theta_3 V$ by weighted least squares with weights $W^A$ or $SW^A$.
 - In most settings $L$ should include $V$;
   even when $V$ is not needed for exchangeability, including it generally improves efficiency.
-- Because the model is within levels of $V$, the numerator can be $f[A \mid V]$:
-  $$SW^A(V) = \frac{f[A \mid V]}{f[A \mid L]}$$
-  estimated like $SW^A$ but with $V$ added to the numerator's logistic model.
+- Because the model is within levels of $V$, the numerator can be $f[A \mid V]$ (@def-stabilized-weights-v).
+
+::: {#def-stabilized-weights-v}
+## Stabilized IP Weights Given $V$
+
+$$SW^A(V) \eqdef \frac{f[A \mid V]}{f[A \mid L]}$$
+
+They are estimated like $SW^A$, but with $V$ added to the numerator's logistic model.
+:::
 
 ::: {.notes}
 $SW^A(V)$ generally gives narrower confidence intervals than $SW^A$;
@@ -610,8 +674,15 @@ The 95% confidence interval for $\hth_2$ (the product-term coefficient) was $(-2
 ### Which Covariates to Put in the Model?
 
 - The subset $V$ of $L$ included in the marginal structural model should reflect only **substantive interest**: include $V$ if you believe it may modify the effect and you care more about effects within levels of $V$ than in the whole population.
-- If all of $L$ is included, $SW^A(L) = 1$ and IP weighting is unnecessary: the model becomes the unweighted outcome regression that fully adjusts for $L$ (Chapter 15).
-  The book calls this, half-jokingly, a **faux marginal structural model**.
+- If all of $L$ is included, IP weighting is unnecessary (@def-faux-msm).
+
+::: {#def-faux-msm}
+## Faux Marginal Structural Model
+
+A marginal structural model that includes all of $L$ as covariates has $SW^A(L) = 1$, so no weighting is done:
+it is the unweighted outcome regression that fully adjusts for $L$ (Chapter 15).
+The book calls this, half-jokingly, a **faux marginal structural model**.
+:::
 
 ::: {.notes}
 **Teaching point**: confounding and effect modification are logically distinct, but students often conflate them because stratification (Chapter 4) and regression (Chapter 15) are used for both.
@@ -627,7 +698,12 @@ With marginal structural models the two tasks use distinct tools: IP weighting f
 The analysis so far used the 1566 individuals with a 1982 weight measurement.
 Another 63 eligible individuals were excluded because their 1982 weight was unknown.
 
-Let $C = 1$ if the outcome is unmeasured (censored) and $C = 0$ if measured.
+::: {#def-censoring-indicator}
+## Censoring Indicator
+
+The **censoring indicator** $C$ equals 1 if an individual's outcome is unmeasured (censored) and 0 if it is measured.
+:::
+
 The analyses of Sections 12.2-12.4 actually fit
 $$\E{Y \mid A, C = 0} = \theta_0 + \theta_1 A$$
 among individuals with $C = 0$.
@@ -646,9 +722,14 @@ The NHEFS data are consistent with that structure:
 
 ### The Target: A Joint Effect
 
-We want the effect if nobody had been censored:
-$$\E{Y^{a=1, c=0}} - \E{Y^{a=0, c=0}}$$
+::: {#def-effect-without-censoring}
+## Causal Effect in the Absence of Censoring
+
+The average causal effect of $A$ had nobody been censored is
+$$\E{Y^{a=1, c=0}} - \E{Y^{a=0, c=0}},$$
 a joint effect of $A$ and $C$ (Chapter 8).
+:::
+
 The superscript $c = 0$ makes explicit what many investigators mean by "the causal effect of $A$" even when they omit it.
 
 ---
@@ -665,11 +746,13 @@ $$W^{A,C} \eqdef W^A \times W^C = \frac{1}{f(A, C = 0 \mid L)}$$
 using the factorization $f(A, C = 0 \mid L) = f(A \mid L) \times \Pr[C = 0 \mid L, A]$.
 :::
 
-**Identifiability conditions** for the joint treatment $(A, C)$:
+::: {#def-identifiability-a-c}
+## Identifiability Conditions for the Joint Treatment $(A, C)$
 
 - exchangeability: $Y^{a, c=0} \ind (A, C) \mid L$;
 - positivity for $(A = a, C = 0)$;
 - consistency.
+:::
 
 ::: {.notes}
 If some components of $L$ are affected by treatment $A$ (as in Figure 8.4), the conditional independence $Y^{a,c=0} \ind (A, C) \mid L$ will not generally hold;
@@ -682,6 +765,14 @@ Even so, in large samples, efficiency is always gained by including in both mode
 ---
 
 ### Nonstabilized versus Stabilized Censoring Weights
+
+::: {#def-stabilized-censoring-weights}
+## Stabilized IP Weights for Censoring
+
+$$SW^C \eqdef \frac{\Pr[C = 0 \mid A]}{\Pr[C = 0 \mid L, A]} \text{ for uncensored individuals}, \qquad SW^C \eqdef 0 \text{ for censored individuals}$$
+
+$$SW^{A,C} \eqdef SW^A \times SW^C$$
+:::
 
 | | Nonstabilized $W^C = 1/\Pr[C = 0 \mid L, A]$ | Stabilized $SW^C = \Pr[C = 0 \mid A] / \Pr[C = 0 \mid L, A]$ |
 |---|---|---|
