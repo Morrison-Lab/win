@@ -34,11 +34,15 @@ but opens a collider path that creates selection bias for $A_0$.
 Not adjusting for $L_1$ leaves $A_1$ confounded.
 Either way the estimate of a treatment-strategy effect is biased;
 g-methods (Chapter 21) avoid both problems.
+
 :::
 
 ## 20.1 The Elements of Treatment-Confounder Feedback (pp. 267-269)
 
 ---
+
+::: {#exm-hiv-trial-time-varying}
+## The Sequentially Randomized HIV Trial
 
 Return to the sequentially randomized HIV trial of Chapter 19:
 
@@ -50,6 +54,8 @@ The time-varying covariates $L_k$ are time-varying confounders:
 CD4 count $L_k$ affects treatment $A_k$.
 In addition, treatment $A_{k-1}$ raises future CD4 count $L_k$.
 
+:::
+
 ::: {#def-treatment-confounder-feedback}
 ## Treatment-Confounder Feedback
 
@@ -57,22 +63,29 @@ There is **treatment-confounder feedback** when the time-varying confounder affe
 ($L_k \to A_k$) *and* earlier treatment affects the confounder ($A_{k-1} \to L_k$):
 "the confounder affects the treatment and the treatment affects the confounder"
 [@hernan2020causal, p. 267].
+
 :::
 
 ::: {.notes}
 The book's Figure 20.1 (the same diagram as Figure 19.2) shows the first two months of the trial.
 As in Chapter 19, the example has no censoring, so we can focus on confounding.
+
 :::
 
 ---
 
 ### Time-Varying Confounding Without Feedback
 
+::: {#rem-confounding-without-feedback}
+## Time-Varying Confounding Without Feedback
+
 Time-varying confounding can occur *without* treatment-confounder feedback.
 In the book's Figure 20.2, the arrows from $A_{k-1}$ to $L_k$ and to $U_k$ are deleted:
 $L_k$ still confounds the effect of $A_k$,
 but it is not affected by prior treatment.
 There is time-varying confounding but no feedback.
+
+:::
 
 ::: {.callout-note title="Fine Point 20.1: Representing Feedback Cycles with Acyclic Graphs"}
 A feedback loop between treatment and confounder can be drawn on an acyclic graph
@@ -84,11 +97,15 @@ without specifying when within the interval.
 In practice the intervals can be made as short as the data's granularity requires
 (months in the HIV example, where patients see their doctors at most monthly),
 and time is usually recorded in discrete units anyway [@hernan2020causal, Fine Point 20.1, p. 268].
+
 :::
 
 ---
 
 ### The Simplest Case: Figure 20.3
+
+::: {#exm-minimal-feedback-diagram}
+## The Simplest Feedback Diagram
 
 The smallest diagram that shows treatment-confounder feedback in a two-time-point
 sequentially randomized trial is the book's Figure 20.3.
@@ -103,9 +120,14 @@ It makes four simplifications relative to Figure 20.1:
 - no arrow $A_0 \to A_1$: treatment at time 1 is assigned using $L_1$ only;
 - no arrows from $A_0$, $L_1$, or $A_1$ into $Y$: the **sharp null** holds.
 
+:::
+
 ::: {.notes}
 None of these simplifications affects the arguments of the chapter;
 a larger diagram would add no conceptual insight and would only be harder to read.
+
+::: {#rem-sharp-null-figure-20-3}
+## The True Effect Under Figure 20.3 Is Zero
 
 Because Figure 20.3 has no forward-directed path from $A_0$ or $A_1$ to $Y$,
 the true average causal effect of "always treat" versus "never treat" is zero:
@@ -117,11 +139,17 @@ so Figure 20.3 can represent a sequentially randomized trial
 (or an observational study with no unmeasured confounding),
 and Chapter 19's results say the observed data on $(A_0, L_1, A_1, Y)$
 should identify this effect as 0.
+
+:::
+
 :::
 
 ---
 
 ### Feedback Through Shared Causes: Figure 20.4
+
+::: {#exm-shared-cause-feedback}
+## Feedback Through a Shared Cause
 
 The same problem arises when the time-varying confounder is not affected by prior treatment
 but **shares a cause** $W_0$ with it (the book's Figure 20.4, a subset of Figure 19.4).
@@ -133,6 +161,8 @@ Figure 20.4 represents an observational study.
 The book refers to both Figures 20.3 and 20.4 (and 19.2 and 19.4)
 as examples of treatment-confounder feedback.
 
+:::
+
 ::: {#rem-traditional-vs-g}
 ## The Claim of This Chapter
 
@@ -141,11 +171,15 @@ traditional methods (stratification, outcome regression, matching)
 cannot correctly adjust for the confounders,
 even when the data suffice for sequential exchangeability.
 G-methods adjust correctly even in the presence of feedback.
+
 :::
 
 ## 20.2 The Bias of Traditional Methods (pp. 269-271)
 
 ---
+
+::: {#exm-hypothetical-hiv-trial}
+## A Hypothetical Two-Time-Point Trial
 
 A hypothetical sequentially randomized trial with 32,000 individuals with HIV
 and two time points $k = 0, 1$ (full adherence, no loss to follow-up):
@@ -155,8 +189,11 @@ and two time points $k = 0, 1$ (full adherence, no loss to follow-up):
   and 0.8 if $L_1 = 1$ (low CD4);
 - the outcome $Y$, measured at the end of follow-up, is a health score (higher is better).
 
-::: {#exm-table-20-1}
-## Table 20.1
+The data are in @tbl-hiv-feedback-trial.
+
+:::
+
+::: {#tbl-hiv-feedback-trial}
 
 | $N$ | $A_0$ | $L_1$ | $A_1$ | Mean $Y$ |
 |-----:|:---:|:---:|:---:|-----:|
@@ -169,16 +206,26 @@ and two time points $k = 0, 1$ (full adherence, no loss to follow-up):
 | 1600 | 1 | 1 | 0 | 44 |
 | 6400 | 1 | 1 | 1 | 44 |
 
-Source: @hernan2020causal [Table 20.1, p. 269].
 Each row is a combination of $(A_0, L_1, A_1)$,
 with its number of individuals $N$ and $\E{Y \mid A_0, L_1, A_1}$.
+Source: @hernan2020causal [Table 20.1, p. 269].
+
 :::
 
 ::: {.notes}
-The design probabilities can be read back from the table.
+
+::: {#exm-design-probabilities}
+## Reading the Design Back From the Data
+
+The design probabilities can be read back from @tbl-hiv-feedback-trial.
 Within $L_1 = 0$: $1600 / (2400 + 1600) = 0.4$ and $3200 / (4800 + 3200) = 0.4$.
 Within $L_1 = 1$: $9600 / (2400 + 9600) = 0.8$ and $6400 / (1600 + 6400) = 0.8$.
 Also, $16{,}000$ of the $32{,}000$ individuals have $A_0 = 1$, matching probability 0.5.
+
+:::
+
+::: {#rem-identifiability-by-design}
+## Identifiability Holds by Design
 
 The identifiability conditions hold by design:
 there are no confounders for $A_0$,
@@ -187,13 +234,18 @@ and positivity holds because no row of the table is empty.
 If treatment at later times $k$ were also affected by $L_k$,
 then $L_k$ would be a time-varying confounder too.
 Random variability is ignored throughout.
+
+:::
+
 :::
 
 ---
 
 ### Each Treatment, Taken Separately, Has No Effect
 
-**Effect of $A_1$.**
+::: {#exm-no-effect-a1}
+## No Effect of $A_1$
+
 In every stratum of $(A_0, L_1)$, the mean outcome is the same for $A_1 = 1$ and $A_1 = 0$
 (rows 1 vs 2, 3 vs 4, 5 vs 6, 7 vs 8).
 For example,
@@ -203,9 +255,13 @@ $$\E{Y \mid A_0 = 0, L_1 = 0, A_1 = 1} - \E{Y \mid A_0 = 0, L_1 = 0, A_1 = 0} = 
 and because the identifiability conditions hold this equals
 $\E{Y^{a_1=1} \mid A_0 = 0, L_1 = 0} - \E{Y^{a_1=0} \mid A_0 = 0, L_1 = 0}$.
 
+:::
+
 ---
 
-**Effect of $A_0$.**
+::: {#exm-no-effect-a0}
+## No Effect of $A_0$
+
 Because $A_0$ is randomized, $\E{Y \mid A_0 = 1} - \E{Y \mid A_0 = 0}$
 estimates $\E{Y^{a_0=1}} - \E{Y^{a_0=0}}$.
 Averaging rows 1-4 (16,000 individuals with $A_0 = 0$):
@@ -232,6 +288,8 @@ $$
 
 So the average causal effect of $A_0$ is $60 - 60 = 0$.
 
+:::
+
 ::: {.callout-note title="Technical Point 20.1: G-Null Test"}
 Under the sharp null, every counterfactual outcome $Y^g$ equals the observed $Y$.
 With two time points, sequential exchangeability for all $Y^g$ then reads
@@ -248,6 +306,7 @@ these two independencies hold if and only if the distribution of $Y^g$
 (and therefore $\E{Y^g}$) is the same for all $g$
 and equal to the distribution (and mean) of the observed $Y$
 [@hernan2020causal, Technical Point 20.1, p. 270].
+
 :::
 
 ---
@@ -259,7 +318,9 @@ the g-null theorem implies
 $\E{Y^{a_0=1, a_1=1}} - \E{Y^{a_0=0, a_1=0}} = 0$.
 Do conventional analyses recover this?
 
-**Analysis 1: no adjustment for $L_1$.**
+::: {#exm-analysis-no-adjustment}
+## Analysis 1: No Adjustment for $L_1$
+
 Compare the 9600 individuals treated at both times (rows 6 and 8)
 with the 4800 untreated at both times (rows 1 and 3):
 
@@ -276,9 +337,13 @@ The difference $54.7 - 68 = -13.3$ is non-null,
 because $\E{Y \mid A_0 = a_0, A_1 = a_1}$ is not a valid estimator of $\E{Y^{a_0, a_1}}$:
 adjustment for the confounder $L_1$ is needed.
 
+:::
+
 ---
 
-**Analysis 2: stratification on $L_1$.**
+::: {#exm-analysis-stratification}
+## Analysis 2: Stratification on $L_1$
+
 Within $L_1 = 0$, compare treated at both times (row 6) with untreated at both times (row 1):
 
 $$\E{Y \mid A_0 = 1, L_1 = 0, A_1 = 1} - \E{Y \mid A_0 = 0, L_1 = 0, A_1 = 0} = 76 - 84 = -8.$$
@@ -287,13 +352,23 @@ Within $L_1 = 1$ (rows 8 and 3): $44 - 52 = -8$.
 
 The analysis adjusted for the confounder also gives the wrong answer.
 
+:::
+
 ::: {.notes}
+
+::: {#rem-no-stratum-weighting}
+## No Weighting of the Strata Recovers the Null
+
 Because the stratum-specific difference is $-8$ in *both* strata of $L_1$,
 no weighted average of the stratum-specific differences can equal the correct value 0.
 This estimate reflects the bias of traditional methods
 when there is treatment-confounder feedback [@hernan2020causal, p. 271].
 
-**Preview of Chapter 21.**
+:::
+
+::: {#exm-gformula-preview}
+## Preview of Chapter 21: The G-Formula
+
 The correct answer can be recovered from the same table by the g-formula,
 which standardizes over the distribution of $L_1$ *given* $A_0$
 rather than conditioning on $L_1$.
@@ -309,21 +384,32 @@ $$
 
 and the difference is $60 - 60 = 0$, as it should be.
 Chapter 21 develops this computation.
+
+:::
+
 :::
 
 ## 20.3 Why Traditional Methods Fail (pp. 271-273)
 
 ---
 
-All three identifiability conditions hold in Table 20.1;
+::: {#rem-problem-is-method}
+## The Problem Is the Adjustment Method
+
+All three identifiability conditions hold in @tbl-hiv-feedback-trial;
 the unmeasured $U_1$ (immunosuppression level) is not needed
 because we have data on $L_1$.
 Yet neither analysis gave the correct answer.
 The problem is the **adjustment method**: stratification cannot handle treatment-confounder feedback.
 
+:::
+
 ---
 
 ### Stratification Opens a Collider Path
+
+::: {#rem-stratification-collider}
+## Stratification Opens a Collider Path
 
 Stratifying on $L_1$ means estimating the treatment-outcome association
 separately in the subsets $L_1 = 0$ (high CD4) and $L_1 = 1$ (low CD4).
@@ -334,8 +420,10 @@ $$A_0 \to L_1 \leftarrow U_1 \to Y$$
 
 (the book's Figure 20.5: Figure 20.3 with $L_1$ conditioned on).
 Conditioning on $L_1$ opens this path
-and induces a noncausal association between $A_0$ and $U_1$,
+and generically (that is, under faithfulness) induces a noncausal association between $A_0$ and $U_1$,
 and hence between $A_0$ and $Y$, within levels of $L_1$.
+
+:::
 
 ::: {.notes}
 Intuition: among those with low CD4 count ($L_1 = 1$),
@@ -343,6 +431,7 @@ being on treatment ($A_0 = 1$) marks severe immunosuppression (high $U_1$),
 since treatment would otherwise have raised their CD4.
 Among those with high CD4 count ($L_1 = 0$),
 being off treatment ($A_0 = 0$) marks milder immunosuppression (low $U_1$).
+
 :::
 
 ::: {#rem-confounding-for-selection-bias}
@@ -357,11 +446,15 @@ $$\E{Y \mid A_0 = 1, L_1 = l, A_1 = 1} - \E{Y \mid A_0 = 0, L_1 = l, A_1 = 0}$$
 may be non-zero even when treatment has no effect on anyone's outcome at any time.
 The net bias depends on the relative sizes of the confounding removed
 and the selection bias created.
+
 :::
 
 ---
 
 ### Feedback Through Shared Causes
+
+::: {#rem-shared-cause-collider}
+## The Same Bias Under a Shared Cause
 
 The same bias arises when the confounder shares an unmeasured cause $W_0$ with prior treatment
 (an observational study, the book's Figure 20.6):
@@ -372,9 +465,13 @@ $$A_0 \leftarrow W_0 \to L_1 \leftarrow U_1 \to Y.$$
 The settings of Figures 20.3 and 20.4 cannot be distinguished using the observed data,
 which is why both are called treatment-confounder feedback.
 
+:::
+
 ---
 
 ### Beyond the Null and Beyond Two Time Points
+
+::: {.callout-warning title="The Bias Is Not Limited to the Null or to Two Time Points"}
 
 - The bias is not limited to the sharp null.
   With a non-null effect (the book's Figure 20.7, where $A_0 \to L_1 \to Y$),
@@ -386,6 +483,8 @@ which is why both are called treatment-confounder feedback.
 - Valid estimation of a treatment-strategy effect requires estimating
   the joint effect of all treatment components $A_k$ simultaneously and without bias,
   which stratification may be unable to do even with data on all time-varying confounders.
+
+:::
 
 ::: {.callout-note title="Fine Point 20.2: Confounders on the Causal Pathway"}
 Conditioning on a confounder $L_1$ affected by prior treatment can create selection bias
@@ -404,6 +503,7 @@ a confounder for later treatment $A_1$ can lie on a pathway from earlier treatme
 Whether adjusting for it induces bias depends on the method:
 stratification does; g-methods do not
 [@hernan2020causal, Fine Point 20.2, p. 272].
+
 :::
 
 ## 20.4 Why Traditional Methods Cannot Be Fixed (pp. 273-274)
@@ -414,20 +514,29 @@ Could parametric **outcome regression** succeed where nonparametric stratificati
 The question matters most with high-dimensional data,
 where a simple stratified analysis is impossible.
 
+::: {#exm-counting-strategies}
+## Counting Static Strategies
+
 - With two time points there are $2^2 = 4$ static strategies $\bar{a}$.
 - With $K$ of the order of 100 (not unusual in practice),
   there are $2^{100}$ static strategies,
   far more than the sample size of any study,
   and even more once dynamic strategies are considered.
 
+:::
+
 ::: {.notes}
 The number of combinations of the *data* is larger still,
 because several confounders $L_k$ are measured at each time point.
+
 :::
 
 ---
 
 ### Modeling Is Needed, but Does Not Help
+
+::: {#rem-modeling-cumulative-treatment}
+## Many Strategies Require Modeling
 
 As argued since Chapter 11, many possible strategies require **modeling**:
 a dose-response function for the effect of treatment history $\bar{a}$ on the mean outcome.
@@ -436,13 +545,21 @@ so every strategy with exactly three months of treatment has the same effect,
 whenever those three months occur.
 The price is a new threat to validity: misspecification of the dose-response model.
 
+:::
+
+::: {.callout-warning title="Regression Does Not Remove the Bias"}
 Paying that price buys no protection.
 Regression **is** a conventional stratification-based method,
 so it cannot remove the bias of stratification under treatment-confounder feedback.
 
+:::
+
 ---
 
 ### Example: A Cumulative-Treatment Regression
+
+::: {#exm-cumulative-treatment-regression}
+## A Cumulative-Treatment Regression
 
 For data generated under Figure 20.5, define $\text{cum}(\bar{A}) = A_0 + A_1 \in \{0, 1, 2\}$.
 "Always treat" is $\text{cum}(\bar{a}) = 2$ and "never treat" is $\text{cum}(\bar{a}) = 0$;
@@ -462,6 +579,9 @@ $$
 \end{aligned}
 $$
 
+:::
+
+::: {.callout-warning title="Do Not Read $2\theta_1$ as the Causal Effect"}
 It is tempting to read $2\theta_1$ as the effect of "always treat" versus "never treat" within levels of $L_1$.
 But conditioning on $L_1$ induces an association between $A_0$ (a component of $\text{cum}(\bar{A})$) and $Y$,
 so $\theta_1 \neq 0$ even though the true effect is zero [@hernan2020causal, p. 274].
@@ -469,10 +589,15 @@ The bias comes from conditioning on the collider $L_1$,
 not from the form of the model or from the sample size:
 it would persist with unlimited data.
 
+:::
+
 ::: {.notes}
 A similar argument applies to **matching**.
 G-methods are needed to adjust appropriately for time-varying confounders
 in the presence of treatment-confounder feedback [@hernan2020causal, p. 274].
+
+::: {#exm-correct-outcome-model}
+## A Correctly Specified Outcome Model for the Trial Data
 
 The book states that $\theta_1$ is non-zero
 "even if the true causal effect is zero and the regression model for $\E{Y \mid \bar{A}, L_1}$ is correct"
@@ -481,7 +606,7 @@ Under Figure 20.5, the cumulative-treatment model itself cannot be the correct o
 $Y$ is independent of $A_1$ given $(A_0, L_1)$,
 so a correct model for $\E{Y \mid A_0, A_1, L_1}$ has no $A_1$ term,
 whereas $\text{cum}(\bar{A})$ forces $A_0$ and $A_1$ to share the coefficient $\theta_1$.
-The data in Table 20.1 illustrate this.
+The data in @tbl-hiv-feedback-trial illustrate this.
 Their cell means depend on $(A_0, L_1)$ only, and they are fit exactly by
 
 $$\E{Y \mid A_0, A_1, L_1} = 84 - 8 A_0 + 0 \cdot A_1 - 32 L_1,$$
@@ -497,11 +622,17 @@ The conclusion is unchanged:
 even this correctly specified model gives $A_0$ a non-zero coefficient ($-8$)
 although the true effect of $A_0$ is zero,
 because the model conditions on the collider $L_1$.
+
+:::
+
 :::
 
 ## 20.5 Adjusting for Past Treatment (pp. 274-275)
 
 ---
+
+::: {#rem-past-treatment-backdoor}
+## Past Treatment Opens New Backdoor Paths
 
 So far the diagrams had no arrow $A_0 \to A_1$.
 Now suppose doctors use past treatment history $\bar{A}_{k-1}$
@@ -521,6 +652,8 @@ $$
 And whenever past treatment affects the outcome (Figure 20.10),
 $A_0$ is a confounder for the effect of $A_1$, feedback or not.
 
+:::
+
 ::: {#rem-condition-on-treatment-history}
 ## Sequential Exchangeability Conditions on Treatment History
 
@@ -529,14 +662,22 @@ on the treatment history $\bar{A}_{k-1}$ as well as on the covariates;
 conditioning only on $L$ is not enough.
 That is why every sequential exchangeability statement in Chapters 19 and 20
 conditions on treatment history.
+
 :::
 
 ---
 
 ### Past Treatment and Time-Fixed Treatments
 
+::: {#def-short-term-effect}
+## Short-Term Effect
+
 Suppose the target is the effect of the time-fixed treatment $A_1$ alone on $Y$
 (sometimes called the **short-term effect** of $\bar{A}$).
+
+:::
+
+::: {.callout-warning title="Ignoring Past Treatment Biases the Short-Term Effect"}
 Without adjustment for $A_0$:
 
 - with treatment-confounder feedback, there is selection bias;
@@ -545,7 +686,11 @@ Without adjustment for $A_0$:
 So $\E{Y \mid A_1 = 1, L_1} - \E{Y \mid A_1 = 0, L_1}$ need not be zero
 even if $A_1$ has no effect on anyone's outcome (Figures 20.8-20.10).
 
+:::
+
 ::: {.notes}
+
+::: {.callout-tip title="Adjust for Treatment History or Restrict to New Users"}
 In practice, this bias can arise in analyses comparing current users ($A_1 = 1$)
 with nonusers ($A_1 = 0$) of a time-fixed treatment.
 It can be avoided by adjusting for prior treatment history
@@ -554,14 +699,20 @@ This restriction is the idea behind **new-user designs**:
 restrict the analysis to individuals with no past use of the treatment.
 If past treatment could be correctly adjusted for,
 the restriction to new users would be unnecessary.
+
+:::
+
 :::
 
 ---
 
 ### Mismeasured Past Treatment
 
+::: {.callout-warning title="Mismeasured Past Treatment"}
 The need to adjust for past treatment matters when past treatment is **mismeasured**.
 As in Section 9.3, adjusting for a mismeasured confounder can leave bias in either direction.
+
+:::
 
 ::: {#exm-mismeasured-a0}
 ## Self-Reported Treatment History
@@ -573,9 +724,12 @@ conditioning on $A_0^*$ cannot block the biasing paths between $A_1$ and $Y$ tha
 Investigators would find an association between $A_1$ and $Y$
 even after adjusting for $A_0^*$ and $L_1$,
 although $A_1$ has no effect on $Y$.
+
 :::
 
 ::: {.notes}
+
+::: {.callout-warning title="Measurement Error Can Bias Even Under the Null"}
 Contrary to a widespread belief, mismeasurement of a time-varying treatment
 (even independent, non-differential measurement error) **may cause bias under the null**,
 because past treatment confounds the effect of later treatment
@@ -583,6 +737,9 @@ even when past treatment has no effect on the outcome.
 Under the alternative, the imperfect adjustment may exaggerate the effect estimate.
 Robins (1987) showed that randomly mismeasured treatment may lead to bias away from the null
 [@hernan2020causal, p. 275].
+
+:::
+
 :::
 
 ## Summary
@@ -591,7 +748,7 @@ Robins (1987) showed that randomly mismeasured treatment may lead to bias away f
 
 - **Treatment-confounder feedback**: a time-varying confounder $L_k$ affects later treatment $A_k$
   and is affected by (or shares causes with) earlier treatment.
-- In Table 20.1 the true effect of "always treat" vs. "never treat" is 0,
+- In @tbl-hiv-feedback-trial the true effect of "always treat" vs. "never treat" is 0,
   yet the unadjusted analysis gives $-13.3$ and stratification on $L_1$ gives $-8$.
 - Stratification on $L_1$ removes confounding for $A_1$
   but opens the collider path $A_0 \to L_1 \leftarrow U_1 \to Y$,
@@ -607,4 +764,5 @@ Robins (1987) showed that randomly mismeasured treatment may lead to bias away f
 ---
 
 ::: {#refs}
+
 :::
