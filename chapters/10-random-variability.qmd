@@ -67,8 +67,8 @@ and we want to make inferences about that super-population.
 ## Sample proportion as an estimator
 
 - Estimand: $\Pr[Y = 1 \mid A = 1]$ in the super-population.
-- Estimator: the sample proportion $\widehat{\Pr}[Y = 1 \mid A = 1]$.
-- Estimate: in the heart transplant study, 7 of the 13 treated individuals died, so $\widehat{\Pr}[Y = 1 \mid A = 1] = 7/13 \approx 0.54$.
+- Estimator: the sample proportion $\hPr{Y = 1 \mid A = 1}$.
+- Estimate: in the heart transplant study, 7 of the 13 treated individuals died, so $\hPr{Y = 1 \mid A = 1} = 7/13 \approx 0.54$.
 
 A different random sample of 20 individuals would give a different estimate.
 :::
@@ -78,8 +78,8 @@ A different random sample of 20 individuals would give a different estimate.
 ### Consistency of Estimators
 
 An estimator is **consistent** for an estimand if its estimates get arbitrarily close to the estimand as the sample size $n$ grows.
-For example, the sample proportion $\widehat{\Pr}[Y = 1 \mid A = a]$ is consistent for $\Pr[Y = 1 \mid A = a]$:
-the larger $n$, the smaller we expect $\abs{\Pr[Y = 1 \mid A = a] - \widehat{\Pr}[Y = 1 \mid A = a]}$ to be.
+For example, the sample proportion $\hPr{Y = 1 \mid A = a}$ is consistent for $\Pr[Y = 1 \mid A = a]$:
+the larger $n$, the smaller we expect $\abs{\Pr[Y = 1 \mid A = a] - \hPr{Y = 1 \mid A = a}}$ to be.
 
 Even a consistent estimator can produce a point estimate far from the super-population value, especially in small samples.
 So we should have more confidence in estimates from larger studies, and we quantify that confidence with **confidence intervals**.
@@ -100,7 +100,7 @@ and 1.96 is the upper 97.5% quantile of the standard normal distribution.
 ::: {#exm-wald-binomial}
 ## Wald interval for the risk among the treated
 
-Let $p = \Pr[Y = 1 \mid A = 1]$ and $\hat p = \widehat{\Pr}[Y = 1 \mid A = 1] = 7/13$, with $n = 13$.
+Let $p = \Pr[Y = 1 \mid A = 1]$ and $\hat p = \hPr{Y = 1 \mid A = 1} = 7/13$, with $n = 13$.
 The standard error of a binomial proportion is $\sqrt{p(1-p)/n}$, so
 
 $$
@@ -235,7 +235,7 @@ $$
 $$
 
 ::: {.notes}
-Because the study population is a random sample, $\widehat{\Pr}[Y = 1 \mid A = a]$ is an unbiased estimator of $\Pr[Y = 1 \mid A = a]$,
+Because the study population is a random sample, $\hPr{Y = 1 \mid A = a}$ is an unbiased estimator of $\Pr[Y = 1 \mid A = a]$,
 and, by exchangeability in the super-population, also of $\Pr[Y^a = 1]$.
 :::
 
@@ -244,7 +244,7 @@ and, by exchangeability in the super-population, also of $\Pr[Y^a = 1]$.
 ### Testing and Estimation in the Randomized Experiment
 
 Testing the causal null hypothesis $\Pr[Y^{a=1} = 1] = \Pr[Y^{a=0} = 1]$ reduces to comparing the sample proportions
-$\widehat{\Pr}[Y = 1 \mid A = 1] = 7/13$ and $\widehat{\Pr}[Y = 1 \mid A = 0] = 3/7$.
+$\hPr{Y = 1 \mid A = 1} = 7/13$ and $\hPr{Y = 1 \mid A = 0} = 3/7$.
 
 Standard methods give confidence intervals for the causal effects in the super-population, estimated by
 
@@ -529,18 +529,18 @@ An **exact ancillary** is an S-ancillary statistic with known marginal distribut
 If the stratum-specific risk differences $\text{sRD}_l$ vary over $L$, the population causal risk difference is the standardized risk difference
 
 $$
-\text{RD}_{std} = \sum_l \sb{\Pr(Y = 1 \mid L = l, A = 1; \upsilon) - \Pr(Y = 1 \mid L = l, A = 0; \upsilon)} f(l; \rho),
+\RD_{std} = \sum_l \sb{\Pr(Y = 1 \mid L = l, A = 1; \upsilon) - \Pr(Y = 1 \mid L = l, A = 0; \upsilon)} f(l; \rho),
 $$
 
 with $\upsilon = \{\text{sRD}_l, p_{0,l}; l = 0, 1\}$.
-In an unconditionally randomized experiment $A \ind L$, so $\text{RD}_{std}$ equals the associational risk difference.
-Because $\text{RD}_{std}$ depends on $\rho$, $\{A_i, L_i\}$ is no longer exactly ancillary, and no exact ancillary exists.
+In an unconditionally randomized experiment $A \ind L$, so $\RD_{std}$ equals the associational risk difference.
+Because $\RD_{std}$ depends on $\rho$, $\{A_i, L_i\}$ is no longer exactly ancillary, and no exact ancillary exists.
 
 Let $\widetilde S = \widehat{\OR}_{AL} - \OR_{AL}$, the sample minus the super-population $A$-$L$ odds ratio,
 and $\widehat S = \widetilde S / \hse{\widetilde S}$, which is approximately standard normal in large samples.
 When $\OR_{AL}$ is known (e.g., $\OR_{AL} = 1$ in a randomized experiment), $\widehat S$ is an **approximate (large-sample) ancillary**:
 it can be computed from the data, has approximately known distribution, is governed by the $f(A \mid L; \alpha)$ factor of the likelihood only,
-and conditional on it the adjusted estimate of $\text{RD}_{std}$ is unbiased while the unadjusted one is biased.
+and conditional on it the adjusted estimate of $\RD_{std}$ is unbiased while the unadjusted one is biased.
 
 Under a **continuity principle** [@buehler1982some], inferences should not change discontinuously after an arbitrarily small known change in the data-generating distribution.
 Accepting both conditionality and continuity implies conditioning on approximate ancillaries too:
@@ -548,25 +548,25 @@ the **extended conditionality principle**.
 :::
 
 ::: {.callout-note title="Technical Point 10.4: Adjusted Versus Unadjusted Estimators"}
-The adjusted estimator $\widehat{\text{RD}}_{MLE}$ replaces the population proportions in $\text{RD}_{std}$ by sample proportions;
-the unadjusted estimator is $\widehat{\text{RD}}_{UN} = \widehat{\Pr}(Y = 1 \mid A = 1) - \widehat{\Pr}(Y = 1 \mid A = 0)$.
-Unconditionally, both are asymptotically normal and unbiased for $\text{RD}_{std}$.
+The adjusted estimator $\eRD_{MLE}$ replaces the population proportions in $\RD_{std}$ by sample proportions;
+the unadjusted estimator is $\eRD_{UN} = \widehat{\Pr}(Y = 1 \mid A = 1) - \widehat{\Pr}(Y = 1 \mid A = 0)$.
+Unconditionally, both are asymptotically normal and unbiased for $\RD_{std}$.
 
 @robins1987foundations show that
 
-- $\widehat{\text{RD}}_{MLE}$ has the same asymptotic distribution conditionally on $\widehat S$ as unconditionally;
-- $\text{aVar}(\widehat{\text{RD}}_{MLE}) = \text{aVar}(\widehat{\text{RD}}_{UN}) - \sb{\text{aCov}(\widehat S, \widehat{\text{RD}}_{UN})}^2$;
-- the conditional asymptotic bias of $\widehat{\text{RD}}_{UN}$ given $\widehat S$ is $\text{aCov}(\widehat S, \widehat{\text{RD}}_{UN}) \, \widehat S$.
+- $\eRD_{MLE}$ has the same asymptotic distribution conditionally on $\widehat S$ as unconditionally;
+- $\aVar{\eRD_{MLE}} = \aVar{\eRD_{UN}} - \sb{\aCov{\widehat S, \eRD_{UN}}}^2$;
+- the conditional asymptotic bias of $\eRD_{UN}$ given $\widehat S$ is $\aCov{\widehat S, \eRD_{UN}} \, \widehat S$.
 
-So $\widehat{\text{RD}}_{UN}$ is unconditionally inefficient **if and only if** it is conditionally biased (both iff $\text{aCov} \neq 0$).
-Moreover, $\text{aCov}(\widehat S, \widehat{\text{RD}}_{UN}) = 0$ iff $L \ind Y \mid A$,
-so when a measured risk factor for $Y$ is available, $\widehat{\text{RD}}_{MLE}$ is preferred.
-The corrected estimator $\widehat{\text{RD}}_{UN} - \text{aCov}(\widehat S, \widehat{\text{RD}}_{UN})\widehat S$ has the same asymptotic distribution as $\widehat{\text{RD}}_{MLE}$ given $\widehat S$.
+So $\eRD_{UN}$ is unconditionally inefficient **if and only if** it is conditionally biased (both iff $\aCov{\widehat S, \eRD_{UN}} \neq 0$).
+Moreover, $\aCov{\widehat S, \eRD_{UN}} = 0$ iff $L \ind Y \mid A$,
+so when a measured risk factor for $Y$ is available, $\eRD_{MLE}$ is preferred.
+The corrected estimator $\eRD_{UN} - \aCov{\widehat S, \eRD_{UN}}\widehat S$ has the same asymptotic distribution as $\eRD_{MLE}$ given $\widehat S$.
 :::
 
 ::: {.callout-note title="Technical Point 10.5: Most Researchers Follow the Extended Conditionality Principle"}
 With a constant sRD over a dichotomous $L$, the estimated variance of the MLE of sRD is $\widehat V_0 \widehat V_1 / (\widehat V_0 + \widehat V_1)$,
-where $\widehat V_l$ is the estimated variance of the stratum-specific estimate $\widehat{\text{RD}}_l$.
+where $\widehat V_l$ is the estimated variance of the stratum-specific estimate $\eRD_l$.
 
 Two choices for $\widehat V_1$ (smokers, Table 10.2) differ only in the denominators:
 
@@ -650,10 +650,10 @@ Chapters 11 through 17 supply the background on models for causal inference.
 ::: {.callout-note title="Technical Point 10.6: Can the Curse of Dimensionality Be Reversed?"}
 With many strata of $L$, informative inference *conditional* on the exact ancillary $\{A_i, L_i\}$ is impossible whatever the estimator.
 Unconditional inference in a marginally randomized experiment is different:
-$\widehat{\text{RD}}_{UN}$ stays unbiased, with Wald interval width proportional to $1/n^{1/2}$, regardless of the dimension of $L$.
+$\eRD_{UN}$ stays unbiased, with Wald interval width proportional to $1/n^{1/2}$, regardless of the dimension of $L$.
 It uses prior information the MLE does not: it is unbiased for the common risk difference only if $A \ind L$ is known to hold in the super-population.
 Even unconditionally, the MLE's intervals remain uninformative.
-Can data on $L$ give an unconditionally unbiased estimator more efficient than $\widehat{\text{RD}}_{UN}$?
+Can data on $L$ give an unconditionally unbiased estimator more efficient than $\eRD_{UN}$?
 Chapter 18 shows that this is sometimes possible.
 :::
 
