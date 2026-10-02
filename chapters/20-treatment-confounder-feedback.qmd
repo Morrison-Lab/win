@@ -19,7 +19,7 @@ so the measured time-varying confounders suffice to estimate the effect of any t
 Which confounding adjustment method should we then use?
 The answer exposes a central problem for time-varying treatments:
 a time-varying confounder can drive later treatment
-while itself being affected by, or sharing a cause with, earlier treatment.
+while itself being affected by, or sharing an unmeasured cause with, earlier treatment.
 When that happens, traditional adjustment methods can be biased
 even though all the information needed for valid estimation is available.
 This chapter describes the structure of the problem
@@ -29,7 +29,7 @@ and explains why traditional methods fail.
 This chapter is based on @hernan2020causal [Chapter 20, pp. 267-275].
 
 **Key insight**: when a time-varying confounder $L_1$ that affects later treatment $A_1$
-is also affected by (or shares causes with) earlier treatment $A_0$,
+is also affected by (or shares an unmeasured cause with) earlier treatment $A_0$,
 stratifying on $L_1$ removes confounding for the later treatment $A_1$
 but opens a collider path that creates selection bias for $A_0$.
 Not adjusting for $L_1$ leaves $A_1$ confounded.
@@ -46,18 +46,28 @@ g-methods (Chapter 21) avoid both problems.
 ## Treatment-Confounder Feedback
 
 Consider a time-varying treatment $A_k$ and a time-varying confounder $L_k$, measured at times $k = 0, 1, \ldots$.
+Write $(\bar{L}_{k-1}, \bar{A}_{k-2})$ for the measured past of treatment $A_{k-1}$.
 There is **treatment-confounder feedback** when, for some $k \ge 1$,
 the time-varying confounder affects treatment ($L_k \to A_k$)
-*and* $L_k$ is affected by, or shares a cause with, earlier treatment $A_{k-1}$.
+*and* either
+
+- $L_k$ is affected by earlier treatment $A_{k-1}$, or
+- $L_k$ and $A_{k-1}$ share a common cause outside the measured past,
+  through a path between them (such as $A_{k-1} \leftarrow W \to L_k$ with $W$ unmeasured)
+  that conditioning on the measured past does not block.
 
 :::
 
-The book's one-line description is the narrower arrow form ($A_{k-1} \to L_k$):
+The book's one-line description is the arrow form ($A_{k-1} \to L_k$):
 "the confounder affects the treatment and the treatment affects the confounder"
 [@hernan2020causal, p. 267].
-This chapter uses the wider form,
-because the book applies the same name to the shared-cause case,
-which the observed data cannot tell apart from the arrow form.
+The book gives the same name to the case in which $L_1$ shares an unmeasured cause $W_0$ with $A_0$ (its Figures 20.4 and 20.6),
+because the observed data cannot tell that case apart from the arrow form
+and it produces the same bias [@hernan2020causal, pp. 269 and 272].
+The second clause of @def-treatment-confounder-feedback covers that case only.
+It excludes a common cause in the measured past,
+such as an earlier confounder $L_{k-1}$ that affects both $A_{k-1}$ and $L_k$;
+otherwise almost every persistent confounder would count as feedback.
 
 ::: {#exm-hiv-trial-time-varying}
 ## The Sequentially Randomized HIV Trial
@@ -92,6 +102,9 @@ Time-varying confounding can occur *without* treatment-confounder feedback (@def
 In the book's Figure 20.2, the arrows from $A_{k-1}$ to $L_k$ and to $U_k$ are deleted:
 $L_k$ still confounds the effect of $A_k$,
 but it is not affected by prior treatment.
+Nor do $L_k$ and $A_{k-1}$ share a common cause outside the measured past in the sense of @def-treatment-confounder-feedback:
+the diagram is a sequentially randomized trial, so the unmeasured $U$ variables have no arrows into treatment,
+and every path from a common cause to $A_{k-1}$ passes through the measured confounders $\bar{L}_{k-1}$, which block it.
 There is time-varying confounding but no feedback.
 
 :::
@@ -161,12 +174,14 @@ should identify this effect as 0.
 ## Feedback Through a Shared Cause
 
 The same problem arises when the time-varying confounder is not affected by prior treatment
-but **shares a cause** $W_0$ with it (the book's Figure 20.4, a subset of Figure 19.4).
+but **shares an unmeasured cause** $W_0$ with it (the book's Figure 20.4, a subset of Figure 19.4).
 Its arrows include, among others,
 
 $$W_0 \to A_0, \qquad W_0 \to L_1, \qquad L_1 \to A_1, \qquad U_1 \to L_1, \qquad U_1 \to Y.$$
 
 Figure 20.4 represents an observational study.
+The path $A_0 \leftarrow W_0 \to L_1$ runs through a cause outside the measured past of $A_0$,
+so this is the second clause of @def-treatment-confounder-feedback.
 The book refers to both Figures 20.3 and 20.4 (and 19.2 and 19.4)
 as examples of treatment-confounder feedback (@def-treatment-confounder-feedback).
 
@@ -307,7 +322,8 @@ $Y \ind A_0 \mid L_0$ and $Y \ind A_1 \mid A_0, L_0, L_1$
 Under sequential exchangeability, testing these conditional independencies is a test of the sharp null:
 the **g-null test** (Robins 1986).
 The first independence says $A_0$ has no effect within strata of $L_0$;
-the second says $A_1$ has no effect within strata of $(A_0, L_1)$.
+the second says $A_1$ has no effect within strata of $(A_0, L_0, L_1)$
+(in Figure 20.3, which has no $L_0$, within strata of $(A_0, L_1)$).
 
 More generally, the **g-null theorem** (Robins 1986) states that,
 under sequential randomization for all $g$,
@@ -322,8 +338,31 @@ and equal to the distribution (and mean) of the observed $Y$
 
 ### Analyzing the Joint Treatment
 
-Since the effects of $A_0$ and $A_1$ are each null,
-the g-null theorem implies
+The effects of $A_0$ and $A_1$ are each null,
+and the mean outcome under every static strategy $(a_0, a_1)$ follows directly.
+Because $A_0$ is randomized, $L_1$ is the only confounder for $A_1$, and the identifiability conditions hold,
+
+$$
+\begin{aligned}
+\E{Y^{a_0, a_1}}
+&= \E{Y^{a_0, a_1} \mid A_0 = a_0} && \text{(} A_0 \text{ randomized)} \\
+&= \sum_{l} \E{Y^{a_0, a_1} \mid A_0 = a_0, L_1 = l} \Pr[L_1 = l \mid A_0 = a_0] && \text{(law of total expectation)} \\
+&= \sum_{l} \E{Y^{a_0, a_1} \mid A_0 = a_0, L_1 = l, A_1 = a_1} \Pr[L_1 = l \mid A_0 = a_0] && \text{(sequential exchangeability)} \\
+&= \sum_{l} \E{Y \mid A_0 = a_0, L_1 = l, A_1 = a_1} \Pr[L_1 = l \mid A_0 = a_0] && \text{(consistency)}.
+\end{aligned}
+$$
+
+From @tbl-hiv-feedback-trial, $\Pr[L_1 = 0 \mid A_0 = 0] = 4000/16000 = 0.25$ and $\Pr[L_1 = 0 \mid A_0 = 1] = 8000/16000 = 0.5$,
+and the cell means do not depend on $a_1$, so for either value of $a_1$
+
+$$
+\begin{aligned}
+\E{Y^{a_0=0, a_1}} &= 84 \times 0.25 + 52 \times 0.75 = 21 + 39 = 60, \\
+\E{Y^{a_0=1, a_1}} &= 76 \times 0.5 + 44 \times 0.5 = 38 + 22 = 60.
+\end{aligned}
+$$
+
+So $\E{Y^{a_0, a_1}} = 60$ for every $(a_0, a_1)$, and in particular
 $\E{Y^{a_0=1, a_1=1}} - \E{Y^{a_0=0, a_1=0}} = 0$.
 Do conventional analyses recover this?
 
@@ -378,20 +417,10 @@ when there is treatment-confounder feedback [@hernan2020causal, p. 271].
 ::: {#exm-gformula-preview}
 ## Preview of Chapter 21: The G-Formula
 
-The correct answer can be recovered from the same table by the g-formula,
-which standardizes over the distribution of $L_1$ *given* $A_0$
-rather than conditioning on $L_1$.
-From @tbl-hiv-feedback-trial, $\Pr[L_1 = 0 \mid A_0 = 1] = 8000/16000 = 0.5$
-and $\Pr[L_1 = 0 \mid A_0 = 0] = 4000/16000 = 0.25$, so
-
-$$
-\begin{aligned}
-\E{Y^{a_0=1, a_1=1}} &= 76 \times 0.5 + 44 \times 0.5 = 38 + 22 = 60, \\
-\E{Y^{a_0=0, a_1=0}} &= 84 \times 0.25 + 52 \times 0.75 = 21 + 39 = 60,
-\end{aligned}
-$$
-
-and the difference is $60 - 60 = 0$, as it should be.
+The computation that gave $\E{Y^{a_0, a_1}} = 60$ for every strategy is the g-formula:
+it standardizes over the distribution of $L_1$ *given* $A_0$
+rather than conditioning on $L_1$, as the stratified analysis does.
+Applied to "always treat" versus "never treat", it gives $60 - 60 = 0$, as it should.
 Chapter 21 develops this computation.
 
 :::
@@ -485,7 +514,7 @@ which is why both are called treatment-confounder feedback.
 - The bias is not limited to the sharp null.
   With a non-null effect (the book's Figure 20.7, where $A_0 \to L_1 \to Y$),
   arrows from $A_0$, $A_1$, or $L_1$ into $Y$ do not change the fact
-  that conditioning on $L_1$ creates a noncausal association between $A_0$ and $Y$.
+  that conditioning on $L_1$ generically (that is, under faithfulness) creates a noncausal association between $A_0$ and $Y$.
 - With many time points and variables, the bias still arises;
   confounders affected by prior treatment at multiple times
   increase the possibility of a large bias.
@@ -527,8 +556,8 @@ where a simple stratified analysis is impossible.
 ## Counting Static Strategies
 
 - With two time points there are $2^2 = 4$ static strategies $\bar{a}$.
-- With $K$ of the order of 100 (not unusual in practice),
-  there are $2^{100}$ static strategies,
+- With about 100 time points (not unusual in practice),
+  there are about $2^{100}$ static strategies,
   far more than the sample size of any study,
   and even more once dynamic strategies are considered.
 
@@ -557,8 +586,8 @@ The price is a new threat to validity: misspecification of the dose-response mod
 :::
 
 ::: {.callout-warning title="Regression Does Not Remove the Bias"}
-Paying the price of a dose-response model buys no protection against the bias of stratification under treatment-confounder feedback.
-Regression **is** a conventional stratification-based method,
+Paying the price of a dose-response model buys no protection:
+regression **is** a conventional stratification-based method,
 so it cannot remove the bias of stratification under treatment-confounder feedback.
 
 :::
@@ -592,8 +621,8 @@ $$
 
 ::: {.callout-warning title="Do Not Read $2\theta_1$ as the Causal Effect"}
 It is tempting to read $2\theta_1$ as the effect of "always treat" versus "never treat" within levels of $L_1$.
-But conditioning on $L_1$ induces an association between $A_0$ (a component of $\text{cum}(\bar{A})$) and $Y$,
-so $\theta_1 \neq 0$ even though the true effect is zero [@hernan2020causal, p. 274].
+But conditioning on $L_1$ generically induces an association between $A_0$ (a component of $\text{cum}(\bar{A})$) and $Y$,
+so, generically, $\theta_1 \neq 0$ even though the true effect is zero [@hernan2020causal, p. 274].
 The bias comes from conditioning on the collider $L_1$,
 not from the form of the model or from the sample size:
 it would persist with unlimited data.
@@ -611,7 +640,7 @@ in the presence of treatment-confounder feedback [@hernan2020causal, p. 274].
 The book states that $\theta_1$ is non-zero
 "even if the true causal effect is zero and the regression model for $\E{Y \mid \bar{A}, L_1}$ is correct"
 [@hernan2020causal, p. 274].
-Under Figure 20.5, the cumulative-treatment model itself cannot be the correct one.
+Under Figure 20.5, the cumulative-treatment model itself generically cannot be the correct one.
 $Y$ is independent of $A_1$ given $(A_0, L_1)$,
 so a correct model for $\E{Y \mid A_0, A_1, L_1}$ has no $A_1$ term,
 whereas $\text{cum}(\bar{A})$ forces $A_0$ and $A_1$ to share the coefficient $\theta_1$.
@@ -681,7 +710,8 @@ conditions on treatment history.
 ::: {#def-short-term-effect}
 ## Short-Term Effect
 
-The **short-term effect** of $\bar{A}$ is the effect of $A_1$ on $Y$
+In a two-time-point treatment $\bar{A} = (A_0, A_1)$,
+the **short-term effect** of $A_1$ is the effect of $A_1$ on $Y$
 with $A_0$ left at whatever value it naturally takes,
 that is, the effect of $A_1$ when $A_1$ is treated as a time-fixed treatment.
 
@@ -734,7 +764,7 @@ Suppose HIV investigators lack medical records and ascertain prior treatment by 
 so they observe a mismeasured $A_0^*$ rather than $A_0$.
 Adding the arrow $A_0 \to A_0^*$ to Figures 20.8-20.10 shows that
 conditioning on $A_0^*$ cannot block the biasing paths between $A_1$ and $Y$ that pass through $A_0$.
-Investigators would find an association between $A_1$ and $Y$
+Investigators would generically (under faithfulness) find an association between $A_1$ and $Y$
 even after adjusting for $A_0^*$ and $L_1$,
 although $A_1$ has no effect on $Y$.
 
@@ -760,7 +790,7 @@ Robins (1987) showed that randomly mismeasured treatment may lead to bias away f
 ---
 
 - **Treatment-confounder feedback**: a time-varying confounder $L_k$ affects later treatment $A_k$
-  and is affected by (or shares causes with) earlier treatment.
+  and is affected by (or shares an unmeasured cause with) earlier treatment.
 - In @tbl-hiv-feedback-trial the true effect of "always treat" vs. "never treat" is 0,
   yet the unadjusted analysis gives $-13.3$ and stratification on $L_1$ gives $-8$.
 - Stratification on $L_1$ removes confounding for $A_1$
