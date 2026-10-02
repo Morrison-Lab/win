@@ -1,9 +1,16 @@
-# Thin caller of Morrison-Lab/gha's reusable semantic-line-break check.
+# Semantic-line-break check from Morrison-Lab/gha.
 #
 # .github/copilot-instructions.md asks for semantic line breaks (one sentence
 # or clause per source line); nothing enforced it. This check is diff-scoped:
 # it looks only at lines a PR adds, so existing chapters need no reflow pass
 # first. On `push` there is no base to diff against, so the scan is skipped.
+#
+# This calls gha's composite action pinned to a commit, rather than gha's
+# reusable workflow at a tag. Neither tag carries the fix that stops the check
+# flagging TeX math and page locators (Morrison-Lab/gha#999): `v2` is frozen,
+# and `v3` has not yet moved past it. Switch to
+# `uses: Morrison-Lab/gha/.github/workflows/check-new-line-breaks.yml@v3`
+# once that tag moves past 78333c9.
 name: Check new markdown lines for missing semantic breaks
 
 on:
@@ -13,16 +20,32 @@ on:
   pull_request:
   workflow_dispatch:
 
+permissions:
+  contents: read
+
 jobs:
   check:
-    permissions:
-      contents: read
-    uses: Morrison-Lab/gha/.github/workflows/check-new-line-breaks.yml@v2
-    with:
-      # Space-separated git pathspecs. The upstream default is `*.md` alone;
-      # the lecture notes live in `.qmd`.
-      globs: '*.md *.qmd'
-      # `_extensions/` is vendored third-party code, and `latex-macros/` is a
-      # submodule owned by d-morrison/macros. `**` is the recursive form; a single
-      # `*` matches one path segment, so it would miss nested extension files.
-      paths-ignore: '_extensions/**,latex-macros/**'
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          # Full history so PR runs can diff added lines against the base.
+          fetch-depth: 0
+
+      - name: Check new markdown lines for missing semantic breaks
+        # The merge commit of Morrison-Lab/gha#999.
+        uses: Morrison-Lab/gha/check-new-line-breaks@78333c9a13cb35c5a7f2cdd8a00ebca725c7b79a
+        with:
+          # Space-separated git pathspecs. The upstream default is `*.md` alone;
+          # the lecture notes live in `.qmd`.
+          globs: '*.md *.qmd'
+          # `_extensions/` is vendored third-party code, and `latex-macros/` is a
+          # submodule owned by d-morrison/macros. `**` is the recursive form; a
+          # single `*` matches one path segment, so it would miss nested
+          # extension files.
+          paths-ignore: '_extensions/**,latex-macros/**'
+          # On PRs, check only lines added relative to the base; on push there
+          # is no base to diff against, so the check is skipped.
+          base-ref: ${{ github.event_name == 'pull_request' && github.event.pull_request.base.sha || '' }}

@@ -1,5 +1,5 @@
 ---
-title: "Chapter 9: Measurement Bias"
+title: 'Chapter 9: Measurement Bias and "Noncausal" Diagrams'
 format:
   html: default
   revealjs:
@@ -12,282 +12,407 @@ format:
 
 {{< include ../latex-macros/macros.qmd >}}
 
-Measurement error can introduce bias in causal inference, even in the absence of confounding and selection bias. Unlike confounding (systematic differences in treatment groups) and selection bias (systematic differences in who is included in analysis), measurement bias arises from inaccurate measurement of variables. This chapter explores the structure and consequences of measurement error.
+Suppose a randomized experiment of whether one's looking up makes other pedestrians look up finds only a weak association.
+Randomization rules out confounding, and every pedestrian's response was recorded, so there is no selection bias.
+But the collaborator who recorded the responses missed half of the instances in which a pedestrian looked up,
+so even a strong effect would appear diluted.
+There is **measurement bias** when the association between treatment and outcome is weakened or strengthened by the process by which the data are measured.
+Because measurement errors occur in any study design, randomized or observational, measurement bias always needs to be considered.
+This chapter describes the structure of measurement error and then asks what the arrows of a causal diagram mean
+when some of its variables have no well-defined interventions ("noncausal" diagrams).
 
 ::: {.notes}
-This chapter is based on @hernan2020causal [Chapter 9, pp. 117-130].
+This chapter is based on @hernan2020causal [Chapter 9, pp. 125-136], whose title in this revision is "Measurement bias and 'noncausal' diagrams".
 :::
 
-## 9.1 Measurement Error (pp. 117-119)
+## 9.1 Measurement Error (pp. 125-126)
 
 ---
 
-**Measurement error** occurs when the recorded value of a variable differs from its true value.
+Consider an observational study of a cholesterol-lowering drug $A$ on liver disease $Y$.
+If drug use is abstracted from medical records, the abstractor may make transcription errors,
+the physician may forget to record the prescription, or the patient may not take the drug.
+The analysis therefore uses the **measured treatment** $A^*$ ("A-star"), which need not equal the true treatment $A$.
 
-### Types of Variables Subject to Measurement Error
+::: {#def-measurement-error}
+## Measurement Error
 
-All variables in a study can be measured with error:
-
-- **Treatment** $A$: Misclassification of treatment status
-- **Outcome** $Y$: Misclassification or mismeasurement of outcomes
-- **Covariates** $L$: Mismeasured confounders or effect modifiers
-
-### Independent vs. Differential Measurement Error
-
-::: {#def-measurement-error-types}
-## Types of Measurement Error
-
-**Independent (nondifferential) measurement error**: The measurement error is independent of other variables.
-
-**Differential measurement error**: The measurement error depends on other variables in the study.
+The **measurement error** of $A$ for an individual is the difference between the mismeasured value $A^*$ and the true value $A$.
+Measurement error of a discrete variable is called **misclassification**.
 :::
+
+The causal diagram in Figure 9.1 has
+
+- $A \rightarrow Y$ (no confounding or selection bias, for simplicity),
+- $A \rightarrow A^*$ (the true treatment affects its measurement),
+- $U_A \rightarrow A^*$, where $U_A$ stands for all factors other than $A$ that determine $A^*$.
+
+The factors in $U_A$ determine the magnitude and direction of the measurement error.
 
 ::: {.notes}
-**Examples**:
+The psychological literature sometimes calls $A$ the "construct" and $A^*$ the "measure" or "indicator";
+the challenge is to make inferences about the unobserved construct using the observed measure.
 
-**Independent error in treatment**: Treatment misclassification rate is the same regardless of outcome status, covariate values, etc.
-
-**Differential error in treatment**: Patients with disease are more likely to recall past exposures than healthy controls (recall bias).
+Drawing $U_A$ is not strictly necessary, since it is neither a shared cause of other variables nor conditioned on.
+The book includes it to make the sources of measurement error explicit [@hernan2020causal, p. 126].
 :::
 
-## 9.2 The Structure of Measurement Error (pp. 119-121)
+### Measurement Bias
 
 ---
 
-Measurement error can be represented using causal diagrams by distinguishing between:
+Figure 9.2 adds the measured outcome $Y^*$, with $Y \rightarrow Y^*$ and $U_Y \rightarrow Y^*$.
+With no confounding or selection bias, association is causation for the **true** variables:
 
-- **True variables**: The actual values we care about (denoted $A$, $Y$, $L$)
-- **Measured variables**: The values we observe (denoted $A^*$, $Y^*$, $L^*$)
+$$\frac{\Pr[Y = 1 \mid A = 1]}{\Pr[Y = 1 \mid A = 0]} = \frac{\Pr[Y^{a=1} = 1]}{\Pr[Y^{a=0} = 1]}$$
 
-### Causal DAG with Measurement Error
+But only $A^*$ and $Y^*$ are available, and in general
 
-For a measured treatment $A^*$ that imperfectly captures true treatment $A$:
+$$\frac{\Pr[Y^* = 1 \mid A^* = 1]}{\Pr[Y^* = 1 \mid A^* = 0]} \neq \frac{\Pr[Y^{a=1} = 1]}{\Pr[Y^{a=0} = 1]}$$
 
-- There is an arrow from true treatment $A$ to measured treatment $A^*$: $A \rightarrow A^*$
-- Measurement error $U_A$ also affects $A^*$: $U_A \rightarrow A^*$
+::: {#def-measurement-bias}
+## Measurement Bias (Information Bias)
 
-The measured treatment $A^*$ is a function of both the true treatment $A$ and the measurement error $U_A$.
-
-::: {.notes}
-**Key structural insight**: 
-
-Measurement error creates a mismatch between:
-
-- The **causal question** we want to answer (involving true variables $A$, $Y$, $L$)
-- The **data** we actually have (involving measured variables $A^*$, $Y^*$, $L^*$)
-
-The bias depends on how measurement error is structured in the causal diagram.
+There is **measurement bias**, or **information bias**, when the association between the measured treatment and outcome differs from the causal effect of the true treatment on the true outcome because of measurement error.
+In its presence, exchangeability, positivity, and consistency are insufficient to compute the causal effect of $A$ on $Y$ [@hernan2020causal, p. 126].
 :::
 
-## 9.3 Mismeasured Confounders (pp. 121-124)
+::: {.callout-note title="Technical Point 9.1: Independence and Nondifferentiality of Measurement Errors"}
+Define the measurement errors $e_A = A^* - A$ and $e_Y = Y^* - Y$, and let $f(\cdot)$ denote a probability density function.
+
+- $e_A$ and $e_Y$ are **independent** if $f(e_Y, e_A) = f(e_Y) f(e_A)$.
+- $e_A$ is **nondifferential** if $f(e_A \mid Y) = f(e_A)$.
+- $e_Y$ is **nondifferential** if $f(e_Y \mid A) = f(e_Y)$ [@hernan2020causal, p. 126].
+:::
+
+## 9.2 The Structure of Measurement Error (pp. 126-128)
 
 ---
 
-Mismeasured confounders are particularly problematic because they lead to **residual confounding**.
+Confounding has a single structure (common causes) and so does selection bias (conditioning on common effects),
+but there is **no single structure** for measurement error.
+The book classifies it by two properties: **independence** and **nondifferentiality**.
 
-### Effects of Confounder Mismeasurement
+- **Independent**: in Figure 9.2 the errors $U_A$ and $U_Y$ are d-separated, because their only path runs through the colliders $A^*$ and $Y^*$.
+  Example: drug use and liver toxicity both taken from electronic records with haphazard data-entry errors.
+- **Dependent** (Figure 9.3): a common factor $U_{AY}$ affects the measurement of both $A$ and $Y$.
+  Example: both obtained by phone interview, where a person's ability to recall her medical history affects both.
+- **Nondifferential**: $U_A$ is independent of the true $Y$, and $U_Y$ is independent of the true $A$ (Figures 9.2 and 9.3).
+- **Differential**: the true outcome affects the measurement of treatment ($Y \rightarrow U_A$, Figure 9.4), or the true treatment affects the measurement of the outcome ($A \rightarrow U_Y$, Figure 9.5).
 
-Suppose $L$ is a confounder of the $A$-$Y$ relationship, but we only observe $L^*$, a mismeasured version of $L$.
-
-**Consequence**: Adjusting for $L^*$ instead of $L$ leaves residual confounding.
-
-Even with perfect measurement of treatment $A$ and outcome $Y$, confounding cannot be fully eliminated if confounders are mismeasured.
-
-::: {#exm-mismeasured-confounder}
-## Residual Confounding from Mismeasurement
-
-Study the effect of physical activity $A$ on heart disease $Y$, adjusting for socioeconomic status (SES) $L$.
-
-**Problem**: SES is difficult to measure precisely. We use income $L^*$ as a proxy.
-
-**Result**: Income $L^*$ is associated with true SES $L$ but doesn't perfectly capture it. Adjusting for $L^*$ reduces but doesn't eliminate confounding by $L$.
-
-**Residual confounding**: The backdoor path $A \leftarrow L \rightarrow Y$ is only partially blocked by conditioning on $L^*$.
-:::
-
-::: {.notes}
-**Magnitude of bias**:
-
-The bias from mismeasured confounders depends on:
-
-1. **Strength of confounding**: How strongly $L$ affects both $A$ and $Y$
-2. **Quality of measurement**: How well $L^*$ captures $L$
-3. **Type of measurement error**: Independent vs. differential
-
-**Practical implication**: 
-
-Even well-designed observational studies with careful measurement can suffer from residual confounding due to imperfect measurement of confounders.
-
-This is one reason why unmeasured confounding is such a concern in observational research.
-:::
-
-## 9.4 Intention-to-Treat Effect (pp. 124-127)
+### Examples of Differential Error
 
 ---
 
-The **intention-to-treat (ITT)** principle is commonly used in randomized trials to handle non-compliance.
+- **Recall bias** ($Y \rightarrow U_A$):
+  drug use ascertained by interview when the outcome is dementia, which affects recall;
+  or alcohol use in pregnancy $A$ ascertained after delivery, when recall may depend on whether there was a birth defect $Y$.
+- **Reverse causation bias** ($Y \rightarrow U_A$):
+  blood levels of the drug used as $A^*$ but measured after liver toxicity $Y$ has developed, since toxicity affects drug levels.
+- **Differential outcome ascertainment** ($A \rightarrow U_Y$):
+  physicians who suspect that the drug causes liver toxicity monitor treated patients more closely.
 
-### Non-Compliance in Randomized Trials
-
-**Scenario**: In a randomized trial, some participants don't follow their assigned treatment.
-
-- Assigned to treatment but don't take it
-- Assigned to control but receive treatment
-
-**Two treatment variables**:
-
-1. **Treatment assignment** $Z$: Randomly assigned treatment (randomized, no confounding)
-2. **Treatment received** $A$: Actual treatment taken (not randomized, may be confounded)
-
-### ITT Analysis
-
-An **intention-to-treat analysis** compares outcomes by assigned treatment $Z$, regardless of actual treatment received $A$.
-
-$$\text{ITT effect} = \E{Y | Z = 1} - \E{Y | Z = 0}$$
+| Type | Figure |
+|:-----|:------:|
+| Independent nondifferential | 9.2 |
+| Dependent nondifferential | 9.3 |
+| Independent differential | 9.4, 9.5 |
+| Dependent differential | 9.6, 9.7 |
 
 ::: {.notes}
-**Why use ITT?**
-
-**Advantages**:
-
-- Preserves randomization (no confounding)
-- Estimates the effect of *assignment* policy
-- Simple to implement
-
-**Disadvantages**:
-
-- Estimates the effect of assignment, not the effect of actually taking treatment
-- Underestimates the effect of treatment among those who comply
-- Cannot answer "what if everyone actually took treatment?"
-
-**When to use ITT**: 
-
-When the policy question is about implementing a treatment program (which will have imperfect compliance), rather than the biological effect of the treatment itself.
+**Correcting for measurement error.**
+The structure of the error determines which correction methods apply;
+there is a large literature for independent nondifferential error.
+Correction methods generally combine modeling assumptions with **validation samples**, subsets in which key variables are measured with little or no error.
+The book does not cover them;
+its point is that measuring variables, like selecting individuals, can introduce bias.
+Realistic causal diagrams must represent confounding, selection, and measurement simultaneously,
+and the best defense against measurement bias is better measurement [@hernan2020causal, p. 128].
 :::
 
-### Per-Protocol Analysis
+::: {.callout-note title="Fine Point 9.1: The Strength and Direction of Measurement Bias"}
+Measurement error generally causes bias.
+The notable exception: if $A$ has no effect on $Y$ (no arrow $A \rightarrow Y$ in Figure 9.2) and the error is independent and nondifferential, both the $A$-$Y$ and the $A^*$-$Y^*$ associations are null.
 
-**Per-protocol analysis**: Compare outcomes among those who actually followed their assigned treatment.
+Otherwise the $A^*$-$Y^*$ association may be **further from or closer to** the null than the $A$-$Y$ association.
+Even with independent nondifferential error, the $A^*$-$Y^*$ and $A$-$Y$ trends can go in **opposite directions** for ordinal (non-dichotomous) or continuous treatments,
+which happens when the conditional mean of $A^*$ given $A$ is a nonmonotonic function of $A$
+(Dosemeci, Wacholder, and Lubin 1990; Weinberg, Umbach, and Greenland 1994).
 
-**Problem**: Per-protocol analysis can introduce selection bias and confounding.
-
-Those who comply may differ systematically from non-compliers in ways that affect the outcome.
-
-::: {.notes}
-**The fundamental trade-off**:
-
-- **ITT preserves internal validity** (no bias) but estimates a different quantity (effect of assignment)
-- **Per-protocol analysis** targets the desired quantity (effect of treatment) but introduces bias
-
-**Solutions**:
-
-- Instrumental variable methods (Chapter 14)
-- Sensitivity analyses
-- Collecting data on compliance determinants
+The magnitude of the bias generally grows with the strength of the arrows $U_A \rightarrow A^*$ and $U_Y \rightarrow Y^*$.
+Causal diagrams encode no quantitative information, so they cannot describe the magnitude of the bias [@hernan2020causal, p. 128].
 :::
 
-## 9.5 Measurement and Treatment (pp. 127-130)
+## 9.3 Mismeasured Confounders and Colliders (pp. 128-130)
 
 ---
 
-Measurement error in treatment creates unique challenges for causal inference.
+Mismeasured confounders can cause bias even when treatment and outcome are perfectly measured.
 
-### Types of Treatment Mismeasurement
+::: {#exm-hepatitis}
+## History of Hepatitis
 
-**Misclassification**: Binary treatment recorded incorrectly (yes/no exposure miscoded).
+In Figure 9.8, $A$ is drug use, $Y$ liver disease, and $L$ history of hepatitis:
+people with prior hepatitis are less likely to be prescribed the drug and more likely to develop liver disease,
+so there is confounding through $A \leftarrow L \rightarrow Y$.
+With $L$ perfectly measured, standardization or IP weighting by $L$ recovers the causal risk ratio.
 
-**Measurement error**: Continuous treatment measured inaccurately (dose, duration miscoded).
-
-### Effect of Treatment Mismeasurement
-
-When treatment is mismeasured, we're effectively studying the effect of $A^*$ (measured) instead of $A$ (true).
-
-**General result**: Independent measurement error in treatment typically **biases estimates toward the null** (underestimates the true effect).
-
-**Exception**: Differential measurement error can bias in any direction.
-
-::: {#exm-treatment-mismeasurement}
-## Attenuation from Independent Error
-
-Study the effect of dietary sodium intake $A$ on blood pressure $Y$.
-
-**Measurement**: Sodium intake measured via 24-hour dietary recall $A^*$ (subject to recall error).
-
-**Error structure**: Recall errors are approximately independent of blood pressure.
-
-**Result**: The observed association between $A^*$ and $Y$ underestimates the true effect of $A$ on $Y$ (bias toward null).
+If hepatitis history is instead ascertained by questionnaire, some participants misreport it,
+and investigators have only the mismeasured $L^*$.
+Conditioning on $L^*$ does not generally block $A \leftarrow L \rightarrow Y$,
+so the risk ratio standardized (or IP weighted) by $L^*$ generally differs from the causal risk ratio:
+there is measurement bias [@hernan2020causal, pp. 128-129].
 :::
 
+The same holds in Figure 9.9, where the confounding path is $A \leftarrow L \leftarrow U \rightarrow Y$ and $L$ is not itself a common cause of $A$ and $Y$:
+conditioning on $L^*$ does not generally block it.
+
 ::: {.notes}
-**Why independent error attenuates**:
+**Measurement bias or unmeasured confounding?**
+Figure 9.8 is equivalent to Figure 7.8: one can view $L$ as unmeasured and $L^*$ as a surrogate confounder (Fine Point 7.3).
+The choice of terminology is irrelevant for practical purposes [@hernan2020causal, p. 129].
+In some settings, however, mismeasured variables are enough to adjust for confounding (Fine Point 9.2).
+:::
 
-With independent measurement error in treatment:
+### Apparent Effect Modification
 
-- Some truly unexposed are classified as exposed
-- Some truly exposed are classified as unexposed
-- This dilutes the contrast between treatment groups
-- The observed effect is weaker than the true effect
+---
 
-**Implication**: 
+Mismeasured confounders can also create **apparent effect modification**.
+Suppose, under the sharp null hypothesis (treatment has no effect on anyone's liver disease):
 
-A null finding in a study with measurement error doesn't necessarily mean no true effect. The true effect could be non-null but attenuated by measurement error.
+- everyone who reported prior hepatitis ($L^* = 1$) truly had it ($L = 1$);
+- half of those who reported none ($L^* = 0$) truly had it.
+
+Then:
+
+- in the stratum $L^* = 1$, everyone has $L = 1$, so there is no confounding by $L$ and no $A$-$Y$ association;
+- in the stratum $L^* = 0$, individuals with $L = 1$ and $L = 0$ are mixed, so there is uncontrolled confounding by $L$ and a non-null $A$-$Y$ association.
+
+Reading both stratum-specific associations as effects, investigators would conclude that $L^*$ modifies the effect of $A$, although there is no effect at all [@hernan2020causal, p. 129].
+
+### Mismeasured Colliders
+
+---
+
+A collider can be mismeasured too.
+In Figure 9.10 (equivalent to Figure 8.2), conditioning on the mismeasured $C^*$ generally introduces selection bias,
+because $C^*$ is a descendant of the collider $C$ and therefore a common effect of $A$ and $Y$.
+
+::: {.callout-note title="Fine Point 9.2: When Mismeasured Confounders Are Not a Problem"}
+High blood pressure $L$ affects antihypertensive therapy $A$ and stroke $Y$,
+but treatment decisions are based on the office measurement $L^*$, not on the true $L$.
+In Figure 9.11 (structurally equivalent to Figure 7.2), $L^*$ fully mediates the effect of $L$ on $A$:
+$L \rightarrow L^* \rightarrow A$, $L \rightarrow Y$, $A \rightarrow Y$.
+Any part of $L$ not captured by $L^*$ was unknown to decision makers and could not affect treatment.
+So the backdoor path $A \leftarrow L^* \leftarrow L \rightarrow Y$ is blocked by conditioning on **either** $L$ or $L^*$.
+
+In the more extreme Figure 9.12, data on the true $L$ are insufficient but data on $L^*$ suffice.
+The general point: effects can be identified whenever the data contain as much information as the decision makers had,
+whether or not that information was measured with error [@hernan2020causal, p. 130].
+:::
+
+## 9.4 Causal Diagrams Without Mismeasured Variables? (pp. 130-131)
+
+---
+
+Earlier chapters drew causal diagrams under two simplifying assumptions;
+this section makes the first explicit.
+
+**Assumption 1: all variables on the diagram are perfectly measured.**
+This is unrealistic.
+As this chapter showed, measurement error can
+
+- create a noncausal association between $A^*$ and $Y^*$ even when $A$ has no effect on $Y$ and there is no confounding or selection bias, and
+- prevent a measured confounder $L^*$ from blocking a backdoor path that the true $L$ would block.
+
+Should every diagram then show both true and measured values of every variable?
+Often the measurement error is judged or known to be too small to matter, and a simpler diagram is preferable.
+
+::: {.notes}
+**A two-step approach.**
+If confounding and selection bias exist under perfect measurement, they will typically exist under measurement error too
+(with exceptions, as in Fine Point 9.2).
+So the book first draws diagrams without measurement error to study confounding and selection bias,
+then adds measurement error as an extra layer.
+Throughout the book, when the emphasis is on confounding and selection, it omits the distinction between true and measured values [@hernan2020causal, pp. 130-131].
+The second assumption, which is fundamental to any causal diagram, is the subject of Section 9.5.
+:::
+
+## 9.5 Many Proposed Causal Diagrams Include Noncausal Arrows (pp. 131-133)
+
+---
+
+Let $A$ be antiviral treatment for COVID-19, $Y$ death, and $L$ obesity (body mass index above 30), all binary.
+Obese patients are more likely to be treated and to die without treatment,
+so experts draw Figure 9.13 (equal to Figure 7.1): $L \rightarrow A$, $L \rightarrow Y$, $A \rightarrow Y$.
+Assume treatment depends only on $L$ and on physician preference, and that there is no measurement error.
+
+**Assumption 2: every arrow corresponds to a well-defined intervention.**
+
+- Inference about the effect of $A$ on $Y$ needs well-defined counterfactuals $Y^a$, hence well-defined interventions on $A$ (Chapter 3).
+  Antiviral treatment can clearly be given or withheld, so the arrow $A \rightarrow Y$ (or its absence) is meaningful.
+- Obesity $L$ is not an intervention.
+  As in Chapter 3, $Y^l$ is defined only if some well-defined **effective no-direct-effect (ENDE)** intervention
+  can change $L$ while having no direct effect on $Y$.
+  Few experts would grant that such an intervention exists for obesity and mortality,
+  so the arrow $L \rightarrow Y$ cannot be assumed to be well defined [@hernan2020causal, p. 131].
+
+::: {#def-causal-dag-strict}
+## Causal DAG (Strict Sense)
+
+The book restricts the term **causal DAG** to DAGs in which every arrow has a causal interpretation.
+A DAG with at least one arrow lacking such an interpretation, such as Figure 9.13 under current knowledge, is a **"noncausal" diagram** [@hernan2020causal, p. 132].
+:::
+
+### The Two Arrows out of Obesity
+
+---
+
+- **$L \rightarrow A$ is reasonable.**
+  Doctors are more likely to treat patients they learn are obese,
+  and one can imagine a well-defined ENDE intervention, such as showing the physician a patient with a different body mass index.
+- **$L \rightarrow Y$ is not.**
+  Experts know obese patients are more likely to die, but because they do not accept that ENDE interventions on obesity exist for that effect,
+  the arrow has no causal interpretation for them.
+
+::: {.callout-note title="Fine Point 9.3: Whether Interventions Are Well-Defined Depends on the Outcome of Interest"}
+If we know how to intervene on $L$ to study its effect on $A$, why not use the same intervention for $Y$?
+The apparent contradiction comes from using $L$ for two things:
+the physical quantity body weight, and the doctor's perception of that quantity.
+
+Let $L$ be body weight and $L^*$ the doctor's perception of it.
+With perfect perception there is a deterministic arrow $L \rightarrow L^*$, and the arrow into treatment is $L^* \rightarrow A$:
+body weight affects treatment only once the doctor learns $L^*$.
+Intervening on the perceived $L^*$ while leaving body weight unchanged would change the doctor's behavior just as intervening on $L$ would.
+In this sense the counterfactuals $A^l$ are well defined, while $Y^l$ are not [@hernan2020causal, p. 132].
+:::
+
+### Making the Diagram Causal: Hidden Factors $H$
+
+---
+
+Experts who want a causal DAG that still accounts for the fact that obese patients die more often
+can instead propose Figure 9.14, which has the same structure as Figure 7.2.
+It adds a hidden node $H$ that causes both $L$ and $Y$;
+$H$ may contain unmeasured, possibly unknown, factors (genetic factors, metabolic factors related to body fat, microbiota, and others not yet discovered).
+Figure 9.14 has
+
+$$H \rightarrow L \rightarrow A \rightarrow Y, \qquad H \rightarrow Y,$$
+
+with no arrow $H \rightarrow A$, which is reasonable if obesity $L$ is the only information used in treatment decisions.
+
+Is Figure 9.14 itself causal?
+Its new arrows $H \rightarrow L$ and $H \rightarrow Y$ are causal exactly when the counterfactuals $L^h$ and $Y^h$ are well defined.
+That holds if the experts are willing to assume either
+
+- that $H$ corresponds to a well-defined intervention, or
+- that some well-defined ENDE intervention on $H$ exists whose only route to $L$ and $Y$ runs through $H$.
+
+The precise intervention on $H$ is unknown, but current knowledge does not exclude it,
+so both arrows out of $H$ are tentatively justified and Figure 9.14 is treated as a causal diagram [@hernan2020causal, pp. 132-133].
+
+::: {.callout-note title="Fine Point 9.4: \"Noncausal\" Diagrams With Well-Defined Statistical Interpretations"}
+Consider an FFRCISTG model in which only $A$ has well-defined interventions (counterfactuals $(M^a, Y^a)$)
+and the joint distribution factors according to the DAG.
+Its arrows need not be causal;
+they only encode, via d-separation, conditional independencies on the DAG and the associated SWIG.
+Under this reading, the arrow $L \rightarrow Y$ in Figure 9.13 need not be removed.
+
+Richardson and Robins (2013) pointed out serious difficulties:
+if arrows are not causal, there is no reason to expect the distribution to factor according to any incomplete DAG,
+and with unmeasured variables some of the implied independencies cannot even be checked.
+For example, the front door graph (Figure 7.14) implies $Y \ind A \mid M, U$,
+and it is hard to see a reason for postulating this other than believing every arrow is causal.
+
+Alternatively, noncausal arrows can be read as a response by researchers skeptical that the counterfactuals $Y^m$ exist:
+Figure 7.14 then states that $Y \ind A \mid M$ would hold in a future trial randomizing $A$,
+and if it fails, the claim that $M$-counterfactuals exist is falsified together with the structure [@hernan2020causal, p. 133].
+:::
+
+::: {.callout-note title="Fine Point 9.5: A Connection to the Front Door Formula"}
+Figure 9.14 is the front door diagram of Figure 7.14 with $L \rightarrow A$ in place of $A \rightarrow M$.
+Hence $\E{Y^l}$ is identified by the front door formula (Technical Point 7.4),
+substituting $L, l, l'$ for $A, a, a'$ and $A, a$ for $M, m$:
+
+$$\E{Y^l} = \sum_a \Pr[A = a \mid L = l] \sum_{l'} \E{Y \mid A = a, L = l'} \Pr[L = l']$$
+
+If a researcher adds a direct arrow $L \rightarrow Y$
+(e.g., because patients with high $L$ receive unrecorded ancillary care such as dietary advice),
+$Y^l - Y^{l'}$ becomes the total effect along both $L \rightarrow Y$ and $L \rightarrow A \rightarrow Y$, and $\E{Y^l}$ is no longer identified.
+The effect along $L \rightarrow A \rightarrow Y$ alone remains identified by the front door formula, which the book proves in Chapter 23 [@hernan2020causal, p. 134].
+:::
+
+## 9.6 Does It Matter That Many Proposed Diagrams Include Noncausal Arrows? (pp. 133-136)
+
+---
+
+**Sometimes it does not.**
+Figure 9.13 is not causal, yet it leads to the right analysis:
+under both Figure 9.13 and the causal Figure 9.14, all backdoor paths between $A$ and $Y$ are blocked by conditioning on $L$,
+so standardization or IP weighting by $L$ identifies the average causal effect.
+This is expected, because in neither DAG do unmeasured variables have arrows into $A$ (compare Fine Point 9.2).
+
+Many DAGs in the health and social sciences are noncausal because they omit the hidden variables $H$ that would make them causal;
+including a variable without well-defined interventions for its effect on its descendants effectively declares the DAG noncausal.
+The identifying formula may still coincide with that from the causal DAG, as here.
+
+### When Noncausal Arrows Mislead
+
+---
+
+**Sometimes it does.**
+In Figure 9.15 the direct arrow $L \rightarrow Y$, read causally, claims well-defined interventions on $L$ for $Y$,
+and $L$ blocks the backdoor path between $A$ and $Y$.
+If instead $L$ is a surrogate for hidden factors $H$ for which well-defined interventions exist (Figure 9.16),
+$L$ does not block the backdoor path.
+Investigators unaware that $L$ is only a surrogate confounder would wrongly conclude that adjusting for $L$ suffices,
+as discussed in Section 9.3 [@hernan2020causal, p. 134].
+
+When proposing a causal DAG, ask of each arrow $X \rightarrow Y$ whether there is a well-defined intervention on $X$ for its effect on $Y$.
+This scrutiny is unnecessary for an electrical circuit, where all interventions are well defined,
+but indispensable in the health and social sciences.
+
+::: {.notes}
+**Well-defined is a matter of degree.**
+No intervention is perfectly well defined (Chapter 3), but for some there is scientific consensus that they are sufficiently well defined.
+From here on, except for clearly sign-posted exceptions, the book assumes all DAGs are strictly causal:
+every arrow corresponds to an intervention that can be specified with no meaningful vagueness given current knowledge,
+while acknowledging that such beliefs, and the diagrams, may later prove wrong [@hernan2020causal, p. 135].
+:::
+
+::: {.callout-note title="Fine Point 9.6: From Noncausal Diagrams to Causal Diagrams"}
+Investigators interested in the effect of $A$ on $Y$ draw Figure 9.17 from the temporal order of the variables and two facts:
+the measured $L$ is associated with $Y$, and known but unmeasured factors $U$ affect $A$ and are associated with $L$.
+If Figure 9.17 were the true causal diagram, the effect would not be identifiable, because $L$ is a descendant of $A$ (Fine Point 7.4).
+
+There is no well-defined intervention on $L$ for $Y$, so they add a hidden $H \rightarrow Y$ with $L$ as a surrogate of $H$, and redirect the arrows from $U$ and $A$ into $L$ toward $H$ (Figure 9.18).
+Now the backdoor path $A \leftarrow U \rightarrow H \rightarrow Y$ cannot be blocked by any measured variable, so the effect is not identifiable.
+Even if $L$ were a deterministic function of $H$, conditioning on $L$ would not block paths through $H$, because $H$ is not a function of $L$.
+
+Letting $H$ inherit all arrows into $L$ is not always warranted.
+If $U$ affects $L$ directly rather than $H$ (Figure 9.19), there are no open backdoor paths and the effect is identifiable.
+Example: $U$ is a physician's decision to order a diagnostic test, $L$ the test result, and $H$ the biological determinants of the result [@hernan2020causal, p. 136].
 :::
 
 ## Summary
 
 ---
 
-This chapter examined **measurement bias**, a third source of bias in causal inference.
-
-**Key concepts**:
-
-1. **Measurement error**: Discrepancy between true and recorded values
-
-2. **Types of measurement error**:
-   - Independent (nondifferential): Error independent of other variables
-   - Differential: Error depends on other variables
-
-3. **Structure**: Represented by $\text{True variable} \rightarrow \text{Measured variable} \leftarrow \text{Error}$
-
-4. **Mismeasured confounders**: Lead to residual confounding even when adjusting
-
-5. **Treatment mismeasurement**:
-   - Independent error typically attenuates effects toward null
-   - Differential error can bias in any direction
-
-6. **Intention-to-treat**: Addresses non-compliance by analyzing by assignment rather than actual treatment
-
-::: {.notes}
-**Practical implications**:
-
-1. **Study design**:
-   - Invest in high-quality measurement
-   - Validate measurements when possible
-   - Measure key confounders with particular care
-
-2. **Analysis**:
-   - Acknowledge measurement error in interpretation
-   - Conduct sensitivity analyses
-   - Consider correction methods when error structure is known
-
-3. **Reporting**:
-   - Describe measurement procedures clearly
-   - Report validation studies if available
-   - Discuss potential impact of measurement error
-
-**Interaction with other biases**:
-
-Measurement bias, confounding, and selection bias can all occur simultaneously:
-
-- Measurement error in confounders creates residual confounding
-- Measurement error in selection variables affects selection bias
-- Multiple sources of bias compound the challenge of causal inference
-
-**Looking ahead**:
-
-- **Chapter 10**: Introduces the need for parametric models
-- **Chapters 11-16**: Advanced methods that can sometimes address combinations of biases
-:::
+1. **Measurement bias** (information bias) arises when the association between measured treatment $A^*$ and measured outcome $Y^*$ differs from the causal effect of $A$ on $Y$;
+   it can occur in any study design.
+2. Measurement error has no single structure;
+   it is classified as **independent or dependent** and **nondifferential or differential** (Figures 9.2-9.7).
+   Recall bias and reverse causation bias are examples of differential error.
+3. Measurement bias can move the association **toward or away from** the null;
+   a notable exception is a null effect with independent nondifferential error, where both associations are null.
+   For non-dichotomous treatments, even independent nondifferential error can reverse a trend.
+4. **Mismeasured confounders** generally leave the backdoor path partly open and can create apparent effect modification;
+   **mismeasured colliders** still induce selection bias.
+   But if decisions were made on the measured value, the measured confounder suffices.
+5. Diagrams often omit measurement error as a first approximation.
+6. A strictly **causal DAG** requires a well-defined intervention for every arrow.
+   "Noncausal" arrows, such as obesity $\rightarrow$ death, may still give the right identifying formula (Figures 9.13 and 9.14) or may mislead (Figures 9.15 and 9.16).
 
 ## References
 

@@ -12,341 +12,697 @@ format:
 
 {{< include ../latex-macros/macros.qmd >}}
 
-Throughout most of this book we have asked: "What is the **total** causal effect of treatment $A$ on outcome $Y$?"
-This question collapses all causal pathways between $A$ and $Y$ into a single number.
-But scientific and policy questions often require a finer decomposition:
-*how much* of the effect of $A$ on $Y$ operates through a particular intermediate variable (a **mediator** $M$),
-and how much operates through other pathways?
+Part III asked how outcomes would change under sustained treatment strategies;
+it did not ask *how* treatment produces its effect.
+**Causal mediation** studies the causal pathways
+through which a treatment $A$ affects an outcome $Y$,
+in particular the pathways that run through an intermediate variable,
+the **mediator** $M$.
 
-Mediation analysis has a long history in the behavioral and social sciences,
-but the traditional approach — based on coefficient differences in linear regression —
-has significant conceptual and practical limitations.
-This chapter examines those limitations,
-defends a properly formulated mediation analysis,
-and introduces a modern interventionist framework
-that resolves many of the classical difficulties.
+Mediation can be viewed as a special case of causal inference with time-varying treatments:
+instead of one treatment taking values at several times,
+we have two different variables, the treatment and the mediator, at different times.
+This chapter develops a framework for mediation
+based on hypothetical interventions that can be mapped into a target trial.
+Unlike approaches built on pure direct and total indirect effects,
+this **interventionist** framework allows the causal estimates
+to be checked empirically, at least in principle.
 
 ::: {.notes}
-This chapter is based on @hernan2020causal [Chapter 23, pp. 323–330].
+This chapter is based on @hernan2020causal [Chapter 23, pp. 323-331].
 
-**Key message**: The classical approach to mediation (Baron and Kenny, path analysis)
-conflates total, direct, and indirect effects in ways that can produce misleading conclusions.
-The counterfactual formulation precisely defines each effect as a potential outcome,
-reveals the assumptions required for identification,
-and suggests estimation strategies that parallel those developed for total effects.
+**Key message**: the standard decomposition of a total effect
+into a pure direct effect and a total indirect effect
+relies on cross-world counterfactuals
+whose identifying assumptions no experiment can check.
+The interventionist alternative reframes the mediation question
+as a question about separately intervenable components of treatment.
+When the identifying assumptions hold,
+the resulting g-formula is the same mediation formula,
+but now it estimates the effect of an intervention that could be carried out,
+and its assumptions can be refuted by a future randomized trial.
 :::
 
-## 23.1 Mediation Analysis Under Attack (p. 323)
+## 23.1 Mediation Analysis Under Attack (pp. 323-325)
 
 ---
 
-Classical mediation analysis, as popularized by Baron and Kenny (1986),
-decomposes the total effect of $A$ on $Y$ into:
+::: {#exm-smoking-mediation}
+## The smoking cessation trial
 
-- A **direct effect**: the effect of $A$ on $Y$ not through $M$.
-- An **indirect effect** (mediated effect): the effect of $A$ on $Y$ through $M$.
+Smokers are randomized to quit smoking ($A = 0$) or to keep smoking ($A = 1$),
+with perfect adherence.
+The trial finds that cessation lowers the 1-year risk of myocardial infarction $Y$,
+i.e., $\E{Y \mid A = 1} > \E{Y \mid A = 0}$.
 
-In a linear structural equation model, this decomposition is:
-
-$$Y = \beta_0 + \beta_1 A + \beta_2 M + \varepsilon_Y, \quad M = \alpha_0 + \alpha_1 A + \varepsilon_M.$$
-
-The indirect effect is $\alpha_1 \cdot \beta_2$ (the "product of coefficients")
-and the direct effect is $\beta_1$.
-The total effect is $\beta_1 + \alpha_1 \cdot \beta_2$.
-
-### Criticisms of the Classical Approach
-
-::: {#def-classical-mediation-limitations}
-## Limitations of Classical Mediation Analysis
-
-The classical approach fails in several important ways:
-
-1. **Non-linear models**: In logistic or survival regression,
-   the "difference of coefficients" and "product of coefficients" methods
-   do not estimate the same quantity and neither equals the natural indirect effect.
-2. **Interaction**: If $A$ and $M$ interact in their effects on $Y$
-   (i.e., the effect of $M$ on $Y$ differs by $A$),
-   classical mediation analysis misses this interaction entirely.
-3. **Confounding of the mediator**: If there are common causes of $M$ and $Y$
-   (confounders of the mediator-outcome relationship),
-   the regression coefficients do not have causal interpretations.
-4. **Unmeasured $A$–$M$ interaction for non-linearities**: Even correcting for the above,
-   the classical estimands do not correspond to well-defined causal quantities.
+The investigators then ask whether the benefit operates
+through reduced hypertension $M$, measured at 6 months
+(assume no one has the outcome during the first 6 months).
+The book's Figure 23.1 is the causal diagram $A \to M \to Y$ with an additional arrow $A \to Y$,
+assuming interventions on $M$ are sufficiently well defined.
 :::
 
-These criticisms motivate a formal counterfactual definition of direct and indirect effects,
-which makes the identifying assumptions explicit and yields estimators that work
-in non-linear models with interaction.
+Decomposing the total effect of $A$ on $Y$
+into a part through $M$ (indirect) and a part not through $M$ (direct)
+is a **causal mediation analysis**.
+Chapter 22 formalized direct effects (Technical Points 22.1 and 22.2)
+but not indirect effects.
 
 ::: {.notes}
-**Historical note**: The critique of classical mediation using the potential outcomes framework
-was developed in the 2000s and 2010s by VanderWeele, Robins, Pearl, and others.
-The key insight is that the classical "direct" and "indirect" effects are estimable
-only under strong — and usually unstated — assumptions about the absence of
-$A \times M$ interaction and the absence of unmeasured confounders of the $M \to Y$ relationship.
+@hernan2020causal [p. 323] attributes the pure direct effect
+and the total indirect effect to Robins and Greenland (1992).
+Pearl (2001) called the same quantities
+the natural direct effect and the natural indirect effect.
 :::
-
-## 23.2 A Defense of Mediation Analysis (p. 325)
 
 ---
 
-Despite these criticisms, mediation analysis remains scientifically valuable
-when conducted with appropriate care.
-Understanding *how* a treatment works — through what mechanisms —
-is essential for:
+::: {#def-pure-direct-effect}
+## Pure direct effect
 
-- **Surrogate endpoint validation**: If a treatment works only through biomarker $M$,
-  then $M$ may serve as a valid surrogate for $Y$ in future trials.
-- **Mechanism-based intervention design**: If the indirect pathway through $M$ is dominant,
-  interventions targeting $M$ directly (without $A$) may be effective.
-- **Effect decomposition for policy**: Policy makers may want to know
-  how much of the health disparity between two groups is "explained" by a specific mediator.
+The **pure direct effect** of $A$ on $Y$ not through $M$
+is the average causal effect of $A$ on $Y$
+if each individual's mediator had been set to the value $M^{a=0}$
+it would have taken under $a = 0$:
 
-The counterfactual framework provides precise definitions
-that make these scientific goals achievable without the ambiguities of the classical approach.
-
-::: {#def-natural-direct}
-## Natural Direct Effect (NDE)
-
-The **natural direct effect** of $A$ (comparing $a = 1$ to $a = 0$) is
-
-$$\text{NDE} = \E{Y^{a=1, M^{a=0}}} - \E{Y^{a=0, M^{a=0}}},$$
-
-where $Y^{a, m}$ is the potential outcome under treatment $a$ and mediator value $m$,
-and $M^{a=0}$ is the potential value of the mediator under no treatment.
-The NDE asks: what is the effect of $A$ on $Y$ if the mediator were "held" at the value
-it would have taken under no treatment?
+$$\E{Y^{a=1, M^{a=0}}} - \E{Y^{a=0, M^{a=0}}}.$$
 :::
 
-::: {#def-natural-indirect}
-## Natural Indirect Effect (NIE)
+::: {#def-total-indirect-effect}
+## Total indirect effect
 
-The **natural indirect effect** of $A$ (comparing $a = 1$ to $a = 0$) is
+The **total indirect effect** of $A$ on $Y$ through $M$ is
 
-$$\text{NIE} = \E{Y^{a=1, M^{a=1}}} - \E{Y^{a=1, M^{a=0}}},$$
-
-which captures the effect of changing the mediator from $M^{a=0}$ to $M^{a=1}$
-while holding treatment at $a = 1$.
-The NIE asks: how much of the treatment effect is attributable to the change in $M$?
+$$\E{Y^{a=1, M^{a=1}}} - \E{Y^{a=1, M^{a=0}}}.$$
 :::
 
-### The Decomposition
-
-The **total effect** decomposes as:
-
-$$\E{Y^{a=1}} - \E{Y^{a=0}} = \text{NDE} + \text{NIE}.$$
-
-This decomposition always holds on the additive (difference) scale.
-On other scales (ratio, odds ratio), decompositions exist but are more complex.
-
-::: {.notes}
-**Nested counterfactuals**: The quantity $Y^{a=1, M^{a=0}}$ is a **cross-world** counterfactual:
-it asks about the outcome when treatment is set to 1 but the mediator takes the value
-it would have taken if treatment had been set to 0.
-This requires simultaneously imagining two different treatment worlds,
-which cannot be directly observed.
-
-**Identification**: The NDE and NIE are identified under four conditions:
-(1) no unmeasured $A$–$Y$ confounders,
-(2) no unmeasured $M$–$Y$ confounders,
-(3) no unmeasured $A$–$M$ confounders, and
-(4) no $M$–$Y$ confounder that is itself caused by $A$.
-Condition (4) is particularly restrictive:
-if treatment affects a common cause of $M$ and $Y$,
-the cross-world counterfactuals are not identified from observed data.
-:::
-
-## 23.3 Empirically Verifiable Mediation (p. 327)
+In the smoking example,
+$M^{a=0}$ is known for those who actually quit
+but unknown for those who kept smoking.
+$Y^{a=1, M^{a=0}}$ is a **cross-world** quantity:
+it is indexed by two treatment values, $a = 1$ and $a = 0$,
+that cannot occur simultaneously for the same individual in the same world.
+Both the pure direct effect and the total indirect effect are cross-world quantities.
 
 ---
 
-The natural direct and indirect effects require identifying assumptions
-that cannot be empirically verified — in particular, the cross-world consistency condition
-assumes that the potential outcome $Y^{a=1, M^{a=0}}$ is well-defined
-and corresponds to a realizable intervention.
-This is conceptually problematic when the mediator $M$ cannot in principle
-be manipulated independently of $A$.
+::: {#thm-pde-tie-decomposition}
+## The decomposition of the total effect
 
-An alternative is to focus on **controlled direct effects** and related estimands
-that do not require cross-world counterfactuals.
+The pure direct effect and the total indirect effect sum to the total effect:
 
-::: {#def-controlled-direct}
-## Controlled Direct Effect (CDE)
-
-The **controlled direct effect** of $A$ at mediator level $m$ is
-
-$$\text{CDE}(m) = \E{Y^{a=1, m}} - \E{Y^{a=0, m}},$$
-
-where both $A$ and $M$ are set simultaneously to specified values.
-The CDE asks: what is the effect of $A$ on $Y$ when $M$ is held at level $m$
-by external intervention?
+$$\E{Y^{a=1, M^{a=0}}} - \E{Y^{a=0, M^{a=0}}}
++ \E{Y^{a=1, M^{a=1}}} - \E{Y^{a=1, M^{a=0}}}
+= \E{Y^{a=1}} - \E{Y^{a=0}}.$$
 :::
 
-The CDE is identified under the same conditions as the average causal effect of $A$,
-*plus* no unmeasured $M$–$Y$ confounders.
-Crucially, the CDE does not require the cross-world consistency assumption
-and does not depend on condition (4) above (no $A$-affected $M$–$Y$ confounder).
+::: {.proof}
+Adding the two contrasts, the cross-world term cancels:
 
-### Empirical Content
-
-The CDE corresponds to a **physical intervention**: setting $M = m$ for everyone in the population
-and then comparing treatment assignments.
-This is the kind of intervention that could, in principle, be conducted
-(e.g., in a sequential randomized trial that randomizes both $A$ and $M$).
-
-The limitation of the CDE is that it does not provide a single measure
-of the "indirect effect"; rather, the CDE at $m$ captures the direct effect
-when the mediator is fixed at $m$, and one obtains a different CDE for each value of $m$.
-
-::: {.notes}
-**Relationship between CDE and NDE**:
-
-When there is no $A \times M$ interaction on the additive scale
-(i.e., $\E{Y^{1,m}} - \E{Y^{0,m}}$ does not depend on $m$),
-the CDE equals the NDE for any value of $m$.
-In this case, both estimands agree and the choice is immaterial.
-When interaction is present, they differ, and the analyst must decide which is of interest.
-
-**Four-way decomposition**: VanderWeele (2014) proposed a four-way decomposition of the total effect
-into components due to:
-(1) the controlled direct effect (CDE at $m = 0$),
-(2) a pure indirect effect (no interaction),
-(3) an interaction component attributable to the mediator,
-(4) an interaction component attributable to treatment.
-This decomposition is especially useful when $A \times M$ interaction is present and of scientific interest.
+$$
+\begin{aligned}
+&\E{Y^{a=1, M^{a=0}}} - \E{Y^{a=0, M^{a=0}}}
++ \E{Y^{a=1, M^{a=1}}} - \E{Y^{a=1, M^{a=0}}} \\
+&\quad = \E{Y^{a=1, M^{a=1}}} - \E{Y^{a=0, M^{a=0}}}
+&& \text{(the } \E{Y^{a=1, M^{a=0}}} \text{ terms cancel)} \\
+&\quad = \E{Y^{a=1}} - \E{Y^{a=0}}
+&& \text{(consistency: } Y^{a, M^{a}} = Y^{a} \text{)}.
+\end{aligned}
+$$
 :::
-
-## 23.4 An Interventionist Theory of Mediation (p. 329)
 
 ---
 
-The deepest conceptual challenge in mediation analysis
-arises from the cross-world nature of the NDE and NIE:
-$Y^{a=1, M^{a=0}}$ requires simultaneously setting $A = 1$ (at one level)
-and letting $M$ be as it would be if $A = 0$ (a different level).
-This is not the result of any single intervention on $(A, M)$.
+### Identification: the mediation formula
 
-The **interventionist** approach resolves this by restricting attention
-to estimands that correspond to interventions that *could actually be performed*.
+Figure 23.1 has no unmeasured common causes of $M$ and $Y$.
+If such common causes existed,
+no direct effect could be identified:
+neither controlled direct effects
+nor the pure direct and total indirect effects.
+Identifying the mediation effects requires identifying
+the cross-world mean $\E{Y^{a=1, M^{a=0}}}$,
+which the **mediation formula** does:
 
-::: {#def-interventionist-mediation}
-## Interventionist (Stochastic) Mediation Estimands
+$$\E{Y^{a=1, M^{a=0}}} = \sum_m \E{Y \mid A = 1, M = m} \Pr[M = m \mid A = 0].$$
 
-Let $Q$ be a distribution over mediator values.
-Define the **randomized interventional analogue** of the indirect effect as
+::: {#thm-mediation-formula}
+## The mediation formula (Technical Point 23.1)
 
-$$\text{rIIE} = \E{Y^{a=1, G_1}} - \E{Y^{a=1, G_0}},$$
+Under the causal diagram in Figure 23.1,
+assuming exchangeability and consistency for $A$ and $M$
+and the cross-world independence $Y^{a=1, m} \ind M^{a=0}$,
 
-where $G_a \sim Q(M^a)$ denotes assigning the mediator at random
-from the distribution it would have under treatment $a$.
+$$\E{Y^{a=1, M^{a=0}}} = \sum_m \E{Y \mid A = 1, M = m} \Pr[M = m \mid A = 0].$$
 :::
 
-In this formulation, both components of the nested counterfactual
-correspond to actual interventions: set $A$ to some value and draw $M$ from a distribution.
-There is no cross-world problem because we are only asking
-"what would happen if $A$ were set to 1 and $M$ were drawn from the distribution
-it would have under $A = 0$?" — which is an intervention that could be implemented.
+::: {.proof}
+$$
+\begin{aligned}
+\E{Y^{a=1, M^{a=0}}}
+&= \sum_m \E{Y^{a=1, M^{a=0}} \mid M^{a=0} = m} \Pr[M^{a=0} = m]
+&& \text{(law of total expectation)} \\
+&= \sum_m \E{Y^{a=1, m} \mid M^{a=0} = m} \Pr[M^{a=0} = m]
+&& \text{(on } \{M^{a=0} = m\}, \ Y^{a=1, M^{a=0}} = Y^{a=1, m} \text{)} \\
+&= \sum_m \E{Y^{a=1, m}} \Pr[M^{a=0} = m]
+&& \text{(cross-world independence } Y^{a=1, m} \ind M^{a=0} \text{)} \\
+&= \sum_m \E{Y^{a=1, m} \mid A = 1, M = m} \Pr[M^{a=0} = m \mid A = 0]
+&& \text{(exchangeability for } A \text{ and for } M \text{)} \\
+&= \sum_m \E{Y \mid A = 1, M = m} \Pr[M = m \mid A = 0]
+&& \text{(consistency)}.
+\end{aligned}
+$$
 
-### Identification of Interventionist Effects
+The fourth line uses randomization of $A$
+(so $Y^{a=1, m}$ and $M^{a=0}$ are independent of $A$)
+and the absence of unmeasured common causes of $M$ and $Y$
+(so $Y^{a=1, m}$ is independent of $M$ given $A = 1$).
+The book compresses the last two lines into one step
+"by exchangeability and consistency" [@hernan2020causal, p. 324].
+:::
 
-The randomized interventional analogue of the indirect effect is identified
-under conditions that do not require assumption (4) from Section 23.2:
+---
 
-$$\text{rIIE} = \E{ \int \E{Y \mid A = 1, M = m, C}\, dF_{M \mid A=0, C}(m) }
-- \E{ \E{Y \mid A = 1, M, C} },$$
+### Why the mediation formula is under attack
 
-where $C$ are baseline covariates sufficient to control confounding of both
-the $A \to Y$ and $M \to Y$ pathways.
-This expression can be estimated from observed data
-using outcome regression, IP weighting, or doubly robust methods.
+- The mediation formula identifies a cross-world quantity
+  whose value cannot be confirmed by any experiment that intervenes on $A$ and $M$,
+  not even in principle.
+- Its proof needs the cross-world independence $Y^{a=1, m} \ind M^{a=0}$.
+  $Y^{a=1, m}$ and $M^{a=0}$ can never be observed together for the same individual,
+  so no trial randomizing $A$ and $M$, singly or jointly,
+  can check their independence.
+- That independence holds under an **NPSEM-IE**
+  but not under an **FFRCISTG** model,
+  the counterfactual model used throughout the book (Technical Point 6.2).
+  This is one reason the book prefers the FFRCISTG:
+  it wants methods whose results are, in principle, verifiable.
+- Skeptical policy makers may regard the pure direct effect
+  as having no policy relevance, because it corresponds to no intervention.
 
 ::: {.notes}
-**Why the interventionist approach matters**:
+Under an FFRCISTG model, the pure direct and total indirect effects are not point identified,
+but sharp bounds exist (Robins and Richardson 2010, cited in @hernan2020causal [p. 325]).
 
-The standard NDE requires cross-world consistency, which is often unjustifiable
-when the mediator cannot be independently manipulated.
-The interventionist approach by Vansteelandt and Daniel (2017)
-and the stochastic mediation approach by Didelez, Dawid, and Geneletti (2006)
-replace cross-world counterfactuals with stochastic interventions on the mediator,
-which are well-defined physically and identifiable under weaker assumptions.
-
-**Example**: Suppose $A$ is a job training program, $M$ is employment status, and $Y$ is income.
-The NDE requires holding employment at the value it *would have been* without training —
-but if training causes employment, what does it mean to "hold" employment at the no-training value?
-The interventionist approach instead asks:
-"what is the effect on income if we randomly assign employment from the distribution
-it would have in the no-training group?"
-This is a well-defined intervention (randomly assign individuals to jobs or not)
-and is identifiable.
+In very unusual settings, a crossover trial could identify the cross-world quantity
+(Fine Points 2.1 and 3.2) [@hernan2020causal, p. 324].
 :::
 
-### The Do-Operator and Mediation
+## 23.2 A Defense of Mediation Analysis (pp. 325-327)
 
-In the structural causal model (SCM) framework of Pearl (2000),
-mediation is analyzed using the **do-operator** $\text{do}(M = m)$,
-which represents an intervention that sets $M$ to a fixed value $m$
-by removing all arrows into $M$ in the causal DAG.
+---
 
-::: {#def-do-mediation}
-## Direct Effect via the Do-Operator
+The trial investigators, as advocates of the NPSEM-IE,
+defend the pure direct effect with a policy story
+(Pearl 2001 gave a similar argument):
 
-The **controlled direct effect** in Pearl's framework is:
+- Nicotine-free cigarettes will become available in a year,
+  and policy makers want to learn their benefits as soon as possible.
+- Suppose strong experimental evidence shows
+  (i) nicotine affects heart disease $Y$ only through hypertension $M$, and
+  (ii) the non-nicotine components of cigarettes have no effect on hypertension $M$.
+- Then a smoker of nicotine-free cigarettes would have the hypertension status
+  she would have had without cigarettes,
+  so $\E{Y^{a=1, M^{a=0}}}$ is the risk of heart disease
+  if all smokers switched to nicotine-free cigarettes,
+  which the mediation formula computes from the existing trial.
 
-$$\text{CDE}(m) = \E{Y \mid \text{do}(A = 1), \text{do}(M = m)} - \E{Y \mid \text{do}(A = 0), \text{do}(M = m)}.$$
-
-This is equivalent to the potential outcome expression $\E{Y^{a=1,m}} - \E{Y^{a=0,m}}$
-under the consistency assumption.
+::: {.notes}
+The book observes two oddities in this defense [@hernan2020causal, p. 325]:
+the story is about an intervention on the nicotine content of cigarettes,
+which makes no reference to the mediator $M$ at all;
+and assumptions (i) and (ii) concern direct effects of variables
+that do not even appear in Figure 23.1.
 :::
 
-The natural direct and indirect effects in SCMs require an additional assumption
-— that the system obeys a **composition rule** — which corresponds to
-the cross-world consistency condition above.
-The interventionist approach avoids this by replacing $\text{do}(M = M^{a=0})$
-with $\text{do}(M \sim F_{M^{a=0}})$, a stochastic do-intervention.
+---
 
-::: {.callout-note title="Fine Point 23.1: Mediation with Time-Varying Mediators"}
-When the mediator $M$ is itself time-varying —
-for example, when $A$ is a baseline treatment
-and $M_k$ is a biomarker measured at each follow-up visit —
-mediation analysis becomes a special case of the time-varying treatment framework
-from Chapters 19–21.
+### Separable components of treatment
 
-The sequence $A \to M_0 \to M_1 \to \cdots \to M_K \to Y$,
-with treatment feeding back into subsequent mediator values,
-creates precisely the treatment-confounder feedback structure
-analyzed in Chapters 20 and 21.
-G-methods are therefore the appropriate tools for mediation analysis
-with time-varying mediators.
+The story decomposes treatment $A$ into two **separable components**:
 
-In this setting, the controlled direct effect is defined as the effect of $A$
-under an intervention that sets all $M_k = 0$ (or to some reference value)
-for the entire follow-up period.
-The indirect effect is the difference between the total effect
-and this controlled direct effect.
+- $N$: nicotine exposure, which affects $M$ but not $Y$ directly;
+- $O$: exposure to the other, non-nicotine components, which affects $Y$ but not $M$.
+
+Each component can, in principle, be intervened on separately.
+For example, $Y^{n=0, o=1}$ is the outcome under an intervention
+that removes only the nicotine from cigarettes.
+
+The book's Figure 23.2 is the FFRCISTG causal DAG for this story:
+bold (deterministic) arrows $A \to N$ and $A \to O$,
+and arrows $N \to M$, $M \to Y$, and $O \to Y$.
+The arrows from $A$ are deterministic because in the trial
+either $A = N = O = 1$ (kept smoking regular cigarettes)
+or $A = N = O = 0$ (quit).
+
+- No arrow $N \to Y$ encodes assumption (i).
+- No arrow $O \to M$ encodes assumption (ii).
+
+Figure 23.3 is the corresponding SWIG.
+If $O$ causes $M$ for no individual, we may write $M^{n, o}$ as $M^{n}$.
+
+::: {.notes}
+Assumptions (i) and (ii) are "no controlled direct effect" assumptions.
+For example, (i) says that $N$ has no direct effect on $Y$
+when the value of $M$ is set [@hernan2020causal, p. 326].
+:::
+
+---
+
+::: {#thm-mediation-g-formula}
+## When the mediation formula is the g-formula (Technical Point 23.2)
+
+Under the FFRCISTG represented by Figure 23.2,
+with assumptions (i) and (ii),
+
+$$\E{Y^{n=0, o=1}} = \sum_m \E{Y \mid A = 1, M = m} \Pr(M = m \mid A = 0),$$
+
+which is the mediation formula.
+:::
+
+::: {.proof}
+Exchangeability holds for $N$ and $O$ in Figure 23.3 (the SWIG of Figure 23.2),
+so if $N$ and $O$ were observed,
+the g-formula would give
+
+$$
+\begin{aligned}
+\E{Y^{n=0, o=1}}
+&= \sum_m \E{Y \mid N = 0, O = 1, M = m} \Pr(M = m \mid N = 0, O = 1)
+&& \text{(g-formula)} \\
+&= \sum_m \E{Y \mid O = 1, M = m} \Pr(M = m \mid N = 0)
+&& \text{(} N \text{ is not a parent of } Y\text{; } O \text{ is not a parent of } M \text{)} \\
+&= \sum_m \E{Y \mid A = 1, M = m} \Pr(M = m \mid A = 0)
+&& \text{(in the data, } O = 1 \iff A = 1 \text{ and } N = 0 \iff A = 0 \text{)}.
+\end{aligned}
+$$
+
+No one in the trial has $(N = 0, O = 1)$, so positivity fails.
+But positivity is sufficient, not necessary:
+given exchangeability and consistency,
+identification by the g-formula only requires
+that the g-formula be a function of the observed data distribution,
+which the last line shows it is.
+:::
+
+::: {.notes}
+The book calls this derivation "somewhat heuristic"
+because determinism between $A$, $N$, and $O$ creates null sets;
+Robins et al. (2022) give a rigorous proof
+using the SWIG Markov property of Technical Point 21.12 [@hernan2020causal, p. 326].
+:::
+
+---
+
+### Lessons from the separable-components story
+
+- For an NPSEM-IE advocate, $\E{Y^{a=1, M^{a=0}}}$ was already identified;
+  the story only shows that this parameter,
+  and hence the pure direct and total indirect effects,
+  encodes $\E{Y^{n=0, o=1}}$, a parameter of public health interest.
+- For an FFRCISTG user, the story gives
+  $\E{Y^{a=1, M^{a=0}}}$ an interventional interpretation as $\E{Y^{n=0, o=1}}$,
+  *and* makes both identifiable by the g-formula (the mediation formula).
+- If absent arrows mean absent direct effects for every individual,
+  then $Y^{a=1, M^{a=0}} = Y^{n=0, o=1}$ for every individual.
+
+::: {.proof}
+## Why $Y^{n=0, o=1} = Y^{a=1, M^{a=0}}$ for every individual
+
+$$
+\begin{aligned}
+Y^{n=0, o=1}
+&= Y^{o=1, M^{n=0}}
+&& \text{(no } N \to Y \text{: } N \text{ affects } Y \text{ only through } M \text{; no } O \to M \text{)} \\
+&= Y^{a=1, M^{n=0}}
+&& \text{(with } N \text{ irrelevant for } Y \text{, setting } o = 1 \text{ acts on } Y \text{ like setting } a = 1 \text{)} \\
+&= Y^{a=1, M^{a=0}}
+&& \text{(with } O \text{ irrelevant for } M \text{, setting } n = 0 \text{ acts on } M \text{ like setting } a = 0 \text{)}.
+\end{aligned}
+$$
+:::
+
+---
+
+### Separable effects
+
+::: {#def-separable-direct-effect}
+## Separable effect of the nicotine component
+
+The **separable direct effect** of the component $N$ on $Y$ is
+
+$$\E{Y^{n=1, o=1}} - \E{Y^{n=0, o=1}},$$
+
+a controlled direct effect for the separable component $N$.
+:::
+
+It equals the total indirect effect:
+
+$$
+\begin{aligned}
+\E{Y^{n=1, o=1}} - \E{Y^{n=0, o=1}}
+&= \E{Y^{a=1}} - \E{Y^{n=0, o=1}}
+&& \text{(} n = o = 1 \text{ is the same intervention as } a = 1 \text{)} \\
+&= \E{Y^{a=1}} - \E{Y^{a=1, M^{a=0}}}
+&& \text{(} Y^{n=0, o=1} = Y^{a=1, M^{a=0}} \text{)} \\
+&= \E{Y^{a=1, M^{a=1}}} - \E{Y^{a=1, M^{a=0}}}
+&& \text{(consistency: } Y^{a=1} = Y^{a=1, M^{a=1}} \text{)}.
+\end{aligned}
+$$
+
+Likewise the separable effect of $O$ with nicotine removed equals the pure direct effect:
+
+$$
+\begin{aligned}
+\E{Y^{n=0, o=1}} - \E{Y^{n=0, o=0}}
+&= \E{Y^{a=1, M^{a=0}}} - \E{Y^{n=0, o=0}}
+&& \text{(} Y^{n=0, o=1} = Y^{a=1, M^{a=0}} \text{)} \\
+&= \E{Y^{a=1, M^{a=0}}} - \E{Y^{a=0}}
+&& \text{(} n = o = 0 \text{ is the same intervention as } a = 0 \text{)}.
+\end{aligned}
+$$
+
+::: {.notes}
+**A note on p. 327.**
+The book [@hernan2020causal, p. 327] writes the pure direct effect
+$\E{Y^{a=1, M^{a=0}}} - \E{Y^{a=0}}$
+as "analogously" equal to $\E{Y^{n=1, o=1}} - \E{Y^{n=1, o=0}}$.
+The same argument as in the proof above gives
+$$
+\begin{aligned}
+Y^{n=1, o=0}
+&= Y^{o=0, M^{n=1}}
+&& \text{(no } N \to Y \text{ arrow, and no } O \to M \text{ arrow)} \\
+&= Y^{a=0, M^{a=1}}
+&& \text{(} o = 0 \text{ acts on } Y \text{ like } a = 0 \text{, and } n = 1 \text{ acts on } M \text{ like } a = 1 \text{)}.
+\end{aligned}
+$$
+So that contrast equals $\E{Y^{a=1}} - \E{Y^{a=0, M^{a=1}}}$
+(the effect of $O$ with nicotine present),
+which differs from the pure direct effect in general.
+For a counterexample, let $M^n = n$ and $Y = O \cdot M$.
+Then the book's contrast is $\E{Y^{n=1, o=1}} - \E{Y^{n=1, o=0}} = 1 - 0 = 1$,
+but the pure direct effect is $\E{Y^{a=1, M^{a=0}}} - \E{Y^{a=0}} = 0 - 0 = 0$.
+Also, the book's pairing does not sum with the total indirect effect to the total effect,
+whereas the pairing in these notes does:
+$\E{Y^{n=0, o=1}} - \E{Y^{n=0, o=0}}$ is the pure direct effect,
+and it adds to the total indirect effect $\E{Y^{n=1, o=1}} - \E{Y^{n=0, o=1}}$
+to give $\E{Y^{a=1}} - \E{Y^{a=0}}$.
+:::
+
+## 23.3 Empirically Verifiable Mediation (pp. 327-329)
+
+---
+
+The interventional reading of $\E{Y^{a=1, M^{a=0}}}$ as $\E{Y^{n=0, o=1}}$
+is valid only if the separable-components story is correct
+and Figure 23.3 represents an FFRCISTG.
+Its advantage is that the story can be **refuted** by a randomized trial.
+
+::: {#exm-three-arm-trial}
+## A three-arm trial of nicotine-free cigarettes
+
+Once nicotine-free cigarettes exist, randomize smokers to:
+
+1. smoking cessation ($A = N = O = 0$);
+2. continued smoking of standard cigarettes ($A = N = O = 1$);
+3. continued smoking of nicotine-free cigarettes ($N = 0$, $O = 1$).
+
+Without temporal trends, arms 1 and 2 should reproduce the original trial's arm means
+(assume samples large enough to ignore sampling variability).
+By randomization, $\E{Y \mid N = 0, O = 1} = \E{Y^{n=0, o=1}}$ in the new trial.
+If the story is correct,
+$\E{Y \mid N = 0, O = 1}$ equals the mediation formula from the original trial.
+:::
+
+---
+
+### If the prediction fails
+
+If $\E{Y \mid N = 0, O = 1}$ differs from the mediation formula,
+at least one assumption is false:
+
+- (i) no direct effect of nicotine on $Y$;
+- (ii) no direct effect of the non-nicotine components on $M$;
+- (iii) no unmeasured common cause $U$ of $M$ and $Y$ in Figure 23.2.
+
+The new trial's data help locate the failure:
+
+- If $\E{M \mid N = 0, O = 1} - \E{M \mid N = 0, O = 0} \neq 0$,
+  then $O$ and $M$ are associated given $N = 0$,
+  (ii) is refuted, and an arrow $O \to M$ must be added.
+- If $\E{Y \mid N = 1, O = 1, M = m} - \E{Y \mid N = 0, O = 1, M = m} \neq 0$
+  for some $m$,
+  then either (i) is false (add $N \to Y$)
+  or an unmeasured common cause $U$ of $M$ and $Y$ exists (add $U$),
+  or both.
+
+::: {.callout-note title="Fine Point 23.1: Empirical falsification of the assumptions for separable effects"}
+Telling (i) apart from (iii) needs a further trial, say with 8 arms,
+that also intervenes on $M$:
+
+- if $N$ affects $Y$ only through $M$,
+  $N$ is independent of $Y$ given $M$ and $O$ in the eight-arm trial;
+- if $M$ and $Y$ share no unmeasured common cause,
+  the distribution of $Y$ given $M$ within levels of $N$ and $O$
+  is the same in the three-arm and the eight-arm trials.
+
+How can Figure 23.2 omit a common cause of $M$ and $Y$
+when Figure 23.1 is an FFRCISTG with no such common cause?
+Common causes may be active only under interventions
+that give $N$ and $O$ different values;
+the FFRCISTG for Figure 23.1 only considers $A = N = O = 1$ and $A = N = O = 0$.
+If such a $U$ is the only reason for the discrepancy,
+$Y^{n=0, o=1} = Y^{a=1, M^{a=0}}$ still holds for every individual,
+but $\E{Y^{n=0, o=1}} = \E{Y^{a=1, M^{a=0}}}$
+is no longer identified by the mediation formula.
+Robins et al. (2022) describe a realistic hypothetical study
+of treatment for river blindness with exactly this structure
+[@hernan2020causal, p. 328].
+:::
+
+---
+
+### How different analysts react
+
+Suppose the new trial reproduces the original arms
+but its nicotine-free arm differs from the mediation formula.
+
+- **Everyone** agrees the separable-components story was wrong,
+  and that $\E{Y^{n=0, o=1}}$ is estimated by the third arm,
+  not by the mediation formula.
+- **NPSEM-IE advocates** may still believe
+  $\E{Y^{a=1, M^{a=0}}}$ equals the mediation formula,
+  but can no longer justify the pure direct effect
+  as the effect of switching to nicotine-free cigarettes.
+- **FFRCISTG users** may lose interest in the mediation formula,
+  and instead value what the three-arm trial taught them
+  about nicotine-free cigarettes
+  and about which of assumptions (i)-(iii) failed.
+
+---
+
+### Can treatment always be decomposed?
+
+Keep assuming Figure 23.1 is an FFRCISTG
+and that the nicotine-free arm differs from the mediation formula.
+Could $A$ always be split into other, possibly unknown, components $N'$ and $O'$
+for which Figure 23.2 is an FFRCISTG and (i) and (ii) hold,
+so that $\E{Y^{n'=0, o'=1}} = \E{Y^{a=1, M^{a=0}}}$ = the mediation formula?
+
+**No.**
+Otherwise $\E{Y^{a=1, M^{a=0}}}$ would always be point identified
+by the mediation formula, which it is not;
+this would contradict the sharp bounds of Robins and Richardson (2010)
+[@hernan2020causal, p. 329].
+
+## 23.4 An Interventionist Theory of Mediation (pp. 329-331)
+
+---
+
+The chapter's **interventionist theory** of mediation
+reframes the mediation question as a question about the effects
+of interventions on substantively meaningful, separable components ($N$ and $O$) of $A$.
+It can stand on its own,
+without any reference to cross-world (nested) counterfactuals.
+
+If $N$ and $O$ are separable components of $A$,
+then in a future six-arm trial with arms
+
+1. $a = 1$;
+2. $a = 0$;
+3. $n = 1, o = 1$;
+4. $n = 0, o = 0$;
+5. $n = 0, o = 1$;
+6. $n = 1, o = 0$,
+
+two statements hold:
+
+- the mean of $Y$ in arm 1 equals that in arm 3,
+  and the mean in arm 2 equals that in arm 4;
+- $\E{Y^{n=0, o=1}}$ is the mean outcome in arm 5
+  and $\E{Y^{n=1, o=0}}$ the mean outcome in arm 6,
+  whether or not $\E{Y^{n=0, o=1}}$ is identified from the currently observed data.
+
+::: {.notes}
+The theory was presented by Robins and Richardson (2010)
+and extended by Robins, Richardson, and Shpitser (2022).
+Extensions cover survival analysis (Didelez 2019; Aalen et al. 2020),
+competing risks (Stensrud et al. 2020, 2021),
+and interference (Shpitser et al. 2021).
+Stensrud et al. (2021) stressed the equalities of arm means across the six-arm trial
+[@hernan2020causal, p. 329].
+:::
+
+---
+
+### Identification from current data
+
+With data on $A$, $M$, and $Y$ only,
+the separable effects of $N$ and $O$ are identified if
+
+- there is no unmeasured common cause of $M$ and $Y$, and
+- $O$ has no direct effect on $M$ and $N$ has no direct effect on $Y$.
+
+In particular, $\E{Y^{n=0, o=1}}$ then equals the mediation formula
+(@thm-mediation-g-formula).
+
+---
+
+### When interventions on the mediator are not well defined
+
+Often interventions on the putative mediator $M$ are not well defined,
+so counterfactuals like $Y^{a, m}$ are not meaningful.
+Then neither the pure direct effect
+nor the controlled direct effects based on $M$ (Technical Point 22.1) exist.
+The interventionist effects still exist,
+as long as meaningful separable components $N$ and $O$ can be intervened on.
+
+::: {.callout-note title="Fine Point 23.2: Separable effects with a surrogate mediator"}
+If interventions on $M$ are not well defined,
+the arrow $M \to Y$ in Figure 23.1 is not causal (Section 9.5):
+$M$ is a **surrogate** for an unknown true mediator $H$
+(Figure 23.4: $A \to H$, $H \to M$, $H \to Y$, $A \to Y$).
+Adding separable components $N$ and $O$ gives Figure 23.5,
+in which, unlike Figure 23.2,
+$N$ and $Y$ are *not* d-separated given $M$ and $O$.
+
+Suppose the three-arm trial nevertheless shows $N \ind Y \mid M, O$.
+Four explanations are possible:
+
+(a) Figure 23.1, not 23.4, is the true diagram, and $M$ is the true mediator;
+(b) $M$ is a one-to-one deterministic function of $H$;
+(c) a non-deterministic faithfulness violation in Figure 23.4;
+(d) the predicted dependence exists but the trial was too small to detect it.
+
+Causal-discovery advocates would tend to choose (a) if the trial was large
+(Technical Point 10.7) [@hernan2020causal, p. 330].
+:::
+
+---
+
+### Summary of the interventionist approach
+
+- Treatment $A$ is hypothesized to decompose into
+  multiple substantively meaningful separable components,
+  each contributing to the overall effect
+  and each, in principle, independently intervenable.
+- The assumptions that identify the separable effects
+  are, in principle, verifiable in future randomized trials
+  that intervene on the components.
+- Well-defined interventions on the purported mediator need not exist.
+- Specific separable components improve communication with subject-matter experts.
+- When the identifying assumptions hold,
+  the identifying g-formula equals the mediation formula,
+  but the effects it identifies refer to interventions on the separable components.
+
+The framework accommodates more than two components,
+including components that vary over time.
+
+---
+
+::: {.callout-note title="Technical Point 23.3: Path-specific effects and the front door formula"}
+Take the front-door setting of Fine Point 9.5 (BMI $L$, drug $A$, outcome $Y$,
+unmeasured $H$ confounding $L$ and $Y$),
+modified to include an edge $L \to Y$ (Figure 23.6).
+The total effect of $L$ on $Y$ is then not identified,
+because the $L \to Y$ path cannot be separated from confounding by $H$.
+Is the effect of $L$ along $L \to A \to Y$ identified?
+
+Expand the graph (Figure 23.7):
+$N$ is the BMI reported to the physician who prescribes $A$,
+and $O$ is the BMI used for referral to physical therapy and diet counseling;
+in the data $L = N = O$.
+Figure 23.8 is the SWIG for an (unethical) intervention
+that reports a value $n$ to the physician while the true $L = O$ drives referral.
+Because $L \equiv O$ even in the intervened world, $O$ can be dropped.
+Since $Y^{n} \ind N \mid L$ in Figure 23.8, the g-formula gives
+
+$$
+\begin{aligned}
+\E{Y^{n}}
+&= \sum_{l, a} \E{Y \mid A = a, L = l} \Pr[L = l] \Pr[A = a \mid N = n]
+&& \text{(g-formula)} \\
+&= \sum_{a} \cb{\sum_{l} \E{Y \mid A = a, L = l} \Pr[L = l]} \Pr[A = a \mid N = n]
+&& \text{(regroup the sum)} \\
+&= \sum_{a} \cb{\sum_{l} \E{Y \mid A = a, L = l} \Pr[L = l]} \Pr[A = a \mid L = n]
+&& \text{(} L \equiv N \text{ in the data)},
+\end{aligned}
+$$
+
+which is the front door formula.
+This derivation is heuristic because of the null sets created by determinism;
+a rigorous proof combines determinism with the approach of Technical Point 21.12.
+$N$ and $O$ need not be separable components of $L$;
+what matters is that the substantive story implies an expanded graph
+with an intervention variable $N$ deterministically related to $L$ in the actual world
+(Stensrud et al. 2023;
+Wen et al. 2023 obtained essentially equivalent results).
+Fulcher et al. (2020) had shown that the front door formula identifies
+the cross-world quantity $\E{Y^{L, A^{l=n}}}$ under the NPSEM-IE for Figure 23.6
+[@hernan2020causal, p. 331].
+:::
+
+---
+
+### Practical caveats
+
+- The chapter treats theory, not the practice of estimating
+  pure direct effects and separable direct effects.
+- Without trials that actually intervene on the mediator (controlled direct effects)
+  or on treatment components (separable direct effects),
+  these analyses rest on observational data and exchangeability:
+  valid mediation analyses must adjust for confounders
+  of both the treatment-outcome and the mediator-outcome relationships.
+- The chapter's simple diagram is a teaching device, not a realistic study.
+  In practice, causal mediation analyses are observational
+  and rely on more heroic assumptions than non-mediation analyses.
+
+::: {.notes}
+For separable effects, further issues arise when a measured common cause of $M$ and $Y$
+is a child of $N$ and $O$
+(Robins and Richardson 2010; Robins et al. 2022)
+[@hernan2020causal, p. 331].
 :::
 
 ## Summary
 
 ---
 
-- **Classical mediation analysis** (Baron and Kenny) has serious limitations:
-  it requires linearity and no $A \times M$ interaction,
-  fails to identify confounders of the $M \to Y$ pathway,
-  and does not extend to non-linear models.
-- The **natural direct effect** (NDE) and **natural indirect effect** (NIE)
-  are defined via nested cross-world counterfactuals:
-  $$\text{NDE} = \E{Y^{a=1, M^{a=0}}} - \E{Y^{a=0, M^{a=0}}},$$
-  $$\text{NIE} = \E{Y^{a=1, M^{a=1}}} - \E{Y^{a=1, M^{a=0}}}.$$
-- The NDE and NIE sum to the total effect and allow decomposition in non-linear models,
-  but require cross-world consistency and the absence of $A$-affected $M$–$Y$ confounders.
-- The **controlled direct effect** (CDE) avoids cross-world counterfactuals
-  and corresponds to an intervention that fixes $M$ at a specific value:
-  $$\text{CDE}(m) = \E{Y^{a=1, m}} - \E{Y^{a=0, m}}.$$
-- The **interventionist** approach further resolves the cross-world problem
-  by replacing the NDE/NIE with stochastic interventional analogues
-  that correspond to realizable experiments.
-- With **time-varying mediators**, mediation analysis becomes a special case
-  of the g-methods framework for time-varying treatments.
+- The **pure direct effect** $\E{Y^{a=1, M^{a=0}}} - \E{Y^{a=0, M^{a=0}}}$
+  and the **total indirect effect** $\E{Y^{a=1, M^{a=1}}} - \E{Y^{a=1, M^{a=0}}}$
+  sum to the total effect, but both are cross-world quantities.
+- The **mediation formula**
+  $\sum_m \E{Y \mid A = 1, M = m} \Pr[M = m \mid A = 0]$
+  identifies $\E{Y^{a=1, M^{a=0}}}$ only under a cross-world independence
+  that holds under an NPSEM-IE, not an FFRCISTG, and that no experiment can check.
+- Decomposing $A$ into **separable components** $N$ and $O$
+  gives the mediation formula an interventional meaning, $\E{Y^{n=0, o=1}}$,
+  identified by the g-formula under no-direct-effect assumptions
+  and no unmeasured $M$-$Y$ confounding.
+- Those assumptions can be **refuted** by a future trial
+  that intervenes on the components.
+- The **interventionist theory** does not require well-defined interventions on $M$.
 
 ## References
 

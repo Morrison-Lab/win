@@ -12,391 +12,753 @@ format:
 
 {{< include ../latex-macros/macros.qmd >}}
 
-Randomized clinical trials are the gold standard for causal inference,
-but they are often infeasible, unethical, too slow, or too narrow in scope
-to answer the questions most relevant to clinical and policy decision-making.
-Observational databases — electronic health records, insurance claims,
-disease registries — contain rich longitudinal data on millions of patients
-and offer an opportunity to answer causal questions at scale.
-But the translation from "data we have" to "causal question we want to answer"
-is fraught with opportunities for bias.
-
-The **target trial emulation** framework provides a principled solution:
-explicitly specify the randomized trial you *would* have conducted if resources and ethics permitted
-(the **target trial**), then use observational data to emulate it as faithfully as possible.
+Part I described causal inference from observational data
+as an attempt to emulate a hypothetical randomized trial, the **target trial**,
+but only for simple target trials comparing time-fixed treatments.
+With the g-methods of Chapters 19-21 in hand,
+we can now specify realistic target trials that compare **sustained treatment strategies**,
+and emulate them with either randomized or observational data.
 
 ::: {.notes}
-This chapter is based on @hernan2020causal [Chapter 22, pp. 305–320].
+This chapter is based on @hernan2020causal [Chapter 22, pp. 305-322].
 
-**Central message**: Many biases in observational pharmacoepidemiology studies
-arise from implicit design choices that would not occur in a well-designed trial.
-By making the target trial explicit — including its eligibility criteria,
-treatment strategies, outcome, follow-up, and analysis plan —
-analysts are forced to confront these choices and mitigate the resulting biases.
+The chapter does three things:
+
+- it builds a taxonomy of causal effects in trials:
+  the **intention-to-treat effect**, the **per-protocol effect**,
+  and per-protocol effects in alternative target trials;
+- it defines observational analogs of those effects
+  and describes how to emulate a target trial, including the choice of **time zero**;
+- it argues that, aside from baseline randomization,
+  randomized trials and observational studies of sustained strategies
+  should be analyzed the same way.
+
+What makes this more than a formal exercise is the existence of g-methods:
+if data on all important fixed and time-varying confounders are available,
+the effects of interest can be validly estimated.
 :::
 
-## 22.1 Intention-to-Treat Effect and Per-Protocol Effect (p. 305)
+## 22.1 Intention-to-Treat Effect and Per-Protocol Effect (pp. 305-309)
 
 ---
 
-In a randomized trial, two causal estimands are commonly of interest:
+Consider a randomized trial of a virus that can kill:
+
+- $Z$: **assigned** treatment
+  (1: immediate vaccination plus an experimental antiviral if infected;
+  0: standard of care, with neither);
+- $A$: **received** treatment (vaccinated or not);
+- $Y$: death;
+- $U$: unmeasured risk factors that influence the decision to get vaccinated.
+
+$Z$ and $A$ can differ:
+some people assigned to vaccine refuse it,
+and some assigned to no vaccine get vaccinated outside the study.
+
+::: {.notes}
+In the book's Figure 22.1, $Z$ affects $Y$ through two pathways:
+
+- $Z \to A \to Y$: assignment changes the treatment received,
+  which in turn affects mortality;
+- $Z \to Y$ directly: knowing one's assignment can change behavior.
+  For example, people who know they were assigned to vaccination plus a promising antiviral
+  may become less careful about avoiding infection.
+
+The effect of $Z$ therefore depends on the strength of three arrows:
+$A \to Y$ (the effect of the treatment itself),
+$Z \to A$ (the degree of adherence),
+and $Z \to Y$ (concurrent behavioral changes).
+:::
+
+::: {.callout-note title="Fine Point 22.1: The Exclusion Restriction (Again)"}
+An arrow $Z \to Y$ means the exclusion restriction does not hold
+(see Technical Point 16.1 and Chapter 16).
+Investigators often try to remove that arrow by **blinding**:
+those assigned $Z=1$ get the vaccine and those assigned $Z=0$ get an identical placebo injection,
+so neither participants nor their doctors know the assignment
+(a double-blind placebo-controlled trial).
+Blinding is often infeasible (no convincing placebo exists for open heart surgery;
+side effects reveal who is treated),
+and it is not advisable when the goal is the effect of treatment in the real world,
+where there is no blinding or placebo [@hernan2020causal, Fine Point 22.1, p. 306].
+:::
+
+### The Intention-to-Treat Effect
+
+---
 
 ::: {#def-itt}
 ## Intention-to-Treat (ITT) Effect
 
-The **intention-to-treat effect** is the causal effect of
-the *assigned* treatment strategy, regardless of whether participants
-actually adhered to their assigned strategy.
-
-$$\text{ITT effect} = \E{Y^{a_{\text{assigned}} = 1}} - \E{Y^{a_{\text{assigned}} = 0}}.$$
+The **intention-to-treat effect** is the causal effect of randomized *assignment* $Z$,
+for example the causal risk ratio
+$$\frac{\Pr[Y^{z=1} = 1]}{\Pr[Y^{z=0} = 1]}.$$
+It is "the effect of having the intention of treating with $A$,"
+not "the effect of treating with $A$" [@hernan2020causal, p. 306].
 :::
+
+Because $Z$ is randomized, there are no backdoor paths from $Z$ to $Y$,
+so $Y^z \ind Z$ and the associational risk ratio equals the ITT risk ratio:
+$$\frac{\Pr[Y = 1 \mid Z = 1]}{\Pr[Y = 1 \mid Z = 0]} = \frac{\Pr[Y^{z=1} = 1]}{\Pr[Y^{z=0} = 1]}.$$
+Estimating the ITT effect by this unadjusted association is an **intention-to-treat analysis**.
+
+::: {.callout-note title="Fine Point 22.2: Pseudo- and Modified Intention-to-Treat Analyses"}
+An ITT analysis is unbiased because it includes *all* randomized individuals;
+variations that include only a subset may be biased.
+
+- **Pseudo-intention-to-treat analysis**:
+  with loss to follow-up, the analysis is restricted to the uncensored,
+  $\Pr[Y = 1 \mid Z = 1, C = 0] / \Pr[Y = 1 \mid Z = 0, C = 0]$.
+  Censoring can induce selection bias (Chapter 8) in either direction,
+  so adjustment for selection bias is needed (Section 21.5).
+- **Modified intention-to-treat analysis**:
+  limited to those who started their assigned strategy at least once
+  (for instance, took one or more pills).
+  It usually needs adjustment for the risk factors of adherence.
+:::
+
+### The Per-Protocol Effect
+
+---
 
 ::: {#def-pp}
 ## Per-Protocol (PP) Effect
 
-The **per-protocol effect** is the causal effect of
-*adhering* to the assigned treatment strategy throughout follow-up.
-
-$$\text{PP effect} = \E{Y^{\bar{a} = \text{adhere to arm 1}}} - \E{Y^{\bar{a} = \text{adhere to arm 0}}}.$$
+The **per-protocol effect** is the causal effect under full adherence,
+that is, if everyone had followed the protocol's instructions for the treatment they were assigned:
+the contrast of $\Pr[Y^{z=1,a=1} = 1]$ versus $\Pr[Y^{z=0,a=0} = 1]$,
+or, under the exclusion restriction,
+of $\Pr[Y^{a=1} = 1]$ versus $\Pr[Y^{a=0} = 1]$.
 :::
 
-### Differences Between ITT and PP
+Unlike the ITT effect, the PP effect is generally **confounded**.
+Suppose $U$ is high risk of infection,
+and high-risk people assigned $Z=0$ seek vaccination outside the study.
+Then the backdoor path $A \leftarrow U \rightarrow Y$ makes
+$\Pr[Y = 1 \mid A = 1] / \Pr[Y = 1 \mid A = 0]$
+differ from $\Pr[Y^{a=1} = 1] / \Pr[Y^{a=0} = 1]$.
 
-The ITT analysis is straightforward in a randomized trial:
-randomization ensures that assigned treatment is independent of all baseline characteristics,
-so a simple comparison of outcomes by assigned group is valid.
-The ITT effect is often conservative (toward the null) when adherence is incomplete,
-because some participants in the active arm will not take the treatment.
+Estimating the PP effect requires viewing the trial as an observational study:
+adjustment under conditional exchangeability given measured covariates,
+or alternative assumptions such as those of instrumental variable estimation (Chapter 16).
 
-The PP analysis is harder because **non-adherence is not random**:
-participants who discontinue treatment differ from those who continue
-in ways that are prognostically important.
-In a trial, PP analysis requires adjustment for post-randomization confounders
-(covariates that predict both adherence and the outcome),
-using precisely the methods from Chapters 19–21.
+::: {.callout-note title="Fine Point 22.3: Naive Per-Protocol Analyses"}
+- **As-treated analysis**: compares $A = 1$ with $A = 0$ regardless of $Z$.
+  It is confounded by unmeasured $U$ (Figures 22.1 and 22.2);
+  if measured factors $L$ block all backdoor paths (Figure 22.3), it must adjust for $L$.
+- **Conventional per-protocol (on-treatment) analysis**:
+  an ITT analysis restricted to the "per-protocol population" with $A = Z$.
+  With selection indicator $S$ ($S = 1$ if $A = Z$),
+  conditioning on $S = 1$ opens the noncausal path
+  $Z \to A \leftarrow L \leftarrow U \to Y$ (Figure 22.4),
+  so the analysis is biased unless it measures and adjusts for $L$.
 
-::: {.notes}
-**Why PP effects matter**:
-
-Policy questions are often best answered by the PP effect.
-For example, the question "do statins reduce cardiovascular events?"
-is really asking about the effect of *taking* statins,
-not merely being assigned to the statin group.
-If adherence is poor, the ITT estimate will underestimate the biological efficacy of the drug.
-
-**ITT in observational data**:
-In observational data, there is no randomization, so the concept of "assigned treatment"
-must be replaced by "treatment initiated."
-The closest analogue to the ITT effect in observational data
-is the "as-initiated" analysis (also called "intent-to-treat" by analogy),
-which compares outcomes between individuals who initiated treatment versus those who did not,
-regardless of subsequent adherence.
+Both are observational analyses of a randomized experiment
+and require adjustment for confounding and selection bias
+[@hernan2020causal, Fine Point 22.3, p. 308].
 :::
 
-### Per-Protocol Analysis in Observational Data
-
-In observational data, a per-protocol analysis compares individuals
-who adhered to a specific treatment strategy throughout follow-up.
-This is a problem of time-varying treatment:
-treatment initiation, continuation, and discontinuation all occur over time,
-and all may be confounded by time-varying covariates.
-The g-methods of Chapter 21 — particularly IP weighting with censoring weights —
-are the appropriate tools.
-
-## 22.2 A Target Trial with Sustained Treatment Strategies (p. 309)
+### Two Justifications for the ITT Effect, Revisited
 
 ---
 
-To make the target trial concept concrete, consider a clinical question:
-"What is the effect of starting and maintaining antiretroviral therapy immediately
-versus deferring therapy until CD4 count falls below 350 cells/mm³
-on the five-year risk of AIDS or death in HIV-positive individuals?"
+The ITT effect is privileged largely because it is unconfounded,
+not because it is the effect we want.
+Two common justifications deserve "a grain of salt" [@hernan2020causal, p. 307]:
 
-The **target trial** for this question would specify:
+1. **It preserves the null.**
+   Under the sharp causal null *and* the exclusion restriction,
+   $\Pr[Y = 1 \mid Z = 1] / \Pr[Y = 1 \mid Z = 0] = \Pr[Y^{a=1} = 1] / \Pr[Y^{a=0} = 1] = 1$.
+   Without the exclusion restriction (no double-blind placebo control),
+   the effect of $A$ can be null while the effect of $Z$ is not:
+   erase $A \to Y$ in Figure 22.1 and $Z \to Y$ remains.
+2. **It is conservative** (between 1 and the PP risk ratio).
+   This holds only if non-adherence attenuates the effect, which is not guaranteed.
+   Even when it holds, a near-null ITT effect on an adverse outcome
+   can wrongly suggest a harmful treatment is safe,
+   because many assigned to $Z = 1$ stopped treatment before the harm occurred.
+
+::: {.notes}
+The argument against conservative ITT analyses also applies to **non-inferiority trials**,
+whose goal is to show that one treatment is not inferior to another.
+
+The book's conclusion: exclusive reliance on ITT estimates is hard to justify
+for trials with substantial non-adherence and for trials of harms.
+The PP effect is often the more natural estimand for clinicians, patients, and other decision makers.
+
+With **sustained** strategies, the probability of non-adherence increases greatly,
+the ITT effect becomes increasingly uninformative relative to the PP effect,
+and estimating the PP effect, in a trial or in an observational emulation,
+generally requires g-methods.
+:::
+
+::: {.callout-note title="Fine Point 22.4: More Misunderstandings About the ITT Effect"}
+**"ITT measures effectiveness in the real world; PP measures efficacy."**
+This reasoning is problematic because:
+
+- the ITT effect reflects adherence in *that* trial,
+  which may differ from real life (close monitoring;
+  adherence may rise once a treatment is shown to work);
+- if real-world effectiveness were the goal, we should not run double-blind placebo-controlled trials,
+  which remove the effects of assignment awareness that exist in practice;
+- people who plan to adhere to their prescribed treatment care more about the PP effect.
+
+**"ITT is always conservative."**
+Not if the effect is non-monotonic (Technical Point 5.2) and non-adherence is high.
+Even for monotonic effects, it can fail in head-to-head trials:
+in a trial of an expensive drug ($Z = 1$) versus ibuprofen ($Z = 0$) for severe pain at 1 year,
+both drugs are equally effective (PP risk ratio 1),
+but adherence to ibuprofen is lower because of an easily palliated side effect.
+The ITT comparison then wrongly suggests ibuprofen is less effective
+[@hernan2020causal, Fine Point 22.4, p. 309].
+:::
+
+## 22.2 A Target Trial with Sustained Treatment Strategies (pp. 309-313)
+
+---
+
+Because the goal is to emulate target trials with real-world data,
+we consider **pragmatic** trials:
+
+- treatment assignment is not blinded;
+- nobody receives a placebo (strategies involve active treatments or no treatment);
+- participants are monitored as often and as intensely as regular patients.
 
 ::: {#exm-target-trial-hiv}
-## Target Trial for ART Timing
+## A Target Trial of Antiretroviral Therapy
 
 | Component | Specification |
 |-----------|---------------|
-| Eligibility criteria | HIV-positive adults with CD4 > 350, no prior ART |
-| Treatment strategies | (1) Initiate ART immediately; (2) Defer until CD4 < 350 |
-| Assignment | Random at time zero |
-| Follow-up | From randomization until AIDS, death, or 5 years |
-| Outcome | Composite: AIDS diagnosis or death within 5 years |
-| Causal contrasts | Risk difference, risk ratio, hazard ratio between strategies |
-| Analysis plan | ITT and PP (adjusted for non-adherence via IP weighting) |
+| Eligibility criteria | HIV infection, age 18 or older, no AIDS, no previous antiretroviral therapy |
+| Treatment strategies | $g_1$: receive therapy ($A_k = 1$) continuously unless a contraindication or toxicity arises; $g_0$: receive no therapy ($A_k = 0$) continuously |
+| Assignment | Random, at baseline $k = 0$; $Z = 1$ if assigned to $g_1$, $Z = 0$ if assigned to $g_0$ |
+| Follow-up | From assignment until death, loss to follow-up, or 60 months, whichever comes first |
+| Outcome | Death; $D_k = 1$ if dead by month $k$ |
+| Causal contrasts | Intention-to-treat and per-protocol effects on the risk of death |
+
+Here $k = 0, 1, \ldots, K$ with $K = 59$,
+and $C_k$ indicates censoring by month $k$, for $k = 1, \ldots, K + 1$
+[@hernan2020causal, pp. 309-310].
 :::
-
-The treatment strategies are **sustained strategies**:
-they specify a sequence of treatment decisions over the follow-up period,
-not just a single decision at baseline.
-Strategy 1 is "always treat" ($\bar{a} = \bar{1}$);
-strategy 2 is the dynamic strategy "do not treat until CD4 < 350, then treat."
-
-### Why Sustained Strategies Are Important
-
-Many real-world clinical interventions involve decisions made repeatedly over time.
-The causal effect of sustained "always treat" versus sustained "never treat" is often different —
-sometimes radically so — from the effect of a single treatment initiation at baseline.
-The target trial framework makes this explicit by requiring the analyst to specify
-what the treatment strategy *is* over the entire follow-up,
-not just at the moment of treatment initiation.
 
 ::: {.notes}
-**Active comparator designs**:
-
-A well-designed target trial uses **active comparators** rather than comparing treated
-to completely untreated individuals.
-The "new user, active comparator" design, in which both strategies begin treatment
-(just of different types or at different thresholds), tends to produce better-calibrated
-observational estimates because it more closely mirrors the actual clinical decision.
-Comparing new users of drug A to non-users of any drug conflates the effect of drug A
-with the effect of the clinical decision to initiate any treatment.
-
-**Intention-to-treat in the target trial**:
-The target trial ITT effect compares individuals by their *assigned* strategy at time zero,
-regardless of subsequent deviations.
-In the emulation with observational data, this translates to comparing individuals
-by their *actual* treatment initiation at time zero,
-ignoring later changes in treatment.
-This is easier to implement but often not the most clinically relevant estimand.
+Unlike earlier chapters, where the outcome $Y$ was measured at the end of follow-up,
+the outcome here is a failure time, time to death (see Technical Point 21.10).
 :::
 
-## 22.3 Emulating a Target Trial with Sustained Strategies (p. 313)
+### ITT and PP Effects for Sustained Strategies
 
 ---
 
-Emulating the target trial means reproducing each component
-of the trial specification using observational data.
+**ITT effect at time $k$**: a contrast of the static strategies
+"be assigned to $g_1$ (or $g_0$) at baseline, with no loss to follow-up":
+$$\Pr\sb{D_k^{z=1, \bar{c}_k = \bar{0}} = 1} - \Pr\sb{D_k^{z=0, \bar{c}_k = \bar{0}} = 1}.$$
 
-### Emulating Each Component
+**PP effect at time $k$**: a contrast of "receive strategy $g_1$ (or $g_0$)
+continuously between baseline and end of follow-up":
+$$\Pr\sb{D_k^{g_1, \bar{c}_k = \bar{0}} = 1} - \Pr\sb{D_k^{g_0, \bar{c}_k = \bar{0}} = 1}.$$
 
-**Eligibility criteria**: Apply the same eligibility criteria
-to the observational cohort as would have been used in the trial
-(e.g., HIV-positive, CD4 > 350, no prior ART).
-Any individual who meets the criteria at some calendar time can serve as a "trial participant"
-at that time, creating **sequential trials** (discussed in Section 22.4).
-
-**Treatment strategies**: Observe which individuals followed the target strategies
-(initiated immediately or waited until CD4 < 350).
-For the per-protocol analysis, censor individuals when they deviate from the strategy.
-
-**Assignment mechanism**: In the trial, assignment is random.
-In the emulation, treatment initiation is not random — it depends on measured
-and unmeasured clinical characteristics.
-Sequential exchangeability (conditional on measured covariates) is the identifying assumption.
-
-**Follow-up and outcome**: Use the same outcome definition and follow-up rules
-as specified in the target trial.
-Informative censoring (due to loss to follow-up or deviating from protocol)
-is handled via censoring IP weights.
-
-**Analysis**: Apply the g-methods of Chapter 21.
-For the ITT analysis, compare the two initiation groups without adjustment for post-baseline treatment.
-For the PP analysis, use IP weighting to adjust for time-varying confounders of adherence.
+Both are defined as if nobody had been lost to follow-up through time $k$ ($\bar{c}_k = \bar{0}$).
 
 ::: {.notes}
-**Why emulation is not trivial**:
+When assignment and initiation always coincide
+(everyone assigned to $g_1$ starts treatment at time 0 and nobody assigned to $g_0$ does,
+whatever happens later),
+the ITT effect is also the effect of **initiation**:
+$$\Pr\sb{D_k^{a_0=1, \bar{c}_k = \bar{0}} = 1} - \Pr\sb{D_k^{a_0=0, \bar{c}_k = \bar{0}} = 1}.$$
 
-Each component of the target trial introduces potential sources of bias when emulated
-with observational data:
-
-- **Eligibility criteria**: Selecting a "baseline" requires defining a point in time
-  that matches the trial's entry criterion.
-  In longitudinal databases this may be complex (see time zero, Section 22.4).
-- **Treatment strategies**: Real-world treatment patterns may not map cleanly
-  onto trial strategies; grace periods and adherence windows are needed.
-- **Confounding**: The absence of randomization requires adjustment for baseline
-  and time-varying confounders, introducing the challenges of Chapters 19–21.
-- **Outcome ascertainment**: Administrative data may under-code events,
-  requiring validation studies.
+The ITT effect is agnostic about post-baseline protocol deviations
+(stopping treatment for no clinical reason, starting it in the $g_0$ arm,
+non-approved concomitant treatments).
+Its magnitude can therefore depend heavily on the deviation patterns in each trial:
+two trials with the same protocol in different settings can have different ITT effects,
+and neither is biased.
+This limitation is why the ITT effect should be complemented with the PP effect.
 :::
 
-### The Per-Protocol Estimand in the Emulation
-
-In the emulation, the PP analysis requires censoring participants
-when they deviate from their "assigned" strategy
-(the strategy they were on at time zero).
-For example, under strategy 2 ("defer ART until CD4 < 350"),
-a participant is censored if they initiate ART before their CD4 reaches 350.
-This censoring is informative — sicker patients are more likely to start ART early —
-so censoring IP weights are needed.
-
-The per-protocol analysis thus requires:
-
-- Unstabilized or stabilized treatment IP weights ($SW^A$),
-  to adjust for confounding of treatment decisions.
-- Censoring IP weights ($SW^C$),
-  to adjust for selection bias from protocol deviations.
-- A MSM or g-formula to estimate the counterfactual mean outcome.
-
-## 22.4 Time Zero (p. 315)
+### Per-Protocol Strategies Are Usually Dynamic
 
 ---
 
-**Time zero** — the moment at which follow-up begins for each individual —
-is one of the most consequential choices in any observational study.
-Errors in defining time zero are responsible for a large class of systematic biases
-in the observational literature.
+Sensible protocols do not mandate treatment no matter what:
+$g_1$ requires stopping therapy when a contraindication or toxicity arises.
+So the PP effect generally compares **dynamic** strategies
+("do this; if X happens, do this other thing").
+
+An individual assigned to $g_1$ who stops therapy because of toxicity
+is *adhering* to $g_1$, not deviating from it,
+even if the protocol describes $g_1$ loosely as "treat continuously."
+
+::: {.notes}
+Ideally the protocol fully specifies the strategies,
+so that the per-protocol effect is well defined (Hernán and Robins, 2017, as cited in the book).
+
+The PP effect is often the *implicit* target of inference.
+When investigators complain that the interventions implemented in a trial
+were not faithful to the protocol and call that "bias,"
+they are really interested in the PP effect:
+non-adherence after baseline cannot bias the effect of baseline assignment.
+:::
+
+### Per-Protocol Effects in Alternative Target Trials
+
+---
+
+Suppose that during the trial a consensus emerges that $g_0$ is inferior,
+and physicians start treating $g_0$ participants once their CD4 count ($L_k$) first drops below 200 cells/µL.
+Many $g_0$ participants then follow
+
+$g_0'$: "receive $A_k = 0$ continuously, but switch to $A_k = 1$ after $L_k < 200$."
+
+The contrast of $g_1$ versus $g_0'$ is neither the ITT nor the original PP effect.
+It is the **PP effect of another target trial**, randomizing $g_1$ versus $g_0'$,
+which can be emulated with the actual trial's data.
+
+::: {.notes}
+Paradoxically, complete adherence would make this impossible:
+if everyone followed the original protocol, nobody in the data followed $g_0'$.
+A fully adherent trial of CD4 thresholds for initiating therapy
+is of little use to emulate a trial of continuous treatment versus no treatment, and vice versa.
+It is precisely non-adherence that lets one trial's data
+answer other, perhaps more relevant, causal questions.
+
+Estimating per-protocol effects of sustained strategies in a trial raises
+the same issues as in an observational study:
+trial investigators need to collect post-randomization data
+on adherence and on time-varying prognostic factors associated with adherence.
+:::
+
+::: {.callout-note title="Technical Point 22.1: Controlled Direct Effects"}
+The **controlled direct effect** of $A$ on $Y$ with mediator $M$ set to $m$ is
+$\E{Y^{a=1,m}} - \E{Y^{a=0,m}}$, for $m = 0$ or $m = 1$.
+It could be identified by a trial that randomizes $A$ at baseline and $M$ one month later,
+so that $\Pr[Y^{a,m} = 1] = \Pr[Y = 1 \mid A = a, M = m]$,
+or by emulating such a trial when consistency, positivity, and exchangeability hold for both $A$ and $M$.
+It is just a contrast of sustained strategies: replace $A$ and $M$ by $A_0$ and $A_1$ (Chapter 19)
+[@hernan2020causal, Technical Point 22.1, p. 311].
+:::
+
+::: {.callout-note title="Technical Point 22.2: Pure and Principal Stratum Direct Effects"}
+- **Pure (natural) direct effect**: $\E{Y^{a=1, M^{a=0}}} - \E{Y^{a=0, M^{a=0}}}$.
+  It is a cross-world quantity, so it cannot be identified from any randomized experiment
+  on $A$, $M$, or both, nor from observational data under an FFRCISTG model
+  (Technical Point 6.2).
+  Introduced by Robins and Greenland (1992); Pearl (2001) renamed it
+  and showed it is identified for certain graphs under the NPSEM-IE model,
+  which assumes untestable cross-world independencies.
+- **Principal stratum direct effect**: the effect of $A$ in the subset with $M^{a=0} = M^{a=1} = m$.
+  It equals $\E{Y^{a=1} \mid M^{a=0} = M^{a=1} = m} - \E{Y^{a=0} \mid M^{a=0} = M^{a=1} = m}$,
+  a total effect in a subpopulation, so it needs no well-defined intervention on $M$;
+  but it has little policy relevance when $A$ affects $M$ in almost everyone.
+  Introduced by Robins (1986) and popularized by Rubin (2004).
+
+Chapter 23 presents yet another type of direct effect
+[@hernan2020causal, Technical Point 22.2, p. 312].
+:::
+
+## 22.3 Emulating a Target Trial with Sustained Strategies (pp. 313-315)
+
+---
+
+When a pragmatic trial is not possible,
+we emulate it with existing observational data;
+the trial is then the **target trial** of the observational analysis.
+At a minimum, its protocol specifies:
+
+- eligibility criteria;
+- start and end of follow-up;
+- treatment strategies;
+- outcomes of interest;
+- causal contrast;
+- data analysis plan.
+
+::: {.notes}
+Specifying the protocol precisely may require some exploration of the available data.
+For example, a target trial of individuals with HIV is a reasonable proposal
+only after confirming that the data include information on HIV diagnosis.
+:::
+
+### Observational Analog of the ITT Effect
+
+---
+
+The actual assignment is unknown in existing observational data,
+so a true ITT effect can rarely be emulated.
+The closest analog compares **initiators** of the strategies,
+"initiate $A_0 = 1$ (or $A_0 = 0$) at baseline, with no loss to follow-up":
+$$\Pr\sb{D_k^{a_0=1, \bar{c}_k = \bar{0}} = 1} - \Pr\sb{D_k^{a_0=0, \bar{c}_k = \bar{0}} = 1}.$$
+
+::: {.notes}
+This contrast groups people by **initiation** rather than **assignment**.
+Used in a randomized trial, it would put everyone who took no dose at baseline in the same group,
+whether assigned to $g_1$ or $g_0$.
+It is therefore equivalent to the modified ITT analysis of Fine Point 22.2.
+If initiation occurs shortly after assignment, it roughly preserves a key ITT feature:
+the contrast refers to interventions taken soon after baseline.
+
+With prescription (rather than dispensing) data,
+a comparison by whether therapy was prescribed at baseline
+would come a little closer to the target trial's ITT analysis.
+:::
+
+### Observational Analog of the PP Effect
+
+---
+
+The observational analog of the PP effect is defined exactly as in the target trial.
+Without a pre-specified protocol, every per-protocol effect corresponds to some target trial,
+so there is no distinction between the "original" PP effect and PP effects of alternative trials.
+
+We can only emulate target trials whose strategies are actually followed
+by at least some individuals in the data,
+unless we are willing to extrapolate with models such as dose-response structural models.
+
+::: {.notes}
+**Why explicit strategies help**:
+
+- they prevent bias, by exposing analyses whose comparisons cannot be translated
+  into a contrast between hypothetical interventions (Sections 3.5 and 3.6);
+- they add clarity.
+  The labels "efficacy" (effect under perfect conditions)
+  and "effectiveness" (effect under realistic conditions) are ambiguous:
+  the ITT effect of a trial is sometimes called effectiveness and sometimes efficacy,
+  and the PP effect of an emulation is sometimes called effectiveness.
+  It is more helpful to accept that all causal effects lie somewhere on an effectiveness continuum,
+  and to define explicitly the strategies that decision makers can choose between.
+:::
+
+## 22.4 Time Zero (pp. 315-317)
+
+---
 
 ::: {#def-time-zero}
 ## Time Zero
 
-Time zero for an individual is the point in calendar time at which:
-
-1. The individual meets the eligibility criteria of the target trial.
-2. The individual's treatment strategy is assigned (or, in the emulation, observed).
-3. Follow-up for outcomes begins.
-
-All three conditions must be satisfied simultaneously at time zero.
+**Time zero** (baseline, start of follow-up) is the time at which
+eligibility criteria must be met (but not later)
+and after which outcomes begin to be counted (but not earlier).
+In a randomized trial, it is the time an eligible individual is assigned to a strategy.
 :::
 
-### Immortal Time Bias
-
-**Immortal time bias** arises when there is a period of follow-up before time zero
-during which individuals cannot experience the outcome by design
-(because they must survive to meet the eligibility criterion or to be "assigned").
-If this immortal time is misclassified — for example, attributed to the treated group
-when it actually preceded treatment initiation — the treated group appears to have
-better outcomes simply because they could not have died during the immortal period.
-
-::: {#exm-immortal-time}
-## Immortal Time Bias: Statin and Mortality
-
-Suppose we study whether statin use reduces mortality using an insurance claims database.
-We define "statin users" as individuals who filled a statin prescription at any point
-during a one-year observation window,
-and we compare their mortality during that year to "non-users."
-
-Individuals who died in the first week cannot fill a prescription, so they are automatically
-in the non-user group.
-Statin users, by definition, survived long enough to fill a prescription.
-This immortal time — the gap between study entry and first prescription —
-is misattributed to the treated group, inducing a spurious survival advantage.
-:::
-
-### Sequential Trials
-
-One practical approach to correct time zero assignment in observational databases
-is the **sequential trials** design:
-for each calendar time $t$ at which individuals satisfy the eligibility criteria,
-we create a separate "trial" with time zero at $t$.
-Individuals can appear in multiple such trials (each with a different time zero)
-and their data are then pooled across all trials with appropriate adjustment
-for the time-varying covariates at each trial's time zero.
-
-This design ensures that each participant's follow-up genuinely begins
-at the moment of eligibility and strategy assignment,
-eliminating immortal time bias by construction.
+Follow-up in the emulation should start when it would have started in the target trial.
 
 ::: {.notes}
-**Prevalent user bias**:
+In our antiretroviral therapy trial, follow-up does not start 2 years before or after assignment:
 
-A related problem arises when including individuals who are already on treatment
-at the start of the observation window, rather than restricting to **new users**.
-Prevalent users have survived on treatment long enough to be observed —
-they are a selected, healthier subset of all who ever initiated treatment.
-Comparing prevalent users to never-users confounds the treatment effect
-with the selective survival required to be a prevalent user.
-The **new user design** (also called the active comparator, new user design)
-restricts to individuals who recently initiated treatment,
-eliminating prevalent user bias and aligning the observational study
-more closely with a randomized trial.
+- **before**: the strategies have not been assigned
+  and the eligibility criteria have not been met, or even defined;
+- **after**: deaths in the first 2 years are excluded and short-term effects are missed.
+  Worse, if treatment has a short-term effect,
+  more susceptible individuals would have died by year 2 in the active arm but not in the other,
+  destroying baseline comparability and opening the door to **selection bias**.
+
+The same rules apply to observational analyses, for the same reasons.
+Errors in emulating time zero are nevertheless frequent.
+For example, the discrepancy between observational and randomized estimates
+of the effect of postmenopausal hormone therapy on heart disease
+was partly due to mishandling time zero in the observational studies
+(Hernán et al., 2008, as cited in @hernan2020causal [p. 315]).
 :::
 
-## 22.5 A Unified Approach to Answering What If Questions with Data (p. 317)
+Two problems cause errors in emulating time zero:
+
+1. there may be no unique choice of time zero;
+2. the treatment strategies may not be uniquely assignable at time zero.
+
+### Problem 1: Multiple Eligible Times
 
 ---
 
-The target trial emulation framework provides a unifying conceptual scaffolding
-for all observational causal inference:
+- **Eligible once**: follow-up starts at the only eligible time.
+  Example: comparing initiation of therapy when CD4 first drops below 500 cells/µL
+  versus below 350 cells/µL; follow-up starts when CD4 first drops below 500.
+- **Eligible many times**: e.g., initiation versus no initiation of hormone therapy
+  in postmenopausal women with no chronic disease and no hormone therapy in the previous two years.
+  A woman eligible continuously from age 51 to 65 could start follow-up at 51, 52, 53, ...
 
-1. **Specify** the target trial — the idealized randomized experiment
-   that would answer the causal question.
-2. **Identify** the components of the target trial that can be emulated
-   with the available observational data, and those that cannot.
-3. **Apply** the appropriate g-method to estimate the trial's estimand
-   from the observational data under the required identifying assumptions.
-4. **Conduct** sensitivity analyses to assess the robustness of conclusions
-   to violations of the identifying assumptions.
-
-::: {#thm-target-trial-unification}
-## The Target Trial as a Unifying Framework
-
-Any causal question about a medical or social intervention can be expressed
-as a target trial with:
-
-- Eligibility criteria defining the target population.
-- Treatment strategies defining the interventions to compare.
-- A time zero aligning eligibility, assignment, and follow-up.
-- An outcome and follow-up period.
-- An analysis plan (ITT, PP, or both).
-
-The choice of g-method (g-formula, IP weighting, g-estimation) is secondary —
-what matters is first getting the trial specification right.
-:::
-
-### Benefits of the Target Trial Approach
-
-The target trial framework:
-
-- **Makes implicit choices explicit**: Eligibility, time zero, and strategies
-  that are often decided ad hoc in practice must be pre-specified.
-- **Connects to a clearly defined estimand**: The causal question is framed
-  as a comparison between specific strategies in a specific population,
-  leaving no ambiguity about what is being estimated.
-- **Organizes the analytic steps**: Once the trial is specified,
-  it is clear what confounders must be measured, what models must be fit,
-  and what biases must be mitigated.
-- **Facilitates replication and critique**: Other researchers can evaluate
-  whether the emulation is faithful to the target trial
-  and whether the assumptions are plausible.
+Options for time zero: (a) the first eligible time, (b) a random eligible time,
+or (c) **every** eligible time, which means emulating **sequential target trials**.
 
 ::: {.notes}
-**When observational emulation is insufficient**:
+The number of sequential trials depends on how often treatment and covariates are measured:
 
-Not every causal question can be answered by emulating a target trial
-with available observational data.
-The emulation may fail if:
+- with a fixed data-collection schedule (e.g., every two years in many cohorts),
+  emulate a new trial at each scheduled time;
+- with subject-specific schedules (e.g., electronic medical records),
+  choose a time unit (day, week, month) and emulate a new trial at each unit.
 
-- Key eligibility criteria require data not available in the database.
-- The treatment strategies of interest were never observed
-  (positivity violations).
-- Unmeasured confounders are strong enough that sequential exchangeability is implausible.
-- The outcome is too rare or too poorly measured in the database.
+The choice of time unit matters: if treatment and confounders change more than once a week
+for many individuals, a week or month unit introduces bias that a daily unit could eliminate;
+without daily data the bias cannot be fully corrected.
 
-In these cases, the target trial framework helps clarify *why* the emulation is limited
-and what additional data or study design changes would be needed.
-This is itself valuable — it prevents researchers from publishing
-biased estimates while presenting them as valid.
+Strategy (c) can be more efficient because it uses more of the data,
+but individuals contribute to multiple trials,
+so the variance must be adjusted, e.g., by bootstrapping the entire analysis.
+:::
 
-**Further reading**: The target trial emulation framework was developed by Hernán and Robins.
-Key papers include Hernán & Robins (2016), "Using Big Data to Emulate a Target Trial"
-in the *American Journal of Epidemiology*,
-and the series of application papers in pharmacoepidemiology that followed.
+### Problem 2: Data Compatible with Several Strategies
+
+---
+
+Target trial: individuals whose CD4 count just dropped below 500 cells/µL are assigned to start therapy
+
+1. immediately,
+2. when CD4 drops below 350, or
+3. when CD4 drops below 200.
+
+Those who started at time zero follow strategy 1,
+but those who did not are compatible with both 2 and 3.
+
+**Cloning + censoring + weighting**: copy each such individual into two **clones**,
+one per strategy, and censor each clone when its data stop being consistent with its strategy.
+The likely informative censoring is corrected by IP weighting for time-varying factors.
+
+::: {.notes}
+Assigning these individuals to one strategy at random would be statistically inefficient.
+
+If an individual dies before either clone is censored,
+the death is counted under both strategies.
+This double allocation prevents the bias that would arise
+if events during the waiting period were systematically assigned to one strategy only.
+
+Because individuals appear multiple times through their clones,
+the variance must again be adjusted by bootstrapping.
+Cloning, censoring, and weighting can be combined with sequential trial emulation
+when eligibility can be met at multiple times.
+See Robins et al. (2008) and Cain et al. (2010), as cited in the book;
+for related work, van der Laan and Petersen (2007).
+:::
+
+::: {.callout-note title="Fine Point 22.5: Grace Periods"}
+Therapy cannot be started on the very day it is assigned,
+so "immediate" initiation needs a **grace period** (say, 3 months)
+during which initiation still counts as immediate;
+otherwise the study would compare strategies that rarely occur or could not be implemented.
+
+During the grace period an individual's data are consistent with more than one strategy
+(e.g., someone who starts in month 3 is consistent with both
+"initiate within 3 months" and "never initiate" during months 1 and 2),
+so cloning and censoring are again used, with IP weighting to handle the censoring.
+
+Consequences:
+
+- the ITT effect cannot be estimated,
+  because almost everyone contributes a clone to every strategy,
+  so groups defined by baseline assignment have essentially identical outcomes;
+  such analyses target some form of per-protocol effect and need adjustment;
+- a well-defined strategy with a grace period should specify
+  the timing of initiation within the grace period (Cain et al., 2010).
+
+[@hernan2020causal, Fine Point 22.5, p. 317]
+:::
+
+### Supplement: Immortal Time Bias
+
+---
+
+The book's chapter does not use the term, but a classic consequence of misaligned time zero
+is **immortal time bias**: a period of follow-up during which,
+by the way groups are defined, the treated cannot experience the outcome.
+
+::: {#exm-immortal-time}
+## Immortal Time Bias: Statins and Mortality
+
+Define "statin users" as people who filled a statin prescription at any time
+during a one-year window, and compare their mortality over that year with "non-users."
+Anyone who dies before filling a prescription is automatically a non-user,
+and users must survive until their first fill.
+The time from the start of follow-up to the first fill is "immortal" for users,
+which produces a spurious survival advantage.
+Starting follow-up when eligibility is met and strategies are assigned,
+as the target trial requires, avoids this bias
+(see Hernán, Sauer, Hernández-Díaz, Platt, and Shrier, 2016, listed in the book's references).
+:::
+
+::: {.notes}
+A related design point: eligibility criteria such as
+"no hormone therapy during the previous two years" restrict the target trial to **new users**.
+Section 20.5 explains why comparing current users with nonusers can be biased
+unless past treatment is adjusted for or the analysis is restricted to new users.
+:::
+
+## 22.5 A Unified Approach to Answer What If Questions with Data (pp. 317-322)
+
+---
+
+Explicit target trial emulation brings together the two frameworks of this book,
+counterfactuals and causal diagrams,
+and grounds them in actionable causal inference:
+
+- organizing the analysis around a familiar concept, the experiment,
+  helps articulate a well-defined causal question,
+  from which design and analysis follow;
+- it applies across disciplines, whatever their vocabulary
+  (economists' "omitted variable bias" and "selection on observables"
+  are confounding and conditional exchangeability);
+- it gives randomized and observational studies a **common language**.
+
+::: {.notes}
+All health and social scientists face the same fundamental task:
+articulating causal questions as contrasts of well-defined counterfactuals.
+The target trial helps by specifying the well-defined interventions
+that lead to well-defined counterfactuals.
+:::
+
+### Trials and Observational Studies Differ Only by Baseline Randomization
+
+---
+
+A randomized trial is a follow-up study with baseline randomization;
+observational longitudinal data form a follow-up study without it.
+Long-term trials of sustained strategies in real-world settings,
+with imperfect adherence and loss to follow-up,
+suffer the confounding and selection biases usually associated with observational studies.
+
+> "Time-varying confounding in observational studies is a bias with the same structure as nonrandom noncompliance in randomized trials" [@hernan2020causal, p. 318].
+
+::: {.callout-note title="Fine Point 22.6: How Do Randomized and Observational Data Differ?"}
+In a randomized experiment:
+
+i. no baseline confounding is expected;
+ii.
+the randomization probabilities are known;
+iii.
+each individual's assigned strategy is known at baseline.
+
+An observational analysis can emulate (i) when a sufficient set of covariates is measured and adjusted for,
+and (ii) when the treatment model given the past is correctly specified.
+Feature (iii) is not needed for a per-protocol effect in either design,
+because efficient estimators ignore it:
+a trial's assignment variable could be dropped from the data without losing the per-protocol effect,
+as long as a sufficient set of confounders had been measured.
+With dynamic strategies and full adherence,
+the covariates the strategies use to decide treatment form such a set (Robins, 1986)
+[@hernan2020causal, Fine Point 22.6, p. 319].
+:::
+
+### Conventional Trial Analyses, Revisited
+
+---
+
+**ITT analysis** (unadjusted comparison of randomized groups):
+randomization rules out baseline and post-randomization confounding for the effect of assignment,
+but not selection bias from **loss to follow-up**.
+Valid ITT estimation may need adjustment for time-varying prognostic factors,
+e.g., g-methods if dropout depends on symptom onset.
+
+**Conventional per-protocol analysis** (censor at the first deviation, no adjustment)
+is questionable for three reasons:
+
+1. selection bias from differential loss to follow-up;
+2. those remaining on protocol in each arm need not be exchangeable,
+   so g-methods are needed for time-varying factors that affect staying on protocol
+   (or instrumental variable methods, with their own strong assumptions;
+   Technical Point 16.6);
+3. it ignores that the strategies are **dynamic**:
+   censoring people who stop treatment because of toxicity or a contraindication
+   (the "on-treatment" analysis) treats adherence as deviation.
+
+::: {.notes}
+Fine Point 22.2's unadjusted ITT analysis is the **pseudo-intention-to-treat** analysis,
+and Fine Point 22.3's unadjusted per-protocol analysis is the **naive per-protocol** analysis.
+
+For failure-time outcomes, g-methods are *always* needed when treatment affects the outcome,
+because $A_k$ affects all later variables through its effect on $D_{k+1}$
+(Technical Point 21.10).
+
+The upshot: when the goal is a per-protocol effect or its observational analog,
+randomized trials and observational studies should be analyzed identically.
+Any reason to adjust for time-varying confounding and selection bias in an observational study
+is equally a reason to adjust for them in a randomized trial
+[@hernan2020causal, Chapter 22, p. 320].
+:::
+
+### Why Observational Emulation Matters
+
+---
+
+Randomized trials may be expensive, infeasible, unethical, or too slow for an urgent decision,
+so many decisions must be made without them.
+When we cannot run the trial that would answer our question,
+the observational analysis should explicitly emulate it
+and be judged by how well it emulates its target trial.
+
+::: {.notes}
+In very unusual situations,
+a decision informed by a well-conducted randomized trial can be worse
+than one informed by badly confounded observational data
+(Fine Points 22.7 and 22.8).
+
+**Further reading** (listed in the book's references):
+Hernán and Robins (2016), "Using big data to emulate a target trial
+when a randomized trial is not available," *American Journal of Epidemiology*;
+Hernán and Robins (2017), "Per-protocol analyses of pragmatic trials,"
+*New England Journal of Medicine*.
+:::
+
+::: {.callout-note title="Fine Point 22.7: A Counterintuitive Comparison of a Trial and an Observational Study"}
+A double-blind placebo-controlled trial of an over-the-counter treatment $A$
+enrolled a random 20% of people diagnosed with lung cancer; everyone adhered.
+The 60-month mortality was 550/1000 = 55% with $A = 1$ and 450/1000 = 45% with $A = 0$,
+so the regulator banned $A$.
+An observational study of the other 80% found **0%** mortality among both treated and untreated.
+
+Classify individuals into types: doomed ($Y^{a=0} = Y^{a=1} = 1$), hurt ($Y^{a=0} = 0$, $Y^{a=1} = 1$),
+helped ($Y^{a=0} = 1$, $Y^{a=1} = 0$), immune ($Y^{a=0} = Y^{a=1} = 0$).
+Random sampling and randomization give the trial arms and the observational sample
+the same distribution of types.
+Then:
+
+- 0% observational mortality means nobody is doomed;
+- the trial's treated arm gives $\Pr[Y^{a=1} = 1] = \Pr[\text{doomed}] + \Pr[\text{hurt}] = 0 + \Pr[\text{hurt}] = 0.55$;
+- the untreated arm gives $\Pr[Y^{a=0} = 1] = \Pr[\text{doomed}] + \Pr[\text{helped}] = 0 + \Pr[\text{helped}] = 0.45$;
+- so $\Pr[\text{immune}] = 1 - 0 - 0.55 - 0.45 = 0$.
+
+In the observational data every "hurt" person took $A = 0$ and every "helped" person took $A = 1$:
+everyone followed the optimal strategy.
+The trial compared "treat everyone" with "treat no one,"
+but the best strategy was "treat only those who benefit."
+If, say, the type were determined by ethnic group and each group had learned from experience
+whether to take $A$ (maximal effect modification and maximal confounding),
+the confounded observational study, not the unconfounded trial, revealed the correct policy
+[@hernan2020causal, Fine Point 22.7, p. 321].
+:::
+
+::: {.callout-note title="Fine Point 22.8: Generalizing Fine Point 22.7"}
+Suppose lower $Y$ is better and the observational mean $\E{Y}$ is below the mean of both trial arms,
+so $\E{Y} < \E{Y^{a=0}}$ and $\E{Y} < \E{Y^{a=1}}$.
+If $U$ is a (possibly unknown) set of pre-treatment covariates with $Y^a \ind A \mid U$,
+then $\E{Y} = \E{Y^g}$ for the random strategy $g$ that assigns $A = 1$ with probability $\Pr[A = 1 \mid U]$,
+the strategy that generated the observational data.
+That strategy cannot be implemented without data on $U$,
+but it can motivate measuring pre-treatment covariates $V$
+and using the trial data to find a deterministic dynamic strategy $g^*$
+whose mean, estimated from the trial, is below the observational $\E{Y}$.
+Combining trial and observational data can thus be more informative than the trial alone,
+provided both are random samples of everyone eligible for the trial
+[@hernan2020causal, Fine Point 22.8, p. 322].
 :::
 
 ## Summary
 
 ---
 
-- The **intention-to-treat (ITT) effect** compares outcomes by assigned strategy;
-  the **per-protocol (PP) effect** compares outcomes by strategy actually adhered to.
-- In observational data, the PP analysis requires time-varying IP weighting
-  to handle confounding of adherence decisions.
-- The **target trial** is the explicit specification of the randomized experiment
-  that the observational analysis attempts to emulate.
-  It includes eligibility criteria, treatment strategies, time zero, outcomes, and analysis plan.
-- **Time zero** must simultaneously mark eligibility, strategy assignment, and follow-up start.
-  Misalignment of these leads to **immortal time bias**, **prevalent user bias**,
-  and other systematic errors.
-- The **sequential trials** design eliminates immortal time bias
-  by defining a new "trial" at each calendar time an individual becomes eligible.
-- The **new user design** eliminates prevalent user bias
-  by restricting to individuals who recently initiated treatment.
-- The target trial framework **unifies** observational causal inference:
-  specify the trial first, then choose the g-method for estimation.
+- The **ITT effect** is the effect of randomized assignment;
+  it is unconfounded but is neither guaranteed to preserve the null
+  (without the exclusion restriction) nor guaranteed to be conservative.
+- The **PP effect** is the effect of adhering to the assigned strategies;
+  it is often the more relevant estimand and generally requires adjustment,
+  for sustained strategies via g-methods, in trials and observational studies alike.
+- PP strategies are usually **dynamic**: stopping for toxicity is adherence, not deviation.
+- Non-adherence in a trial allows emulation of **alternative target trials**.
+- A **target trial** protocol specifies eligibility, follow-up, strategies, outcomes,
+  causal contrast, and analysis plan;
+  observational analogs are the comparison of initiators (ITT) and the PP effect.
+- **Time zero** must align eligibility, assignment, and start of follow-up;
+  multiple eligible times call for **sequential trials**,
+  and data compatible with several strategies call for **cloning, censoring, and weighting**.
+- Aside from baseline randomization, randomized and observational studies of sustained strategies
+  should be **analyzed the same way**.
 
 ## References
 

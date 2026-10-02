@@ -12,452 +12,712 @@ format:
 
 {{< include ../latex-macros/macros.qmd >}}
 
-This chapter introduces **instrumental variable (IV) estimation**, a method for identifying causal effects when there is **unmeasured confounding**. Unlike the methods in previous chapters, IV estimation does not rely on conditional exchangeability. Instead, it uses a special variable (the instrument) that affects treatment but not the outcome directly.
+Every method in the previous chapters needs all the variables required to adjust for confounding and selection bias to be identified and measured correctly.
+**Instrumental variable (IV) estimation** replaces that untestable assumption with a different set of (also untestable) assumptions,
+built around a variable $Z$, the **instrument**, that does not require measuring the confounders.
 
 ::: {.notes}
-This chapter is based on @hernan2020causal [Chapter 16, pp. 227-246].
+This chapter is based on @hernan2020causal [Chapter 16, pp. 209-225].
 
-**Key innovation**: IV methods allow causal inference even with unmeasured confounding, but require strong assumptions about the instrument. The causal effect identified is often for a specific subgroup (compliers), not the entire population.
+**Key theme**: an instrument alone identifies only bounds on the average causal effect.
+A point estimate needs a fourth, untestable condition:
+either some form of **effect homogeneity** (giving the average causal effect in the population)
+or **monotonicity** (giving the effect in the "compliers" only).
+And because the IV estimator divides by the instrument-treatment association,
+small violations of any condition can produce large biases.
 :::
 
-## 16.1 The Three Instrumental Conditions (pp. 227-231)
+## 16.1 The Three Instrumental Conditions (pp. 209-212)
 
 ---
 
-An **instrumental variable** $Z$ must satisfy three conditions to identify causal effects.
+### A Double-Blind Randomized Trial
 
-::: {#def-instrumental-variable}
-## Instrumental Variable
+- $Z$: randomization assignment (1: treatment, 0: placebo)
+- $A$: treatment actually received (1: yes, 0: no); not everyone adheres
+- $Y$: outcome
+- $U$: factors, some unmeasured, that affect both adherence and the outcome
 
-A variable $Z$ is an **instrumental variable** for the effect of $A$ on $Y$ if:
+In the book's Figure 16.1, $Z \rightarrow A \rightarrow Y$, with $U$ a common cause of $A$ and $Y$.
 
-1. **Relevance**: $Z$ is associated with $A$
-2. **Exchangeability**: $Z$ is independent of unmeasured confounders $U$ (i.e., $Y^{a,z} \ind Z$)
-3. **Exclusion restriction**: $Z$ affects $Y$ only through $A$ (i.e., $Y^{a,z} = Y^a$ for all $a, z$)
-
-Where $Y^{a,z}$ denotes the potential outcome under treatment $A = a$ and instrument $Z = z$.
-:::
-
-### Condition 1: Relevance
-
-**Statement**: $Z$ is associated with $A$
-
-**Meaning**: The instrument must actually affect treatment assignment.
-
-**Example**: Randomized encouragement
-
-- $Z = 1$ if encouraged to take treatment, $Z = 0$ if not encouraged
-- Relevance requires that encouragement increases the probability of treatment
-
-**Testing**: Relevance can be tested empirically by checking $\Pr[A = 1 \mid Z = 1] \neq \Pr[A = 1 \mid Z = 0]$
-
-::: {.notes}
-**Weak instruments**: If the association between $Z$ and $A$ is very weak, the IV estimator will have:
-
-- Large variance (imprecise estimates)
-- Potential bias even in large samples
-
-Common rule of thumb: F-statistic > 10 in first-stage regression (for continuous outcomes).
-:::
-
-### Condition 2: Exchangeability
-
-**Statement**: $Y^{a,z} \ind Z$ (or $Y^a \ind Z$ under exclusion)
-
-**Meaning**: The instrument is "as good as randomly assigned" with respect to potential outcomes.
-
-**Example**: Randomized encouragement
-
-- If encouragement is randomized, exchangeability holds by design
-- $Z \ind U$ where $U$ are unmeasured confounders
-
-**Testing**: Exchangeability generally **cannot** be tested (involves unmeasured confounders)
-
-### Condition 3: Exclusion Restriction
-
-**Statement**: $Y^{a,z} = Y^a$ for all $a, z$
-
-**Meaning**: The instrument affects the outcome ONLY through its effect on treatment.
-
-**Example**: Randomized encouragement
-
-- Encouragement affects outcome only by changing treatment received
-- NOT through psychological effects, information effects, etc.
-
-**Testing**: Exclusion generally **cannot** be tested (untestable assumption)
-
-::: {.notes}
-**Common violations**:
-
-1. **Direct effects**: Instrument affects outcome through pathways other than treatment
-2. **Defiers**: Some individuals do the opposite of what the instrument suggests (see Section 16.3)
-
-**Critical importance**: Exclusion is the most controversial IV assumption. Subject-matter knowledge is essential for justifying it.
-:::
-
-## 16.2 The Usual IV Estimand (pp. 231-234)
+Adjustment methods (IP weighting, standardization, g-estimation, stratification, matching) need to block the backdoor path $A \leftarrow U \rightarrow Y$,
+so they are biased if part of $U$ is unmeasured or mismeasured.
+IV methods may identify the effect of $A$ on $Y$ without measuring $U$.
 
 ---
 
-Under the three IV conditions, we can identify a causal effect.
+::: {#def-instrumental-conditions}
+## The Three Instrumental Conditions
 
-### IV Estimand for Binary $Z$ and $A$
+A variable $Z$ is an **instrument** for the effect of $A$ on $Y$ if it meets three conditions [@hernan2020causal, p. 209]:
 
-**Setting**: Binary instrument $Z$, binary treatment $A$, outcome $Y$
-
-**IV estimand**:
-
-$$\frac{\E{Y \mid Z = 1} - \E{Y \mid Z = 0}}{\E{A \mid Z = 1} - \E{A \mid Z = 0}}$$
-
-This is the **Wald estimator** or **ratio estimator**.
-
-**Interpretation**: The effect of $Z$ on $Y$, divided by the effect of $Z$ on $A$.
-
-### Why This Works
-
-**Numerator**: $\E{Y \mid Z = 1} - \E{Y \mid Z = 0}$
-
-- By exchangeability: equals $\E{Y^{z=1}} - \E{Y^{z=0}}$
-- By exclusion: equals $\E{Y^{A^{z=1}}} - \E{Y^{A^{z=0}}}$
-
-**Denominator**: $\E{A \mid Z = 1} - \E{A \mid Z = 0}$
-
-- By exchangeability: equals $\Pr[A^{z=1} = 1] - \Pr[A^{z=0} = 1]$
-
-**Ratio**: Under additional assumptions (see next section), this estimates the average causal effect in a specific subgroup.
-
-::: {.notes}
-**Identification without conditional exchangeability**:
-
-The key insight: Even if $A$ is confounded (unmeasured $U$ affects both $A$ and $Y$), we can use $Z$ to identify causal effects because:
-
-1. $Z$ is randomized (or acts as if randomized)
-2. $Z$ affects $Y$ only through $A$
-
-This allows us to isolate the causal pathway $A \to Y$ without measuring all confounders.
+- **(i)** $Z$ is associated with $A$;
+- **(ii)** $Z$ does not affect $Y$ except through its potential effect on $A$;
+- **(iii)** $Z$ and $Y$ do not share causes.
 :::
 
-### Example: Randomized Encouragement
+In the double-blind trial, $Z$ is an instrument:
+(i) holds because those assigned to treatment are more likely to take it,
+(ii) is expected from blinding,
+and (iii) is expected from random assignment.
 
-**Design**: Randomize individuals to receive encouragement to exercise ($Z$)
-
-- Not everyone encouraged will exercise ($A = 1$)
-- Some not encouraged will exercise anyway
-
-**IV estimate**:
-
-$$\frac{\text{Mean health in encouraged} - \text{Mean health in not encouraged}}{\Pr[\text{Exercise} \mid \text{Encouraged}] - \Pr[\text{Exercise} \mid \text{Not encouraged}]}$$
-
-If 60% exercise when encouraged vs 30% when not, and mean health differs by 6 points:
-
-$$\frac{6}{0.60 - 0.30} = \frac{6}{0.30} = 20$$
-
-Effect of exercise on health (in a subgroup) is 20 points.
-
-## 16.3 Instrumental Variable Estimation versus Randomized Experiments (pp. 234-237)
+::: {.notes}
+Condition (ii) would fail if, for example, side effects of treatment inadvertently unblinded participants [@hernan2020causal, p. 209].
+:::
 
 ---
 
-IV estimation is like an imperfect randomized experiment.
+::: {.callout-note title="Technical Point 16.1: The Instrumental Conditions, Formally"}
+- **(i) Relevance**: $Z$ and $A$ are associated, i.e., $Z \ind A$ does not hold.
+- **(ii) Exclusion restriction** ("no direct effect of $Z$ on $Y$"):
+  at the individual level, $Y_i^{z,a} = Y_i^{z',a} = Y_i^{a}$ for all $z, z'$, all $a$, and all individuals $i$;
+  some results only need the population-level version $\E{Y^{z,a}} = \E{Y^{z',a}}$.
+- **(iii)** as **marginal exchangeability**, $Y^{a,z} \ind Z$ for all $a, z$;
+  together with the individual-level (ii) it implies $Y^a \ind Z$.
+  A stronger version is **joint exchangeability**, $\{Y^{z,a};\ a \in \{0,1\},\ z \in \{0,1\}\} \ind Z$ (dichotomous $A$ and $Z$).
 
-### Perfect Compliance
+All of these are expected to hold in a double-blind randomized trial [@hernan2020causal, p. 210].
+:::
 
-If everyone complied with their assigned treatment ($A = Z$):
+---
 
-- IV estimand = average causal effect in the full population
-- This is just a standard randomized experiment
+### Causal and Surrogate Instruments
 
-### Imperfect Compliance
+- A **causal instrument** has a causal effect on $A$ (Figure 16.1).
+- A **surrogate instrument** $Z$ has no effect on $A$ but is associated with an unmeasured causal instrument $U_Z$ (Figure 16.2).
+  Condition (i) then holds through the shared cause $U_Z$, and (iii) becomes "$Z$ and $Y$ share no causes other than $U_Z$."
 
-When $A \neq Z$ for some individuals:
+In the book's Figure 16.2, $U_Z \rightarrow Z$ and $U_Z \rightarrow A \rightarrow Y$, with $U$ a common cause of $A$ and $Y$.
 
-- IV estimand estimates effect in a **subgroup** (compliers)
-- Not the average effect in the full population
+::: {.notes}
+Both kinds of instrument can be used for IV estimation, with caveats discussed in Section 16.4.
+The book's Figure 16.3 shows a more unusual surrogate instrument:
+$Z$ and $U_Z$ become associated because the analysis is restricted to a selected population, i.e., conditions on a common effect $S$ of $Z$ and $U_Z$ [@hernan2020causal, p. 210].
+:::
 
-### Compliance Types
+---
+
+### A Candidate Instrument in NHEFS
+
+To estimate the effect of smoking cessation $A$ on weight gain $Y$, the book proposes
+$Z = 1$ if the average price of a pack of cigarettes in the individual's U.S. state of birth was greater than \$1.50, and $Z = 0$ otherwise [@hernan2020causal, p. 210].
+
+- Condition (i) is the only one that can be checked:
+  $\Pr[A = 1 \mid Z = 1] = 25.8\%$ and $\Pr[A = 1 \mid Z = 0] = 19.5\%$,
+  a risk difference of about 6%.
+  So $Z$ is a **weak instrument** (Section 16.5).
+- Conditions (ii) and (iii) cannot be verified.
+  Conditioning on $A$ does not help: $A$ is a collider on $Z \leftarrow U_Z \rightarrow A \leftarrow U \rightarrow Y$.
+
+::: {.notes}
+"Price in state of birth" would meet condition (i) through the unmeasured causal instrument $U_Z$ "price in place of residence", so it is a surrogate instrument [@hernan2020causal, p. 210].
+
+Because only (i) is checkable, the book calls $Z$ a **proposed** or **candidate** instrument:
+we argue for (ii) and (iii) with subject-matter knowledge, just as we argue for the identifying assumptions of other methods.
+Falsification tests exist that use data on $Z$, $A$, and $Y$,
+but they can reject only a small subset of violations,
+and for most violations they have no power at any sample size [@hernan2020causal, p. 211].
+:::
+
+---
+
+::: {.callout-note title="Fine Point 16.1: Candidate Instruments in Observational Studies"}
+Three common categories [@hernan2020causal, p. 211]:
+
+- **Genetic factors**: a genetic variant associated with $A$ and assumed to affect $Y$ only through $A$,
+  e.g., a polymorphism affecting alcohol metabolism (such as ALDH2 in Asian populations) for the effect of alcohol on coronary heart disease.
+  This is the framework of **Mendelian randomization**.
+- **Preference**: a physician's preference for one treatment over another.
+  Preference itself ($U_Z$) is unmeasured, so a surrogate such as "last prescription the physician issued before the current one" is used.
+- **Access**: distance or travel time to a facility, calendar period when access changed over time, or the price of treatment (the book's example).
+:::
+
+---
+
+### What an Instrument Alone Buys: Bounds
+
+Under conditions (i)-(iii) alone, the average causal effect is **not** point identified;
+only upper and lower bounds are, and they are typically wide and often include the null [@hernan2020causal, p. 212].
+In the smoking example, the bounds would only say that quitting can cause weight gain, weight loss, or no change.
+
+::: {.callout-note title="Technical Point 16.2: Partial Identification (Bounds)"}
+For a dichotomous $Y$, $\Pr[Y^{a=1} = 1] - \Pr[Y^{a=0} = 1]$ lies a priori in $(-1, 1)$, an interval of width 2.
+
+- **Data alone**: assigning each individual's unobserved counterfactual its most extreme possible value halves the width,
+  but the bounds still include 0.
+- **Natural bounds** (instrumental condition (ii) at the population level plus marginal exchangeability (iii)):
+  width $\Pr[A = 1 \mid Z = 0] + \Pr[A = 0 \mid Z = 1]$.
+- **Sharp bounds**: narrower still, under joint exchangeability.
+
+These bounds are often too wide to be informative.
+Sufficiently strong parametric assumptions about the effect of $A$ on $Y$ (Section 16.2 onward) collapse them to a single number [@hernan2020causal, p. 212].
+:::
+
+::: {.notes}
+Why the data alone halve the width:
+for a dichotomous $Y$, each individual contributes one observed counterfactual,
+so only the unobserved half of each individual's pair is unknown.
+For a continuous $Y$, bounds require choosing a minimum and maximum possible outcome, and their width depends on that choice [@hernan2020causal, p. 212].
+:::
+
+## 16.2 The Usual IV Estimand (pp. 212-214)
+
+---
+
+For a dichotomous instrument meeting (i)-(iii), plus a condition (iv) described in Section 16.3,
+the average causal effect $\E{Y^{a=1}} - \E{Y^{a=0}}$ is identified and equals the **usual IV estimand**
+
+$$
+\frac{\E{Y \mid Z = 1} - \E{Y \mid Z = 0}}{\E{A \mid Z = 1} - \E{A \mid Z = 0}} .
+$$
+
+For a dichotomous treatment, $\E{A \mid Z = z} = \Pr[A = 1 \mid Z = z]$.
+For a continuous instrument, the usual IV estimand is $\Cov{Y, Z} / \Cov{A, Z}$ [@hernan2020causal, p. 213].
+
+---
+
+### Intuition from the Randomized Trial
+
+- **Numerator**: the effect of assignment $Z$ on $Y$, the **intention-to-treat effect**.
+- **Denominator**: the effect of $Z$ on $A$, a measure of **adherence**.
+
+Both can be estimated without adjustment because $Z$ is randomized.
+With perfect adherence the denominator is 1 and the IV estimand equals the intention-to-treat effect;
+as adherence worsens the denominator approaches 0 and the IV estimand is increasingly inflated relative to the intention-to-treat effect.
+
+::: {.notes}
+So the IV estimand avoids adjusting for confounders by **inflating** the effect of assignment.
+In observational studies the denominator is the effect of a causal instrument on $A$ (Figure 16.1),
+or the noncausal association between a surrogate instrument and $A$ (Figures 16.2 and 16.3) [@hernan2020causal, p. 213].
+:::
+
+---
+
+::: {#exm-nhefs-iv}
+## Usual IV Estimate in NHEFS
+
+With $Z$ = 1 for a state with high cigarette price [@hernan2020causal, p. 213]:
+
+$$
+\begin{aligned}
+\hE{Y \mid Z = 1} - \hE{Y \mid Z = 0} &= 2.686 - 2.536 = 0.1503 \\
+\hE{A \mid Z = 1} - \hE{A \mid Z = 0} &= 0.2578 - 0.1951 = 0.0627 \\
+\text{IV estimate} &= \frac{0.1503}{0.0627} \approx 2.4 \text{ kg}.
+\end{aligned}
+$$
+
+Under (i)-(iv), this estimates the average causal effect of smoking cessation on weight gain.
+:::
+
+::: {.notes}
+The numerator difference is reported to four decimals (0.1503), presumably computed from unrounded means;
+the rounded means shown give $2.686 - 2.536 = 0.150$.
+This ratio is also called the **Wald estimator**.
+The book excludes individuals with a missing outcome or instrument for simplicity;
+in practice IP weighting could adjust for the resulting selection bias [@hernan2020causal, p. 213].
+:::
+
+---
+
+### Two-Stage Least Squares
+
+The same estimate can be computed with two saturated linear models,
+$\E{A \mid Z} = \alpha_0 + \alpha_1 Z$ (denominator) and $\E{Y \mid Z} = \beta_0 + \beta_1 Z$ (numerator),
+or by **two-stage least squares**:
+
+1. Fit the first-stage treatment model $\E{A \mid Z} = \alpha_0 + \alpha_1 Z$ and compute predicted values $\hE{A \mid Z}$.
+2. Fit the second-stage outcome model $\E{Y \mid Z} = \beta_0 + \beta_1 \hE{A \mid Z}$.
+
+$\hb_1$ always equals the standard IV estimate: again 2.4 kg [@hernan2020causal, p. 213].
+
+---
+
+### Precision and Weak Instruments
+
+- 95% confidence interval: $-36.5$ to $41.3$ kg.
+- Rule of thumb: an instrument is **weak** if the first-stage F-statistic is below 10;
+  here it was 0.8 [@hernan2020causal, pp. 213-214].
+
+::: {.notes}
+The assumptions implicit in two-stage least squares can be made explicit with additive or multiplicative **structural mean models** (Technical Points 16.3 and 16.4), whose parameters can be estimated by g-estimation.
+When measured common causes $L$ of the instrument and the outcome must be adjusted for,
+choosing between two-stage least squares and structural mean models involves trade-offs similar to those between outcome regression and structural nested models (Chapters 14 and 15) [@hernan2020causal, p. 214].
+
+All of these estimators estimate the average causal effect only if a fourth identifying condition holds.
+:::
+
+## 16.3 A Fourth Identifying Condition: Homogeneity (pp. 214-217)
+
+---
+
+Conditions (i)-(iii) do not make the IV estimand equal the average causal effect.
+A fourth condition, **effect homogeneity (iv)**, is needed.
+The book describes four versions, in order of historical appearance [@hernan2020causal, pp. 214-216]:
+
+1. **Constant effect** of $A$ on $Y$ for every individual (e.g., everyone gains exactly 2.4 kg).
+   This is additive rank preservation (Section 14.4): implausible for most treatments and impossible for dichotomous outcomes except under the sharp null or universal harm (or benefit).
+2. **Equal average effect across levels of $Z$** among the treated and among the untreated:
+   $\E{Y^{a=1} - Y^{a=0} \mid Z = 1, A = a} = \E{Y^{a=1} - Y^{a=0} \mid Z = 0, A = a}$ for $a = 0, 1$.
+3. **No additive effect modification by $U$**:
+   $\E{Y^{a=1} \mid U} - \E{Y^{a=0} \mid U} = \E{Y^{a=1}} - \E{Y^{a=0}}$.
+4. **Constant $Z$-$A$ association across $U$**:
+   $\E{A \mid Z = 1, U} - \E{A \mid Z = 0, U} = \E{A \mid Z = 1} - \E{A \mid Z = 0}$.
+
+::: {.notes}
+Version 1 was implicitly assumed in many early IV analyses that used two-stage least squares.
+
+Version 2 is the one used in Technical Point 16.3.
+It is not automatically implied by condition (iii): even when $Y^a \ind Z$ holds, $Y^a \ind Z \mid A$ generally does not,
+so the treatment effect may vary with $Z$ among the treated or the untreated [@hernan2020causal, p. 214].
+It is also hard for subject-matter experts to argue for, which motivates versions stated in terms of the confounders $U$.
+
+Version 3 is often implausible because some unmeasured confounders are likely effect modifiers too,
+e.g., weight gain after quitting may depend on prior smoking intensity, itself a likely unmeasured confounder.
+Hernán and Robins showed that if $U$ is an additive effect modifier, version 2 would not be a reasonable belief either [@hernan2020causal, p. 215].
+:::
+
+---
+
+### The General Homogeneity Condition
+
+Define the effect modification by $U$ of the effect of $A$ on $Y$ and of the $Z$-$A$ association:
+
+$$
+e(U) \eqdef \E{Y^{a=1} - Y^{a=0} \mid U}, \qquad
+t(U) \eqdef \E{A \mid Z = 1, U} - \E{A \mid Z = 0, U}.
+$$
+
+::: {#thm-general-homogeneity}
+## General Homogeneity Condition
+
+Under the causal diagram of Figure 16.1, if $\Cov{e(U), t(U)} = 0$, then
+
+$$
+\E{Y^{a=1} - Y^{a=0}} = \frac{\E{Y \mid Z = 1} - \E{Y \mid Z = 0}}{\E{A \mid Z = 1} - \E{A \mid Z = 0}} .
+$$
+:::
+
+Versions 3 and 4 are special cases: they say "$e(U)$ is constant" and "$t(U)$ is constant", and the covariance of any variable with a constant is 0 [@hernan2020causal, p. 216].
+
+---
+
+::: {.proof}
+## Proof (Technical Point 16.5)
+
+In Figure 16.1, $Y^a \ind (A, Z) \mid U$ for each $a$ and $U \ind Z$.
+
+**Step 1: the denominator is $\E{t(U)}$.**
+Because $U \ind Z$, $f(u \mid z) = f(u)$, so
+
+$$
+\begin{aligned}
+\E{A \mid Z = z} &= \textstyle\sum_u \E{A \mid Z = z, U = u} f(u \mid z) && \text{(law of total expectation)} \\
+&= \textstyle\sum_u \E{A \mid Z = z, U = u} f(u) && (U \ind Z) \\
+\E{A \mid Z = 1} - \E{A \mid Z = 0} &= \textstyle\sum_u t(u) f(u) = \E{t(U)}. && \text{(definition of } t)
+\end{aligned}
+$$
+
+**Step 2: the numerator is $\E{e(U)\,t(U)}$.**
+By consistency, $Y = A (Y^{a=1} - Y^{a=0}) + Y^{a=0}$.
+For each $z$ and $u$,
+
+$$
+\begin{aligned}
+\E{A (Y^{a=1} - Y^{a=0}) \mid Z = z, U = u}
+&= \Pr(A = 1 \mid Z = z, U = u)\, \E{Y^{a=1} - Y^{a=0} \mid A = 1, Z = z, U = u} \\
+&= \Pr(A = 1 \mid Z = z, U = u)\, \E{Y^{a=1} - Y^{a=0} \mid U = u} && (Y^a \ind (A, Z) \mid U) \\
+&= \Pr(A = 1 \mid Z = z, U = u)\, e(u), \\
+\E{Y^{a=0} \mid Z = z, U = u} &= \E{Y^{a=0} \mid U = u}. && (Y^{a=0} \ind Z \mid U)
+\end{aligned}
+$$
+
+Averaging over $U$ (with $f(u \mid z) = f(u)$):
+
+$$
+\E{Y \mid Z = z} = \textstyle\sum_u \cb{e(u) \Pr(A = 1 \mid Z = z, U = u) + \E{Y^{a=0} \mid U = u}} f(u),
+$$
+
+so the second term cancels in the difference and
+
+$$
+\E{Y \mid Z = 1} - \E{Y \mid Z = 0} = \textstyle\sum_u e(u)\, t(u)\, f(u) = \E{e(U)\, t(U)} .
+$$
+
+**Step 3: use the zero covariance.**
+
+$$
+\begin{aligned}
+\E{e(U)\, t(U)} &= \Cov{e(U), t(U)} + \E{e(U)}\, \E{t(U)} && \text{(definition of covariance)} \\
+&= \E{e(U)}\, \E{t(U)} && (\Cov{e(U), t(U)} = 0) \\
+&= \E{Y^{a=1} - Y^{a=0}} \paren{\E{A \mid Z = 1} - \E{A \mid Z = 0}}. && \text{(iterated expectations; Step 1)}
+\end{aligned}
+$$
+
+Dividing the numerator (Step 2) by the denominator (Step 1) gives the result.
+:::
+
+---
+
+::: {.callout-note title="Technical Point 16.3: Additive Structural Mean Models and IV Estimation"}
+Saturated additive structural mean model for dichotomous $A$ and instrument $Z$:
+
+$$
+\E{Y^{a=1} - Y^{a=0} \mid A = 1, Z} = \beta_0 + \beta_1 Z,
+\quad\text{equivalently}\quad
+\E{Y - Y^{a=0} \mid A, Z} = A (\beta_0 + \beta_1 Z).
+$$
+
+$\beta_0$ is the effect in the treated with $Z = 0$, $\beta_0 + \beta_1$ the effect in the treated with $Z = 1$;
+$\beta_1$ measures additive effect modification by $Z$.
+If we assume $\beta_1 = 0$, then $\beta_0$ equals the usual IV estimand [@hernan2020causal, p. 215].
+:::
+
+::: {.proof}
+The instrumental conditions imply $\E{Y^{a=0} \mid Z = 1} = \E{Y^{a=0} \mid Z = 0}$.
+From the model, $\E{Y^{a=0} \mid A, Z} = \E{Y \mid A, Z} - A(\beta_0 + \beta_1 Z)$;
+averaging over $A$ given $Z$,
+
+$$
+\E{Y^{a=0} \mid Z} = \E{Y \mid Z} - (\beta_0 + \beta_1 Z)\, \E{A \mid Z}.
+$$
+
+Setting $\beta_1 = 0$ and equating the $Z = 1$ and $Z = 0$ values:
+
+$$
+\begin{aligned}
+\E{Y \mid Z = 1} - \beta_0 \E{A \mid Z = 1} &= \E{Y \mid Z = 0} - \beta_0 \E{A \mid Z = 0} \\
+\E{Y \mid Z = 1} - \E{Y \mid Z = 0} &= \beta_0 \paren{\E{A \mid Z = 1} - \E{A \mid Z = 0}} \\
+\beta_0 &= \frac{\E{Y \mid Z = 1} - \E{Y \mid Z = 0}}{\E{A \mid Z = 1} - \E{A \mid Z = 0}} .
+\end{aligned}
+$$
+:::
+
+::: {.notes}
+**Why set $\beta_1 = 0$?**
+The instrumental conditions give one equation in two unknowns ($\beta_0$, $\beta_1$), and that equation exhausts the constraints they place on the data.
+A second constraint is needed and is necessarily untestable;
+$\beta_1 = 0$ is an arbitrary choice (one could as well pick $\beta_1 = 2$).
+That is what "an instrument is insufficient to identify the average causal effect" means.
+
+Even with $\beta_1 = 0$, $\beta_0$ is the effect **in the treated**.
+Interpreting it as the population effect $\E{Y^{a=1}} - \E{Y^{a=0}}$ needs the further untestable assumption that the effect is the same in the treated and the untreated,
+i.e., that the corresponding $Z$ parameter is also 0 in the model for $A = 0$ [@hernan2020causal, p. 215].
+:::
+
+---
+
+::: {.callout-note title="Technical Point 16.4: Multiplicative Structural Mean Models and IV Estimation"}
+Saturated multiplicative (log-linear) structural mean model:
+
+$$
+\frac{\E{Y^{a=1} \mid A = 1, Z}}{\E{Y^{a=0} \mid A = 1, Z}} = \exp{\beta_0 + \beta_1 Z},
+\quad\text{equivalently}\quad
+\E{Y \mid A, Z} = \E{Y^{a=0} \mid A, Z} \exp{A (\beta_0 + \beta_1 Z)}.
+$$
+
+Assuming $\beta_1 = 0$ and no multiplicative effect modification by $Z$ in the untreated either,
+the causal risk ratio is $\exp{\beta_0}$ and
+
+$$
+\E{Y^{a=1}} - \E{Y^{a=0}} = \E{Y \mid A = 0}(1 - \E{A})\sb{\exp{\beta_0} - 1} + \E{Y \mid A = 1}\, \E{A} \sb{1 - \exp{-\beta_0}}.
+$$
+
+This is identified but is **not** the usual IV estimand [@hernan2020causal, p. 216].
+:::
+
+::: {.notes}
+So the estimate of the average causal effect depends on whether one assumes no additive or no multiplicative effect modification by $Z$,
+and no amount of data can tell which (if either) is true, because the saturated models have more unknown parameters than equations [@hernan2020causal, p. 216].
+The book refers to Robins (1989) and Hernán and Robins (2006b) for the proof of the formula.
+:::
+
+---
+
+### Bypassing Homogeneity
+
+Because the homogeneity conditions are often implausible, the book describes two ways around them [@hernan2020causal, p. 216]:
+
+1. **Add baseline covariates** to the IV models, preferably with structural mean models (fewer parametric assumptions than two-stage least squares).
+   The effect in the treated may then vary with $Z$, subject to constraints on how it varies within levels of the covariates.
+2. **Replace homogeneity by a different condition (iv)**, monotonicity (Section 16.4),
+   which gives the usual IV estimand a causal interpretation without identifying the population effect.
+
+::: {.callout-note title="Technical Point 16.6: More General Structural Mean Models"}
+With possibly continuous or multivariate $A$ and $Z$ and pre-instrument covariates $V$, an additive structural mean model is
+
+$$
+\E{Y - Y^{a=0} \mid Z, A, V} = \gamma(Z, A, V; \beta),
+$$
+
+with $\gamma$ a known function, $\beta$ an unknown parameter, and $\gamma(Z, A = 0, V; \beta) = 0$.
+It models the effect of the observed treatment level versus level 0 among those with that $Z$, $V$, and observed $A$.
+Its parameters are identified by g-estimation under $\E{Y^{a=0} \mid Z = 1, V} = \E{Y^{a=0} \mid Z = 0, V}$.
+The multiplicative analog is $\E{Y \mid Z, A, V} = \E{Y^{a=0} \mid Z, A, V} \exp{\gamma(Z, A, V; \beta)}$ [@hernan2020causal, p. 218].
+:::
+
+::: {.notes}
+Models also allow several proposed instruments at once, continuous treatments, and causal risk ratios for dichotomous outcomes [@hernan2020causal, p. 216].
+Nested versions of these structural mean models extend IV methods to time-varying treatments and confounders [@hernan2020causal, p. 218].
+:::
+
+## 16.4 An Alternative Fourth Condition: Monotonicity (pp. 217-220)
+
+---
+
+In the double-blind trial, let $A^{z=1}$ and $A^{z=0}$ be the treatment an individual would take if assigned to treatment or to no treatment.
 
 ::: {#def-compliance-types}
-## Principal Strata
+## Compliance Types (Principal Strata)
 
-Individuals can be classified into **principal strata** based on potential treatments $A^{z=1}$ and $A^{z=0}$:
-
-1. **Compliers**: $A^{z=1} = 1, A^{z=0} = 0$ (take treatment if and only if $Z = 1$)
-2. **Always-takers**: $A^{z=1} = 1, A^{z=0} = 1$ (always take treatment)
-3. **Never-takers**: $A^{z=1} = 0, A^{z=0} = 0$ (never take treatment)
-4. **Defiers**: $A^{z=1} = 0, A^{z=0} = 1$ (do opposite of instrument)
+1. **Always-takers**: $A^{z=1} = 1$ and $A^{z=0} = 1$.
+2. **Never-takers**: $A^{z=1} = 0$ and $A^{z=0} = 0$.
+3. **Compliers** (cooperative): $A^{z=1} = 1$ and $A^{z=0} = 0$.
+4. **Defiers** (contrarians): $A^{z=1} = 0$ and $A^{z=0} = 1$.
 :::
 
-**Monotonicity assumption**: No defiers exist.
+These strata are not identified: someone with $Z = 1$ and $A = 1$ may be a complier or an always-taker;
+someone with $Z = 1$ and $A = 0$ may be a defier or a never-taker.
 
-::: {.notes}
-**Why monotonicity**:
+::: {#def-monotonicity}
+## Monotonicity
 
-If defiers exist, the IV estimand can be severely biased. With monotonicity:
-
-- Compliers: Instrument changes their treatment
-- Always-takers: Get treatment regardless
-- Never-takers: Never get treatment regardless
-
-The IV estimand identifies the causal effect in **compliers only** (LATE = local average treatment effect).
+**Monotonicity** holds when there are no defiers, i.e., $A^{z=1} \ge A^{z=0}$ for all individuals.
 :::
-
-### Local Average Treatment Effect (LATE)
-
-Under IV conditions plus monotonicity:
-
-$$\text{IV estimand} = \E{Y^{a=1} - Y^{a=0} \mid \text{Complier}}$$
-
-This is the **average causal effect in compliers**, not in the full population.
-
-**Interpretation**: IV tells us the effect of treatment for those who would comply with the instrument.
-
-**Limitation**: We don't know who the compliers are (unobservable principal stratum).
-
-## 16.4 Two-Stage Least Squares Estimation (pp. 237-240)
 
 ---
 
-**Two-stage least squares (2SLS)** is the most common IV method for continuous outcomes.
+::: {#thm-late}
+## IV Estimand under Monotonicity
 
-### 2SLS Algorithm
+Under instrumental conditions (i)-(iii) with a dichotomous causal instrument that is randomly assigned, and monotonicity as condition (iv),
+the usual IV estimand equals the average causal effect in the compliers,
 
-**Stage 1**: Regress treatment on instrument (and covariates if present)
+$$
+\E{Y^{a=1} - Y^{a=0} \mid A^{z=1} = 1, A^{z=0} = 0},
+$$
 
-$$A_i = \alpha_0 + \alpha_1 Z_i + \epsilon_i$$
-
-Obtain predicted treatment: $\hat{A}_i = \hat{\alpha}_0 + \hat{\alpha}_1 Z_i$
-
-**Stage 2**: Regress outcome on predicted treatment
-
-$$Y_i = \beta_0 + \beta_1 \hat{A}_i + \eta_i$$
-
-The coefficient $\hat{\beta}_1$ is the 2SLS estimate of the causal effect.
-
-### Why This Works
-
-**Intuition**: 
-
-- Stage 1 extracts the variation in $A$ that is "caused by" $Z$
-- $\hat{A}$ is the part of $A$ that is free of confounding (because $Z$ is randomized)
-- Stage 2 estimates the effect of this "clean" variation on $Y$
-
-**Mathematical equivalence**: For binary $Z$ and $A$, 2SLS equals the Wald estimator.
-
-::: {.notes}
-**Important**:
-
-- Standard errors from Stage 2 are WRONG (they ignore Stage 1 uncertainty)
-- Use specialized IV software or bootstrap for correct standard errors
-- R packages: `ivreg`, `AER::ivreg`
-- Stata command: `ivregress 2sls`
+not the average causal effect in the population [@hernan2020causal, p. 218].
 :::
 
-### Including Covariates
+Sketch: the intention-to-treat effect is a weighted average over the four strata;
+it is zero in always-takers and never-takers (their $A$ does not change with $Z$, and $Z$ acts only through $A$),
+and there are no defiers.
+So the numerator is the effect in compliers times the proportion of compliers, which is the denominator.
 
-**With measured confounders** $L$ that confound $A \to Y$ but not $Z \to A$:
+::: {.notes}
+The book's main text refers to "Technical Point 16.6" for this proof;
+the proof is in Technical Point 16.7 [@hernan2020causal, pp. 218, 224].
 
-**Stage 1**: 
-$$A_i = \alpha_0 + \alpha_1 Z_i + \alpha_2^{\top} L_i + \epsilon_i$$
-
-**Stage 2**: 
-$$Y_i = \beta_0 + \beta_1 \hat{A}_i + \beta_2^{\top} L_i + \eta_i$$
-
-Including $L$ can improve efficiency even if not necessary for identification.
-
-## 16.5 Instrumental Variable Estimation with Measured Confounders (pp. 240-242)
+This estimand is often called the **complier average causal effect (CACE)** or **local average treatment effect (LATE)**: an effect in a subpopulation, not the population average.
+Greenland calls compliers "cooperative" and defiers "non-cooperative" to avoid confusion with observed compliance in trials [@hernan2020causal, p. 219].
+:::
 
 ---
 
-IV estimation can be combined with adjustment for measured confounders.
+::: {.proof}
+## Proof (Technical Point 16.7)
 
-### Two Scenarios
+Write the intention-to-treat effect as a weighted average over the strata (AT: always-takers, NT: never-takers, C: compliers, D: defiers):
 
-**Scenario 1**: Confounders of $A \to Y$ that don't affect $Z$
+$$
+\E{Y^{z=1} - Y^{z=0}} = \textstyle\sum_{s \in \{AT, NT, C, D\}} \E{Y^{z=1} - Y^{z=0} \mid s}\, \Pr[s].
+$$
 
-- Adjust by including $L$ in both stages of 2SLS
-- Improves efficiency but not necessary for identification
+- In AT and NT, $Z$ does not change $A$, and by the individual-level exclusion restriction $Z$ has no other effect on $Y$, so $\E{Y^{z=1} - Y^{z=0} \mid AT} = \E{Y^{z=1} - Y^{z=0} \mid NT} = 0$.
+- Under monotonicity, $\Pr[D] = 0$.
 
-**Scenario 2**: Confounders of $Z \to Y$
+Hence $\E{Y^{z=1} - Y^{z=0}} = \E{Y^{z=1} - Y^{z=0} \mid C}\, \Pr[C]$.
+In compliers $A = Z$, so the effect of $Z$ equals the effect of $A$:
+$\E{Y^{z=1} - Y^{z=0} \mid C} = \E{Y^{a=1} - Y^{a=0} \mid C}$, and
 
-- More problematic - threatens IV exchangeability assumption
-- Need $Y^a \ind Z \mid L$ (conditional exchangeability of instrument)
-- Use conditional IV methods
+$$
+\E{Y^{a=1} - Y^{a=0} \mid C} = \frac{\E{Y^{z=1} - Y^{z=0}}}{\Pr[C]} .
+$$
 
-### Conditional IV Estimation
+Random assignment implies $Z \ind \{Y^{a,z}, A^z;\ z = 0,1;\ a = 0,1\}$, so with consistency the numerator equals $\E{Y \mid Z = 1} - \E{Y \mid Z = 0}$.
+For the denominator, $\Pr[AT] = \Pr[A^{z=0} = 1] = \Pr[A = 1 \mid Z = 0]$ and $\Pr[NT] = \Pr[A^{z=1} = 0] = \Pr[A = 0 \mid Z = 1]$;
+with no defiers,
 
-**Modified IV conditions**:
-
-1. **Conditional relevance**: $Z \not\ind A \mid L$
-2. **Conditional exchangeability**: $Y^a \ind Z \mid L$
-3. **Exclusion restriction**: $Y^{a,z} = Y^a$ (still unconditional)
-
-**Estimation**: Use 2SLS with $L$ as covariates, then standardize over $L$.
-
-::: {.notes}
-**When to adjust for $L$**:
-
-- **Include** if $L$ confounds $A \to Y$ (for efficiency)
-- **Include** if $L$ confounds $Z \to Y$ (for identification)
-- **Don't include** if $L$ is affected by $Z$ (would bias estimates)
-
-Subject-matter knowledge is crucial for deciding which covariates to include.
+$$
+\begin{aligned}
+\Pr[C] &= 1 - \Pr[AT] - \Pr[NT] \\
+&= 1 - \Pr[A = 1 \mid Z = 0] - \paren{1 - \Pr[A = 1 \mid Z = 1]} \\
+&= \Pr[A = 1 \mid Z = 1] - \Pr[A = 1 \mid Z = 0].
+\end{aligned}
+$$
 :::
 
-## 16.6 Instrumental Variable Estimation versus Regression (pp. 242-244)
+::: {.notes}
+The result is due to Imbens and Angrist (1994);
+Baker and Lindeman (1994) had a related proof for a binary outcome [@hernan2020causal, p. 224].
+For a surrogate instrument $Z$, Hernán and Robins (2006b) showed that the usual IV estimator still identifies the effect in the compliers (defined by $U_Z$),
+but only if $Z$ is independent of $A$ and $Y$ given $U_Z$ and $U_Z$ is binary, and that independence is rarely plausible unless $U_Z$ is continuous [@hernan2020causal, p. 224].
+:::
 
 ---
 
-How do IV estimates compare to regression-based estimates?
+### Compliers in an Observational Study
 
-### Comparison
-
-**Regression** (e.g., outcome regression or IP weighting):
-
-- Assumes no unmeasured confounding: $Y^a \ind A \mid L$
-- Identifies average causal effect: $\E{Y^{a=1}} - \E{Y^{a=0}}$
-- Efficient when assumptions hold
-
-**IV estimation**:
-
-- Allows unmeasured confounding of $A \to Y$
-- Assumes valid instrument with IV conditions
-- Identifies LATE: $\E{Y^{a=1} - Y^{a=0} \mid \text{Complier}}$
-- Less efficient (larger standard errors)
-
-### When Estimates Differ
-
-If IV and regression give different estimates:
-
-1. **Unmeasured confounding**: Regression is biased, IV may be valid
-2. **Effect heterogeneity**: IV estimates LATE, regression estimates ATE
-3. **IV violations**: IV assumptions may be violated
-4. **Both wrong**: Both methods could have issues
-
-**Interpretation**: Differences suggest either unmeasured confounding or effect heterogeneity (or both).
-
-::: {.notes}
-**Practical dilemma**:
-
-- If estimates agree: Reassuring (though both could be wrong)
-- If estimates disagree: Difficult to know which to trust
-
-**Recommendation**: 
-
-1. Carefully assess IV assumptions (especially exclusion)
-2. Consider who the compliers are and whether LATE is the estimand of interest
-3. Conduct sensitivity analyses
-4. Report both estimates with clear statements about assumptions
-:::
-
-## 16.7 The Survivor Average Causal Effect (pp. 244-246)
+There is no assignment, but "compliers" still means $(A^{z=1} = 1, A^{z=0} = 0)$:
+in NHEFS, people who would quit smoking in a high-price state and not in a low-price state.
+If there are no defiers and the causal instrument is dichotomous, 2.4 kg estimates the effect in the compliers [@hernan2020causal, pp. 218-219].
 
 ---
 
-IV methods can be extended to handle **survival outcomes** and **time-to-event data**.
+### Criticisms of the Complier Effect
 
-### Challenges with Survival Outcomes
+Monotonicity was welcomed in the mid-1990s as the salvation of IV methods, but the book raises four problems [@hernan2020causal, pp. 219-220]:
 
-**Issue**: With time-to-event outcomes, some individuals are censored before the event.
-
-**Question**: How do we interpret IV estimates when the outcome is survival time?
-
-### Survivor Average Causal Effect (SACE)
-
-::: {#def-sace}
-## Survivor Average Causal Effect
-
-The **survivor average causal effect (SACE)** is:
-
-$$\E{Y^{a=1} - Y^{a=0} \mid S^{a=1} = 1, S^{a=0} = 1}$$
-
-where $S^a$ is an indicator for surviving (or remaining uncensored) under treatment $a$.
-
-This is the effect in **always-survivors** - those who would survive under both treatment and control.
-:::
-
-### Identification
-
-**Setting**: Survival $S$ is affected by treatment $A$, and outcome $Y$ is only observed if $S = 1$.
-
-**IV approach**: Under IV conditions plus additional assumptions (monotonicity for survival), IV can identify SACE.
-
-**Interpretation**: Effect of treatment on the outcome for those who would survive regardless of treatment.
+1. **Relevance**: compliers cannot be identified, and their proportion (the denominator, about 6% in NHEFS) varies across instruments and studies, so the effect is hard to use for decisions.
+2. **Monotonicity may fail in observational studies**, especially when treatment decisions weigh several criteria.
+3. **Surrogate instruments**: if the causal instrument $U_Z$ is continuous, a dichotomous surrogate's IV estimand is a weighted average of effects over everyone, not the effect in a subpopulation of compliers.
+4. **Principal strata may be ill-defined**.
 
 ::: {.notes}
-**SACE vs LATE**:
+1. A mitigating factor: under strong assumptions, the distribution of observed variables among compliers can be characterized.
+   Deaton (2010) likened focusing on the complier effect to choosing where the light falls and then claiming that whatever it illuminates is what we were looking for [@hernan2020causal, p. 219].
+2. Monotonicity is safe in trials (participants are unlikely to consent in order to do the opposite of what they are asked),
+   and it holds by design when those assigned to no treatment cannot get it (no always-takers or defiers);
+   the effect in the compliers is then the effect in the treated.
+   Example (Swanson and Hernán 2014): in a clinic, one physician usually prescribes the treatment except for patients with diabetes;
+   the other usually does not, except for physically active patients.
+   A physically active patient with diabetes is treated contrary to both physicians' preferences, i.e., is a defier.
+3. For a continuous $U_Z$, monotonicity means $A^{u_z}$ is non-decreasing in $u_z$.
+4. A stable partition requires, e.g., all physicians with the same preference level who could have seen a patient to treat the patient identically;
+   it also requires deterministic counterfactuals, no interference, and stability across settings and instruments [@hernan2020causal, p. 220].
 
-- **LATE**: Effect in compliers (those whose treatment is affected by instrument)
-- **SACE**: Effect in always-survivors (those who survive under both treatments)
+**Bottom line**: if the complier effect is of interest, monotonicity is most promising in double-blind two-arm trials with all-or-nothing compliance, especially when one arm has full adherence by design;
+more caution is needed in complex settings and observational studies [@hernan2020causal, p. 220].
+:::
 
-Both are **principal stratification** approaches - effects in specific latent subgroups.
+## 16.5 The Three Instrumental Conditions Revisited (pp. 220-222)
 
-**Challenge**: SACE requires strong assumptions:
+---
 
-1. Monotonicity for survival (treatment doesn't hurt anyone's survival)
-2. Exclusion restriction for both survival and outcome
+A proposed instrument may violate (ii) or (iii), or barely meet (i).
+Then IV estimation may be badly biased even if condition (iv) holds perfectly.
 
-These are often hard to justify.
+### Condition (i): Weak Instruments
+
+::: {.callout-note title="Fine Point 16.2: Defining Weak Instruments"}
+1. **Substantively weak**: the true $Z$-$A$ association (the denominator) is small.
+2. **Statistically weak**: the F-statistic for the observed $Z$-$A$ association is small, typically below 10.
+
+The NHEFS instrument is weak by both: risk difference about 6%, F-statistic 0.8 [@hernan2020causal, p. 221].
+:::
+
+Three problems [@hernan2020causal, pp. 220-221]:
+
+1. **Wide confidence intervals** (NHEFS: $-36.5$ to $41.3$ kg).
+2. **Bias amplification**: any bias in the numerator (from a violation of (ii) or (iii)) is divided by the small denominator.
+   In NHEFS it is multiplied by about $1/0.0627 \approx 15.9$.
+3. **Finite-sample bias** even with a valid instrument and a large sample.
+
+::: {.notes}
+Definition 1 links to problem 2 (it holds even in an infinite sample);
+definition 2 links to problem 3.
+
+In linear models, strong confounding guarantees a weak instrument: a strong $A$-$U$ association leaves little room for a strong $A$-$Z$ association (Martens et al. 2006) [@hernan2020causal, p. 220].
+:::
+
+---
+
+### Why Weak Instruments Are Biased in Finite Samples
+
+A randomly generated $Z$ has, in an infinite population, zero association with $A$, so the IV estimand is undefined.
+In a finite sample, chance creates a small $Z$-$U$, and hence $Z$-$A$, association, so the denominator is small but not zero and the estimate can be wildly inflated.
+
+::: {#exm-nhefs-thresholds}
+## The NHEFS Instrument Behaves Like Noise
+
+Redefining $Z$ as price above \$1.60, \$1.70, \$1.80, or \$1.90 gives IV estimates of 41.3, $-40.9$, $-21.1$, and $-12.8$ kg, each with a huge confidence interval [@hernan2020causal, p. 221].
+:::
+
+::: {.notes}
+Given the bias and variability weak instruments create, a strong proposed instrument that slightly violates (ii) or (iii) may be preferable to a weaker but less invalid one [@hernan2020causal, p. 221].
+Bound, Jaeger and Baker (1995) documented this bias.
+:::
+
+---
+
+### Condition (ii): Direct Effects of the Instrument
+
+- A direct arrow $Z \rightarrow Y$ (Figure 16.8) adds to the numerator, and the denominator inflates it as if it were an effect of $A$.
+- **Coarsening the treatment** can create a violation: if a continuous or multi-valued $A$ is replaced by a dichotomized $A^*$, the path $Z \rightarrow A \rightarrow Y$ is a direct effect of $Z$ not mediated by $A^*$ (Figure 16.9).
+  Coarsening is a problem for IV estimation but not necessarily for the methods of earlier chapters [@hernan2020causal, pp. 221-222].
+
+---
+
+### Condition (iii): Confounding and Selection Bias
+
+- Common causes of $Z$ and $Y$ (which may or may not also cause $A$;
+  Figure 16.10) bias the numerator, and the bias is inflated by the denominator.
+  In observational studies this possibility always exists.
+- **Adjusting for measured pre-instrument covariates $V$**: assume no unmeasured confounding of $Z$-$Y$ within levels of $V$,
+  then do IV estimation within strata of $V$ and pool (assuming the effect is constant across $V$), or include $V$ in the two-stage models.
+  In NHEFS this reduced the effect estimate and widened its 95% confidence interval [@hernan2020causal, p. 222].
+- **Checking balance** of measured confounders across levels of $Z$ can give false security: small imbalances can cause large biases through amplification.
+- **Selection bias**: excluding individuals with some treatment levels (e.g., keeping only $A = 1$ or $A = 2$ when $A \in \{0, 1, 2\}$) can give a non-null IV estimate under the null,
+  although it does not bias a non-IV comparison of $A = 1$ versus $A = 2$.
+
+::: {.notes}
+All these problems get worse when several proposed instruments are used together to compensate for weakness:
+the more proposed instruments, the more likely that some of them violate a condition [@hernan2020causal, p. 222].
+:::
+
+## 16.6 Instrumental Variable Estimation versus Other Methods (pp. 223-225)
+
+---
+
+IV estimation differs from the earlier methods in at least three ways [@hernan2020causal, p. 223]:
+
+1. **Different assumptions**: it replaces conditional exchangeability of treated and untreated with conditions (i)-(iv).
+   The choice depends on whether it is easier to measure the confounders or to find an instrument and expect monotonicity or no relevant effect heterogeneity.
+2. **Sensitivity to violations**: because the denominator blows up the numerator, small violations or a weak instrument can cause large bias in either direction, possibly larger than an unadjusted estimate.
+   Slight violations of the conditions for IP weighting or standardization tend to give only slight bias.
+3. **Narrower applicability**: standard IV estimation suits settings with lots of unmeasured confounding, a truly dichotomous time-fixed treatment, a strong (causal) instrument, and either effect homogeneity or (if the complier effect is of interest) monotonicity.
+   So it is mostly used for point interventions and plays a small role in Part III (time-varying treatments).
+
+::: {.notes}
+Because it rests on different assumptions, IV estimation is useful for **triangulation**,
+but the wide confidence intervals typical of IV estimates often limit its added value,
+and the counterintuitive direction and size of its biases need special attention.
+Sensitivity analyses and transparent reporting are important [@hernan2020causal, p. 223].
+Regression discontinuity (Fine Point 16.3) and difference-in-differences (Technical Point 7.3) also identify effects without conditional exchangeability.
+:::
+
+---
+
+::: {.callout-note title="Fine Point 16.3: Regression Discontinuity Design"}
+Example: an antiviral $A$ for COVID-19 is given to everyone aged 65 or older ($L \ge 65$) and to no one younger, so $\Pr[A = 1 \mid L < 65] = 0$ and $\Pr[A = 1 \mid L \ge 65] = 1$.
+There is no positivity.
+
+- **Continuity assumption**: $\E{Y^{a=1} \mid L}$ and $\E{Y^{a=0} \mid L}$ are continuous in $L$ (at least around the threshold), and individuals just on either side are exchangeable.
+- Then a jump in the observed $\E{Y \mid L}$ at $L = 65$ estimates the effect of $A$ **among those with $L$ near the threshold**,
+  e.g., by comparing mean outcomes within a chosen bandwidth, typically with regression models fit on each side.
+- The bandwidth trades precision against bias;
+  data-adaptive procedures such as cross-validation can help choose it.
+
+This is a **sharp** design;
+a **fuzzy** design, where the treatment probability jumps but not from 0 to 1, relies on monotonicity and estimates the effect in the compliers near the threshold [@hernan2020causal, p. 225].
+:::
+
+::: {.notes}
+The design is biased if other treatments also change at the threshold (e.g., intensive care restricted to those 65 and older),
+or if people manipulate the running variable (e.g., falsify their age).
+The near-threshold effect can differ from the population effect if $L$ is an effect modifier [@hernan2020causal, p. 225].
 :::
 
 ## Summary
 
 ---
 
-**Key concepts**:
-
-1. **Instrumental variable**: A variable $Z$ that affects treatment but not the outcome directly
-2. **IV conditions**: Relevance, exchangeability, exclusion restriction
-3. **Wald estimator**: $\frac{\E{Y \mid Z=1} - \E{Y \mid Z=0}}{\E{A \mid Z=1} - \E{A \mid Z=0}}$ for binary $Z, A$
-4. **Principal strata**: Compliers, always-takers, never-takers, defiers
-5. **LATE**: Local average treatment effect in compliers
-6. **2SLS**: Two-stage least squares for continuous outcomes
-7. **SACE**: Survivor average causal effect for survival outcomes
-
-**When to use IV methods**:
-
-- **Unmeasured confounding** is a concern
-- **Valid instrument** is available (strong assumptions)
-- **LATE** is a meaningful estimand (compliers are of interest)
-- **Efficiency loss** is acceptable (IV estimates have larger SEs)
-
-**Common instruments**:
-
-| Setting | Instrument | Treatment | Outcome |
-|---------|-----------|-----------|---------|
-| Randomized encouragement | Encouragement | Behavior change | Health |
-| Geographic variation | Distance to facility | Healthcare use | Health |
-| Mendelian randomization | Genetic variant | Biomarker | Disease |
-| Draft lottery | Lottery number | Military service | Earnings |
-| Physician preference | Physician tendency | Treatment choice | Outcome |
-
-**Assumptions to check**:
-
-1. **Relevance**: Test empirically ($Z$ associated with $A$)
-2. **Exchangeability**: Justify by design or argue plausibility
-3. **Exclusion**: Requires subject-matter knowledge (cannot be tested)
-4. **Monotonicity**: No defiers (often plausible, sometimes testable)
-
-**Advantages**:
-
-- Allows causal inference with unmeasured confounding
-- Uses only treatment variation "caused by" instrument
-- Provides a different estimand than regression methods
-
-**Limitations**:
-
-- Strong, untestable assumptions (especially exclusion)
-- Estimates LATE, not ATE (interpretation challenge)
-- Less efficient than regression (when regression assumptions hold)
-- Weak instruments lead to bias and large variance
-
-::: {.notes}
-**Practical advice**:
-
-1. **Think hard about exclusion**: Is it plausible the instrument only affects outcome through treatment?
-2. **Check instrument strength**: Weak instruments are worse than no instrument
-3. **Understand LATE**: Who are the compliers? Is their effect of interest?
-4. **Sensitivity analyses**: Try different instruments if available
-5. **Compare with regression**: Large differences suggest unmeasured confounding or heterogeneity
-
-**Looking ahead**: Part III extends these methods to time-varying treatments, where IV ideas play a role in dealing with time-varying confounding and selection bias.
-:::
+- An **instrument** meets (i) association with $A$, (ii) no effect on $Y$ except through $A$, (iii) no shared causes with $Y$;
+  only (i) is testable.
+- Alone, an instrument identifies only (usually wide) **bounds**.
+- **Usual IV estimand**: $\dfrac{\E{Y \mid Z=1} - \E{Y \mid Z=0}}{\E{A \mid Z=1} - \E{A \mid Z=0}}$, computed directly or by two-stage least squares.
+- Adding **homogeneity** (iv) makes it the population average causal effect;
+  adding **monotonicity** (iv) instead makes it the effect in the **compliers**.
+- **NHEFS**: estimate 2.4 kg (95% CI $-36.5$ to $41.3$) from a weak instrument (risk difference 6%, F = 0.8).
+- Weak instruments widen intervals, amplify bias, and are biased in finite samples;
+  violations of (ii) and (iii) are inflated by the small denominator.

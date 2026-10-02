@@ -1,5 +1,5 @@
 ---
-title: "Chapter 18: Variable Selection for Causal Inference"
+title: "Chapter 18: Variable Selection and High-Dimensional Data"
 format:
   html: default
   revealjs:
@@ -12,478 +12,484 @@ format:
 
 {{< include ../latex-macros/macros.qmd >}}
 
-This chapter addresses a critical question in causal inference: **Which variables should we adjust for?** Not all variables that predict the outcome should be included in causal models. Some variables, if adjusted for, can introduce bias rather than remove it. We provide guidance on variable selection using causal diagrams.
+Every adjustment method in this book (stratification and outcome regression, standardization and the parametric g-formula, IP weighting, g-estimation) relies on the same condition:
+the adjustment set $L$ must be enough to make the treated and the untreated conditionally exchangeable,
+i.e., to block all backdoor paths between $A$ and $Y$ without opening other biasing paths.
+This chapter asks **how to choose $L$**, and how to estimate effects when the candidate covariates $X$ are high-dimensional.
 
 ::: {.notes}
-This chapter is based on @hernan2020causal [Chapter 18, pp. 265-282].
+This chapter is based on @hernan2020causal [Chapter 18, pp. 241-251].
 
-**Central message**: Variable selection for causal inference is fundamentally different from variable selection for prediction. We must use causal reasoning (often encoded in DAGs) rather than purely statistical criteria.
+**Key theme**: variable selection for causal inference is not variable selection for prediction.
+Some variables induce or amplify bias when adjusted for, and no purely statistical algorithm can find them;
+subject-matter knowledge is needed.
+Given a good set of candidate covariates, machine learning can estimate the nuisance functions,
+but valid confidence intervals need **doubly robust** estimators combined with **sample splitting and cross-fitting**.
 :::
 
-## 18.1 The Traditional Approach (pp. 265-267)
+## 18.1 The Different Goals of Variable Selection (pp. 241-242)
 
 ---
 
-Traditional variable selection methods are designed for **prediction**, not causal inference.
+### Prediction Does Not Need Confounding Adjustment
 
-### Prediction vs Causal Inference
-
-**Prediction goal**: Minimize prediction error for $Y$ given covariates
-
-- Include any variable that improves prediction
-- Use criteria like AIC, BIC, cross-validation
-- More variables (if not overfitting) → better prediction
-
-**Causal inference goal**: Estimate $\E{Y^a}$ or $\E{Y^{a=1}} - \E{Y^{a=0}}$
-
-- Include variables that remove confounding
-- Exclude variables that introduce bias
-- More variables ≠ better causal estimates
+- **Causal analysis**: if confounders $L$ may explain part of the $A$-$Y$ association, adjustment is required before the association can be read as an effect.
+- **Predictive analysis**: no adjustment for confounding is needed, because there is no treatment whose effect could be confounded.
+  To predict weight gain we simply include whatever predicts it (e.g., smoking cessation, baseline weight, income).
 
 ::: {.notes}
-**Why they differ**:
+Confounding is a causal concept;
+it does not apply when the estimand is an association [@hernan2020causal, p. 241].
+The distinction between predictive and causal models was discussed in Section 15.5.
 
-In prediction, we want to capture all associations between covariates and outcome. In causal inference, we want to isolate the causal effect of treatment, which means blocking certain associations and preserving others.
-
-**Example**: A mediator predicts the outcome well, but adjusting for it removes part of the causal effect we want to estimate.
+Even an outcome model that includes all confounders of the effect of $A$ on $Y$ does not give the coefficients of those confounders a causal interpretation,
+because nothing adjusts for the confounders of the confounders [@hernan2020causal, p. 241].
 :::
-
-### Stepwise Selection
-
-**Traditional approach**: Stepwise regression (forward, backward, or both)
-
-- Add/remove variables based on statistical significance or information criteria
-- Maximize $R^2$ or minimize AIC/BIC
-
-**Problem for causal inference**: 
-
-- May exclude important confounders (if weak predictors)
-- May include colliders or mediators (if strong predictors)
-- Ignores causal structure
-
-**Recommendation**: **Do not use** stepwise selection for causal inference.
-
-## 18.2 Confounding and Confounders (pp. 267-270)
 
 ---
 
-What exactly is a confounder, and when should we adjust for it?
+::: {#exm-heart-failure}
+## Prediction Is Not Intervention
 
-::: {#def-confounder-formal}
-## Confounder (Formal Definition)
-
-A variable $L$ is a **confounder** for the effect of $A$ on $Y$ if:
-
-1. $L$ is associated with treatment $A$
-2. $L$ is a cause of outcome $Y$
-3. $L$ is not affected by $A$ (not a descendant of $A$ on a causal DAG)
-
-**Causal criterion**: $L$ is on a backdoor path from $A$ to $Y$.
+Investigators use outcome regression to identify patients at high risk of heart failure, a classification (prediction) task.
+A prior hospitalization may be a useful predictor, yet nobody would propose to stop admitting people to hospitals to prevent heart failure.
+Identifying patients with bad prognosis is different from identifying the best action to prevent or treat a disease [@hernan2020causal, pp. 241-242].
 :::
 
-### Backdoor Paths
-
-**Backdoor path**: A path from $A$ to $Y$ that starts with an arrow into $A$
-
-$$A \leftarrow L \to Y$$
-
-Such paths create non-causal association between $A$ and $Y$.
-
-**Goal**: Block all backdoor paths to eliminate confounding.
-
-### Sufficient Adjustment Sets
-
-::: {#def-sufficient-adjustment}
-## Sufficient Adjustment Set
-
-A set of variables $L$ is **sufficient for confounding adjustment** if conditioning on $L$ blocks all backdoor paths from $A$ to $Y$.
-
-Equivalently: $(Y^a \ind A \mid L)$ for all $a$ (conditional exchangeability).
-:::
-
-**Multiple sufficient sets**: There may be many sufficient adjustment sets. We want to choose one that:
-
-1. Blocks all backdoor paths (necessary)
-2. Doesn't introduce new bias (important)
-3. Is measurable and measured
-
-::: {.notes}
-**DAG-based approach**:
-
-1. Draw a causal DAG representing your subject-matter knowledge
-2. Identify all backdoor paths from $A$ to $Y$
-3. Find a set $L$ that blocks all backdoor paths
-4. Adjust for $L$ (and only $L$)
-
-This is superior to traditional approaches because it's based on causal structure, not statistical associations.
-:::
-
-## 18.3 Confounding Adjustment (pp. 270-273)
+In a predictive model all covariates have the same status: there is no treatment $A$ and no adjustment set $L$.
 
 ---
 
-When we adjust for a sufficient set, we remove confounding. But be careful about adjusting for too much.
+### Choosing Predictors: Tuning Parameters and Black Boxes
 
-### Variables to Include
-
-**Confounders**: Variables on backdoor paths
-
-- ✓ Include to block backdoor paths
-- These are causes of both treatment and outcome (or proxies thereof)
-
-**Example DAG**: 
-$$A \leftarrow L \to Y$$
-
-Adjust for $L$ to block the backdoor path.
-
-### Variables to Exclude
-
-**Mediators**: Variables on the causal path from $A$ to $Y$
-
-- ✗ Do NOT adjust (would remove part of the causal effect)
-
-**Example DAG**: 
-$$A \to M \to Y$$
-
-If we adjust for $M$, we block the causal path through $M$.
-
-**Descendants of treatment**: Variables affected by $A$
-
-- ✗ Usually do NOT adjust (may induce bias)
-
-### Colliders
-
-::: {#def-collider}
-## Collider
-
-A **collider** on a path is a variable with two arrows pointing into it.
-
-**Example**: 
-$$A \to C \leftarrow U \to Y$$
-
-$C$ is a collider on the path $A \to C \leftarrow U \to Y$.
-
-**Property**: This path is **blocked** by default (without conditioning on $C$).
-
-**Danger**: If we condition on $C$ (or its descendants), we **open** the path, creating **collider bias**.
-:::
-
-**Rule**: Do NOT adjust for colliders (unless necessary to block other paths).
+- Most prediction algorithms have **tuning parameters** chosen to optimize predictive accuracy,
+  e.g., the regularization parameter of the lasso or ridge regression (degree of shrinkage), or the depth and width of a neural network.
+- They are usually chosen by **cross-validation** (Fine Point 18.2), which is also used to choose between algorithms, since no single algorithm predicts best in all data sets.
+- **Black-box** algorithms (e.g., deep neural nets): one view is that anything that improves prediction is fair game;
+  another is that interpretability matters [@hernan2020causal, p. 242].
 
 ::: {.notes}
-**Collider bias example**:
+Arguments for interpretable algorithms [@hernan2020causal, p. 242]:
 
-- $A$: Athletic ability
-- $C$: Being on a sports team (affected by both $A$ and parental encouragement $U$)
-- $U$: Parental encouragement (also affects academic performance $Y$)
-- $Y$: Academic performance
-
-If we condition on being on a sports team ($C = 1$), we induce a negative association between athletic ability and parental encouragement. This can bias estimates of the effect of $A$ on $Y$.
-
-**Practical implication**: Including "selection variables" in regression can introduce bias.
+- Physicians may not feel comfortable acting on predictions they cannot explain to themselves and to the patient, especially for unusual combinations of symptoms.
+- Black-box algorithms may perform poorly in new settings because they may rely on local, often noncausal, features of the training setting.
+- They can bake in predictive but socially discriminatory practices that were in place when the training data were collected.
 :::
-
-## 18.4 Instrumental Variables and M-bias (pp. 273-276)
 
 ---
 
-Some variables should not be adjusted for even if they're associated with both treatment and outcome.
+### Causal Analysis Needs Thoughtful Selection
 
-### M-bias (Butterfly Bias)
-
-**DAG structure**:
-
-```
-    U1 → L ← U2
-     ↓         ↓
-     A         Y
-```
-
-**Properties**:
-
-- $L$ is associated with both $A$ and $Y$ (through $U1$ and $U2$)
-- $L$ is a **collider** on the path $A \leftarrow U1 \to L \leftarrow U2 \to Y$
-- This path is blocked by default
-- But if we adjust for $L$, we **open** this path!
-
-**Result**: Adjusting for $L$ introduces bias even though $L$ is associated with both $A$ and $Y$.
-
-::: {.notes}
-**Practical example**:
-
-- $A$: Smoking
-- $Y$: Lung cancer
-- $U1$: Genetic variant affecting smoking propensity
-- $U2$: Different genetic variant affecting cancer risk
-- $L$: Being in a genetic study (selected based on $U1$ and $U2$)
-
-In the genetic study sample, adjusting for study participation $L$ induces collider bias.
-
-**Lesson**: Don't adjust for a variable just because it's associated with treatment and outcome. Check the causal structure!
-:::
-
-### Instrumental Variables Revisited
-
-An **instrumental variable** $Z$ satisfies:
-
-```
-Z → A → Y
-```
-
-with no backdoor paths from $Z$ to $Y$.
-
-**Should we adjust for $Z$?** 
-
-- If using IV methods: NO (use $Z$ as instrument)
-- If using standard methods and $Z$ is not a confounder: NO (unnecessary, may hurt efficiency)
-- If $Z$ confounds some other relationship of interest: MAYBE
-
-## 18.5 Confounders, Mediators, and Intermediate Confounders (pp. 276-279)
+A causal analysis requires a thoughtful selection of confounders.
+Automatic variable selection may work for prediction but not, in general, for causal inference:
+it may select adjustment variables that **introduce bias** [@hernan2020causal, p. 242].
 
 ---
 
-Time-varying treatments create new challenges for variable selection.
+::: {.callout-note title="Fine Point 18.1: Variable Selection Procedures for Regression Models"}
+For prediction with very many candidate predictors (perhaps more than individuals) [@hernan2020causal, p. 243]:
 
-### Time-Varying Confounding
-
-**Setting**: Treatment varies over time ($A_0, A_1, \ldots$), as do confounders ($L_0, L_1, \ldots$)
-
-**Time-varying confounder**: $L_1$ is a confounder for the effect of $A_1$ on $Y$
-
-**Problem**: If $A_0$ affects $L_1$, then:
-
-- $L_1$ is a confounder (need to adjust)
-- $L_1$ is a mediator (should not adjust in standard regression)
-
-### Intermediate Confounder
-
-::: {#def-intermediate-confounder}
-## Intermediate Confounder (Time-Dependent Confounder Affected by Prior Treatment)
-
-A variable $L_1$ is an **intermediate confounder** if:
-
-1. $L_1$ is a confounder for the effect of $A_1$ on $Y$
-2. $L_1$ is affected by prior treatment $A_0$
-
-**DAG**:
-```
-A_0 → L_1 → Y
- ↓     ↓
- A_1 → Y
-```
+- **Best subset selection**: fit every model with a given number of variables and pick the best by a pre-specified criterion (e.g., Akaike's information criterion).
+  Computationally infeasible for many variables, and in a finite data set not guaranteed to give the smallest prediction error.
+- **Forward selection**, **backward elimination**, and **stepwise selection** (a combination): efficient, but do not explore all subsets.
+- **Shrinkage**: add a penalty that pulls parameter estimates (other than the intercept) toward zero, lowering variance and stabilizing predictions.
+  **Ridge regression** shrinks;
+  the **lasso** ("least absolute shrinkage and selection operator") can set some parameters exactly to zero, so it also selects variables.
 :::
-
-**Standard regression fails**: Cannot correctly adjust for $L_1$ using standard methods.
-
-**Solutions**:
-
-- **G-methods**: Parametric g-formula, IP weighting, g-estimation (Part III)
-- These methods properly handle time-varying confounders affected by prior treatment
-
-::: {.notes}
-**Why standard regression fails**:
-
-If we adjust for $L_1$, we block the indirect effect $A_0 \to L_1 \to Y$. If we don't adjust, we have confounding of $A_1 \to Y$.
-
-**Example**: HIV treatment and CD4 count
-
-- $A_0, A_1$: Antiretroviral therapy at times 0 and 1
-- $L_1$: CD4 count at time 1 (affected by $A_0$, affects treatment choice $A_1$, affects outcome $Y$)
-- Standard regression cannot handle this correctly
-
-**Part III solution**: Marginal structural models with IP weighting or g-formula can properly estimate effects in this setting.
-:::
-
-## 18.6 Selecting Variables for Precision (pp. 279-281)
 
 ---
 
-After ensuring confounding is addressed, can we include additional variables to improve precision?
+::: {.callout-note title="Fine Point 18.2: Overfitting and Cross-Validation"}
+**Overfitting**: a model selected to fit the data as well as possible also fits random variation, so it predicts well for the individuals used to fit it and poorly for new ones.
+The same holds for random forests, neural networks, and other machine learning algorithms.
 
-### Precision Variables
-
-**Definition**: Variables associated with the outcome but not with treatment (after accounting for confounders).
-
-**Example DAG**:
-```
-A → Y ← V
-```
-
-$V$ is associated with $Y$ but not with $A$ (no arrow from $V$ to $A$ or shared causes).
-
-**Effect of adjustment**: 
-
-- Does NOT affect bias (no confounding)
-- DOES improve precision (reduces residual variance)
-
-**Recommendation**: Include precision variables to improve efficiency.
-
-### Instruments as Precision Variables?
-
-**Question**: Should we include instrumental variables in outcome models?
-
-**Answer**: Generally NO.
-
-- Instruments are associated with $A$ but (by exclusion) not directly with $Y$
-- Including them in outcome models doesn't improve precision
-- May slightly worsen precision due to additional parameters
-
-### Practical Strategy
-
-1. **First priority**: Include all variables needed to block backdoor paths (confounders)
-2. **Second priority**: Exclude colliders, mediators, and descendants of treatment
-3. **Third priority**: Consider including precision variables if they:
-   - Strongly predict the outcome
-   - Are not affected by treatment
-   - Don't introduce collinearity issues
-
-::: {.notes}
-**Balance precision and bias**:
-
-- Including precision variables: ↑ efficiency, but more complex models
-- Excluding precision variables: ↓ efficiency, but simpler models
-
-With large samples, precision gains may be modest. With small samples, precision improvements can be valuable.
-
-**Practical consideration**: In many applications, confounders ARE strong predictors of the outcome, so adjusting for them serves both purposes (removes bias and improves precision).
+- **Training/validation split**: with sample size $n$, fit on $n - v$ individuals and evaluate predictions on the other $v$;
+  with the lasso, the validation performance can guide the degree of shrinkage.
+- **Cross-validation**: repeat the split many times and average the predictive accuracy over the validation samples, so the algorithm effectively uses more individuals.
+- **Leave-$v$-out** examines all partitions with a validation set of size $v$;
+  this can be infeasible, so one can take $v = 1$ or evaluate only some partitions.
+- **$k$-fold**: split into $k$ equal subsamples, use each as the validation sample with the other $k - 1$ as training;
+  $k = 10$ is common [@hernan2020causal, p. 244].
 :::
 
-## 18.7 Using Causal Diagrams (pp. 281-282)
+::: {.notes}
+Deep neural networks with many layers can have thousands to billions of parameters and often fit the training data exactly,
+yet with massive training data (e.g., speech recognition, images) they often seem nearly immune to overfitting and still predict new individuals well.
+Explaining this is an active research area [@hernan2020causal, p. 244].
+:::
+
+## 18.2 Variables That Induce or Amplify Bias (pp. 242-246)
 
 ---
 
-**Causal DAGs** (directed acyclic graphs) are invaluable tools for variable selection.
+### An Idealized Setting
 
-### Steps for Using DAGs
+Imagine unlimited computing power and a quasi-infinite number of individuals, with $A$, $Y$, and a moderate number of discrete variables $X$, some of which may be confounders.
 
-1. **Draw the DAG**: 
+- For **prediction** (under squared-error loss), the best predictor of $Y$ is the mean of $Y$ in each joint stratum of $A$ and $X$.
+- For the **average causal effect** $\E{Y^{a=1}} - \E{Y^{a=0}}$, we could adjust for all of $X$.
+  Is there any reason to adjust for only a subset?
+  **Yes**: adjusting for some variables induces bias [@hernan2020causal, pp. 242-243].
 
-   - Represent your causal assumptions about relationships between variables
-   - Include treatment, outcome, all measured covariates, and key unmeasured variables
-   - Draw arrows representing direct causal effects
+::: {.notes}
+Collapsibility reminder: an adjusted association measure may differ from the unadjusted one even without confounding (Fine Point 4.3) [@hernan2020causal, p. 243].
+:::
 
-2. **Identify backdoor paths**:
+---
 
-   - Find all paths from $A$ to $Y$ that start with an arrow into $A$
-   - These are sources of confounding
+### Post-Treatment Variables That Induce Bias
 
-3. **Find sufficient adjustment sets**:
+- **Colliders** (Figure 18.1, same as Figure 7.7): the effect of $A$ on $Y$ is null and $\E{Y \mid A = 1} - \E{Y \mid A = 0}$ estimates it without bias.
+  The g-formula contrast adjusted for $L$,
 
-   - Identify sets of variables that block all backdoor paths
-   - Avoid inducing collider bias
-   - Use algorithms (e.g., `dagitty` R package) if DAG is complex
+  $$
+  \textstyle\sum_l \E{Y \mid A = 1, L = l} \Pr(L = l) - \sum_l \E{Y \mid A = 0, L = l} \Pr(L = l),
+  $$
 
-4. **Choose an adjustment set**:
+  is biased, because $L$ is associated with $Y$ given $A$ and with $A$, so $\Pr(L = l) \neq \Pr(L = l \mid A)$.
+  This is **selection bias under the null**.
+  The same holds for a **descendant of a collider** (Figure 18.2).
+- **Noncolliders affected by treatment** (Figure 18.3): adjusting for $L$ biases a non-null effect,
+  but under the null $A$ no longer affects $L$ and the adjusted contrast is unbiased.
+  This is **selection bias under the alternative** (off the null; Section 6.5).
+- **Mediators** (Figure 18.4, $A \rightarrow L \rightarrow Y$ and $A \rightarrow Y$): adjusting for $L$ or its descendants blocks the part of the effect through $L$,
+  sometimes called **overadjustment for mediators** when the total effect is of interest [@hernan2020causal, pp. 243-245].
 
-   - Select a sufficient set that is measured
-   - Prefer simpler sets (fewer variables) when multiple options exist
-   - Check for practical considerations (measurement error, missing data, etc.)
+::: {.notes}
+In Figure 18.4, the $L$-adjusted $A$-$Y$ association is a biased estimator of the total effect of $A$ on $Y$
+but an unbiased estimator of the direct effect not mediated through $L$ [@hernan2020causal, p. 245].
+Chapter 8 has more structures with colliders and their descendants.
+:::
 
-### Software Tools
+---
 
-**R package `dagitty`**:
+### "Never Adjust for Post-Treatment Variables" Is Not the Rule
 
-- Define DAGs
-- Find adjustment sets automatically
-- Check conditional independencies implied by the DAG
-- Visualize DAGs
+All the variables above are affected by treatment, but avoiding every variable measured after $A$ can exclude useful adjustment variables (Fine Point 7.4).
 
-**Example**:
+- In Figure 18.5, $L$ occurs after $A$ but can block a backdoor path: the $L$-adjusted association is unbiased and the unadjusted one is biased.
+- Causal graphs do not care about temporal order: when $A$ does not affect $L$, the correct analysis is the same whether $L$ comes before or after $A$.
+- But the data cannot tell whether $A$ affects $L$: with temporal order $A, L, Y$, any joint distribution of $(A, L, Y)$ with no independencies is compatible with several causal graphs [@hernan2020causal, p. 245].
+
+So **whether to adjust for $L$ cannot be decided by any automated procedure based only on statistical associations**;
+for example, data alone cannot distinguish a collider from a confounder.
+The book cites Hernán et al. (2002) as an example of applying expert knowledge to adjustment.
+
+---
+
+### Pre-Treatment Variables That Induce Bias: M-Bias
+
+Even with temporal order $L, A, Y$ and a sample so large that only bias matters, adjusting for **all** pre-treatment covariates does not minimize bias, for two reasons [@hernan2020causal, p. 245].
+
+**Reason 1: colliders.**
+In Figure 18.6 (same as Figure 7.4), $L$ shares a cause $U_2$ with $A$ and a cause $U_1$ with $Y$,
+so $L$ is a collider on $A \leftarrow U_2 \rightarrow L \leftarrow U_1 \rightarrow Y$.
+Adjusting for $L$ opens that path: **M-bias**.
+
+::: {.notes}
+The data cannot distinguish confounders from colliders, so external information must decide.
+If there were also an arrow $L \rightarrow A$ in Figure 18.6, $L$ would be both a confounder and a collider,
+and the average causal effect would not be identified whether or not we adjust for $L$ [@hernan2020causal, p. 245].
+:::
+
+---
+
+### Pre-Treatment Variables That Amplify Bias: Z-Bias
+
+**Reason 2: bias amplification.**
+In Figure 18.7 (same as Figure 16.1), $Z \rightarrow A \rightarrow Y$ and an unmeasured $U$ confounds $A$ and $Y$.
+$Z$ is an instrument, not on any backdoor path, so adjusting for $Z$ cannot remove the confounding by $U$.
+But it **can amplify** it: the $Z$-adjusted $A$-$Y$ association may be further from the effect than the unadjusted one.
+This is called **Z-bias** [@hernan2020causal, p. 246].
+
+::: {.notes}
+Amplification is guaranteed when all equations of the structural equation model for the diagram are linear (Wooldridge 2010, Pearl 2011),
+and may also occur in more realistic settings (Ding et al. 2017).
+It is not guaranteed in general: adjusting for $Z$ could also reduce the bias, and usually we cannot know which [@hernan2020causal, p. 246].
+:::
+
+---
+
+### Summary of Section 18.2
+
+Even with no computational constraints and a quasi-infinite sample, adjusting for all available variables is not advisable.
+Ideally the adjustment set excludes every variable that may **introduce** (colliders, their descendants, mediators, other variables affected by treatment) or **amplify** (instruments) bias.
+Because these variables cannot be identified by purely statistical algorithms, **expert knowledge must guide variable selection** [@hernan2020causal, p. 246].
+
+---
+
+### Supplement: Encoding Expert Knowledge with `dagitty`
+
+Once subject-matter knowledge is written down as a causal diagram, software can list adjustment sets that satisfy the backdoor criterion.
+For the M-bias diagram of Figure 18.6:
+
 ```r
 library(dagitty)
-dag <- dagitty('dag {
+m_bias <- dagitty("dag {
+  U1 -> L
+  U1 -> Y
+  U2 -> L
+  U2 -> A
   A -> Y
-  L1 -> A
-  L1 -> Y
-  L2 -> Y
-  U -> A
-  U -> Y
-}')
-adjustmentSets(dag, exposure = "A", outcome = "Y")
+}")
+adjustmentSets(m_bias, exposure = "A", outcome = "Y")
 ```
 
 ::: {.notes}
-**DAGs encode assumptions**:
-
-- What you include in the DAG (and what you exclude) represents your causal knowledge
-- DAGs make assumptions explicit and falsifiable
-- Subject-matter expertise is crucial for drawing valid DAGs
-
-**Limitations**:
-
-- DAG is only as good as your causal knowledge
-- Cannot test all assumptions (especially about unmeasured variables)
-- Must think carefully about what to include
-
-**Recommendation**: Draw multiple plausible DAGs, find adjustment sets for each, conduct sensitivity analyses.
+Here the only minimal adjustment set is the empty set: no adjustment is needed, and adjusting for $L$ alone would open the M path.
+The output is only as good as the diagram, which is exactly the subject-matter knowledge Section 18.2 says cannot come from the data.
+This supplement is not in the book.
 :::
+
+## 18.3 Causal Inference and Machine Learning (pp. 246-247)
+
+---
+
+From here on, assume $X$ includes all confounders $L$ and no variable that would induce or amplify bias, and that positivity holds.
+The problem is now **estimation** when $X$ is very high-dimensional or has many continuous variables.
+Since good estimates of $\E{Y^{a=1}}$ and $\E{Y^{a=0}}$ give a good estimate of their difference, focus on $\E{Y^{a=1}}$.
+
+::: {#def-nuisance-functions}
+## The Two Nuisance Functions
+
+$$
+b(X) \eqdef \E{Y \mid A = 1, X}, \qquad \pi(X) \eqdef \Pr[A = 1 \mid X].
+$$
+
+The plug-in g-formula (standardization) estimates $b(X)$;
+IP weighting estimates $\pi(X)$ [@hernan2020causal, pp. 246-247].
+:::
+
+---
+
+### Why Traditional Parametric Models Fail Here
+
+- With high-dimensional $X$, low-dimensional parametric models for $b$ and $\pi$ are certain to be misspecified, so $\hat b$ and $\hat\pi$ are inconsistent.
+- **Richly parameterized** generalized linear models use a linear predictor $\theta^\top s(x) = \sum_j \theta_j s_j(x)$,
+  where $s(X)$ is a high-dimensional vector of transformations of $X$ (e.g., cubic splines and their cross-products),
+  e.g., $\hat b(x) = \expitf{\hth^\top s(x)}$ and $\hat\pi(x) = \expitf{\hth_\pi^\top s(x)}$.
+- Even when consistent, their finite-sample errors are much larger than those of a correct low-dimensional model,
+  and if the dimension of $s(X)$ exceeds $n$ the fit fails to converge [@hernan2020causal, p. 247].
+
+::: {.notes}
+Remember that some variables in $X$ may not be confounders;
+we would not need to adjust for them if we knew which they were [@hernan2020causal, p. 247].
+:::
+
+---
+
+### Machine Learning for the Nuisance Functions
+
+Options [@hernan2020causal, p. 247]:
+
+- the parametric model with a **lasso or ridge penalty** (Fine Point 18.1);
+- a variable selection algorithm such as **stepwise selection**;
+- other machine learning algorithms: **tree-based** (e.g., random forests) or **neural networks** (deep learning), which effectively fit thousands or millions of parameters.
+
+With large samples and many covariates, machine learning usually predicts conditional expectations better than traditional parametric models.
+
+**But prediction is not enough**: to get valid 95% Wald confidence intervals (covering the true parameter at least 95% of the time),
+machine learning must be combined with **doubly robust** estimators using **sample splitting** and **cross-fitting** (Section 18.4).
+
+## 18.4 Doubly Robust Machine Learning Estimators (pp. 247-250)
+
+---
+
+### What a Valid Wald Interval Requires
+
+For $\psi = \E{Y^{a=1}}$ [@hernan2020causal, p. 247]:
+
+- The standard error of most estimators $\hE{Y^{a=1}}$ scales as $1/\sqrt{n}$, so the **bias must be much smaller than $1/\sqrt{n}$**.
+- The estimator must also be asymptotically normal (usually easier than small bias).
+
+::: {.notes}
+Undercoverage is worse when there is confounding in the superpopulation, because the Wald interval is then centered on a biased estimator (Chapter 10) [@hernan2020causal, p. 247].
+:::
+
+---
+
+### Why Double Robustness Helps
+
+- The bias of a **doubly robust** estimator depends on the **product** of the errors in $1/\hat\pi(x)$ and $\hat b(x)$,
+  so it is below $1/\sqrt{n}$ if both errors are much smaller than $n^{-1/4}$ (since $n^{-1/4} \times n^{-1/4} = n^{-1/2}$).
+  Machine learning can often achieve that when $\pi$ and $b$ are **smooth** (many derivatives) or **sparse** (depend on few, unknown components of $X$).
+  This is the **second-order bias** property (Technical Point 13.2).
+- The **IP weighted** and **plug-in g-formula** estimators can have bias as large as the error in $1/\hat\pi$ or in $\hat b$ alone,
+  and with high-dimensional $X$ those errors must exceed $1/\sqrt{n}$, so neither can generally center a valid Wald interval [@hernan2020causal, pp. 247-248].
+
+---
+
+### Sample Splitting
+
+1. Randomly divide the $n$ individuals into an **estimation sample** and a **training sample**, each of size $n/2$.
+2. Apply machine learning to the training sample to estimate $\hat b(x)$ and $\hat\pi(x)$.
+3. Compute the doubly robust estimator in the estimation sample, using $\hat b$ and $\hat\pi$ from the training sample [@hernan2020causal, p. 248].
+
+::: {.notes}
+The training sample is also called the **nuisance sample**, since it estimates the nuisance regressions (Fine Point 15.1).
+Sample splitting and cross-fitting are not new;
+combining them with machine learning has only recently been emphasized [@hernan2020causal, p. 248].
+:::
+
+---
+
+### Why Split? The Full-Sample AIPW Estimator
+
+The full-sample augmented IP weighted (AIPW) estimator of $\E{Y^{a=1}}$ (Technical Point 13.2) is
+
+$$
+\frac{1}{n} \sumin \cb{\hat b(X_i) + \frac{A_i}{\hat\pi(X_i)} \sb{Y_i - \hat b(X_i)}},
+$$
+
+with $\hat b$ and $\hat\pi$ fit by machine learning on **all** $n$ individuals.
+
+- Then $\hat b$ and $\hat\pi$ are correlated with the estimator itself, which can affect its bias, variance, and asymptotic normality in unpredictable ways, by an unknown amount.
+- In the split-sample version, the estimation sample is independent of $\hat b$ and $\hat\pi$, so under weak conditions (Technical Point 18.2) the estimator is asymptotically normal with standard error of order $1/\sqrt{n}$ and only the product bias.
+  If the product bias is below $1/\sqrt{n}$, Wald intervals are valid [@hernan2020causal, p. 248].
+
+---
+
+### Cross-Fitting
+
+Sample splitting's cost: the standard error corresponds to a sample of size $n/2$, so intervals are wider.
+**Cross-fitting** recovers the lost efficiency [@hernan2020causal, pp. 248-249]:
+
+1. Swap the roles: the former estimation half becomes the training sample and vice versa, and recompute the doubly robust estimate.
+2. Average the two estimates to estimate the effect in the whole study population.
+3. Get a 95% confidence interval by bootstrapping (estimate $\pm 1.96$ bootstrap standard errors, or the 2.5 and 97.5 percentiles of the bootstrap estimates).
+
+---
+
+::: {.callout-note title="Technical Point 18.1: Augmented IP Weighted Split-Sample and Cross-Fit Estimator"}
+For $\psi = \E{Y^{a=1}}$ [@hernan2020causal, p. 249]:
+
+1. Randomly split the $n$ subjects into an estimation sample of size $q$ and a training sample of size $n_{tr} = n - q$, with $q/n \approx 1/2$.
+2. From the training sample, estimate $b(x) = \E{Y \mid A = 1, X = x}$ and $\pi(x) = \Pr[A = 1 \mid X = x]$ by machine learning.
+3. In the estimation sample, compute
+   $$
+   \hat\psi = \frac{1}{q} \sum_{i=1}^{q} \cb{\hat b(X_i) + \frac{A_i}{\hat\pi(X_i)} \sb{Y_i - \hat b(X_i)}}.
+   $$
+4. Compute $\hat\psi_{\text{cross-fit}} = (\hat\psi + \tilde\psi)/2$, where $\tilde\psi$ is $\hat\psi$ with the training and estimation samples swapped.
+
+A version with better finite-sample behavior uses $M > 2$ equal-sized random subsamples:
+compute $\hat\psi^{(m)}$ using subsample $m$ for estimation and the other $M - 1$ for training, and set $\hat\psi_{\text{cross-fit}} = \frac{1}{M} \sum_{m=1}^{M} \hat\psi^{(m)}$.
+:::
+
+::: {.notes}
+Open problems: detecting whether the bias of split-sample doubly robust estimators is as large as the standard error,
+and reducing it without redoing the machine learning.
+Lin et al. (2020) built estimators based on higher-order influence functions with smaller bias than doubly robust cross-fit estimators and without much larger variance [@hernan2020causal, p. 249].
+:::
+
+---
+
+::: {.callout-note title="Technical Point 18.2: Statistical Properties of Split-Sample and Cross-Fit Estimators"}
+Conditional on the training data $Tr$, $\hat b$ and $\hat\pi$ are fixed functions, so $\hat\psi$ is an average of independent and identically distributed terms
+and, by the central limit theorem, is asymptotically normal given $Tr$ with standard error proportional to $n^{-1/2}$.
+
+If (i) $\hat b$ and $\hat\pi$ are consistent in mean square and (ii) the conditional bias divided by the standard error converges to 0 in probability,
+then $\hat\psi$ and $\hat\psi_{\text{cross-fit}}$ are asymptotically normal and unbiased, and their Wald intervals (with bootstrap standard errors) are valid and calibrated.
+$\hat\psi_{\text{cross-fit}}$ is then semiparametric efficient, with standard error smaller than that of $\hat\psi$ by a factor of $1/\sqrt{2}$ [@hernan2020causal, p. 250].
+:::
+
+---
+
+::: {#prp-conditional-bias}
+## Conditional Bias of the Split-Sample AIPW Estimator
+
+Assume conditional exchangeability given $X$ and positivity, so $\psi = \E{b(X)}$.
+Then
+
+$$
+\E{\hat\psi - \psi \mid Tr} = \E{\pi(X) \paren{\frac{1}{\pi(X)} - \frac{1}{\hat\pi(X)}} \paren{\hat b(X) - b(X)} \mid Tr} .
+$$
+:::
+
+::: {.proof}
+Given $Tr$, each term of $\hat\psi$ has the same mean, so $\E{\hat\psi \mid Tr}$ is the mean of one term.
+Conditioning on $X$ first:
+
+$$
+\begin{aligned}
+\E{\frac{A}{\hat\pi(X)} \sb{Y - \hat b(X)} \mid X, Tr}
+&= \frac{\Pr[A = 1 \mid X]}{\hat\pi(X)} \E{Y - \hat b(X) \mid A = 1, X, Tr} && \text{(only } A = 1 \text{ contributes)} \\
+&= \frac{\pi(X)}{\hat\pi(X)} \paren{b(X) - \hat b(X)}. && (\text{estimation sample independent of } Tr)
+\end{aligned}
+$$
+
+So
+
+$$
+\begin{aligned}
+\E{\hat\psi - \psi \mid Tr}
+&= \E{\hat b(X) + \frac{\pi(X)}{\hat\pi(X)} \paren{b(X) - \hat b(X)} - b(X) \mid Tr} && (\psi = \E{b(X)}) \\
+&= \E{\paren{\hat b(X) - b(X)} \paren{1 - \frac{\pi(X)}{\hat\pi(X)}} \mid Tr} && \text{(collect terms)} \\
+&= \E{\pi(X) \paren{\frac{1}{\pi(X)} - \frac{1}{\hat\pi(X)}} \paren{\hat b(X) - b(X)} \mid Tr} . && \text{(factor out } \pi(X))
+\end{aligned}
+$$
+:::
+
+::: {.notes}
+The bias is a **product** of the two errors, the second-order property used in this section.
+(The book writes the same product with both factors negated,
+$\E{\pi(X) \paren{\frac{1}{\hat\pi(X)} - \frac{1}{\pi(X)}} \paren{b(X) - \hat b(X)} \mid Tr}$.)
+
+**Rates**: if $1/\hat\pi(x) - 1/\pi(x)$ converges at rate $n^{-\alpha}$ and $\hat b(x) - b(x)$ at rate $n^{-\epsilon}$,
+the conditional bias is $o(n^{-1/2})$ when $\alpha + \epsilon > 1/2$.
+So $\hat b$ may converge more slowly than $n^{-1/4}$ if $\hat\pi$ converges fast enough, and vice versa [@hernan2020causal, p. 250].
+
+The efficient standard error of $\hat\psi_{\text{cross-fit}}$ (scaled by $n^{1/2}$) is
+$\cb{\Var{b(X) + \frac{A}{\pi(X)} \sb{Y - b(X)}}}^{1/2}$.
+:::
+
+## 18.5 Variable Selection Is a Difficult Problem (pp. 250-251)
+
+---
+
+Doubly robust machine learning refutes the belief that **any** data-adaptive selection of adjustment variables must give incorrect confidence intervals.
+But it does not solve every problem, for at least three reasons [@hernan2020causal, p. 250]:
+
+1. **Knowledge**: subject-matter knowledge may be insufficient to include all important confounders or to exclude bias-inducing or bias-amplifying variables, so small bias is not guaranteed.
+2. **Implementation**: doubly robust estimators have been hard (and, with machine learning, computationally expensive) to implement for high-dimensional time-varying treatments, especially in survival analysis.
+   Most published longitudinal analyses use singly robust estimators, the ones emphasized in Part III, although these methods are becoming routine in some fields.
+3. **Variance**: the estimator can reach the variance we would have if $b(X)$ and $\pi(X)$ were known, but that variance may still be too large to be useful.
+
+---
+
+### The Variance Problem
+
+- If some covariates in $X$ are strongly associated with $A$, $\pi(X)$ can be near 0 or 1 for some individuals,
+  giving a very wide (but often correct) 95% confidence interval, even with small product bias.
+- Discarding the covariates that cause the "problem" after seeing the data **changes the game**:
+  dropping covariates that are associated with treatment but not much with the outcome makes it impossible to guarantee that the interval is valid.
+- The tension between including all potential confounders (less bias) and excluding some (less variance) is hard to resolve [@hernan2020causal, p. 251].
+
+::: {.notes}
+The book poses a puzzle: if the interval is invalid when we use the data to discard, say, 5 variables that make the variance too large,
+why would it be valid had we received a data set that never included those 5 variables?
+Since some potential confounders are always unrecorded, how should we interpret confidence intervals from any observational analysis [@hernan2020causal, p. 251]?
+:::
+
+---
+
+### Practical Advice
+
+General, prescriptive guidelines for variable selection may not be possible while so much research is ongoing.
+As in Section 13.5, the book's advice is to run **multiple sensitivity analyses**: apply several analytic methods and compare the estimates.
+If they agree, we gain confidence;
+if they disagree, our job is to understand why [@hernan2020causal, p. 251].
 
 ## Summary
 
 ---
 
-**Key principles for variable selection in causal inference**:
-
-1. **Use causal reasoning**, not statistical criteria
-2. **Adjust for confounders** (variables on backdoor paths)
-3. **Don't adjust for mediators** (variables on causal paths from treatment)
-4. **Don't adjust for colliders** (unless necessary to block other paths)
-5. **Don't adjust for descendants of treatment** (generally)
-6. **Consider precision variables** (if they don't introduce bias)
-7. **Use causal DAGs** to guide selection
-
-**Variables to include**:
-
-- ✓ Confounders (on backdoor paths from $A$ to $Y$)
-- ✓ Precision variables (predict $Y$, not affected by $A$, not colliders)
-- ✓ Proxies for unmeasured confounders
-
-**Variables to exclude**:
-
-- ✗ Mediators (on causal path from $A$ to $Y$)
-- ✗ Colliders (except if needed to block backdoor paths)
-- ✗ Descendants of treatment (except special cases)
-- ✗ Instruments (when using standard methods)
-- ✗ Variables that induce M-bias
-
-**Special cases**:
-
-- **Intermediate confounders**: Time-varying confounders affected by prior treatment
-  - Cannot be handled by standard regression
-  - Require g-methods (Part III)
-
-**Tools**:
-
-- **Causal DAGs**: Represent causal structure graphically
-- **Backdoor criterion**: Identify sufficient adjustment sets
-- **Software**: `dagitty`, `ggdag` (R), `DAGitty` (web interface)
-
-**Common mistakes**:
-
-1. Using stepwise selection or AIC/BIC for variable selection
-2. Adjusting for all predictors of the outcome
-3. Adjusting for mediators
-4. Conditioning on colliders
-5. Ignoring time-varying confounding
-
-**Practical workflow**:
-
-1. Draw a causal DAG based on subject-matter knowledge
-2. Identify backdoor paths from treatment to outcome
-3. Find sufficient adjustment sets using the backdoor criterion
-4. Choose a set that is measured and practical
-5. Fit causal model adjusting for that set (using appropriate method)
-6. Conduct sensitivity analyses with alternative DAGs/adjustment sets
-
-::: {.notes}
-**Bottom line**:
-
-Variable selection for causal inference requires causal thinking. Statistical significance, prediction accuracy, and $R^2$ are not appropriate criteria. Instead:
-
-- Think about causal structure
-- Use DAGs to formalize assumptions
-- Apply the backdoor criterion
-- Adjust for the right variables, not just any variables
-
-**Looking ahead**: Part III extends these ideas to longitudinal settings with time-varying treatments and confounders, where variable selection becomes even more critical and complex.
-:::
+- **Prediction** needs no confounding adjustment and may use any algorithm that predicts well;
+  **causal inference** needs a carefully chosen adjustment set.
+- Adjusting for some variables **induces** bias (colliders and their descendants, noncolliders affected by treatment, mediators, M-bias structures) or **amplifies** it (instruments;
+  Z-bias).
+  Data alone cannot find them, so **expert knowledge** must guide selection.
+- Temporal order alone is not the rule: a post-treatment variable can be a valid adjustment variable, and a pre-treatment variable can be a collider.
+- With high-dimensional $X$, estimate $b(X)$ and $\pi(X)$ with machine learning inside a **doubly robust** estimator, with **sample splitting and cross-fitting**, to get valid Wald intervals.
+- Valid intervals may still be very wide;
+  dropping covariates after seeing the data threatens validity.
+  Run multiple sensitivity analyses.
