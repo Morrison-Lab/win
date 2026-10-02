@@ -11,9 +11,14 @@ on:
     branches: [main]
   workflow_dispatch:
 
-# Serialize deploys so two pushes don't race on the gh-pages branch.
+# Serialize this workflow's own runs. The group must NOT be named `gh-pages`:
+# the called workflow's deploy job already holds that group, and a caller-level
+# block with the same name deadlocks it (the deploy job fails with no runner,
+# no steps and no log, so the site silently stops publishing;
+# Morrison-Lab/gha#809). Every publish run on main failed this way from
+# 2026-09-29 until this rename.
 concurrency:
-  group: gh-pages
+  group: quarto-publish-${{ github.ref }}
   cancel-in-progress: false
 
 jobs:

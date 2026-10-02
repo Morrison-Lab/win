@@ -1,0 +1,18 @@
+# Thin caller of Morrison-Lab/gha's reusable junk-file check.
+# Fails when operating-system or editor detritus (.DS_Store, .Rhistory,
+# .Rproj.user, ...) is tracked in git. It scans the index rather than the
+# diff, so a file committed long ago still fails.
+name: Check for tracked junk files
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  check:
+    permissions:
+      contents: read
+    uses: Morrison-Lab/gha/.github/workflows/check-junk-files.yml@v2
