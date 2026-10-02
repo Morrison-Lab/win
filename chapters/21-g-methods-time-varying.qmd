@@ -373,10 +373,11 @@ The average causal effect is $\E{Y^{\bar{a}}} - \E{Y^{\bar{a} = \bar{0}}} = \bet
 
 Suppose the marginal structural model of @def-msm-tv is correctly specified,
 and the identifiability conditions (sequential exchangeability, positivity, and consistency) hold.
-Let $\hth_1$ be the estimate of $\theta_1$ from fitting $\E{Y \mid \bar{A}} = \theta_0 + \theta_1 \, \mathrm{cum}(\bar{A})$
+Let $\hat{\beta}_1$ be the coefficient of $\mathrm{cum}(\bar{A})$ in the fit of the model
+$\E{Y \mid \bar{A}} = \theta_0 + \theta_1 \, \mathrm{cum}(\bar{A})$
 by weighted least squares with weights $SW^{\bar{A}}$ or $W^{\bar{A}}$
 (known, or estimated from a correctly specified treatment model).
-Then $\hth_1$ is consistent for the causal $\beta_1$,
+Then $\hat{\beta}_1$ is consistent for the causal $\beta_1$,
 not for the associational $\theta_1$ of the unweighted data.
 :::
 
@@ -399,6 +400,7 @@ gives a 2-degree-of-freedom Wald test of $\theta_2 = \theta_3 = 0$,
 a test that the original MSM is correctly specified.
 In practice one may use other summaries of treatment history and flexible functions such as cubic splines.
 :::
+:::
 
 ::: {#def-msm-effect-modification-tv}
 ## Marginal structural model with a baseline effect modifier
@@ -409,9 +411,15 @@ $\E{Y^{\bar{a}} \mid V} = \beta_0 + \beta_1 \mathrm{cum}(\bar{a}) + \beta_2 V + 
 Its parameters are estimated by fitting the associational model
 $\E{Y \mid \bar{A}, V} = \theta_0 + \theta_1 \mathrm{cum}(\bar{A}) + \theta_2 V + \theta_3 \mathrm{cum}(\bar{A}) V$
 by weighted least squares with $W^{\bar{A}}$ or, better,
-$SW^{\bar{A}}(V) = \prod_{k=0}^{K} f(A_k \mid \bar{A}_{k-1}, V) / f(A_k \mid \bar{A}_{k-1}, \bar{L}_k)$,
-so that $\theta_1$ and $\theta_3$ estimate the causal $\beta_1$ and $\beta_3$.
+$SW^{\bar{A}}(V) = \prod_{k=0}^{K} f(A_k \mid \bar{A}_{k-1}, V) / f(A_k \mid \bar{A}_{k-1}, \bar{L}_k)$.
 :::
+
+If this marginal structural model and the model for the weights are both correctly specified,
+and sequential exchangeability, positivity, and consistency hold,
+then the coefficients of $\mathrm{cum}(\bar{A})$ and $\mathrm{cum}(\bar{A}) V$ in the weighted fit
+are consistent for the causal $\beta_1$ and $\beta_3$.
+
+::: {.notes}
 
 ::: {.callout-warning title="Only Baseline Variables as Effect Modifiers"}
 With treatment-confounder feedback, $V$ may include only baseline variables;
@@ -516,9 +524,11 @@ It is a targeted minimum loss-based estimator (TMLE) in the terminology of van d
 ## The time-varying doubly robust estimator is $K + 2$ robust
 
 Suppose each sequential outcome model $b_m$ of @alg-dr-time-varying
-is fit by maximum likelihood with a canonical link
-(logistic for a binary $Y$, linear for a continuous $Y$)
-and includes the weight $\hat{W}^{\bar{1}_m}$ as a covariate.
+is fit by solving the score equations of a generalized linear model with a canonical link
+(logistic for a binary $Y$, linear for a continuous $Y$),
+that is, by quasi-likelihood, since for $m < K$ the response $\hat{B}_{m+1}$ is fractional,
+and that each $b_m$ includes the weight $\hat{W}^{\bar{1}_m}$ as a covariate.
+Suppose also that positivity holds for the strategy $\bar{a} = \bar{1}$.
 Then the estimator of @alg-dr-time-varying is consistent for the g-formula functional of @def-g-formula-tv
 at $\bar{a} = \bar{1}$ if
 (i) the outcome models $b_m$ are correct for all $m$, or
@@ -528,7 +538,7 @@ for some $m \in \{0, \ldots, K - 1\}$,
 the treatment model is correct for times $0$ to $m$
 and the outcome model is correct for times $m + 1$ to $K$
 [@hernan2020causal, p. 288].
-If, in addition, sequential exchangeability, positivity, and consistency hold,
+If, in addition, sequential exchangeability and consistency hold,
 that functional equals $\E{Y^{\bar{a} = \bar{1}}}$,
 so the estimator is consistent for the counterfactual mean.
 :::
@@ -610,7 +620,7 @@ $$\E{Y^{\bar{a}_{k-1}, a_k, \underline{0}_{k+1}} - Y^{\bar{a}_{k-1}, \underline{
 
 where $(\bar{a}_{k-1}, a_k, \underline{0}_{k+1})$ follows $\bar{a}_{k-1}$ through $k - 1$, gives $a_k$ at $k$,
 and gives no treatment from $k + 1$ to $K$;
-$\gamma_k(\bar{a}_{k-1}, \bar{l}_k, \psi)$ is a known function of past treatment, covariate history, and a parameter $\psi$,
+$\gamma_k(\bar{a}_{k-1}, \bar{l}_k, \psi^\dagger)$ is a known function of past treatment, covariate history, and a parameter value $\psi^\dagger$,
 with $\gamma_k(\bar{a}_{k-1}, \bar{l}_k, 0) = 0$;
 and $\beta$ is the unknown true value of that parameter.
 :::
@@ -679,9 +689,12 @@ ranks are preserved among individuals with the same $a_0$ and $l_1$.
 
 ::: {.callout-warning title="Rank Preservation Is Implausible but Not Required"}
 Rank preservation is biologically implausible,
-but under sequential exchangeability for $Y$ the g-estimators of $\psi$
-(@alg-g-estimation-one-parameter and @rem-g-estimating-equation)
-are consistent for the SNMM parameters $\beta$ even if the rank-preserving model is wrong.
+but it is not needed.
+G-estimation, described later in this chapter, is consistent for the SNMM parameters $\beta$ of @def-snmm-tv
+even if the rank-preserving model is wrong,
+provided the SNMM is correctly specified,
+sequential exchangeability for $Y$ and consistency hold,
+and the model for treatment given past treatment and covariates is correctly specified.
 :::
 
 ::: {.notes}
@@ -835,8 +848,9 @@ with $\hat{\alpha}_0, \hat{\alpha}_2$ from the model fit with $\alpha_1 = 0$.
 
 Let $\hb$ be the solution of the estimating equation of @rem-g-estimating-equation
 (equivalently, the limit of the grid-search estimate of @alg-g-estimation-one-parameter as the grid step goes to 0).
-Then $\hb$ is consistent for $\beta$ if
-(i) the SNMM is correct,
+Then $\hb$ is consistent for the true $\beta_1$ if
+(i) the one-parameter SNMM of @alg-g-estimation-one-parameter,
+$\gamma_k(\bar{a}_{k-1}, \bar{l}_k, \beta) = \beta_1$, is correct,
 (ii) sequential exchangeability for $Y$ holds,
 (iii) consistency holds, $Y^{\bar{A}} = Y$,
 (iv) the treatment model $\logit \Pr[A_k = 1 \mid \bar{L}_k, \bar{A}_{k-1}] = \alpha_0 + \alpha_2 W_k$ is correct, and
@@ -999,14 +1013,13 @@ a pseudo-population in which nobody is censored, then g-estimate in it.
 ::: {.notes}
 
 ::: {.callout-tip title="Check the Mean of the Stabilized Weights"}
-After fitting the censoring models, compute the sample mean of the estimated $SW^{\bar{C}}$
-(and, if you use them, of the estimated $SW^{\bar{A}}$).
-A correctly specified model gives a mean close to 1
-[@hernan2020causal, p. 298].
-A mean well away from 1 is a warning sign:
-the numerator or denominator model is probably misspecified,
-or a few individuals have extreme weights (a sign of near-violations of positivity).
-Revisit the models before trusting the weighted estimate.
+After fitting the censoring models, compute the sample mean of the estimated $SW^{\bar{C}}$.
+Correctly specified models give a mean close to 1
+[@hernan2020causal, p. 298],
+so for $SW^{\bar{C}}$ a mean well away from 1 suggests that the numerator or the denominator model is misspecified.
+The same check applies to $SW^{\bar{A}}$ with a narrower reading:
+a correct denominator model gives a mean of 1 for any proper numerator,
+so a mean away from 1 points only to the denominator (treatment) model.
 :::
 
 ::: {.callout-warning title="Fact-Check: Stabilized Weights Keep Arrows from Past Treatment"}
@@ -1062,7 +1075,7 @@ some factuals, like $U$, are unavailable for analysis because they were not meas
 ::: {#rem-big-g-formula-not-computable}
 ## The big g-formula cannot be computed directly
 
-The big g-formula is a function of the distribution of the factuals (@def-factuals) $(A, L, Y, U)$ alone,
+The big g-formula is a function of the distribution of the factuals $(A, L, Y, U)$ (@def-factuals) alone,
 but it includes unmeasured $U$, so it cannot be computed directly.
 :::
 
