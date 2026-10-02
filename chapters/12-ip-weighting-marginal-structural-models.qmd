@@ -204,7 +204,7 @@ Under these parametric restrictions, we get an estimate $\hat{\Pr}[A = 1 \mid L]
 
 Fit the (saturated) linear mean model
 $$\E{Y \mid A} = \theta_0 + \theta_1 A$$
-by **weighted least squares** with weights $\hat{W}^A$, i.e., choose $\hat\theta_0, \hat\theta_1$ to minimize
+by **weighted least squares** with weights $\hat{W}^A$, i.e., choose $\hth_0, \hth_1$ to minimize
 $$\sum_i \hat{W}_i \sb{Y_i - (\theta_0 + \theta_1 A_i)}^2.$$
 
 ::: {.notes}
@@ -220,7 +220,7 @@ If there is no confounding in the pseudo-population and the model for $\Pr[A = 1
 ## NHEFS: Nonstabilized IP Weighting
 
 - Estimated weights $\hat{W}^A$ ranged from 1.05 to 16.7, with mean 2.00.
-- $\hat\theta_1 = 3.4$ kg: under our assumptions, quitting smoking increases weight by 3.4 kg on average.
+- $\hth_1 = 3.4$ kg: under our assumptions, quitting smoking increases weight by 3.4 kg on average.
 - Conservative 95% confidence interval: (2.4, 4.5).
 
 Compare with the unadjusted difference of 2.5 kg.
@@ -267,7 +267,7 @@ With $\hE{\cdot}$ the sample average:
 - **Hajek estimator** (modified Horvitz-Thompson):
   $$\frac{\hE{\indicp{A = a} Y / f(A \mid L)}}{\hE{\indicp{A = a} / f(A \mid L)}}$$
 
-For binary $A$, the IP weighted least squares estimate $\hat\theta_0 + \hat\theta_1 a$ is the Hajek estimator.
+For binary $A$, the IP weighted least squares estimate $\hth_0 + \hth_1 a$ is the Hajek estimator.
 :::
 
 ::: {.notes}
@@ -362,7 +362,7 @@ To estimate the average causal effect in the treated rather than in the whole po
 ## NHEFS: Stabilized IP Weighting
 
 - Estimated $\hat{SW}^A$ ranged from 0.33 to 4.30, with mean 1.00 (versus 1.05 to 16.7, mean 2.00, for $\hat{W}^A$).
-- $\hat\theta_1 = 3.4$ kg (95% CI: 2.4, 4.5), the same estimate as with the nonstabilized weights.
+- $\hth_1 = 3.4$ kg (95% CI: 2.4, 4.5), the same estimate as with the nonstabilized weights.
 :::
 
 ---
@@ -394,7 +394,7 @@ The two kinds of violation have different consequences [@hernan2020causal, Fine 
   inference has to be limited to the strata where structural positivity holds (see Technical Point 12.1).
 - Under **random** violations, the parametric model smooths over the zeros: the logistic model of Section 12.2 estimated the probability of quitting for white women aged 66 by interpolating from everyone else.
 
-Whenever we use parametric IP weights in the presence of zero cells, as in the estimate $\hat\theta_1 = 3.4$, we are effectively assuming that the nonpositivity is random.
+Whenever we use parametric IP weights in the presence of zero cells, as in the estimate $\hth_1 = 3.4$, we are effectively assuming that the nonpositivity is random.
 :::
 :::
 
@@ -429,7 +429,7 @@ So Sections 12.2-12.3 were already estimating $\beta_1$ of a marginal structural
 
 1. Use IP weights to create a pseudo-population in which (under our assumptions) association is causation.
 2. Fit the associational model $\E{Y \mid A} = \theta_0 + \theta_1 A$ to the pseudo-population, i.e., by IP weighted least squares.
-3. $\theta_1$ then has the same causal interpretation as $\beta_1$, so a consistent estimator $\hat\theta_1$ is a consistent estimator of $\beta_1 = \E{Y^{a=1}} - \E{Y^{a=0}}$.
+3. $\theta_1$ then has the same causal interpretation as $\beta_1$, so a consistent estimator $\hth_1$ is a consistent estimator of $\beta_1 = \E{Y^{a=1}} - \E{Y^{a=0}}$.
 
 **Pseudo-code**:
 
@@ -502,7 +502,7 @@ Finding more stable ways to estimate these weights is ongoing research [@hernan2
 ::: {#exm-nhefs-continuous}
 ## NHEFS: Change in Smoking Intensity
 
-IP weighted estimates: $\hat\beta_0 = 2.005$, $\hat\beta_1 = -0.109$, $\hat\beta_2 = 0.003$.
+IP weighted estimates: $\hb_0 = 2.005$, $\hb_1 = -0.109$, $\hb_2 = 0.003$.
 
 | Counterfactual mean | Estimate (95% CI) |
 |---|---|
@@ -516,13 +516,13 @@ The book reports these quantities from the unrounded coefficients.
 Plugging in the **rounded** coefficients gives a slightly different value:
 $$
 \begin{aligned}
-\hat\beta_0 + 20\hat\beta_1 + 400\hat\beta_2
+\hb_0 + 20\hb_1 + 400\hb_2
 &= 2.005 + 20(-0.109) + 400(0.003)\\
 &= 2.005 - 2.180 + 1.200\\
 &= 1.025,
 \end{aligned}
 $$
-because $\hat\beta_2 = 0.003$ is rounded and is multiplied by 400.
+because $\hb_2 = 0.003$ is rounded and is multiplied by 400.
 Use the reported 0.9 kg, not this back-of-the-envelope value.
 :::
 
@@ -534,9 +534,9 @@ For the effect of quitting smoking $A$ on death $D$ by 1992 (1: yes, 0: no):
 
 $$\logit \Pr[D^a = 1] = \alpha_0 + \alpha_1 a$$
 
-- $\expt(\alpha_1)$ is the causal odds ratio of death comparing quitting with not quitting.
+- $\exp{\alpha_1}$ is the causal odds ratio of death comparing quitting with not quitting.
 - Estimate it by fitting $\logit \Pr[D = 1 \mid A] = \theta_0 + \theta_1 A$ to the IP weighted pseudo-population.
-- NHEFS estimate: $\expt(\hat\theta_1) = 1.0$ (95% CI: 0.8, 1.4).
+- NHEFS estimate: $\exp{\hth_1} = 1.0$ (95% CI: 0.8, 1.4).
 
 ::: {.notes}
 This model is saturated for a dichotomous treatment; for a continuous treatment one would specify a nonsaturated logistic model [@hernan2020causal, Chapter 12, p. 171].
@@ -599,7 +599,7 @@ some intuition is that the variance of $SW^A(V)$ is smaller than that of $SW^A$ 
 ## NHEFS: Does the Effect of Quitting Vary by Sex?
 
 Let $V$ = sex (0: male, 1: female).
-The 95% confidence interval for $\hat\theta_2$ (the product-term coefficient) was $(-2.2, 1.9)$: no strong evidence of additive effect modification by sex.
+The 95% confidence interval for $\hth_2$ (the product-term coefficient) was $(-2.2, 1.9)$: no strong evidence of additive effect modification by sex.
 :::
 
 ---
@@ -700,7 +700,7 @@ The estimated $SW^C$ have mean 1 when the model for $\Pr[C = 0 \mid A]$ is corre
 - Fit a logistic model for $\Pr[C = 0 \mid L, A]$ to all 1629 individuals, with the same covariates as the treatment model;
   obtain $\hat{SW}^C$ for the 1566 uncensored individuals.
 - $\hat{SW}^{A,C} = \hat{SW}^A \times \hat{SW}^C$ ranged from 0.35 to 4.09, with mean 1.00.
-- $\hat\theta_1 = 3.5$ kg (95% CI: 2.5, 4.5).
+- $\hth_1 = 3.5$ kg (95% CI: 2.5, 4.5).
 
 This is almost the same as the estimate with $SW^A$ alone (3.4 kg), so either censoring introduces no selection bias here, or the measured covariates are not enough to remove it.
 :::
@@ -734,7 +734,7 @@ The Hajek mean is the solution $u$ of $\E{\frac{g[A] \indicp{A = a}}{f[A \mid L]
 (The book prints this equation without the indicator $\indicp{A = a}$ [@hernan2020causal, Technical Point 12.2, p. 174]; without it, the solution would average $Y$ over all treatment levels rather than estimate $\E{Y^a}$.)
 Similarly, for $\E{Y^a} = \beta_0 + \beta_1 a$, the weighted least squares estimators with weights $g[A]/f[A \mid L]$ solve
 $$\hE{\frac{g[A]}{f[A \mid L]} \sb{Y - (\beta_0 + \beta_1 A)} \begin{pmatrix} 1 \\ A \end{pmatrix}} = 0,$$
-and $\hat\beta_0$ and $\hat\beta_0 + \hat\beta_1$ are exactly the Hajek estimators of $\E{Y^{a=0}}$ and $\E{Y^{a=1}}$.
+and $\hb_0$ and $\hb_0 + \hb_1$ are exactly the Hajek estimators of $\E{Y^{a=0}}$ and $\E{Y^{a=1}}$.
 In the pseudo-population created by $g[A]/f[A \mid L]$, the mean of $Y$ given $A = a$ still equals $\E{Y^a}$.
 :::
 :::

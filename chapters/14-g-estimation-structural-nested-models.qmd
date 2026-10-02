@@ -139,7 +139,7 @@ $$\E{Y^a \mid V} = \beta_0 + \beta_1 a + \beta_2 a V + \beta_3 V$$
 If only the effect is of interest, leave $\E{Y^{a=0} \mid V}$ unspecified:
 $$\E{Y^a - Y^{a=0} \mid V} = \beta_1 a + \beta_2 a V$$
 
-This **semiparametric marginal structural mean model** is more robust when $V$ is continuous or high-dimensional, because a misspecified model $\beta_0 + \beta_3 V$ can bias $(\hat\beta_1, \hat\beta_2)$ through correlated estimates.
+This **semiparametric marginal structural mean model** is more robust when $V$ is continuous or high-dimensional, because a misspecified model $\beta_0 + \beta_3 V$ can bias $(\hb_1, \hb_2)$ through correlated estimates.
 
 - Conditional on a strict subset $V$ of $L$, it equals a structural nested model for a "blip" of treatment given $V$;
   estimate it by g-estimation with $V$ in place of $L$, weighting each individual by $SW^A(V) = f(A \mid V)/f(A \mid L)$
@@ -169,8 +169,8 @@ Technically, IP weighting for censoring is not necessary with g-estimation when 
 
 ::: {.callout-note title="Technical Point 14.1: Multiplicative Structural Nested Mean Models"}
 For positive outcomes, a multiplicative model is often preferred:
-$$\log\left(\frac{\E{Y^a \mid A = a, L}}{\E{Y^{a=0} \mid A = a, L}}\right) = \beta_1 a + \beta_2 a L$$
-It can be g-estimated with $H(\psi^\dagger) = Y \expt\left[-\psi_1^\dagger a - \psi_2^\dagger a L\right]$.
+$$\log\paren{\frac{\E{Y^a \mid A = a, L}}{\E{Y^{a=0} \mid A = a, L}}} = \beta_1 a + \beta_2 a L$$
+It can be g-estimated with $H(\psi^\dagger) = Y \exp{-\psi_1^\dagger a - \psi_2^\dagger a L}$.
 
 - For binary outcomes, this model was originally usable only for rare outcomes (to avoid predicted probabilities above 1);
   Richardson, Robins, and Wang (2017) removed that restriction, and the approach was extended to time-varying treatments with doubly robust g-estimation (Wang et al. 2022)
@@ -348,7 +348,7 @@ $$\logit \Pr[A = 1 \mid H(\beta^\dagger), L] = \alpha_0 + \alpha_1 H(\beta^\dagg
 ::: {#exm-two-parameter-nhefs}
 ## Two-Parameter Model in NHEFS (Program 14.3)
 
-G-estimates: $\hat\beta_1 = 2.86$ and $\hat\beta_2 = 0.03$.
+G-estimates: $\hb_1 = 2.86$ and $\hb_2 = 0.03$.
 Confidence intervals are most easily obtained by bootstrapping.
 :::
 
@@ -362,9 +362,9 @@ has $p + 1$ parameters.
 The average causal effect in the study population is then estimated by averaging the stratum-specific effect over the $n$ individuals:
 $$
 \begin{aligned}
-\frac{1}{n} \sum_{i=1}^{n} \left(\beta_1 + \sum_{j=1}^{p} \beta_{2j} L_{ij}\right)
-&= \frac{1}{n} \sum_{i=1}^{n} \beta_1 + \frac{1}{n} \sum_{i=1}^{n} \sum_{j=1}^{p} \beta_{2j} L_{ij} \\
-&= \beta_1 + \frac{1}{n} \sum_{i=1}^{n} \sum_{j=1}^{p} \beta_{2j} L_{ij}
+\frac{1}{n} \sumin \paren{\beta_1 + \sum_{j=1}^{p} \beta_{2j} L_{ij}}
+&= \frac{1}{n} \sumin \beta_1 + \frac{1}{n} \sumin \sum_{j=1}^{p} \beta_{2j} L_{ij} \\
+&= \beta_1 + \frac{1}{n} \sumin \sum_{j=1}^{p} \beta_{2j} L_{ij}
 \end{aligned}
 $$
 
@@ -382,7 +382,7 @@ General model: $\E{Y - Y^{a=0} \mid A, L} = A \gamma(L; \beta)$, with $\gamma(L;
 **Estimating equation.**
 Choose $\beta^\dagger$ minimizing the association between $H(\beta^\dagger) = Y - A\gamma(L; \beta^\dagger)$ and $A$ given $L$.
 Basing this on a score test means solving
-$$\sum_{i=1}^{n} I[C_i = 0] \, W_i^C \, H_i(\beta^\dagger) \left(A_i - \E{A \mid L_i}\right) q(L_i) = 0$$
+$$\sumin I[C_i = 0] \, W_i^C \, H_i(\beta^\dagger) \paren{A_i - \E{A \mid L_i}} q(L_i) = 0$$
 where $q(L_i)$ is a user-chosen vector function of the same dimension as $\beta$, and $W_i^C$ and $\E{A \mid L_i} = \Pr[A = 1 \mid L_i]$ are replaced by estimates.
 The choice of $q$ affects efficiency (CI length), not consistency;
 Robins (1994) derived the choice that minimizes CI length.
@@ -392,11 +392,11 @@ If $\gamma(L; \beta^\dagger) = \beta^{\dagger T} d(L)$ for a known $d(L)$, choos
 Then
 $$
 \begin{aligned}
-0 &= \sum_i R_i \left(Y_i - A_i\, d(L_i)^T \beta\right) d(L_i)
+0 &= \sum_i R_i \paren{Y_i - A_i\, d(L_i)^T \beta} d(L_i)
 && \text{(substitute } H_i\text{; } \beta^T d = d^T \beta\text{)} \\
 \sum_i R_i A_i\, d(L_i)\, d(L_i)^T \beta &= \sum_i R_i Y_i\, d(L_i)
 && \text{(move the } \beta \text{ term to the left)} \\
-\hat\beta &= \left(\sum_i R_i A_i\, d(L_i)\, d(L_i)^T\right)^{-1} \sum_i R_i Y_i\, d(L_i)
+\hb &= \paren{\sum_i R_i A_i\, d(L_i)\, d(L_i)^T}^{-1} \sum_i R_i Y_i\, d(L_i)
 && \text{(solve for } \beta\text{)}
 \end{aligned}
 $$

@@ -228,7 +228,7 @@ or by **two-stage least squares**:
 1. Fit the first-stage treatment model $\E{A \mid Z} = \alpha_0 + \alpha_1 Z$ and compute predicted values $\hE{A \mid Z}$.
 2. Fit the second-stage outcome model $\E{Y \mid Z} = \beta_0 + \beta_1 \hE{A \mid Z}$.
 
-$\hat\beta_1$ always equals the standard IV estimate: again 2.4 kg [@hernan2020causal, p. 213].
+$\hb_1$ always equals the standard IV estimate: again 2.4 kg [@hernan2020causal, p. 213].
 
 ---
 
@@ -334,7 +334,7 @@ $$
 Averaging over $U$ (with $f(u \mid z) = f(u)$):
 
 $$
-\E{Y \mid Z = z} = \textstyle\sum_u \left\{ e(u) \Pr(A = 1 \mid Z = z, U = u) + \E{Y^{a=0} \mid U = u} \right\} f(u),
+\E{Y \mid Z = z} = \textstyle\sum_u \cb{e(u) \Pr(A = 1 \mid Z = z, U = u) + \E{Y^{a=0} \mid U = u}} f(u),
 $$
 
 so the second term cancels in the difference and
@@ -349,7 +349,7 @@ $$
 \begin{aligned}
 \E{e(U)\, t(U)} &= \Cov{e(U), t(U)} + \E{e(U)}\, \E{t(U)} && \text{(definition of covariance)} \\
 &= \E{e(U)}\, \E{t(U)} && (\Cov{e(U), t(U)} = 0) \\
-&= \E{Y^{a=1} - Y^{a=0}} \left( \E{A \mid Z = 1} - \E{A \mid Z = 0} \right). && \text{(iterated expectations; Step 1)}
+&= \E{Y^{a=1} - Y^{a=0}} \paren{\E{A \mid Z = 1} - \E{A \mid Z = 0}}. && \text{(iterated expectations; Step 1)}
 \end{aligned}
 $$
 
@@ -386,7 +386,7 @@ Setting $\beta_1 = 0$ and equating the $Z = 1$ and $Z = 0$ values:
 $$
 \begin{aligned}
 \E{Y \mid Z = 1} - \beta_0 \E{A \mid Z = 1} &= \E{Y \mid Z = 0} - \beta_0 \E{A \mid Z = 0} \\
-\E{Y \mid Z = 1} - \E{Y \mid Z = 0} &= \beta_0 \left( \E{A \mid Z = 1} - \E{A \mid Z = 0} \right) \\
+\E{Y \mid Z = 1} - \E{Y \mid Z = 0} &= \beta_0 \paren{\E{A \mid Z = 1} - \E{A \mid Z = 0}} \\
 \beta_0 &= \frac{\E{Y \mid Z = 1} - \E{Y \mid Z = 0}}{\E{A \mid Z = 1} - \E{A \mid Z = 0}} .
 \end{aligned}
 $$
@@ -410,16 +410,16 @@ i.e., that the corresponding $Z$ parameter is also 0 in the model for $A = 0$ [@
 Saturated multiplicative (log-linear) structural mean model:
 
 $$
-\frac{\E{Y^{a=1} \mid A = 1, Z}}{\E{Y^{a=0} \mid A = 1, Z}} = \expt(\beta_0 + \beta_1 Z),
+\frac{\E{Y^{a=1} \mid A = 1, Z}}{\E{Y^{a=0} \mid A = 1, Z}} = \exp{\beta_0 + \beta_1 Z},
 \quad\text{equivalently}\quad
-\E{Y \mid A, Z} = \E{Y^{a=0} \mid A, Z} \expt\left[ A (\beta_0 + \beta_1 Z) \right].
+\E{Y \mid A, Z} = \E{Y^{a=0} \mid A, Z} \exp{A (\beta_0 + \beta_1 Z)}.
 $$
 
 Assuming $\beta_1 = 0$ and no multiplicative effect modification by $Z$ in the untreated either,
-the causal risk ratio is $\expt(\beta_0)$ and
+the causal risk ratio is $\exp{\beta_0}$ and
 
 $$
-\E{Y^{a=1}} - \E{Y^{a=0}} = \E{Y \mid A = 0}(1 - \E{A})\left[\expt(\beta_0) - 1\right] + \E{Y \mid A = 1}\, \E{A} \left[1 - \expt(-\beta_0)\right].
+\E{Y^{a=1}} - \E{Y^{a=0}} = \E{Y \mid A = 0}(1 - \E{A})\sb{\exp{\beta_0} - 1} + \E{Y \mid A = 1}\, \E{A} \sb{1 - \exp{-\beta_0}}.
 $$
 
 This is identified but is **not** the usual IV estimand [@hernan2020causal, p. 216].
@@ -452,7 +452,7 @@ $$
 with $\gamma$ a known function, $\beta$ an unknown parameter, and $\gamma(Z, A = 0, V; \beta) = 0$.
 It models the effect of the observed treatment level versus level 0 among those with that $Z$, $V$, and observed $A$.
 Its parameters are identified by g-estimation under $\E{Y^{a=0} \mid Z = 1, V} = \E{Y^{a=0} \mid Z = 0, V}$.
-The multiplicative analog is $\E{Y \mid Z, A, V} = \E{Y^{a=0} \mid Z, A, V} \expt[\gamma(Z, A, V; \beta)]$ [@hernan2020causal, p. 218].
+The multiplicative analog is $\E{Y \mid Z, A, V} = \E{Y^{a=0} \mid Z, A, V} \exp{\gamma(Z, A, V; \beta)}$ [@hernan2020causal, p. 218].
 :::
 
 ::: {.notes}
@@ -541,7 +541,7 @@ with no defiers,
 $$
 \begin{aligned}
 \Pr[C] &= 1 - \Pr[AT] - \Pr[NT] \\
-&= 1 - \Pr[A = 1 \mid Z = 0] - \left(1 - \Pr[A = 1 \mid Z = 1]\right) \\
+&= 1 - \Pr[A = 1 \mid Z = 0] - \paren{1 - \Pr[A = 1 \mid Z = 1]} \\
 &= \Pr[A = 1 \mid Z = 1] - \Pr[A = 1 \mid Z = 0].
 \end{aligned}
 $$

@@ -79,7 +79,7 @@ A different random sample of 20 individuals would give a different estimate.
 
 An estimator is **consistent** for an estimand if its estimates get arbitrarily close to the estimand as the sample size $n$ grows.
 For example, the sample proportion $\widehat{\Pr}[Y = 1 \mid A = a]$ is consistent for $\Pr[Y = 1 \mid A = a]$:
-the larger $n$, the smaller we expect $\left|\Pr[Y = 1 \mid A = a] - \widehat{\Pr}[Y = 1 \mid A = a]\right|$ to be.
+the larger $n$, the smaller we expect $\abs{\Pr[Y = 1 \mid A = a] - \widehat{\Pr}[Y = 1 \mid A = a]}$ to be.
 
 Even a consistent estimator can produce a point estimate far from the super-population value, especially in small samples.
 So we should have more confidence in estimates from larger studies, and we quantify that confidence with **confidence intervals**.
@@ -88,13 +88,13 @@ So we should have more confidence in estimates from larger studies, and we quant
 
 ### Wald Confidence Intervals
 
-A 95% **Wald confidence interval** for a parameter $\theta$ based on an estimator $\hat\theta$ is
+A 95% **Wald confidence interval** for a parameter $\theta$ based on an estimator $\hth$ is
 
 $$
-\hat\theta \pm 1.96 \times \widehat{\text{se}}(\hat\theta),
+\hth \pm 1.96 \times \widehat{\text{se}}(\hth),
 $$
 
-where $\widehat{\text{se}}(\hat\theta)$ estimates the (exact or large-sample) standard error of $\hat\theta$,
+where $\widehat{\text{se}}(\hth)$ estimates the (exact or large-sample) standard error of $\hth$,
 and 1.96 is the upper 97.5% quantile of the standard normal distribution.
 
 ::: {#exm-wald-binomial}
@@ -198,10 +198,10 @@ Confidence intervals quantify only random error, so they can overstate our confi
 ::: {.callout-note title="Technical Point 10.1: Bias and Consistency in Statistical Inference"}
 Suppose we observe $n$ i.i.d. copies of a random vector whose distribution $P$ lies in a model $\mathcal{M}$.
 
-- $\hat\theta_n$ is **consistent** for $\theta = \theta(P)$ in $\mathcal{M}$ if, for every $P \in \mathcal{M}$ and every $\varepsilon > 0$,
-  $$\Pr_P\left[\left|\hat\theta_n - \theta(P)\right| > \varepsilon\right] \to 0 \text{ as } n \to \infty.$$
-- $\hat\theta_n$ is **exactly unbiased** in $\mathcal{M}$ if $E_P[\hat\theta_n] = \theta(P)$ for every $P \in \mathcal{M}$;
-  the exact bias under $P$ is $E_P[\hat\theta_n] - \theta(P)$.
+- $\hth_n$ is **consistent** for $\theta = \theta(P)$ in $\mathcal{M}$ if, for every $P \in \mathcal{M}$ and every $\varepsilon > 0$,
+  $$\Pr_P\sb{\abs{\hth_n - \theta(P)} > \varepsilon} \to 0 \text{ as } n \to \infty.$$
+- $\hth_n$ is **exactly unbiased** in $\mathcal{M}$ if $E_P[\hth_n] = \theta(P)$ for every $P \in \mathcal{M}$;
+  the exact bias under $P$ is $E_P[\hth_n] - \theta(P)$.
   For many parameters, such as the risk ratio $\Pr[Y=1 \mid A=1]/\Pr[Y=1 \mid A=0]$, no exactly unbiased estimator exists.
 - A **systematically biased** estimator is neither consistent nor exactly unbiased.
 
@@ -210,7 +210,7 @@ and show that this holds only for estimators that are **uniformly asymptotically
 there exist sequences $\sigma_n(P)$ such that
 
 $$
-\sup_{P \in \mathcal{M}} \left| \Pr_P\left[ n^{1/2} \left(\hat\theta_n - \theta(P)\right) / \sigma_n(P) < t \right] - \Phi(t) \right| \to 0 \text{ as } n \to \infty
+\sup_{P \in \mathcal{M}} \abs{\Pr_P\sb{n^{1/2} \paren{\hth_n - \theta(P)} / \sigma_n(P) < t} - \Phi(t)} \to 0 \text{ as } n \to \infty
 $$
 
 for every $t \in \mathbb{R}$, where $\Phi$ is the standard normal cumulative distribution function [@robins1997toward].
@@ -353,7 +353,7 @@ $$
 \begin{aligned}
 \sum_i p_i(1-p_i)
 &= \sum_i p_i - \sum_i p_i^2 \\
-&= n\bar p - \left( n \bar p^2 + \sum_i (p_i - \bar p)^2 \right) \\
+&= n\bar p - \paren{n \bar p^2 + \sum_i (p_i - \bar p)^2} \\
 &= n \bar p (1 - \bar p) - \sum_i (p_i - \bar p)^2,
 \end{aligned}
 $$
@@ -528,16 +528,16 @@ An **exact ancillary** is an S-ancillary statistic with known marginal distribut
 If the stratum-specific risk differences $\text{sRD}_l$ vary over $L$, the population causal risk difference is the standardized risk difference
 
 $$
-\text{RD}_{std} = \sum_l \left[ \Pr(Y = 1 \mid L = l, A = 1; \upsilon) - \Pr(Y = 1 \mid L = l, A = 0; \upsilon) \right] f(l; \rho),
+\text{RD}_{std} = \sum_l \sb{\Pr(Y = 1 \mid L = l, A = 1; \upsilon) - \Pr(Y = 1 \mid L = l, A = 0; \upsilon)} f(l; \rho),
 $$
 
 with $\upsilon = \{\text{sRD}_l, p_{0,l}; l = 0, 1\}$.
 In an unconditionally randomized experiment $A \ind L$, so $\text{RD}_{std}$ equals the associational risk difference.
 Because $\text{RD}_{std}$ depends on $\rho$, $\{A_i, L_i\}$ is no longer exactly ancillary, and no exact ancillary exists.
 
-Let $\widetilde S = \widehat{\text{OR}}_{AL} - \text{OR}_{AL}$, the sample minus the super-population $A$-$L$ odds ratio,
+Let $\widetilde S = \widehat{\OR}_{AL} - \OR_{AL}$, the sample minus the super-population $A$-$L$ odds ratio,
 and $\widehat S = \widetilde S / \widehat{\text{se}}(\widetilde S)$, which is approximately standard normal in large samples.
-When $\text{OR}_{AL}$ is known (e.g., $\text{OR}_{AL} = 1$ in a randomized experiment), $\widehat S$ is an **approximate (large-sample) ancillary**:
+When $\OR_{AL}$ is known (e.g., $\OR_{AL} = 1$ in a randomized experiment), $\widehat S$ is an **approximate (large-sample) ancillary**:
 it can be computed from the data, has approximately known distribution, is governed by the $f(A \mid L; \alpha)$ factor of the likelihood only,
 and conditional on it the adjusted estimate of $\text{RD}_{std}$ is unbiased while the unadjusted one is biased.
 
@@ -554,7 +554,7 @@ Unconditionally, both are asymptotically normal and unbiased for $\text{RD}_{std
 @robins1987foundations show that
 
 - $\widehat{\text{RD}}_{MLE}$ has the same asymptotic distribution conditionally on $\widehat S$ as unconditionally;
-- $\text{aVar}(\widehat{\text{RD}}_{MLE}) = \text{aVar}(\widehat{\text{RD}}_{UN}) - \left[\text{aCov}(\widehat S, \widehat{\text{RD}}_{UN})\right]^2$;
+- $\text{aVar}(\widehat{\text{RD}}_{MLE}) = \text{aVar}(\widehat{\text{RD}}_{UN}) - \sb{\text{aCov}(\widehat S, \widehat{\text{RD}}_{UN})}^2$;
 - the conditional asymptotic bias of $\widehat{\text{RD}}_{UN}$ given $\widehat S$ is $\text{aCov}(\widehat S, \widehat{\text{RD}}_{UN}) \, \widehat S$.
 
 So $\widehat{\text{RD}}_{UN}$ is unconditionally inefficient **if and only if** it is conditionally biased (both iff $\text{aCov} \neq 0$).

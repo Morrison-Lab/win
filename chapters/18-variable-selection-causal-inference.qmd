@@ -265,7 +265,7 @@ IP weighting estimates $\pi(X)$ [@hernan2020causal, pp. 246-247].
 - With high-dimensional $X$, low-dimensional parametric models for $b$ and $\pi$ are certain to be misspecified, so $\hat b$ and $\hat\pi$ are inconsistent.
 - **Richly parameterized** generalized linear models use a linear predictor $\theta^\top s(x) = \sum_j \theta_j s_j(x)$,
   where $s(X)$ is a high-dimensional vector of transformations of $X$ (e.g., cubic splines and their cross-products),
-  e.g., $\hat b(x) = \expitf{\hat\theta^\top s(x)}$ and $\hat\pi(x) = \expitf{\hat\theta_\pi^\top s(x)}$.
+  e.g., $\hat b(x) = \expitf{\hth^\top s(x)}$ and $\hat\pi(x) = \expitf{\hth_\pi^\top s(x)}$.
 - Even when consistent, their finite-sample errors are much larger than those of a correct low-dimensional model,
   and if the dimension of $s(X)$ exceeds $n$ the fit fails to converge [@hernan2020causal, p. 247].
 
@@ -334,7 +334,7 @@ Sample splitting and cross-fitting are not new; combining them with machine lear
 The full-sample augmented IP weighted (AIPW) estimator of $\E{Y^{a=1}}$ (Technical Point 13.2) is
 
 $$
-\frac{1}{n} \sum_{i=1}^{n} \left\{ \hat b(X_i) + \frac{A_i}{\hat\pi(X_i)} \left[ Y_i - \hat b(X_i) \right] \right\},
+\frac{1}{n} \sumin \cb{\hat b(X_i) + \frac{A_i}{\hat\pi(X_i)} \sb{Y_i - \hat b(X_i)}},
 $$
 
 with $\hat b$ and $\hat\pi$ fit by machine learning on **all** $n$ individuals.
@@ -363,7 +363,7 @@ For $\psi = \E{Y^{a=1}}$ [@hernan2020causal, p. 249]:
 2. From the training sample, estimate $b(x) = \E{Y \mid A = 1, X = x}$ and $\pi(x) = \Pr[A = 1 \mid X = x]$ by machine learning.
 3. In the estimation sample, compute
    $$
-   \hat\psi = \frac{1}{q} \sum_{i=1}^{q} \left\{ \hat b(X_i) + \frac{A_i}{\hat\pi(X_i)} \left[ Y_i - \hat b(X_i) \right] \right\}.
+   \hat\psi = \frac{1}{q} \sum_{i=1}^{q} \cb{\hat b(X_i) + \frac{A_i}{\hat\pi(X_i)} \sb{Y_i - \hat b(X_i)}}.
    $$
 4. Compute $\hat\psi_{\text{cross-fit}} = (\hat\psi + \tilde\psi)/2$, where $\tilde\psi$ is $\hat\psi$ with the training and estimation samples swapped.
 
@@ -397,7 +397,7 @@ Assume conditional exchangeability given $X$ and positivity, so $\psi = \E{b(X)}
 Then
 
 $$
-\E{\hat\psi - \psi \mid Tr} = \E{\pi(X) \left( \frac{1}{\pi(X)} - \frac{1}{\hat\pi(X)} \right) \left( \hat b(X) - b(X) \right) \mid Tr} .
+\E{\hat\psi - \psi \mid Tr} = \E{\pi(X) \paren{\frac{1}{\pi(X)} - \frac{1}{\hat\pi(X)}} \paren{\hat b(X) - b(X)} \mid Tr} .
 $$
 :::
 
@@ -407,9 +407,9 @@ Conditioning on $X$ first:
 
 $$
 \begin{aligned}
-\E{\frac{A}{\hat\pi(X)} \left[ Y - \hat b(X) \right] \mid X, Tr}
+\E{\frac{A}{\hat\pi(X)} \sb{Y - \hat b(X)} \mid X, Tr}
 &= \frac{\Pr[A = 1 \mid X]}{\hat\pi(X)} \E{Y - \hat b(X) \mid A = 1, X, Tr} && \text{(only } A = 1 \text{ contributes)} \\
-&= \frac{\pi(X)}{\hat\pi(X)} \left( b(X) - \hat b(X) \right). && (\text{estimation sample independent of } Tr)
+&= \frac{\pi(X)}{\hat\pi(X)} \paren{b(X) - \hat b(X)}. && (\text{estimation sample independent of } Tr)
 \end{aligned}
 $$
 
@@ -418,9 +418,9 @@ So
 $$
 \begin{aligned}
 \E{\hat\psi - \psi \mid Tr}
-&= \E{\hat b(X) + \frac{\pi(X)}{\hat\pi(X)} \left( b(X) - \hat b(X) \right) - b(X) \mid Tr} && (\psi = \E{b(X)}) \\
-&= \E{\left( \hat b(X) - b(X) \right) \left( 1 - \frac{\pi(X)}{\hat\pi(X)} \right) \mid Tr} && \text{(collect terms)} \\
-&= \E{\pi(X) \left( \frac{1}{\pi(X)} - \frac{1}{\hat\pi(X)} \right) \left( \hat b(X) - b(X) \right) \mid Tr} . && \text{(factor out } \pi(X))
+&= \E{\hat b(X) + \frac{\pi(X)}{\hat\pi(X)} \paren{b(X) - \hat b(X)} - b(X) \mid Tr} && (\psi = \E{b(X)}) \\
+&= \E{\paren{\hat b(X) - b(X)} \paren{1 - \frac{\pi(X)}{\hat\pi(X)}} \mid Tr} && \text{(collect terms)} \\
+&= \E{\pi(X) \paren{\frac{1}{\pi(X)} - \frac{1}{\hat\pi(X)}} \paren{\hat b(X) - b(X)} \mid Tr} . && \text{(factor out } \pi(X))
 \end{aligned}
 $$
 :::
@@ -428,14 +428,14 @@ $$
 ::: {.notes}
 The bias is a **product** of the two errors, the second-order property used in this section.
 (The book writes the same product with both factors negated,
-$\E{\pi(X) \left( \frac{1}{\hat\pi(X)} - \frac{1}{\pi(X)} \right) \left( b(X) - \hat b(X) \right) \mid Tr}$.)
+$\E{\pi(X) \paren{\frac{1}{\hat\pi(X)} - \frac{1}{\pi(X)}} \paren{b(X) - \hat b(X)} \mid Tr}$.)
 
 **Rates**: if $1/\hat\pi(x) - 1/\pi(x)$ converges at rate $n^{-\alpha}$ and $\hat b(x) - b(x)$ at rate $n^{-\epsilon}$,
 the conditional bias is $o(n^{-1/2})$ when $\alpha + \epsilon > 1/2$.
 So $\hat b$ may converge more slowly than $n^{-1/4}$ if $\hat\pi$ converges fast enough, and vice versa [@hernan2020causal, p. 250].
 
 The efficient standard error of $\hat\psi_{\text{cross-fit}}$ (scaled by $n^{1/2}$) is
-$\left\{ \Var{b(X) + \frac{A}{\pi(X)} \left[ Y - b(X) \right]} \right\}^{1/2}$.
+$\cb{\Var{b(X) + \frac{A}{\pi(X)} \sb{Y - b(X)}}}^{1/2}$.
 :::
 
 ## 18.5 Variable Selection Is a Difficult Problem (pp. 250-251)

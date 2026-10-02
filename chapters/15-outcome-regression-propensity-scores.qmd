@@ -109,17 +109,17 @@ The same approach works for discrete outcomes, e.g., a logistic model for $\Pr[Y
 ## Smoking Cessation and Weight Gain (NHEFS)
 
 Using the outcome model of Section 13.2, which has a single product term (between $A$ and smoking intensity),
-the book reports $\hat\beta_1 = 2.6$ and $\hat\beta_2 = 0.05$ [@hernan2020causal, p. 200].
+the book reports $\hb_1 = 2.6$ and $\hb_2 = 0.05$ [@hernan2020causal, p. 200].
 
 - Estimated effect $\hE{Y \mid A = 1, C = 0, L} - \hE{Y \mid A = 0, C = 0, L}$:
   2.8 kg (95% CI: 1.5, 4.1) for those smoking 5 cigarettes/day;
   4.4 kg (95% CI: 2.8, 6.1) for those smoking 40 cigarettes/day.
 - Model with **no** product terms (assumes no effect modification by any variable in $L$):
-  $\hat\beta_1 = 3.5$ kg (95% CI: 2.6, 4.3), which then estimates both the conditional and the marginal effect.
+  $\hb_1 = 3.5$ kg (95% CI: 2.6, 4.3), which then estimates both the conditional and the marginal effect.
 :::
 
 ::: {.notes}
-By @prp-conditional-effect, each stratum-specific estimate is $\hat\beta_1 + \hat\beta_2 \times (\text{cigarettes/day})$.
+By @prp-conditional-effect, each stratum-specific estimate is $\hb_1 + \hb_2 \times (\text{cigarettes/day})$.
 The book reports the coefficients rounded to one or two decimals,
 so plugging the rounded values into that formula reproduces the reported effect estimates only approximately
 (e.g., $2.6 + 0.05 \times 40 = 4.6$ versus the reported 4.4).
@@ -132,7 +132,7 @@ so plugging the rounded values into that formula reproduces the reported effect 
   The nuisance parameters are $\beta_0$ and $\beta_3$.
 - **G-estimation** of the structural nested model $\E{Y^{a,c=0} - Y^{a=0,c=0} \mid L} = \beta_1 a + \beta_2 a L$:
   consistent (in general) only if the treatment model for $\Pr[A = 1 \mid L]$ is correct.
-  The nuisance parameters are those of the treatment model, e.g., $\alpha_0, \alpha_1$ in $\text{logit} \Pr[A = 1 \mid L] = \alpha_0 + \alpha_1 L$.
+  The nuisance parameters are those of the treatment model, e.g., $\alpha_0, \alpha_1$ in $\logit \Pr[A = 1 \mid L] = \alpha_0 + \alpha_1 L$.
 
 ::: {.notes}
 Example: if $L$ should enter as $\beta_3 L + \beta_4 L^2$ but is modeled as $\beta_3 L$ only, outcome regression is biased;
@@ -360,7 +360,7 @@ For the population average causal effect $\E{Y^{a=1,c=0}} - \E{Y^{a=0,c=0}}$, st
 the Chapter 13 procedure with $\pi(L)$ in place of $L$.
 
 $$
-\hE{Y^{a,c=0}} = \frac{1}{n} \sum_{i=1}^{n} \hE{Y \mid A = a, C = 0, \pi(L) = \hat\pi(L_i)}
+\hE{Y^{a,c=0}} = \frac{1}{n} \sumin \hE{Y \mid A = a, C = 0, \pi(L) = \hat\pi(L_i)}
 $$
 
 ::: {#exm-ps-standardization}
