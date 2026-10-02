@@ -41,8 +41,12 @@ Conditioning on a descendant of such a collider has the same effect.
 In the pedestrian example, consent is a common effect of the investigator's looking up (the treatment) and of shyness (a cause of the outcome).
 :::
 
-Unlike confounding, selection bias does not require common causes of treatment and outcome, and it can occur in randomized experiments as well as in observational studies.
-Like confounding, it is a form of lack of exchangeability between the treated and the untreated.
+Selection bias needs no shared cause of treatment and outcome,
+which sets it apart from confounding,
+and randomization does not protect against it,
+so observational studies and randomized experiments are both exposed.
+What it does share with confounding is the underlying failure:
+the treated and the untreated are not exchangeable.
 The chapter defines selection bias and reviews methods to adjust for it.
 
 ::: {.notes}
@@ -150,8 +154,9 @@ Figure 8.3 is a transformation of Figure 8.1: the association between $C$ and $Y
 
 Intuition for the direction of the bias: a treated individual with side effects is at higher risk of dropping out.
 If that individual nevertheless did not drop out ($C = 0$), a second, independent cause of dropout (such as $U = 1$) is less likely to be present.
-So among the uncensored, $A$ and $U$ are inversely associated.
-Because $U$ is positively associated with death $Y$, restricting to the uncensored induces an inverse association between $A$ and $Y$.
+So among the uncensored, $A$ and $U$ are generically (under faithfulness) inversely associated.
+Because $U$ is positively associated with death $Y$,
+restricting to the uncensored generically (under faithfulness) induces an inverse association between $A$ and $Y$.
 :::
 :::
 
@@ -323,9 +328,14 @@ For this reason many epidemiologists call any variable that needs adjustment a "
 Advantages of the structural classification anyway:
 
 1. The structure guides the choice of method.
-   With time-varying treatments it reveals when stratification-based adjustment for confounding would introduce selection bias, so that g-methods are needed (Part III).
-2. It can inform design even when it does not change the analysis: investigators restricting to firefighters should collect joint risk factors for $Y$ and $C$ (as in the first example of [Section 7.1](07-confounding.qmd#the-structure-of-confounding-pp.-91-93)).
-3. Selection on pre-treatment variables (like being a firefighter) explains why a variable such as $L$ can act as a "confounder" in some studies but not in others, e.g., studies not restricted to firefighters.
+   With time-varying treatments it reveals when stratification-based adjustment for confounding would introduce selection bias,
+   so that g-methods are needed (Part III).
+2. It can inform design even when it does not change the analysis.
+   Investigators restricting to firefighters should collect joint risk factors for $Y$ and $C$,
+   as in the first example of [Section 7.1](07-confounding.qmd#the-structure-of-confounding-pp.-91-93).
+3. Selection on pre-treatment variables (like being a firefighter) explains why a variable such as $L$
+   can act as a "confounder" in some studies but not in others,
+   e.g., studies not restricted to firefighters.
 4. Causal diagrams improve communication and reduce misunderstandings.
 
 :::
@@ -386,14 +396,21 @@ the second is less than 1 because it reflects total mortality through time 2.
 
 In discrete time the hazard at time 1 is just the risk at time 1, but the hazard at time 2 conditions on surviving time 1:
 $$\frac{\Pr[Y_2 = 1 \mid A = 1, Y_1 = 0]}{\Pr[Y_2 = 1 \mid A = 0, Y_1 = 0]}.$$
-Treated survivors of time 1 are less likely than untreated survivors to carry the protective $U$ (treatment can explain their survival), so they are more likely to die at time 2.
+Surviving time 1 carries different information in the two arms.
+For an untreated survivor, the protective $U$ is the main available explanation,
+while for a treated survivor the transplant offers a competing one.
+So among time-1 survivors, $U$ is generically (under faithfulness) rarer in the treated arm,
+which leaves treated survivors at higher risk of death at time 2.
 In this example, the hazard ratio is below 1 at time 1 and, generically (under faithfulness), above 1 at time 2,
 so the hazards cross.
 The time-2 hazard ratio is biased for the (null) direct effect because conditioning on $Y_1$, a common effect of $A$ and $U$, opens $A \rightarrow Y_1 \leftarrow U \rightarrow Y_2$.
 The haplotype $U$ is a frailty (@def-frailty).
 
 Within strata of $U$ the hazard ratio at time 2 is 1, because conditioning on the non-collider $U$ blocks that path.
-That the unconditional hazard ratio differs from these stratum-specific ratios even though $U$ is independent of $A$ shows the noncollapsibility (@def-noncollapsibility) of the hazard ratio.
+Here $U$ is independent of $A$,
+yet the time-2 hazard ratio ignoring $U$ differs from the ratio within each level of $U$.
+A gap of that kind, with no confounding by $U$ to explain it,
+is the noncollapsibility (@def-noncollapsibility) of the hazard ratio.
 Since $U$ is unobserved, the data cannot tell whether $A$ has a direct effect on $Y_2$ (Figure 8.8 versus Figure 8.9).
 This applies to observational studies and randomized experiments alike.
 :::
@@ -545,8 +562,6 @@ The remaining branch follows from the totals in Section 8.4 (@exm-wasabi-censori
 
 :::
 
-The weights $W^C = 1/\Pr[C = 0 \mid L, A]$ (@def-censoring-ip-weights) for each branch are therefore those in @tbl-wasabi-censoring-weights.
-
 ::: {#tbl-wasabi-censoring-weights}
 
 | $L$ | $A$ | uncensored / total | $\Pr[C = 0 \mid L, A]$ | $W^C$ | weighted count |
@@ -558,6 +573,9 @@ The weights $W^C = 1/\Pr[C = 0 \mid L, A]$ (@def-censoring-ip-weights) for each 
 
 Probability of remaining uncensored, IP weight for censoring $W^C$, and weighted count in each branch of the wasabi trial (Figure 8.10).
 :::
+
+@tbl-wasabi-censoring-weights applies the weights $W^C = 1/\Pr[C = 0 \mid L, A]$ (@def-censoring-ip-weights)
+to each branch of the completed tree.
 
 The weighted counts reproduce the 60 original participants: $10 + 10 + 20 + 20 = 60$.
 
@@ -642,16 +660,22 @@ the risk ratio had nobody been censored.
 
 Exchangeability for censoring implies that the average counterfactual outcome $Y^{a,c=0}$ of the uncensored equals that of the censored with the same $A$ and $L$
 (mean exchangeability, which is all the proof uses).
-It holds if $\Pr[C = 0 \mid L, A]$ conditions on treatment
-and on all factors that independently predict both selection and the outcome,
-i.e., if $A$ and $L$ block all backdoor paths between $C$ and $Y$.
+The condition is met when the model for $\Pr[C = 0 \mid L, A]$ includes treatment
+together with every factor that is an independent predictor of selection and of the outcome alike.
+In the causal diagram, the equivalent requirement is that
+$A$ and $L$ jointly block every backdoor path from $C$ to $Y$.
 
 ::: {.callout-warning title="Exchangeability for Censoring Is Untestable"}
 We can never be sure that $A$ and $L$ block every backdoor path between censoring and the outcome, so this assumption is untestable.
 :::
 
-Positivity is required for being uncensored, not for being censored: we do not want a pseudo-population in which everybody is censored.
-In Figure 8.10, $\Pr[C = 1 \mid L = 0, A = 0] = 0$, and that zero does not prevent constructing a pseudo-population in which nobody is censored.
+The positivity needed here concerns staying uncensored:
+$\Pr[C = 0 \mid L, A]$ must be positive in every stratum.
+A stratum where censoring never happens causes no trouble,
+because the target is a pseudo-population free of censoring,
+never one in which censoring is universal.
+For instance, Figure 8.10 has $\Pr[C = 1 \mid L = 0, A = 0] = 0$,
+and that branch still receives a well-defined weight of 1.
 
 ::: {#def-competing-event}
 ## Competing event
@@ -659,8 +683,12 @@ In Figure 8.10, $\Pr[C = 1 \mid L = 0, A = 0] = 0$, and that zero does not preve
 A **competing event** is an event that prevents the outcome of interest from happening, typically death.
 :::
 
-Consistency, including sufficiently well-defined interventions, makes the pseudo-population effect the effect had nobody been censored.
-That is reasonably well defined when censoring is loss to follow-up or nonresponse, but not when censoring is a competing event (@def-competing-event).
+Consistency, which here also demands that the interventions be sufficiently well defined,
+lets us read the pseudo-population effect as the effect had nobody been censored.
+Abolishing censoring is a fairly clear intervention
+when censoring means loss to follow-up or nonresponse.
+It is much less clear when the censoring is a competing event (@def-competing-event),
+since it is hard to say what intervention would remove such an event.
 
 ::: {.notes}
 
