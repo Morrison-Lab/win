@@ -28,12 +28,14 @@ Such associations are the subject of this chapter.
 ::: {#def-selection-bias}
 ## Selection Bias
 
-**Selection bias** refers to all biases that arise from conditioning on a common effect of two variables, one of which is either the treatment or a cause of treatment, and the other is either the outcome or a cause of the outcome [@hernan2020causal, p. 111].
+**Selection bias** is any bias produced by conditioning on a variable that is affected by two others,
+where the first of those two is the treatment or one of its causes,
+and the second is the outcome or one of its causes [@hernan2020causal, p. 111].
 :::
 
 ::: {.notes}
 A margin note in the book gives the more general version: one variable is either the treatment or associated with the treatment, and the other is either the outcome or associated with the outcome (Hernán, Hernández-Díaz, and Robins 2004).
-Conditioning on a descendant of such a collider (Figure 8.2) has the same effect.
+Conditioning on a descendant of such a collider has the same effect.
 In the pedestrian example, consent is a common effect of the investigator's looking up (the treatment) and of shyness (a cause of the outcome).
 :::
 
@@ -57,7 +59,7 @@ This chapter is based on @hernan2020causal [Chapter 8, pp. 109-123].
 **Selection bias under the null** is selection bias (@def-selection-bias) that would arise even if treatment had no effect on the outcome ([Section 6.5](06-graphical-representation.qmd#bias-under-the-null)).
 :::
 
-The chapter focuses on selection bias under the null.
+The chapter focuses on selection bias under the null (@def-selection-bias-under-null).
 
 Causal diagrams make the structure of selection bias explicit.
 
@@ -83,7 +85,7 @@ The diagram shows two sources of association between treatment and outcome:
 2. The path $A \rightarrow C \leftarrow Y$, which is opened by conditioning on the common effect $C$.
 
 The association induced through the second path is **selection bias due to conditioning on $C$** (@def-selection-bias).
-Because of it, the associational risk ratio $\Pr[Y = 1 \mid A = 1, C = 0] / \Pr[Y = 1 \mid A = 0, C = 0]$ generically (that is, under faithfulness) does not equal the causal risk ratio $\Pr[Y^{a=1} = 1] / \Pr[Y^{a=0} = 1]$.
+Because of it, the associational risk ratio $\Pr[Y = 1 \mid A = 1, C = 0] / \Pr[Y = 1 \mid A = 0, C = 0]$ generically (that is, under [faithfulness](06-graphical-representation.qmd#from-d-separation-to-independence)) does not equal the causal risk ratio $\Pr[Y^{a=1} = 1] / \Pr[Y^{a=0} = 1]$.
 Without conditioning on the collider $C$, the only open path would be $A \rightarrow Y$, and the associational risk ratio $\Pr[Y = 1 \mid A = 1] / \Pr[Y = 1 \mid A = 0]$ would equal the causal risk ratio.
 :::
 
@@ -102,7 +104,7 @@ Figure 8.2 adds a node $S$, parental grief (1: yes, 0: no), which is affected by
 If only nongrieving parents ($S = 0$) agreed to participate, the analysis conditions on $S = 0$.
 As shown in Chapter 6, conditioning on a variable affected by the collider $C$ also opens the path $A \rightarrow C \leftarrow Y$.
 
-In both Figures 8.1 and 8.2 the bias comes from conditioning on a common effect of treatment and outcome ($C$ or $S$), and it is present whether or not there is an arrow $A \rightarrow Y$: it is selection bias under the null (@def-selection-bias-under-null).
+In both Figures 8.1 and 8.2 the bias comes from conditioning on a common effect of treatment and outcome ($C$ or $S$), and, generically (that is, under faithfulness), it is present whether or not there is an arrow $A \rightarrow Y$: it is selection bias under the null (@def-selection-bias-under-null).
 :::
 
 ::: {.notes}
@@ -336,7 +338,7 @@ Drawing the causal diagram removes the confusion that comes from using one name 
 ::: {.callout-note title="Selection Bias Is Not All or Nothing"}
 The structural analysis of Sections 8.1-8.3 ignores the magnitude and direction of the bias.
 A noncausal path opened by conditioning on a collider may be weak and induce little bias;
-selection bias is not an "all or nothing" issue (Fine Point 8.2).
+selection bias is not an "all or nothing" issue.
 :::
 :::
 
@@ -548,7 +550,7 @@ counting only the uncensored ($C = 0$).
 Fix a treatment level $a$ and suppose that:
 
 1. **Exchangeability for censoring**: $Y^{a,c=0} \ind C \mid A = a, L$.
-2. **Positivity**: $\Pr[C = 0 \mid A = a, L = l] > 0$ for every $l$ with $\Pr[A = a, L = l] > 0$.
+2. **Positivity**: $\Pr[A = a] > 0$, and $\Pr[C = 0 \mid A = a, L = l] > 0$ for every $l$ with $\Pr[A = a, L = l] > 0$.
 3. **Consistency**: $Y = Y^{a,c=0}$ for every individual with $A = a$ and $C = 0$.
    This requires sufficiently well-defined interventions on $A$ and $C$,
    and no measurement error in $A$ or $Y$.
@@ -590,7 +592,7 @@ Exchangeability for censoring implies that the average counterfactual outcome $Y
 It holds if $\Pr[C = 0 \mid L, A]$ conditions on treatment and on all factors that independently predict both selection and the outcome, i.e., if $A$ and $L$ block all backdoor paths between $C$ and $Y$.
 
 ::: {.callout-warning title="Exchangeability for Censoring Is Untestable"}
-We can never be sure that $L$ contains all common causes of censoring and the outcome, so this assumption is untestable.
+We can never be sure that $A$ and $L$ block every backdoor path between censoring and the outcome, so this assumption is untestable.
 :::
 
 Positivity is required for being uncensored, not for being censored: we do not want a pseudo-population in which everybody is censored.
@@ -728,8 +730,10 @@ so $A \ind E \mid Y = 0$.
 ## Dependence among the dead
 
 Given $Y = 1$ the argument of @prp-independence-among-survivors does not apply:
-$Y = 1$ is compatible with 7 combinations of $(Y_A, Y_E, Y_O)$, every combination except $(0, 0, 0)$, so it does not fix their values;
-the path through $Y$ stays open and, generically (that is, under faithfulness), $A$ and $E$ are associated given $Y = 1$.
+the event $Y = 1$ is compatible with 7 combinations of $(Y_A, Y_E, Y_O)$, every combination except $(0, 0, 0)$,
+so it does not determine $(Y_A, Y_E, Y_O)$,
+and the step that replaced conditioning on $Y$ by conditioning on $(Y_A, Y_E, Y_O)$ does not go through.
+Generically (that is, under faithfulness), $A$ and $E$ are associated given $Y = 1$.
 :::
 
 When the data can be summarized by Figure 8.13, they follow a **multiplicative survival model** (Technical Point 8.2).
