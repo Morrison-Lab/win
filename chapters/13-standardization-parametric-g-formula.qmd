@@ -87,8 +87,14 @@ When some components of $L$ are continuous, $\Pr[L = l]$ is replaced by the dens
 ::: {#thm-standardized-mean-identifies}
 ## Standardization identifies the counterfactual mean
 
-Let $L$ be discrete.
-Under exchangeability and positivity given $L$ (plus consistency), the standardized mean of @def-standardization equals $\E{Y^{a,c=0}}$ for each treatment level $a$.
+Let $L$ be discrete, and fix a treatment level $a$.
+Assume
+
+- conditional exchangeability for the joint treatment $(A, C)$: $Y^{a,c=0} \ind (A, C) \mid L$;
+- positivity: $\Pr[A = a, C = 0 \mid L = l] > 0$ for every $l$ with $\Pr[L = l] > 0$;
+- consistency: $Y^{a,c=0} = Y$ for every individual with $A = a$ and $C = 0$.
+
+Then the standardized mean of @def-standardization equals $\E{Y^{a,c=0}}$.
 :::
 
 ::: {.proof}
@@ -98,7 +104,7 @@ $$
 \begin{aligned}
 \E{Y^{a,c=0}}
 &= \sum_l \E{Y^{a,c=0} \mid L = l} \Pr[L = l] && \text{(law of total expectation)} \\
-&= \sum_l \E{Y^{a,c=0} \mid A = a, C = 0, L = l} \Pr[L = l] && \text{(exchangeability given } L\text{; positivity)} \\
+&= \sum_l \E{Y^{a,c=0} \mid A = a, C = 0, L = l} \Pr[L = l] && \text{(exchangeability for } (A, C) \text{ given } L\text{; positivity)} \\
 &= \sum_l \E{Y \mid A = a, C = 0, L = l} \Pr[L = l] && \text{(consistency)}
 \end{aligned}
 $$
@@ -123,6 +129,7 @@ The choice defines the target population of the causal effect.
 :::
 
 ::: {.callout-note title="Fine Point 13.1: Structural Positivity"}
+
 - Positivity is needed for standardization too: if $\Pr[A = a \mid L = l] = 0$ while $\Pr[L = l] \neq 0$, then $\E{Y \mid A = a, L = l}$ is undefined.
 - With a parametric outcome model, one *can* ignore structural nonpositivity by **extrapolating** over the empty strata, at the cost of bias (95% confidence intervals then cover the truth less than 95% of the time).
 - Near positivity violations, standardization typically has a smaller standard error than IP weighting, but differences in bias may outweigh differences in standard error.
@@ -289,6 +296,7 @@ The **nonparametric bootstrap** estimates standard errors when analytic or large
    the 95% CI is the estimate $\pm 1.96 \times$ that standard error.
 
 ::: {.notes}
+
 - When an estimator's limiting distribution is normal, Wald intervals with bootstrap standard errors are calibrated in large samples.
   For IP weighted MSM estimates, the bootstrap interval is calibrated, whereas the robust ("sandwich") variance from Chapter 12 often gives a conservative, wider interval.
 - Published analyses often use 200-500 bootstrap samples to save computation;
@@ -315,6 +323,7 @@ The **nonparametric bootstrap** estimates standard errors when analytic or large
 ::: {.notes}
 
 ::: {.callout-tip title="Compare the Two Estimates"}
+
 - A **large** difference between the two estimates signals serious misspecification in at least one of them.
 - A **small** difference does not guarantee correct models, but it is reassuring: badly misspecified models are unlikely to produce biases of similar magnitude and direction.
 - In NHEFS both estimates round to **3.5 kg**.
@@ -360,7 +369,10 @@ Part III defines the g-formula for time-varying treatments.
 ::: {#def-doubly-robust}
 ## Doubly robust estimator
 
-An estimator that combines a treatment model and an outcome model is **doubly robust** if, under exchangeability and positivity given $L$, it is consistent when **either** model is correct, without our knowing which.
+An estimator of a counterfactual mean such as $\E{Y^{a=1}}$ that combines a treatment model and an outcome model is **doubly robust** if,
+under the identifying conditions (conditional exchangeability and positivity given $L$, and consistency),
+it is consistent for that counterfactual mean when **either** model is correctly specified, without our knowing which.
+An estimator of a causal contrast, such as $\E{Y^{a=1}} - \E{Y^{a=0}}$, built from doubly robust estimators of each counterfactual mean is then consistent for that contrast under the same conditions.
 :::
 
 ::: {.callout-tip title="Use Both Methods, and Doubly Robust Ones"}
@@ -400,6 +412,15 @@ $$\E{Y^{a=1}} = \E{b(L)} = \E{\frac{AY}{\pi(L)}}.$$
 ::: {#def-aipw}
 ## Augmented IP weighted (AIPW) estimator
 
+Let $A$ be dichotomous, with no censoring, and define
+
+- the outcome regression $b(L) \eqdef \E{Y \mid A = 1, L}$;
+- the propensity score $\pi(L) \eqdef \Pr[A = 1 \mid L]$.
+
+Let $\hat b(L)$ be the predicted mean outcome under $A = 1$ from a fitted model for $\E{Y \mid A, L}$ (the outcome model),
+and let $\hat\pi(L)$ be the predicted probability of $A = 1$ from a fitted model for $\Pr[A = 1 \mid L]$ (the treatment model).
+The **AIPW estimator** of $\E{Y^{a=1}}$ is
+
 $$
 \hE{Y^{a=1}}_{DR} = \frac{1}{n} \sumin \sb{\hat b(L_i) + \frac{A_i}{\hat\pi(L_i)} \cb{Y_i - \hat b(L_i)}}
 $$
@@ -428,9 +449,12 @@ the second is the Horvitz-Thompson estimator plus an outcome-model correction ("
 ::: {#thm-aipw-doubly-robust}
 ## The AIPW estimator is doubly robust
 
-Assume exchangeability, positivity and consistency, and let $b$ and $\pi$ be as in Technical Point 13.2.
-Let $\pi^*$ and $b^*$ be the probability limits of $\hat\pi$ and $\hat b$, with $\pi^*(L) > 0$.
-The AIPW estimator of @def-aipw converges to $\E{b^*(L) + A\{Y - b^*(L)\}/\pi^*(L)}$, and its asymptotic bias is
+Let $A$ be dichotomous, with no censoring, and let $b$, $\pi$, $\hat b$ and $\hat\pi$ be as in @def-aipw.
+Assume conditional exchangeability $Y^{a=1} \ind A \mid L$, positivity $\pi(L) > 0$, and consistency $Y^{a=1} = Y$ when $A = 1$.
+Let $b^*$ and $\pi^*$ be the functions that $\hat b$ and $\hat\pi$ converge to in probability, with $\pi^*(L) > 0$;
+$b^* = b$ when the outcome model is correctly specified, and $\pi^* = \pi$ when the treatment model is.
+Then the AIPW estimator of @def-aipw converges to $\E{b^*(L) + A\{Y - b^*(L)\}/\pi^*(L)}$,
+and its asymptotic bias as an estimator of $\E{Y^{a=1}}$ (that limit minus $\E{Y^{a=1}}$) is
 
 $$
 \E{\pi(L) \paren{\frac{1}{\pi^*(L)} - \frac{1}{\pi(L)}} \paren{b(L) - b^*(L)}},
@@ -506,6 +530,7 @@ But observational estimates remain open to serious criticism.
 :::
 
 ::: {.notes}
+
 - **Exchangeability**: quitters and non-quitters must be exchangeable given the 9 measured covariates;
   unmeasured confounding (Chapter 7) or selection bias (Chapter 8) would violate it.
 - **Positivity**: the distribution of $L$ in quitters must fully overlap that in non-quitters.
