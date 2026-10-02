@@ -185,16 +185,18 @@ An interval is
 
 - **small-sample valid** if it is valid (@def-valid-ci) at every sample size for which it is defined
   (small-sample calibrated intervals are sometimes called **exact**);
-- **large-sample (asymptotically) valid** if, for every value of the true parameter,
-  its coverage is at least 95% at all sufficiently large sample sizes,
-  where how large is large enough may depend on the true parameter.
+- **large-sample (asymptotically) valid** if, for every value $\theta$ of the true parameter,
+  $\liminf_{n \to \infty} \Pr_\theta[\theta \in \text{CI}_n] \ge 0.95$,
+  where $\text{CI}_n$ is the interval computed from a sample of size $n$.
+  Coverage may still dip below 95% at infinitely many sample sizes,
+  provided the dips shrink to nothing as $n$ grows.
 
 :::
 
 ::: {#rem-book-ci-convention}
 ## What the book means by a 95% confidence interval
 
-The Wald interval for $p$ in @exm-wald-binomial is large-sample calibrated but not small-sample valid.
+The Wald interval for $p$ in @exm-wald-binomial is large-sample valid (@def-small-large-sample-valid) but not small-sample valid.
 In the book, "95% confidence interval" means a large-sample valid interval, such as a Wald interval, unless stated otherwise.
 :::
 
@@ -238,7 +240,7 @@ The book adopts the frequency definition of probability (see its Fine Point 11.2
 :::
 
 ::: {.callout-note title="Fine Point 10.1: Honest Confidence Intervals"}
-For a large-sample valid interval, the smallest sample size at which coverage reaches 95% may depend on the unknown true parameter.
+For a large-sample valid interval, how large the sample must be before coverage comes close to 95% may depend on the unknown true parameter.
 A large-sample valid interval is **uniform** or **honest** if there is a sample size $n$ at which it covers the true parameter at least 95% of the time *whatever* the true parameter is.
 Without uniformity, at any finite $n$ some data-generating distributions may have coverage well below 95%.
 Even for honest intervals, the smallest such $n$ is generally unknown and hard to determine, even by simulation [@robins1997toward].
@@ -257,8 +259,7 @@ Any small-sample valid interval is automatically honest for all $n$ at which it 
 An estimator is **unbiased** if it can center a valid Wald interval and **biased** if it cannot.
 :::
 
-Not every consistent estimator can center a valid Wald interval, even in large samples:
-Technical Point 10.1 gives the formal condition, and Chapter 18 gives consistent estimators that fail it.
+Not every consistent estimator can center a valid Wald interval, even in large samples.
 Most users of statistics use @def-unbiased-estimator,
 and the book adopts it for now.
 
@@ -828,7 +829,8 @@ so that few strata contain both treated and untreated individuals
 and estimators conditional on all of $L$ are uninformative.
 :::
 
-In @exm-hundred-covariates, conditional on all 100 covariates, the marginal estimator is still conditionally biased, but the conditional estimator is now uninformative (@exm-curse).
+In @exm-hundred-covariates, the unadjusted estimator is still [conditionally biased](#def-conditionally-unbiased) given all 100 covariates,
+but the estimator that conditions on them is now uninformative (@exm-curse).
 
 ::: {.callout-warning title="Conditionality Should Not Be a Principle"}
 Conditionality is compelling in simple examples, but it cannot be carried through in high-dimensional models, so it should not be raised to a principle [@robins1997toward].
