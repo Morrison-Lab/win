@@ -46,17 +46,25 @@ and let $T$ be the time to death, counted from the start of follow-up.
 The target is the average causal effect of $A$ on $T$,
 an outcome that can occur at any point after follow-up begins.
 
+::: {#def-administrative-censoring}
+## Administrative censoring
+
 Usually only a minority of participants have the event during the study,
 because follow-up stops for everybody on a fixed date,
 the **administrative end of follow-up**.
 For anyone still event-free on that date we only know that the event time exceeds it:
 their survival time is **administratively censored**.
+:::
+
+::: {#exm-nhefs-administrative-censoring}
+## NHEFS: Administrative censoring
 
 In the NHEFS analysis, the population is the 1629 smokers aged 25-74 at baseline who were still alive in 1982.
 Follow-up runs from January 1, 1983 to December 31, 1992,
 so everyone has the same administrative censoring time of 120 months.
 Only 318 of the 1629 died during this period;
 the other 1311 have administratively censored survival times.
+:::
 
 ::: {.notes}
 Any survival analysis faces administrative censoring.
@@ -87,6 +95,9 @@ we need measures that accommodate administrative censoring.
 
 ### Survival, Risk, and Hazard
 
+::: {#def-survival-risk-hazard-time}
+## Survival, risk, and hazard of an event time
+
 The **survival** at month $k$, $\Pr[T > k]$, is the share of individuals still alive after $k$.
 Computing it for every month up to the administrative end of follow-up, $k_\text{end} = 120$,
 and plotting it against time gives the **survival curve**,
@@ -102,10 +113,16 @@ The **hazard** at $k$ is the share of individuals who have the event at $k$
 among those who were still event-free just before $k$:
 
 $$\Pr[T = k \mid T > k - 1]$$
+:::
 
-Strictly speaking this is a discrete-time hazard, defined for time measured in intervals rather than continuously.
+::: {#rem-discrete-time-hazard}
+## Discrete-time hazards
+
+Strictly speaking, the hazard of @def-survival-risk-hazard-time is a discrete-time hazard,
+defined for time measured in intervals rather than continuously.
 Since real data always record time in units such as years, months, or days,
 we simply call it the hazard.
+:::
 
 ::: {.notes}
 A natural summary of the treatment effect in a survival analysis
@@ -128,6 +145,9 @@ over the 120 months, the hazard curves looked roughly like the letter M.
 
 ### Risk vs. Hazard
 
+::: {#rem-risk-vs-hazard}
+## Risk versus hazard
+
 Risk and hazard are built differently:
 
 - **Risk**: the denominator, everyone at baseline, is the same at every $k$,
@@ -142,6 +162,7 @@ Fine Point 17.2 explains why that summary is problematic,
 so the book's analyses focus on survival and risk instead.
 Hazards still matter, though:
 estimating them is often the easiest route to survival and risk.
+:::
 
 ::: {.callout-note title="Fine Point 17.1: Competing Events"}
 A **competing event** (Section 8.5) is one, usually death, that makes the event of interest impossible afterwards:
@@ -177,6 +198,9 @@ and Stensrud et al. (2020, 2021) propose separable effects (see Technical Point 
 
 ---
 
+::: {#def-data-layouts}
+## Person and person-time data layouts
+
 A survival dataset can be laid out in two ways.
 
 - **One row per person**: the layout used so far in the book,
@@ -187,11 +211,16 @@ A survival dataset can be laid out in two ways.
   This "long" layout is used for most of this chapter
   and for all of Part III's time-varying treatments.
   In the smoking cessation data it has 176,764 rows, one per person-month.
+:::
 
 ### The Event Indicator $D_k$
 
+::: {#def-event-indicator}
+## Event indicator
+
 The long format records survival through a **time-varying event indicator** $D_k$:
 for each person and month $k$, $D_k = 1$ if $T \leq k$ and $D_k = 0$ if $T > k$.
+:::
 
 ::: {.notes}
 The book's Figure 17.2 is a causal diagram with treatment $A$, event indicators $D_1$ and $D_2$,
@@ -220,31 +249,56 @@ At $k = 1$ hazard and risk coincide, since everyone is alive at $k = 0$ by const
 ### From Hazards to Survival
 
 Surviving through $k$ means surviving each interval up to $k$ in turn,
-so the survival at $k$ is the product of the interval-specific conditional survivals:
+so the survival at $k$ is the product of the interval-specific conditional survivals.
+
+::: {#prp-survival-product-of-hazards}
+## Survival as a product of conditional survivals
+
+Suppose $D_0 = 0$ for everyone and that $D_{m-1} = 1$ implies $D_m = 1$ for every $m \geq 1$.
+Then for every $k \geq 1$ such that the conditioning events have positive probability,
 
 $$\Pr[D_k = 0] = \prod_{m=1}^k \Pr[D_m = 0 \mid D_{m-1} = 0]$$
+:::
+
+::: {.proof}
+An event that has happened stays happened, so $D_m = 0$ implies $D_{m-1} = 0$.
+Hence the event $\{D_k = 0\}$ equals $\{D_1 = 0, D_2 = 0, \ldots, D_k = 0\}$.
+By the chain rule of probability, its probability is $\Pr[D_1 = 0] \times \prod_{m=2}^k \Pr[D_m = 0 \mid D_{m-1} = 0, \ldots, D_1 = 0]$.
+Again because $D_{m-1} = 0$ implies $D_1 = \cdots = D_{m-2} = 0$, each conditioning event reduces to $D_{m-1} = 0$.
+Finally, $D_0 = 0$ for everyone, so $\Pr[D_1 = 0] = \Pr[D_1 = 0 \mid D_0 = 0]$, which is the $m = 1$ factor.
+:::
 
 Each factor is one minus the hazard at $m$,
 so the hazards through $k$ determine the survival at $k$,
 and hence the risk at $k$ as well.
 
-::: {.notes}
-**Example**: for $k = 2$,
+::: {#exm-survival-product-k2}
+## Survival through two months
+
+For $k = 2$,
 $\Pr[D_2 = 0] = \Pr[D_1 = 0] \times \Pr[D_2 = 0 \mid D_1 = 0]$:
 survive the first month, then survive the second given survival of the first.
 :::
 
 ### Nonparametric and Parametric Estimation
 
+::: {#def-kaplan-meier}
+## Kaplan-Meier estimator
+
 **Nonparametrically**, the hazard $\Pr[D_k = 1 \mid D_{k-1} = 0]$ is estimated by
 the number of events in interval $k$ divided by the number of people alive at the end of interval $k - 1$.
 Plugging these estimates into the product gives the **Kaplan-Meier** (**product-limit**) estimator of the survival $\Pr[D_k = 0]$,
 which the book used for Figure 17.1.
+:::
+
 It estimates the survival curve well when the total number of events is reasonably large.
 Each interval, however, usually contains few or no events,
 so the individual hazard estimates are erratic,
 and estimating the hazard at a specific $k$ may require parametric smoothing
 (Chapter 11 and Fine Point 17.3).
+
+::: {#exm-nhefs-logistic-hazards}
+## NHEFS: A logistic hazards model
 
 **Parametrically**, a convenient choice is a **logistic regression** for $\Pr[D_{k+1} = 1 \mid D_k = 0]$,
 fit to the person-time rows of those still alive at $k$.
@@ -260,8 +314,11 @@ Multiplying the fitted values of one minus the hazard over time,
 separately for each treatment group,
 gives estimates of the survival $\Pr[D_{k+1} = 0 \mid A = a]$.
 These curves (the book's Figure 17.4) are smoothed versions of the Kaplan-Meier curves of Figure 17.1.
+:::
 
 ::: {.notes}
+
+::: {.callout-warning title="The Hazards Model Must Be Correct"}
 This procedure is valid only if the hazards model is correctly specified,
 which looks plausible here because the parametric and nonparametric survival curves nearly coincide.
 Bootstrapping individuals gives 95% confidence intervals for the survival estimates.
@@ -270,6 +327,7 @@ People contribute many rows each,
 yet an ordinary logistic regression program reports correct standard errors
 as long as the hazards model is correct.
 Other link functions, such as the probit, would also work.
+:::
 :::
 
 ::: {.callout-note title="Fine Point 17.2: The Hazards of Hazard Ratios"}
@@ -365,23 +423,38 @@ Then the hazard-based procedure is more than needed:
 $\Pr[D_{k+1} = 0 \mid A = a]$ can be estimated directly as the proportion of people with treatment $a$ still alive at $k + 1$,
 or with a separate logistic model for $\Pr[D_{k+1} = 0 \mid A]$ at each $k = 0, 1, \ldots, k_\text{end}$.
 
-Things change with **staggered entry**, where people enter the study on different dates while the study closes on one date.
+Things change with staggered entry.
+
+::: {#def-staggered-entry}
+## Staggered entry
+
+Under **staggered entry**, people enter the study on different dates while the study closes on one date.
 Each person's administrative censoring time is the closing date minus their entry date,
 so it now varies across individuals.
+:::
 
 ### The Censoring Indicator
 
-We therefore add a time-varying **censoring indicator** $C_k$,
-equal to 0 if the person's administrative end of follow-up lies beyond $k$ and 1 otherwise.
+::: {#def-time-varying-censoring-indicator}
+## Time-varying censoring indicator
+
+The time-varying **censoring indicator** $C_k$
+equals 0 if the person's administrative end of follow-up lies at or beyond $k$ and 1 otherwise.
 In the person-time format, the row for an individual at time $k$ includes $C_{k+1}$.
+:::
+
 The NHEFS dataset omits this variable because $C_{k+1} = 0$ for everyone at all $k$ before 120 months;
 with individual-specific administrative censoring, $C_{k+1}$ switches from 0 to 1 at different times for different people.
+
+::: {#def-survival-without-censoring}
+## Survival without censoring
 
 The target is the survival curve we would see if no one were censored before $k_\text{end}$,
 that is, $\Pr[D_k = 0 \mid A = a]$ with $D_k$ observed even after censoring.
 In the notation of Chapter 12 this is $\Pr[D^{\bar{c}=0}_k = 0 \mid A = a]$,
 where $\bar{c} = (c_1, c_2, \ldots, c_{k_\text{end}})$ and the superscript $\bar{c} = 0$ denotes no censoring;
 the superscript is dropped when the meaning is clear.
+:::
 
 To keep things simple, suppose entry dates are effectively random,
 as they would be if no variable showed a secular trend.
@@ -389,9 +462,14 @@ Censoring times, and so $C$, are then independent of both treatment and time of 
 
 ### Why Naive Estimation Fails
 
+::: {.callout-warning title="Uncensored Survivors Do Not Estimate Survival"}
 The proportion of people with treatment $a$ who are both alive and uncensored through $k$
 does **not** estimate $\Pr[D_k = 0 \mid A = a]$.
 It estimates the joint probability $\Pr[C_{k+1} = 0, D_{k+1} = 0 \mid A = a]$ instead.
+:::
+
+::: {#exm-naive-censored-survival}
+## Naive estimation under censoring
 
 To see why, consider a study with $k_\text{end} = 2$ in which:
 
@@ -403,23 +481,69 @@ To see why, consider a study with $k_\text{end} = 2$ in which:
 The fraction of uncensored survivors at $k = 2$ is $1 \times 0.9 \times 0.5 \times 0.9 = 0.405$.
 Without censoring, that is, with $\Pr[C_2 = 0 \mid D_1 = 0, C_1 = 0] = 1$,
 the survival would be $1 \times 0.9 \times 1 \times 0.9 = 0.81$.
+:::
 
 ### Correct Estimation Under As-If Randomly Assigned Censoring
 
-If censoring is (as if) randomly assigned, the survival $\Pr[D_k = 0 \mid A = a]$ at $k$ is:
+::: {#prp-survival-random-censoring}
+## Survival under as-if random censoring
 
-$$\Pr[D_k = 0 \mid A = a] = \prod_{m=1}^k \Pr[D_m = 0 \mid D_{m-1} = 0, C_m = 0, A = a] \quad \text{for } k < k_\text{end}$$
+Fix a treatment level $a$ with $\Pr[A = a] > 0$ and a time $k \in \{1, \ldots, k_\text{end}\}$.
+Suppose the uncensored event indicators start at zero and never revert,
+that is, $D^{\bar{c}=0}_0 = 0$ for everyone
+and $D^{\bar{c}=0}_{m-1} = 1$ implies $D^{\bar{c}=0}_m = 1$ for every $m \geq 1$.
+Suppose also that, for every $m = 1, \ldots, k$:
+
+- **Censoring as if randomly assigned**: given $A$ and survival without censoring through $m - 1$,
+  being censored by $m$ is independent of the event at $m$ without censoring,
+  $C_m \ind D^{\bar{c}=0}_m \mid A = a, D^{\bar{c}=0}_{m-1} = 0$;
+- **Positivity**: $\Pr[C_m = 0 \mid A = a, D^{\bar{c}=0}_{m-1} = 0] > 0$
+  and $\Pr[D^{\bar{c}=0}_{m-1} = 0 \mid A = a] > 0$;
+- **Consistency**: for anyone with $C_m = 0$, $D_m = D^{\bar{c}=0}_m$ and $D_{m-1} = D^{\bar{c}=0}_{m-1}$.
+
+Then the survival without censoring (@def-survival-without-censoring) at $k$ is
+
+$$\Pr[D^{\bar{c}=0}_k = 0 \mid A = a] = \prod_{m=1}^k \Pr[D_m = 0 \mid D_{m-1} = 0, C_m = 0, A = a]$$
+:::
+
+::: {.proof}
+Applying @prp-survival-product-of-hazards to the uncensored event indicators $D^{\bar{c}=0}_m$, within the stratum $A = a$, gives
+
+$$\Pr[D^{\bar{c}=0}_k = 0 \mid A = a] = \prod_{m=1}^k \Pr[D^{\bar{c}=0}_m = 0 \mid D^{\bar{c}=0}_{m-1} = 0, A = a]$$
+
+Fix one factor $m$.
+By the independence assumption
+(with positivity ensuring the added conditioning event has positive probability),
+adding $C_m = 0$ to the conditioning event leaves the factor unchanged:
+it equals $\Pr[D^{\bar{c}=0}_m = 0 \mid D^{\bar{c}=0}_{m-1} = 0, C_m = 0, A = a]$.
+Among people with $C_m = 0$, consistency replaces $D^{\bar{c}=0}_m$ by $D_m$ and $D^{\bar{c}=0}_{m-1}$ by $D_{m-1}$,
+so the factor equals $\Pr[D_m = 0 \mid D_{m-1} = 0, C_m = 0, A = a]$,
+which involves only observed data.
+Multiplying the $k$ factors gives the result.
+:::
+
+The range $k = 1, \ldots, k_\text{end}$ in @prp-survival-random-censoring
+covers the same times as $D_{k+1}$ for $k = 0, \ldots, k_\text{end} - 1$ elsewhere in this chapter.
+
+::: {#def-cause-specific-hazard}
+## Cause-specific hazard
+
+The **cause-specific hazard** at $k + 1$ is $\Pr[D_{k+1} = 1 \mid D_k = 0, C_{k+1} = 0, A = a]$.
+:::
 
 Estimation proceeds as before,
 except that the quantity estimated nonparametrically or with a logistic model
-is the **cause-specific hazard** $\Pr[D_{k+1} = 1 \mid D_k = 0, C_{k+1} = 0, A = a]$.
+is the cause-specific hazard (@def-cause-specific-hazard).
 
+::: {.callout-warning title="Random Censoring Is Often Hard to Defend"}
 Random censoring is often hard to defend.
 Under staggered entry, censoring time depends on the calendar date of entry
 (late entrants are followed for less time),
 and calendar time may also predict the outcome,
 so the analysis must adjust for calendar time at baseline.
 Other baseline prognostic factors may also differ between treatment groups and need adjustment.
+:::
+
 The rest of the chapter adds adjustment for baseline confounders with g-methods,
 and Part III extends it to treatments and confounders that vary over time.
 
@@ -427,14 +551,21 @@ and Part III extends it to treatments and confounders that vary over time.
 
 ---
 
+::: {#exm-nhefs-confounding-by-age}
+## NHEFS: Confounding by age
+
 Without exchangeability between treated and untreated,
 comparing their survival curves does not estimate a causal effect.
 In the smoking cessation data, 120-month survival was lower among quitters than among non-quitters (76.2% versus 82.0%),
 which need not mean that quitting raises mortality:
 quitters tend to be older, and older people die more often.
 Because quitters include more older people, confounding by age makes quitting look harmful.
+:::
 
 ### Counterfactual Survivals
+
+::: {#def-counterfactual-survival}
+## Counterfactual survival
 
 Let $D^{a,\bar{c}=0}_k$ be the counterfactual death indicator at $k$ under treatment $a$ and no censoring.
 Since every analysis in this chapter targets survival without censoring,
@@ -445,6 +576,7 @@ We want to compare the counterfactual survivals $\Pr[D^{a=1}_{k+1} = 0]$ and $\P
 under treatment for all ($a = 1$) and under no treatment for all ($a = 0$):
 
 $$\Pr[D^{a=1}_{k+1} = 0] \text{ vs. } \Pr[D^{a=0}_{k+1} = 0] \quad \text{for } k = 0, 1, \ldots, k_\text{end} - 1$$
+:::
 
 With confounding, the observed survivals $\Pr[D_{k+1} = 0 \mid A = 1]$ and $\Pr[D_{k+1} = 0 \mid A = 0]$
 do not in general estimate this contrast.
@@ -457,6 +589,9 @@ weight, recreational exercise, and physical activity in daily life.
 Assume positivity and consistency as well.
 IP weighted survival curves are then estimated in two steps.
 
+::: {#alg-ipw-survival-curves}
+## IP weighted survival curves
+
 **Step 1**: Estimate each person's stabilized IP weight $SW^A$ as in Chapter 12.
 Fit a logistic model for $\Pr[A = 1 \mid L]$.
 The denominator is the fitted $\widehat{\Pr}[A = 1 \mid L]$ for the treated
@@ -464,7 +599,6 @@ and $1 - \widehat{\Pr}[A = 1 \mid L]$ for the untreated;
 the numerator is $\widehat{\Pr}[A = 1]$ for the treated and $1 - \widehat{\Pr}[A = 1]$ for the untreated,
 with $\widehat{\Pr}[A = 1]$ estimated nonparametrically or by a logistic model without covariates.
 In the weighted pseudo-population $L$ and $A$ are independent, so $L$ no longer confounds.
-The estimated weights averaged 1, as they should, and ranged from 0.33 to 4.21.
 
 **Step 2**: In the person-time data, fit the hazards model
 
@@ -481,16 +615,29 @@ The fitted counterfactual hazards $\Pr[D^a_{k+1} = 1 \mid D^a_k = 0]$
 are turned into survival estimates
 $\Pr[D^a_{k+1} = 0] = \prod_{m=0}^k (1 - \Pr[D^a_{m+1} = 1 \mid D^a_m = 0])$
 for $a = 1$ and $a = 0$ (the book's Figure 17.6).
+:::
+
+In the NHEFS, the estimated weights averaged 1, as they should, and ranged from 0.33 to 4.21.
 
 ::: {.notes}
+
+::: {#exm-nhefs-ipw-survival}
+## NHEFS: IP weighted survival curves
+
 Estimated 120-month survival: 80.7% if everyone had quit and 80.5% if no one had quit,
 a difference of 0.2% (95% confidence interval $-4.1\%$ to $3.7\%$, from 500 bootstrap samples).
 The curve under quitting lay below the one under not quitting for most of follow-up,
 but the difference was never larger in magnitude than 1.4 percentage points (the most extreme value was $-1.4\%$;
 95% confidence interval $-3.4\%$ to $0.7\%$).
 After IP weighting for $L$, then, the data show little evidence that quitting affects mortality at any point during follow-up.
+:::
+:::
 
+::: {.notes}
+
+::: {.callout-warning title="Two Models Must Be Correct"}
 These IP weighted estimates are valid only if the model for treatment and the marginal hazards model are both correctly specified.
+:::
 :::
 
 ## 17.5 The Parametric G-Formula (pp. 236-237)
@@ -505,12 +652,19 @@ Another is standardization with parametric models, the **parametric g-formula**.
 The counterfactual survival $\Pr[D^a_{k+1} = 0]$ is an average of the survivals at $k + 1$
 conditional on $L$ and on $A = a$,
 weighted by the distribution of $L$.
-Under exchangeability, positivity, and consistency, it equals the standardized survival
 
-$$\sum_l \Pr[D_{k+1} = 0 \mid L = l, A = a]\, \Pr[L = l]$$
+::: {#thm-standardized-survival}
+## Identification of counterfactual survival by standardization
 
-For a formal proof, see Section 2.3.
-In outline:
+Let $L$ be discrete.
+Under conditional exchangeability given $L$, positivity, and consistency, the counterfactual survival equals the standardized survival
+
+$$\Pr[D^a_{k+1} = 0] = \sum_l \Pr[D_{k+1} = 0 \mid L = l, A = a]\, \Pr[L = l]$$
+:::
+
+::: {.proof}
+The argument is the one that identifies the [standardization formula](02-randomized-experiments.qmd#def-standardization) in chapter 2, applied to survival.
+Step by step:
 
 $$
 \begin{aligned}
@@ -523,8 +677,12 @@ $$
 && \text{(consistency)}
 \end{aligned}
 $$
+:::
 
 ### Estimation
+
+::: {#alg-gformula-survival}
+## Parametric g-formula for survival curves
 
 Estimation again takes two steps.
 
@@ -555,12 +713,17 @@ using the procedure of Section 13.3
 (expand the dataset, fit the outcome model, predict, and average).
 The procedure also handles continuous components of $L$, for which the sum over $l$ becomes an integral.
 The book's Figure 17.7 shows the resulting curves.
+:::
 
 ::: {.notes}
 Chapter 12 called a model that conditions on all of $L$ a faux marginal structural model.
 :::
 
 ::: {.notes}
+
+::: {#exm-nhefs-gformula-survival}
+## NHEFS: Parametric g-formula survival curves
+
 The estimated curve under quitting lay below the one under not quitting throughout follow-up,
 with a difference never larger in magnitude than 2.0 percentage points (the most extreme value was $-2.0\%$;
 95% confidence interval $-5.6\%$ to $1.8\%$).
@@ -568,16 +731,25 @@ Estimated 120-month survival was 80.4% under quitting and 80.6% under not quitti
 the book reports the difference as 0.2% (95% confidence interval from $-4.6\%$ to $4.1\%$),
 i.e., a magnitude of 0.2 percentage points ($80.4\% - 80.6\% = -0.2\%$).
 As with IP weighting, standardization for $L$ yields little evidence of an effect of quitting on mortality during follow-up.
+:::
+:::
 
+::: {.notes}
+
+::: {.callout-tip title="Why the Two Sets of Curves Differ"}
 The IP weighted and g-formula curves are close but not identical,
 because they depend on different modeling assumptions:
 IP weighting needs correct models for treatment and for the unconditional hazards,
 while the parametric g-formula needs a correct model for the conditional hazards.
 :::
+:::
 
 ## 17.6 G-Estimation of Structural Nested Models (pp. 237-240)
 
 ---
+
+::: {#rem-snm-no-survival}
+## Structural nested models do not give survivals
 
 The methods so far contrast survivals or risks under different values of $A$,
 computing survival from hazards fitted by logistic regression.
@@ -588,6 +760,7 @@ Structural nested models (Chapter 14) describe **conditional causal contrasts**,
 such as a difference or ratio of covariate-specific counterfactual means,
 rather than the separate quantities being contrasted,
 so they cannot give us survivals or hazards.
+:::
 
 ::: {.notes}
 They cannot even approximate a hazard ratio,
@@ -595,6 +768,9 @@ since structural nested logistic models are hard to extend to treatments that va
 :::
 
 ### Structural Nested Models for Risks, Survivals, and Survival Times
+
+::: {#rem-snm-survival-models}
+## Structural nested models for survival outcomes
 
 What a structural nested model can do is model ratios:
 
@@ -606,6 +782,7 @@ What a structural nested model can do is model ratios:
   suited, for the same reason, to settings where survival is rare;
 - more generally, a model for the ratio of survival times under different treatments,
   the **accelerated failure time (AFT) model**.
+:::
 
 ::: {.callout-note title="Technical Point 17.2: Structural Nested CFT and CST Models"}
 With a treatment fixed at baseline, a (non-nested) structural **CFT** model relates the counterfactual risk under treatment $a$
@@ -637,6 +814,9 @@ With time-varying treatments, they fall within the class of multivariate structu
 
 ### Structural Nested AFT Models
 
+::: {#def-structural-nested-aft}
+## Structural nested AFT model
+
 Let $T^a_i$ be individual $i$'s counterfactual survival time under treatment $a$.
 The ratio $T^{a=1}_i / T^{a=0}_i$ measures the effect of $A$ on $i$'s survival time:
 above 1, treatment lengthens survival (benefit);
@@ -652,6 +832,7 @@ in which $\exp{-\psi_1}$ is the factor by which treatment stretches or shrinks e
 - $\psi_1 < 0$: treatment increases survival time
 - $\psi_1 > 0$: treatment decreases survival time
 - $\psi_1 = 0$: treatment does not affect survival time
+:::
 
 ::: {.notes}
 The minus sign keeps the usual convention that positive parameters mean harm and negative ones benefit.
@@ -661,18 +842,31 @@ The "nested" part of the name only matters for time-varying treatments (Chapter 
 If the effect varies with covariates $L$, a more general structural AFT model is
 $T^a_i / T^{a=0}_i = \exp{-\psi_1 a - \psi_2 a L_i}$,
 with $\psi_1$ and the vector $\psi_2$ common to all individuals.
+
+::: {#prp-aft-observed-time}
+## The AFT model in terms of observed survival times
+
+Under consistency, the structural AFT model $T^a_i / T^{a=0}_i = \exp{-\psi_1 a - \psi_2 a L_i}$
+(a generalization of @def-structural-nested-aft)
+implies a model in terms of the observed survival time:
+
+$$T^{a=0}_i = T_i \exp{\psi_1 A_i + \psi_2 A_i L_i}$$
+:::
+
+::: {.proof}
 Multiplying both sides by $T^{a=0}_i \exp{\psi_1 a + \psi_2 a L_i}$ gives the equivalent form
 
 $$T^{a=0}_i = T^a_i \exp{\psi_1 a + \psi_2 a L_i} \quad \text{for all individuals } i$$
 
-By consistency, $T^{A_i}_i = T_i$, so setting $a = A_i$ gives a model in terms of the observed survival time:
+By consistency, $T^{A_i}_i = T_i$, so setting $a = A_i$ gives the result.
+:::
 
-$$T^{a=0}_i = T_i \exp{\psi_1 A_i + \psi_2 A_i L_i}$$
-
-Its parameters can be estimated by g-estimation, modified to allow for administrative censoring.
+The parameters of this AFT model can be estimated by g-estimation, modified to allow for administrative censoring.
 
 ::: {.notes}
-As a description of reality this model is implausible on two counts.
+
+::: {.callout-warning title="Deterministic, Rank-Preserving Models Are Implausible"}
+As a description of reality the structural AFT model is implausible on two counts.
 It is **deterministic**: it says that each person's untreated survival time $T^{a=0}$
 follows exactly from $T$, $A$, and $L$.
 It is **rank-preserving**: if $i$ would die before $j$ when both are untreated ($T^{a=0}_i < T^{a=0}_j$),
@@ -682,6 +876,7 @@ The book uses a rank-preserving model anyway because it makes g-estimation easie
 and the procedure is identical with or without rank preservation.
 Robins (1997b) describes structural nested AFT models that are neither deterministic nor rank-preserving.
 :::
+:::
 
 ### G-Estimation Without Censoring
 
@@ -689,13 +884,20 @@ Take the simpler rank-preserving model $T^{a=0}_i = T_i \exp{\psi A_i}$.
 If no one were administratively censored, so that $T$ were known for all,
 g-estimation would follow Section 14.5:
 
+::: {#alg-g-estimation-aft}
+## G-estimation of a structural AFT model without censoring
+
 1. For many candidate values $\psi^\dagger$, compute $H_i(\psi^\dagger) = T_i \exp{\psi^\dagger A_i}$.
 2. The g-estimate of $\psi$ is the $\psi^\dagger$ at which $H_i(\psi^\dagger)$ is unrelated to $A$
    in a logistic model for $\Pr[A = 1]$ that includes $H_i(\psi^\dagger)$ and the confounders $L$.
+:::
 
 ::: {.notes}
+
+::: {.callout-tip title="Use a Directed Search"}
 Statistical software offers directed search methods, such as the Nelder-Mead simplex,
 that need far less computation than a grid search.
+:::
 :::
 
 ### Selection Bias from Administrative Censoring
@@ -722,6 +924,9 @@ In terms of the AFT model $T^{a=1}/T^{a=0} = \exp{-\psi_1}$, this means $\exp{-\
 so $\psi_1 = \log(3/2) \approx 0.41 > 0$, a harmful effect.
 :::
 
+::: {#exm-aft-selection-bias}
+## Selection bias from administrative censoring
+
 Follow-up ends at $K = 60$ months, so by @tbl-aft-example:
 
 - type 1 deaths are observed in either arm (36 and 24 are both below 60);
@@ -733,8 +938,12 @@ the treated include types 1 and 2, the untreated only type 1.
 Exchangeability fails, the untreated look worse off on average,
 and treatment appears more beneficial than it is.
 This selection bias (Chapter 8) occurs whenever treatment changes survival time at all.
+:::
 
 ### Artificial Censoring
+
+::: {#def-artificial-censoring}
+## Artificial censoring
 
 To prevent the bias, the analysis must keep only people whose death would have been observed by $K$ under either treatment,
 those with $T^{a=0}_i \leq K$ and $T^{a=1}_i \leq K$;
@@ -743,6 +952,7 @@ So besides the administratively censored ($T_i > K$),
 some people with observed deaths ($T_i \leq K$) are removed
 because under the other treatment their death would have come after $K$.
 Removing such uncensored people is known as **artificial censoring**.
+:::
 
 Let $\Delta(\psi)$ indicate inclusion (1) or exclusion (0);
 g-estimation then uses $\Delta(\psi^\dagger)$ in place of $H(\psi^\dagger)$ (Technical Point 17.3).
@@ -770,11 +980,15 @@ Hernán et al. (2005, Appendix) give practical details.
 
 ### NHEFS Results and Practical Obstacles
 
+::: {#exm-nhefs-aft-g-estimation}
+## NHEFS: G-estimation of a structural AFT model
+
 Applied to the NHEFS with the rank-preserving model $T^{a=0}_i = T_i \exp{\psi A_i}$,
 g-estimation gave $\hat{\psi} = -0.047$ (95% confidence interval: $-0.223$ to $0.333$).
 The quantity $\exp{-\hat{\psi}} = \exp{0.047} \approx 1.05$ is the ratio of the median survival time
 had everyone received $a = 1$ to the median survival time had everyone received $a = 0$,
 so quitting appears to have little effect on time to death.
+:::
 
 ::: {.notes}
 The point estimate of $\psi$ is where the estimating function of Technical Point 17.3 reaches its minimum,
@@ -784,6 +998,9 @@ Survival analysis with instrumental variables, described by Tchetgen Tchetgen et
 runs into problems like the ones described here for structural nested models.
 :::
 
+::: {#rem-snm-rarely-used}
+## Why structural nested AFT models are rarely used
+
 Structural nested models, AFT models included, are rarely used in practice (Chapter 14).
 Reasons include a shortage of user-friendly software
 and, for survival outcomes, the reliance on search algorithms that may not find a unique solution,
@@ -792,6 +1009,7 @@ Published applications therefore mostly use simple AFT models with no effect mod
 That is a pity, since subject-matter knowledge, such as a biological mechanism,
 maps more naturally onto the parameters of a structural AFT model than onto those of a structural hazards model,
 particularly when the AFT model is neither deterministic nor rank-preserving.
+:::
 
 ## Summary
 
@@ -837,13 +1055,17 @@ None of the three adjusted analyses found much evidence that quitting smoking af
 - Risk and survival differences/ratios are better-defined causal estimands
 
 ::: {.notes}
-**Common mistakes in survival analysis**:
+
+::: {.callout-warning title="Common Mistakes in Survival Analysis"}
 
 1. Reporting only a single (time-averaged) hazard ratio from a Cox model and interpreting it causally
 2. Treating competing events as independent censoring (see Fine Point 17.1)
 3. Ignoring time-varying confounding (addressed in Part III)
 4. Restricting the analysis to uncensored individuals when estimating AFT models, which introduces selection bias
+:::
+:::
 
+::: {.notes}
 **Looking ahead**: Part III extends these ideas to time-varying treatments, where survival analysis becomes even more complex.
 The g-formula and IP weighting remain powerful tools, but they must account for the time-varying nature of both treatment and confounders.
 :::
