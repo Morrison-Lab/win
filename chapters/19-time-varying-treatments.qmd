@@ -110,7 +110,7 @@ A contrast at a single time,
 $$\E{Y^{a_k = 1}} - \E{Y^{a_k = 0}},$$
 
 quantifies the effect of treatment at time $k$ only,
-not the effect of treatment at all times between 0 and 59.
+not the effect of treatment at all times between 0 and $K$.
 The average causal effect of a time-varying treatment must instead contrast
 mean counterfactual outcomes under two rules,
 each of which specifies treatment at every time from $k = 0$ to $k = K$.
@@ -127,9 +127,10 @@ the average causal effect of a time-varying treatment is **not uniquely defined*
 
 A **treatment strategy**
 (also called a plan, policy, protocol, or regime)
-is a rule to assign treatment at each time $k$ of follow-up,
-such as the rules contrasted in @rem-effect-not-unique.
+is a rule to assign treatment at each time $k$ of follow-up.
 :::
+
+The rules contrasted in @rem-effect-not-unique are treatment strategies.
 
 ::: {#exm-always-vs-never-treat}
 ## Always treat versus never treat
@@ -163,8 +164,7 @@ For example, $\E{Y^{\bar{a}}} - \E{Y^{\bar{a}'}}$ could compare
 ## Number of fixed treatment sequences
 
 With a dichotomous treatment $a_k \in \{0, 1\}$ at each time $k = 0, 1, \ldots, K$,
-there are $2^{K+1}$ fixed treatment sequences $\bar{a} = (a_0, a_1, \ldots, a_K) \in \{0, 1\}^{K+1}$,
-and so $2^{K+1}$ deterministic strategies that assign every individual the same fixed sequence.
+there are $2^{K+1}$ fixed treatment sequences $\bar{a} = (a_0, a_1, \ldots, a_K) \in \{0, 1\}^{K+1}$.
 :::
 
 ::: {.proof}
@@ -293,9 +293,9 @@ which also lowers health status $Y$.
 
 | Figure | Arrows from $\bar{A}_{k-1}$ into $A_k$ | Arrows from $\bar{L}_k$ into $A_k$ | Arrows from $\bar{U}_k$ into $A_k$ |
 |--------|:--:|:--:|:--:|
-| 19.1 | yes | no | no |
-| 19.2 | yes | yes | no |
-| 19.3 | yes | yes | yes |
+| 19.1 | yes (for $k \geq 1$) | no | no |
+| 19.2 | yes (for $k \geq 1$) | yes | no |
+| 19.3 | yes (for $k \geq 1$) | yes | yes |
 
 Which variables have arrows into treatment $A_k$ in the book's Figures 19.1-19.3.
 :::
@@ -321,11 +321,10 @@ and with probability 1 to those treated the previous month ($A_{k-1} = 1$).
 - For static strategies (@def-dynamic-static),
   treatment assignment that depends only on past treatment is the time-varying generalization of
   *no confounding by measured or unmeasured variables*.
-- So for every static strategy $\bar{a}$ that satisfies positivity
-  ($\Pr[A_k = a_k \mid \bar{A}_{k-1} = \bar{a}_{k-1}] > 0$ for $k = 0, 1, \ldots, K$)
-  and consistency ($Y^{\bar{a}} = Y$ whenever $\bar{A} = \bar{a}$),
-  association is causation: $\E{Y^{\bar{a}}} = \E{Y \mid \bar{A} = \bar{a}}$.
-  The counterfactual mean under $\bar{a}$ is the mean among those who followed $\bar{a}$.
+- So under Figure 19.1 (where treatment is randomized at each time),
+  association is causation for static strategies:
+  the counterfactual mean under a static strategy $\bar{a}$
+  is the mean outcome among those who followed $\bar{a}$.
 
 ::: {.notes}
 
@@ -404,7 +403,7 @@ Figure 19.3 has unmeasured confounding.
 ::: {.notes}
 Sequentially randomized experiments (@def-seq-randomized) are rarely run in practice,
 but the concept clarifies the conditions needed for valid estimation
-of the effects of time-varying treatments, which the next section states formally.
+of the effects of time-varying treatments.
 :::
 
 ## 19.4 Sequential Exchangeability (pp. 259-260)
@@ -464,16 +463,19 @@ which also equals the counterfactual outcome under the static strategy $(a_0, a_
   implies sequential exchangeability for $Y^g$ (@def-seq-exchangeability).
 - More generally, it holds in any causal graph that, like Figure 19.2,
   has **no arrows from unmeasured $U$ into treatment**.
-- So under Figure 19.2, $\E{Y^g}$ is identified for **all** strategies $g$;
-  under Figure 19.3, for **none**
-  (generically, that is, under faithfulness, which rules out exact cancellations of effects).
-  Under other diagrams, it may be identified for some strategies but not others.
+- So under Figure 19.2, $\E{Y^g}$ is identified for **all** strategies $g$.
+- Under Figure 19.3, sequential exchangeability for $Y^g$ does not hold
+  (generically, that is, under [faithfulness](06-graphical-representation.qmd#from-d-separation-to-independence),
+  which rules out exact cancellations of effects).
+  The book states that $\E{Y^g}$ is then identified for **none** of the strategies
+  [@hernan2020causal, Section 19.4].
+- Under other diagrams, $\E{Y^g}$ may be identified for some strategies but not others.
 
 :::
 
 ::: {.notes}
 "This form of sequential exchangeability" signals that there are others,
-some weaker (Section 19.5) and some stronger (Technical Point 19.3).
+some weaker and some stronger.
 
 Whenever the book talks about identification, the identifying formula is the g-formula (Chapter 21).
 In rare cases, not relevant here, effects can be identified by formulas
@@ -503,6 +505,7 @@ Suppose unconditional sequential exchangeability (@def-unconditional-seq-exchang
 positivity holds along $\bar{a}$
 ($\Pr[A_k = a_k \mid \bar{A}_{k-1} = \bar{a}_{k-1}] > 0$ for $k = 0, 1, \ldots, K$),
 and consistency holds ($Y^{\bar{a}} = Y$ whenever $\bar{A} = \bar{a}$).
+Suppose also that $\E{\abs{Y^{\bar{a}}}} < \infty$.
 Then association is causation: $\E{Y^{\bar{a}}} = \E{Y \mid \bar{A} = \bar{a}}$.
 :::
 
@@ -513,7 +516,7 @@ for every $k$,
 so each conditional expectation below is well defined
 (for $k = 0$, conditioning on the empty history $\bar{A}_{-1} = \bar{a}_{-1}$ is no conditioning).
 
-Inductive step: for each $k = 0, 1, \ldots, K$,
+One-step identity: for each $k = 0, 1, \ldots, K$,
 
 \begin{align}
 \E{Y^{\bar{a}} \mid \bar{A}_{k-1} = \bar{a}_{k-1}}
@@ -523,17 +526,17 @@ Inductive step: for each $k = 0, 1, \ldots, K$,
   && \text{(since } \bar{A}_k = (\bar{A}_{k-1}, A_k)\text{)}
 \end{align}
 
-Applying the inductive step for $k = 0$, then $k = 1$, and so on through $k = K$:
+Applying the one-step identity for $k = 0$, then $k = 1$, and so on through $k = K$:
 
 \begin{align}
 \E{Y^{\bar{a}}}
 &= \E{Y^{\bar{a}} \mid \bar{A}_0 = \bar{a}_0}
-  && \text{(inductive step, } k = 0\text{)} \\
+  && \text{(one-step identity, } k = 0\text{)} \\
 &= \E{Y^{\bar{a}} \mid \bar{A}_1 = \bar{a}_1}
-  && \text{(inductive step, } k = 1\text{)} \\
+  && \text{(one-step identity, } k = 1\text{)} \\
 &\;\;\vdots \\
 &= \E{Y^{\bar{a}} \mid \bar{A}_K = \bar{a}_K}
-  && \text{(inductive step, } k = K\text{)} \\
+  && \text{(one-step identity, } k = K\text{)} \\
 &= \E{Y \mid \bar{A} = \bar{a}}
   && \text{(consistency: } Y^{\bar{a}} = Y \text{ when } \bar{A} = \bar{a}\text{)}
 \end{align}
@@ -555,8 +558,6 @@ $U_1$ is the true (unknown) CD4 count, which $L_1$ measures with error.
   whose assignment depends on $L_1$.
 
 :::
-
-Section 19.5 uses SWIGs to show why.
 
 ---
 
@@ -736,6 +737,8 @@ then $Y^{a_0, a_1} \ind A_1 \mid A_0 = a_0, L_1$.
 ::: {#def-static-seq-exchangeability}
 ## Static sequential exchangeability
 
+**Static sequential exchangeability** holds for a given static strategy $\bar{a}$ if
+
 $$Y^{\bar{a}} \ind A_k \mid \bar{A}_{k-1} = \bar{a}_{k-1}, \bar{L}_k
 \quad \text{for } k = 0, 1, \ldots, K.$$
 :::
@@ -746,7 +749,8 @@ $$Y^{\bar{a}} \ind A_k \mid \bar{A}_{k-1} = \bar{a}_{k-1}, \bar{L}_k
 - Static sequential exchangeability (@def-static-seq-exchangeability) is **weaker**
   than sequential exchangeability for $Y^g$ (@def-seq-exchangeability):
   it concerns only counterfactual outcomes indexed by static strategies $g = \bar{a}$.
-- It suffices to identify $\E{Y^{\bar{a}}}$ for every static strategy.
+- When it holds for every static $\bar{a}$,
+  it suffices to identify $\E{Y^{\bar{a}}}$ for every static strategy.
 - It holds in Figure 19.6 (@exm-figures-19-5-19-6) too (check d-separation on its SWIG, Figure 19.8),
   so under Figure 19.6 every static strategy is identified.
 
@@ -761,7 +765,8 @@ $$Y^{\bar{a}} \ind A_k \mid \bar{A}_{k-1} = \bar{a}_{k-1}, \bar{L}_k
   so *unconditional* sequential exchangeability (@def-unconditional-seq-exchangeability) would hold
   and every static strategy could be identified without data on $L_1$.
 - With an added arrow $U_1 \to A_1$, the SWIG would have $U_1 \to A_1^{a_0}$,
-  no form of sequential exchangeability would hold,
+  no form of sequential exchangeability would hold
+  (generically, that is, under faithfulness),
   and no strategy would be identified.
 
 :::
@@ -782,8 +787,9 @@ Restricting to $\bar{A}_{k-1}^{\bar{a}_{k-2}} = \bar{a}_{k-1}$ and applying cons
 
 $$\paren{Y^{\bar{a}}, \underline{L}_{k+1}^{\bar{a}}} \ind A_k \mid \bar{A}_{k-1} = \bar{a}_{k-1}, \bar{L}_k.$$
 
-When this holds for all $\bar{a}$, it is called **sequential exchangeability**;
-it implies the condition of @def-seq-exchangeability.
+When this holds for all $\bar{a}$, the book calls it sequential exchangeability;
+these notes call it **joint sequential exchangeability**,
+to keep it distinct from @def-seq-exchangeability, which it implies.
 Although it mentions only static strategies, it is equivalent to
 
 $$\paren{Y^{g}, \underline{L}_{k+1}^{g}} \ind A_k \mid \bar{A}_{k-1} = g(\bar{A}_{k-2}, \bar{L}_{k-1}), \bar{L}_k
@@ -848,21 +854,23 @@ So $g_0 = 0$ for everybody, $g_1(L_1^g) = 1$ when $L_1^g = 1$, and $g_1(L_1^g) =
 ## Dynamic strategies under Figures 19.5 and 19.6
 
 - **Figure 19.9** (from Figure 19.5, @exm-figures-19-5-19-6):
-  d-separation gives $Y^g \ind A_0$ and $Y^g \ind A_1^g \mid A_0 = g_0, L_1^g$ for every $g$.
+  d-separation gives $Y^g \ind A_0$ and $Y^g \ind A_1^g \mid A_0, L_1^g$ for every $g$.
+  Restricting the second to those with $A_0 = g_0$ and applying consistency
+  ($L_1^g = L_1$ and $A_1^g = A_1$ whenever $A_0 = g_0$)
+  gives $Y^g \ind A_1 \mid A_0 = g_0, L_1$.
   Sequential exchangeability for $Y^g$ holds:
   **all strategies, static and dynamic, are identified**.
 - **Figure 19.10** (from Figure 19.6):
-  $Y^g \ind A_0$ fails (generically, that is, under faithfulness), because of the open path
-  $$A_0 \leftarrow W_0 \to L_1^g \to g_1(L_1^g) \to Y^g.$$
-  Sequential exchangeability for $Y^g$ fails,
-  and $\E{Y^g}$ is not identified for the dynamic strategy.
+  because of the open path
+  $$A_0 \leftarrow W_0 \to L_1^g \to g_1(L_1^g) \to Y^g,$$
+  neither $Y^g \ind A_0$ nor sequential exchangeability for $Y^g$ holds
+  (generically, that is, under faithfulness).
+  The book states that $\E{Y^g}$ is then not identified for the dynamic strategy
+  [@hernan2020causal, Section 19.5].
 
 :::
 
 ::: {.notes}
-From the SWIG we read $Y^g \ind A_1^g \mid A_0, L_1^g$,
-which by consistency implies $Y^g \ind A_1 \mid A_0 = g_0, L_1$.
-
 Another way to see the Figure 19.10 problem:
 the distribution of $Y^g$ depends on that of $g_1(L_1^g)$, hence on that of $L_1^g$,
 and the distribution of $L_1^g$ is not identified because of the path $A_0 \leftarrow W_0 \to L_1^g$.
@@ -909,9 +917,10 @@ recently called "modified treatment policies" (Diaz et al. 2021).
 Figure 19.11 is Figure 19.6 (@exm-figures-19-5-19-6) plus an arrow $L_1 \to Y$
 (Figure 19.12 is its SWIG under a static strategy).
 Here neither sequential exchangeability for $Y^g$ (@def-seq-exchangeability)
-nor static sequential exchangeability for $Y^{\bar{a}}$ (@def-static-seq-exchangeability) holds,
-so, generically (that is, under faithfulness),
-**no** strategy's effect is identified.
+nor static sequential exchangeability for $Y^{\bar{a}}$ (@def-static-seq-exchangeability) holds
+(generically, that is, under faithfulness).
+The book states that then **no** strategy's effect is identified
+[@hernan2020causal, Section 19.5].
 :::
 
 ::: {#tbl-ch19-identification-summary}
@@ -924,7 +933,8 @@ so, generically (that is, under faithfulness),
 
 Identification of static strategies and of dynamic strategies whose assignment depends on $L_1$,
 under Figures 19.5, 19.6, and 19.11.
-"Not identified" holds generically, that is, under faithfulness.
+"Not identified" is the book's conclusion [@hernan2020causal, Section 19.5];
+the exchangeability conditions behind it fail generically, that is, under faithfulness.
 :::
 
 ::: {.notes}
