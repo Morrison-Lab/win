@@ -139,7 +139,7 @@ $\E{Y \mid A = a, C = 0, L = l} = \beta_0 + \beta_1 a + a \tp{\beta_2} l + \tp{\
 for every $(a, l)$ with positive probability among the uncensored,
 so the linear model with $\alpha = \beta$ equals the conditional mean and is correctly specified;
 in vector form, $\E{Y \mid A, L, C = 0} = \tp{X} \beta$.
-The moment conditions make every expectation below finite.
+The moment conditions make every expectation in the normal equations finite.
 The population least-squares coefficients $\alpha$ are the solutions of the normal equations
 $\E{X (Y - \tp{X} \alpha) \mid C = 0} = 0$.
 The vector $\beta$ solves them:
@@ -213,7 +213,7 @@ Two methods for the same effect rely on different nuisance parameters (@def-nuis
   The nuisance parameters are $\beta_0$ and $\beta_3$.
 - **G-estimation** of the structural nested model $\E{Y^{a,c=0} - Y^{a=0,c=0} \mid L} = \beta_1 a + a \tp{\beta_2} L$:
   consistent (in general) only if the treatment model for $\Pr[A = 1 \mid L]$ is correct.
-  The nuisance parameters are those of the treatment model, e.g., $\alpha_0, \alpha_1$ in $\logit \Pr[A = 1 \mid L] = \alpha_0 + \alpha_1 L$.
+  The nuisance parameters are those of the treatment model, e.g., $\gamma_0, \gamma_1$ in $\logit \Pr[A = 1 \mid L] = \gamma_0 + \tp{\gamma_1} L$.
 
 ::: {.notes}
 Example: if $L$ should enter as $\beta_3 L + \beta_4 L^2$ but is modeled as $\beta_3 L$ only, outcome regression is biased;
@@ -329,7 +329,7 @@ The two probabilities are equal, so $A$ does not depend on $L$ once $\pi(L)$ is 
 In words: individuals with the same $\pi(L)$ may differ in $L$ (e.g., smoking intensity and exercise),
 but among all individuals with a given value of $\pi(L)$ in the super-population,
 the distribution of $L$ is the same in the treated and the untreated.
-The propensity score is the coarsest balancing score (Rosenbaum and Rubin 1983):
+The propensity score is the coarsest balancing score (Rosenbaum and Rubin 1983, as cited in @hernan2020causal [p. 202]):
 a function $b(L)$ is a balancing score exactly when $\pi(L)$ can be written as a function of $b(L)$.
 
 ::: {.notes}
@@ -412,7 +412,9 @@ part 2 of @thm-ps-exchangeability states the positivity condition given $\pi(L)$
 ::: {#alg-propensity-score-adjustment}
 ## Adjusting for the Propensity Score
 
-Suppose exchangeability and positivity hold given $\pi(L)$.
+Suppose exchangeability and positivity hold given $\pi(L)$,
+consistency holds,
+and the model for $\Pr[A = 1 \mid L]$ is correctly specified.
 Then causal effects can be estimated as follows.
 
 1. Fit a model for $\Pr[A = 1 \mid L]$.
@@ -456,7 +458,8 @@ Subtracting the $a = 0$ line from the $a = 1$ line gives the result.
 :::
 
 For treatment alone, without censoring, @thm-ps-exchangeability shows that exchangeability and positivity given $L$ carry over to $\pi(L)$.
-When no one is censored, the joint $(A, C)$ conditions of @prp-ps-stratum-effect reduce to these treatment-only conditions, so they are met.
+When no one is censored, the joint $(A, C)$ conditions of @prp-ps-stratum-effect reduce to these treatment-only conditions,
+so they hold whenever exchangeability and positivity given $L$ hold (with $L$ discrete, as in @prp-ps-stratum-effect).
 With censoring, $\pi(L)$ alone need not suffice;
 one would instead condition on a score $b(L)$ with $(A, C) \ind L \mid b(L)$,
 for example the vector of joint probabilities $\Pr[A = a, C = c \mid L]$ over all $(a, c)$.
@@ -481,7 +484,7 @@ Classify individuals into 10 strata (deciles) of the estimated $\pi(L)$, about 1
 :::
 
 ::: {.notes}
-With wide confidence intervals, differences between deciles cannot be distinguished from chance.
+With wide confidence intervals, differences between deciles may reflect chance.
 :::
 
 ---
@@ -528,17 +531,17 @@ The outcome model on $\pi(L)$ estimates effects **within** levels $s$ of $\pi(L)
 
 For the population average causal effect $\E{Y^{a=1,c=0}} - \E{Y^{a=0,c=0}}$, standardize the fitted conditional means over the distribution of the estimated $\pi(L)$:
 the Chapter 13 procedure with $\pi(L)$ in place of $L$.
-Let $\hat m(a, s)$ be the fitted value at $A = a$ and propensity score $s$
-of an outcome model for $\E{Y \mid A, C = 0, \pi(L)}$ fitted among the uncensored with $\hat\pi(L)$ as the covariate.
-For each $a \in \{0, 1\}$:
 
-1. Fit the outcome model for $\E{Y \mid A, C = 0, \pi(L)}$ among the uncensored, with $\hat\pi(L)$ as the covariate.
-2. For each individual $i = 1, \ldots, n$, compute the prediction $\hat m(a, \hat\pi(L_i))$ at $A = a$ and $\hat\pi(L_i)$.
-3. Average the predictions:
+1. Estimate the propensity score $\hat\pi(L_i)$ for each individual $i = 1, \ldots, n$.
+2. Fit an outcome model for $\E{Y \mid A, C = 0, \pi(L)}$ once, among the uncensored, with $\hat\pi(L)$ as the covariate;
+   write $\hat m(a, s)$ for its fitted value at $A = a$ and propensity score $s$.
+3. For each $a \in \{0, 1\}$, predict each individual's outcome at $A = a$ and their own $\hat\pi(L_i)$, and average the predictions:
 
    $$
    \hE{Y^{a,c=0}} = \frac{1}{n} \sumin \hat m(a, \hat\pi(L_i)).
    $$
+
+4. Estimate the average causal effect by the difference $\hE{Y^{a=1,c=0}} - \hE{Y^{a=0,c=0}}$.
 :::
 
 ::: {#exm-ps-standardization}
@@ -563,8 +566,11 @@ or approximately the same when matches need only fall within a caliper.
 :::
 
 - E.g., pair each treated individual with one (or more) untreated individuals with the same, or a close, propensity score.
-- Under exchangeability and positivity given $\pi(L)$ and a correctly specified propensity model, the treated and the untreated in a propensity-matched population are exchangeable,
+- Under exchangeability and positivity given $\pi(L)$ and a correctly specified propensity model,
+  exact matching on $\pi(L)$ makes the treated and the untreated in the matched population exchangeable,
   so, under consistency, association measures in the matched population consistently estimate the effect measures **in the matched population**.
+- Caliper matching makes them only approximately exchangeable:
+  some bias remains, and it shrinks as the caliper narrows.
 
 ::: {.notes}
 The matched population can be given the $\pi(L)$ distribution of the treated, of the untreated, or any other distribution [@hernan2020causal, p. 204].
@@ -686,7 +692,8 @@ Part II used two kinds of models for causal inference.
 ## Which Parameters Have a Causal Interpretation
 
 We fit a propensity model only to compute the score,
-so its coefficients describe how treatment depends on $L$, not what treatment does (@def-nuisance-parameter).
+so its coefficients are nuisance parameters (@def-nuisance-parameter):
+they describe the association between $L$ and $A$, not the effect of $A$.
 The treatment parameters of a structural model **do** have a causal interpretation.
 :::
 
