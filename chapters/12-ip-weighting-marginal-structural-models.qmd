@@ -201,9 +201,11 @@ This is the curse of dimensionality introduced in Chapter 10, so we resort to a 
 ## Estimating IP Weights with a Treatment Model
 
 1. Fit a logistic regression model for $\Pr[A = 1 \mid L]$ including all 9 confounders:
+
    - linear and quadratic terms for the (quasi-)continuous covariates age, weight, intensity of smoking, and duration of smoking;
    - no product terms between covariates.
 2. For each individual, compute
+
    - $\hat{f}(1 \mid L) = \hat{\Pr}[A = 1 \mid L]$ if $A = 1$,
    - $\hat{f}(0 \mid L) = 1 - \hat{\Pr}[A = 1 \mid L]$ if $A = 0$.
 3. Set $\hat{W}^A = 1 / \hat{f}(A \mid L)$.
@@ -470,8 +472,6 @@ So Sections 12.2-12.3 were already estimating $\beta_1$ of a marginal structural
 
 ---
 
-### Fitting a Marginal Structural Model by IP Weighting
-
 ::: {#alg-fit-msm-ipw}
 ## Fitting a Marginal Structural Model by IP Weighting
 
@@ -519,8 +519,9 @@ where $\beta_0 = \E{Y^{a=0}}$ is the mean weight gain with no change in smoking 
 ### Effect of Increasing Intensity by 20 Cigarettes/Day
 
 ::: {#exm-msm-20-cigarettes}
-## Effect of 20 More Cigarettes per Day under @def-msm-continuous
+## Effect of 20 More Cigarettes per Day
 
+Under the model of @def-msm-continuous,
 $$
 \begin{aligned}
 \E{Y^{a=20}} - \E{Y^{a=0}}
@@ -643,7 +644,7 @@ The parameter $\beta_3$ does not generally have a causal interpretation as the e
 - Fit $\E{Y \mid A, V} = \theta_0 + \theta_1 A + \theta_2 V A + \theta_3 V$ by weighted least squares with weights $W^A$ or $SW^A$.
 - In most settings $L$ should include $V$;
   even when $V$ is not needed for exchangeability, including it generally improves efficiency.
-- Because the model is within levels of $V$, the numerator can be $f[A \mid V]$ (@def-stabilized-weights-v).
+- Because the model is within levels of $V$, the numerator can be $f[A \mid V]$.
 
 ::: {#def-stabilized-weights-v}
 ## Stabilized IP Weights Given $V$
@@ -652,6 +653,8 @@ $$SW^A(V) \eqdef \frac{f[A \mid V]}{f[A \mid L]}$$
 
 They are estimated like $SW^A$, but with $V$ added to the numerator's logistic model.
 :::
+
+Either $SW^A$ or $SW^A(V)$ (@def-stabilized-weights-v) can be used to fit the model.
 
 ::: {.notes}
 $SW^A(V)$ generally gives narrower confidence intervals than $SW^A$;
@@ -674,7 +677,7 @@ The 95% confidence interval for $\hth_2$ (the product-term coefficient) was $(-2
 ### Which Covariates to Put in the Model?
 
 - The subset $V$ of $L$ included in the marginal structural model should reflect only **substantive interest**: include $V$ if you believe it may modify the effect and you care more about effects within levels of $V$ than in the whole population.
-- If all of $L$ is included, IP weighting is unnecessary (@def-faux-msm).
+- If all of $L$ is included, IP weighting is unnecessary.
 
 ::: {#def-faux-msm}
 ## Faux Marginal Structural Model
@@ -749,6 +752,8 @@ using the factorization $f(A, C = 0 \mid L) = f(A \mid L) \times \Pr[C = 0 \mid 
 ::: {#def-identifiability-a-c}
 ## Identifiability Conditions for the Joint Treatment $(A, C)$
 
+The **identifiability conditions** for the joint treatment $(A, C)$ are:
+
 - exchangeability: $Y^{a, c=0} \ind (A, C) \mid L$;
 - positivity for $(A = a, C = 0)$;
 - consistency.
@@ -781,7 +786,7 @@ $$SW^{A,C} \eqdef SW^A \times SW^C$$
 | Result | no selection, hence no selection bias | selection at random with respect to $L$: selection but no selection bias |
 
 With either, fit the weighted model $\E{Y \mid A, C = 0} = \theta_0 + \theta_1 A$ to estimate the marginal structural model $\E{Y^{a, c=0}} = \beta_0 + \beta_1 a$;
-the stabilized version uses $SW^{A,C} = SW^A \times SW^C$.
+the stabilized version uses $SW^{A,C}$ (@def-stabilized-censoring-weights).
 
 ::: {.notes}
 The estimated $SW^C$ have mean 1 when the model for $\Pr[C = 0 \mid A]$ is correctly specified [@hernan2020causal, Chapter 12, p. 173].
