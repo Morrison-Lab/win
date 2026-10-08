@@ -6,9 +6,9 @@
 <script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
 <link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
 <link href="../site_libs/quarto-html/light-border.css" rel="stylesheet">
-<link href="../site_libs/quarto-html/quarto-syntax-highlighting-64a204ab8560d761af7679ceaba22944.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-bf27225e3a48a9273f3daa8f8e829971.css" rel="stylesheet" id="quarto-text-highlighting-styles">
 <link href="../site_libs/quarto-contrib/code-language-labels-1.0.2/code-language-labels.css" rel="stylesheet"><meta charset="utf-8">
-  <meta name="generator" content="quarto-1.10.18">
+  <meta name="generator" content="quarto-1.10.19">
 
   <title>What If? - Lecture Notes – Chapter 15: Outcome Regression and Propensity Scores</title>
   <meta name="apple-mobile-web-app-capable" content="yes">
@@ -687,13 +687,13 @@ A \perp\!\!\!\perp L \mid \pi(L).
 <h2>Standardizing over the Propensity Score</h2>
 <p>The outcome model on <span class="math inline">\(\pi(L)\)</span> estimates effects <strong>within</strong> levels <span class="math inline">\(s\)</span> of <span class="math inline">\(\pi(L)\)</span>.</p>
 <div id="alg-ps-standardization" class="theorem algorithm">
-<p><span class="theorem-title"><strong>Algorithm 2 (Standardization over the Propensity Score)</strong></span> For the population average causal effect <span class="math inline">\(\text{E}{\left[Y^{a=1,c=0}\right]} - \text{E}{\left[Y^{a=0,c=0}\right]}\)</span>, standardize the fitted conditional means over the distribution of the estimated <span class="math inline">\(\pi(L)\)</span>: the Chapter 13 procedure with <span class="math inline">\(\pi(L)\)</span> in place of <span class="math inline">\(L\)</span>. This procedure assumes <span class="math inline">\(\pi(L)\)</span> suffices for adjustment, as it does when no one is censored and exchangeability and positivity hold given <span class="math inline">\(L\)</span> (<a href="#/thm-ps-exchangeability" class="quarto-xref">Theorem&nbsp;1</a>); with censoring, replace <span class="math inline">\(\pi(L)\)</span> by a joint score <span class="math inline">\(b(L)\)</span> with <span class="math inline">\((A, C) \perp\!\!\!\perp L \mid b(L)\)</span>, as discussed after <a href="#/prp-ps-stratum-effect" class="quarto-xref">Proposition&nbsp;4</a>.</p>
+<p><span class="theorem-title"><strong>Algorithm 2 (Standardization over the Propensity Score)</strong></span> For the population average causal effect <span class="math inline">\(\text{E}{\left[Y^{a=1,c=0}\right]} - \text{E}{\left[Y^{a=0,c=0}\right]}\)</span>, standardize the fitted conditional means over the distribution of an estimated adjustment score <span class="math inline">\(b(L)\)</span>: the Chapter 13 procedure with <span class="math inline">\(b(L)\)</span> in place of <span class="math inline">\(L\)</span>. When no one is censored, <span class="math inline">\(b(L) = \pi(L)\)</span>, which suffices for adjustment when exchangeability and positivity hold given <span class="math inline">\(L\)</span> (<a href="#/thm-ps-exchangeability" class="quarto-xref">Theorem&nbsp;1</a>). With censoring, <span class="math inline">\(b(L)\)</span> is a joint score with <span class="math inline">\((A, C) \perp\!\!\!\perp L \mid b(L)\)</span>, as discussed after <a href="#/prp-ps-stratum-effect" class="quarto-xref">Proposition&nbsp;4</a>, such as the vector of joint probabilities <span class="math inline">\(\Pr[A = a, C = c \mid L]\)</span> over all <span class="math inline">\((a, c)\)</span>. This joint score suffices when, for each <span class="math inline">\(a \in \{0, 1\}\)</span>, <span class="math inline">\(Y^{a,c=0} \perp\!\!\!\perp(A, C) \mid L\)</span> and <span class="math inline">\(\Pr[A = a, C = 0 \mid L] &gt; 0\)</span>: because <span class="math inline">\((A, C) \perp\!\!\!\perp L \mid b(L)\)</span>, these conditions carry over from <span class="math inline">\(L\)</span> to <span class="math inline">\(b(L)\)</span>, by the argument <a href="#/thm-ps-exchangeability" class="quarto-xref">Theorem&nbsp;1</a> gives for <span class="math inline">\(A\)</span> alone. In either case, consistency must hold, and the treatment, censoring (if any), and outcome models must be correctly specified.</p>
 <ol type="1">
-<li><p>Estimate the propensity score <span class="math inline">\(\hat\pi(L_i)\)</span> for each individual <span class="math inline">\(i = 1, \ldots, n\)</span>.</p></li>
-<li><p>Fit an outcome model for <span class="math inline">\(\text{E}{\left[Y \mid A, C = 0, \pi(L)\right]}\)</span> once, among the uncensored, with <span class="math inline">\(\hat\pi(L)\)</span> as the covariate; write <span class="math inline">\(\hat m(a, s)\)</span> for its fitted value at <span class="math inline">\(A = a\)</span> and propensity score <span class="math inline">\(s\)</span>.</p></li>
-<li><p>For each <span class="math inline">\(a \in \{0, 1\}\)</span>, predict each individual’s outcome at <span class="math inline">\(A = a\)</span> and their own <span class="math inline">\(\hat\pi(L_i)\)</span>, and average the predictions:</p>
+<li><p>Estimate the score <span class="math inline">\(\hat b(L_i)\)</span> for each individual <span class="math inline">\(i = 1, \ldots, n\)</span>, censored or not. Without censoring, <span class="math inline">\(\hat b(L_i) = \hat\pi(L_i)\)</span>. With censoring, combine a treatment model and a censoring model, <span class="math inline">\(\widehat{\Pr}[A = a, C = c \mid L] = \widehat{\Pr}[A = a \mid L] \, \widehat{\Pr}[C = c \mid L, A = a]\)</span> for each <span class="math inline">\((a, c)\)</span>.</p></li>
+<li><p>Fit an outcome model for <span class="math inline">\(\text{E}{\left[Y \mid A, C = 0, b(L)\right]}\)</span> once, among the uncensored, with <span class="math inline">\(\hat b(L)\)</span> as the covariate(s); write <span class="math inline">\(\hat m(a, s)\)</span> for its fitted value at <span class="math inline">\(A = a\)</span> and score value <span class="math inline">\(s\)</span>.</p></li>
+<li><p>For each <span class="math inline">\(a \in \{0, 1\}\)</span>, predict each individual’s outcome at <span class="math inline">\(A = a\)</span> and their own <span class="math inline">\(\hat b(L_i)\)</span>, and average the predictions over all <span class="math inline">\(n\)</span> individuals:</p>
 <p><span class="math display">\[
-\hat{\text{E}}{\left[Y^{a,c=0}\right]} = \frac{1}{n} \sum_{i=1}^n\hat m(a, \hat\pi(L_i)).
+\hat{\text{E}}{\left[Y^{a,c=0}\right]} = \frac{1}{n} \sum_{i=1}^n\hat m(a, \hat b(L_i)).
 \]</span></p></li>
 <li><p>Estimate the average causal effect by the difference <span class="math inline">\(\hat{\text{E}}{\left[Y^{a=1,c=0}\right]} - \hat{\text{E}}{\left[Y^{a=0,c=0}\right]}\)</span>.</p></li>
 </ol>
@@ -718,6 +718,7 @@ A \perp\!\!\!\perp L \mid \pi(L).
 <li>Under exchangeability and positivity given <span class="math inline">\(\pi(L)\)</span>, exact matching on the true <span class="math inline">\(\pi(L)\)</span> makes the treated and the untreated in the matched population exchangeable, so, under consistency, association measures in the matched population equal the effect measures <strong>in the matched population</strong>.</li>
 <li>In practice we match on an estimate <span class="math inline">\(\hat\pi(L)\)</span>. Equal estimated scores need not mean equal true scores, so even with a correctly specified propensity model this exchangeability holds only approximately, with the approximation improving as the sample grows.</li>
 <li>Caliper matching adds a second approximation: some bias may remain, and it typically shrinks as the caliper narrows.</li>
+<li>With censoring, outcomes are observed only for the uncensored members of the matched population. One way to account for that is to weight the uncensored by the inverse of <span class="math inline">\(\Pr[C = 0 \mid L, A]\)</span> (Chapter 12), which needs a correct censoring model, <span class="math inline">\(Y^{a,c=0} \perp\!\!\!\perp C \mid A, L\)</span>, and <span class="math inline">\(\Pr[C = 0 \mid L, A] &gt; 0\)</span>.</li>
 </ul>
 <aside class="notes">
 <p>The matched population can be given the <span class="math inline">\(\pi(L)\)</span> distribution of the treated, of the untreated, or any other distribution <span class="citation" data-cites="hernan2020causal">(<a href="#/references" role="doc-biblioref" onclick="">Hernán and Robins 2020, 204</a>)</span>.</p>
@@ -1075,7 +1076,7 @@ A \perp\!\!\!\perp L \mid \pi(L).
 <div id="tbl-ch15-methods-summary" class="quarto-float quarto-figure quarto-figure-center">
 <figure class="quarto-float quarto-float-tbl">
 <figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-ch15-methods-summary-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Table&nbsp;1: Methods of this chapter and Chapter 14, the models they fit, and what each requires beyond the identifying conditions. All of these methods also need exchangeability, positivity, and consistency.
+Table&nbsp;1: Methods of this chapter and Chapter 14, the models they fit, and what each requires beyond the identifying conditions. All of these methods also need exchangeability, positivity, and consistency. Outcome regression handles censoring by fitting its model among the uncensored; the other methods need a model for censoring as well, except that g-estimation can skip the censoring weights under the conditions noted in Chapter 14.
 </figcaption>
 <div aria-describedby="tbl-ch15-methods-summary-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 <table class="caption-top">
@@ -1099,13 +1100,13 @@ Table&nbsp;1: Methods of this chapter and Chapter 14, the models they fit, and w
 </tr>
 <tr class="even">
 <td><strong>G-estimation</strong> (SNM)</td>
-<td><span class="math inline">\(\Pr[A = 1 \mid L]\)</span></td>
-<td>Correct treatment model and correct structural nested model</td>
+<td><span class="math inline">\(\Pr[A = 1 \mid L]\)</span>; with censoring, also <span class="math inline">\(\Pr[C = 0 \mid L, A]\)</span> for the censoring weights</td>
+<td>Correct treatment model and correct structural nested model; with censoring, also a correct censoring model</td>
 </tr>
 <tr class="odd">
 <td><strong>Propensity stratification / outcome regression on <span class="math inline">\(\pi(L)\)</span></strong></td>
-<td><span class="math inline">\(\pi(L)\)</span> and <span class="math inline">\(\text{E}{\left[Y \mid A, C = 0, \pi(L)\right]}\)</span></td>
-<td>Correct propensity model and correct <span class="math inline">\(\pi(L)\)</span>-<span class="math inline">\(Y\)</span> relation</td>
+<td><span class="math inline">\(\pi(L)\)</span> and <span class="math inline">\(\text{E}{\left[Y \mid A, C = 0, \pi(L)\right]}\)</span>; with censoring, the joint score <span class="math inline">\(b(L)\)</span> in place of <span class="math inline">\(\pi(L)\)</span></td>
+<td>Correct propensity model and correct score-<span class="math inline">\(Y\)</span> relation; with censoring, also a correct censoring model</td>
 </tr>
 <tr class="even">
 <td><strong>Propensity standardization</strong></td>
@@ -1114,8 +1115,8 @@ Table&nbsp;1: Methods of this chapter and Chapter 14, the models they fit, and w
 </tr>
 <tr class="odd">
 <td><strong>Propensity matching</strong></td>
-<td><span class="math inline">\(\pi(L)\)</span></td>
-<td>Correct propensity model; estimate refers to the matched population</td>
+<td><span class="math inline">\(\pi(L)\)</span>; with censoring, also <span class="math inline">\(\Pr[C = 0 \mid L, A]\)</span></td>
+<td>Correct propensity model; with censoring, also a correct censoring model; estimate refers to the matched population</td>
 </tr>
 </tbody>
 </table>
