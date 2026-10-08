@@ -244,7 +244,8 @@ rewritten in terms of $D_k$:
 
 - **Survival** at $k$: $\Pr[D_k = 0] = \Pr[T > k]$
 - **Risk** at $k$: $\Pr[D_k = 1] = \Pr[T \leq k]$
-- **Hazard** at $k$: $\Pr[D_k = 1 \mid D_{k-1} = 0]$
+- **Hazard** at $k$: $\Pr[D_k = 1 \mid D_{k-1} = 0] = \Pr[T = k \mid T > k - 1]$,
+  since $D_k = 1$ and $D_{k-1} = 0$ together say exactly that $T = k$
 
 At $k = 1$ hazard and risk coincide, since everyone is alive at $k = 0$ by construction.
 :::
@@ -503,6 +504,9 @@ Suppose also that, for every $m = 1, \ldots, k$:
 - **Positivity**: $\Pr[C_m = 0 \mid A = a, D^{\bar{c}=0}_{m-1} = 0] > 0$
   and $\Pr[D^{\bar{c}=0}_{m-1} = 0 \mid A = a] > 0$;
 - **Consistency**: for anyone with $C_m = 0$, $D_m = D^{\bar{c}=0}_m$ and $D_{m-1} = D^{\bar{c}=0}_{m-1}$.
+  Stating it for both indicators is reasonable because being uncensored at $m$ implies being uncensored at $m - 1$:
+  by @def-time-varying-censoring-indicator, a follow-up that ends at or beyond $m$ also ends at or beyond $m - 1$,
+  so both $D_{m-1}$ and $D_m$ are observed for these people.
 
 Then the survival without censoring (@def-survival-without-censoring) at $k$ is
 
@@ -519,10 +523,7 @@ By the independence assumption
 (with positivity ensuring the added conditioning event has positive probability),
 adding $C_m = 0$ to the conditioning event leaves the factor unchanged:
 it equals $\Pr[D^{\bar{c}=0}_m = 0 \mid D^{\bar{c}=0}_{m-1} = 0, C_m = 0, A = a]$.
-Being uncensored at $m$ implies being uncensored at $m - 1$,
-because by @def-time-varying-censoring-indicator a follow-up that ends at or beyond $m$ also ends at or beyond $m - 1$;
-so the people with $C_m = 0$ were observed at $m - 1$ as well as at $m$.
-Among them, consistency replaces $D^{\bar{c}=0}_m$ by $D_m$ and $D^{\bar{c}=0}_{m-1}$ by $D_{m-1}$,
+Among the people with $C_m = 0$, consistency replaces $D^{\bar{c}=0}_m$ by $D_m$ and $D^{\bar{c}=0}_{m-1}$ by $D_{m-1}$,
 so the factor equals $\Pr[D_m = 0 \mid D_{m-1} = 0, C_m = 0, A = a]$,
 which involves only observed data.
 Multiplying the $k$ factors gives the result.
