@@ -163,9 +163,6 @@
 </section>
 <section class="slide level2">
 
-<!-- https://www.overleaf.com/learn/latex/Using_colors_in_LaTeX#Named_colors_provided_by_the_xcolor_package -->
-<!-- \def\or{\theta}  -->
-<!-- doesn't work for some reason -->
 <p>You already reason about causes and effects every day, and you already know that seeing two things happen together does not mean that one caused the other. Someone who could not tell the difference would not last long: they would copy whatever the people who were later rewarded happened to do, however dangerous.</p>
 <p>This chapter therefore does not try to teach new causal intuitions. Its job is to introduce the mathematical notation that formalizes the intuition you already have, so that causal concepts can be defined precisely. The rest of the book uses this notation throughout.</p>
 <aside class="notes">
@@ -425,10 +422,10 @@
 <div id="def-average-causal-effect" class="theorem definition">
 <p><span class="theorem-title"><strong>Definition 3 (Average causal effect)</strong></span> An average causal effect of treatment <span class="math inline">\(A\)</span> on outcome <span class="math inline">\(Y\)</span> is present if <span class="math display">\[
 \Pr[Y^{a=1} = 1] \neq \Pr[Y^{a=0} = 1]
-\]</span> in the population of interest. Because the risk of a dichotomous outcome equals its mean, the definition can be written as <span class="math inline">\(\text{E}{\left[Y^{a=1}\right]} \neq \text{E}{\left[Y^{a=0}\right]}\)</span>, which also applies to nondichotomous outcomes.</p>
+\]</span> in the population of interest. Because the risk of a dichotomous outcome equals its mean, the definition can be written as <span class="math inline">\(\operatorname{E}\mathopen{}\left[Y^{a=1}\right]\mathclose{} \neq \operatorname{E}\mathopen{}\left[Y^{a=0}\right]\mathclose{}\)</span>, which also applies to nondichotomous outcomes.</p>
 </div>
 <p>In Zeus’s family both counterfactual risks are 0.5: whether all or none receive a transplant, half would die. The <strong>null hypothesis of no average causal effect</strong> is true.</p>
-<p>On the difference scale, the average causal effect is the contrast <span class="math inline">\(\text{E}{\left[Y^{a=1}\right]} - \text{E}{\left[Y^{a=0}\right]}\)</span>, which for a binary outcome equals <span class="math inline">\(\Pr[Y^{a=1} = 1] - \Pr[Y^{a=0} = 1]\)</span>; in Zeus’s family it is <span class="math inline">\(0.5 - 0.5 = 0\)</span> <span class="citation" data-cites="hernan2020causal">(<a href="#/references" role="doc-biblioref" onclick="">Hernán and Robins 2020, 6</a>, margin note)</span>.</p>
+<p>On the difference scale, the average causal effect is the contrast <span class="math inline">\(\operatorname{E}\mathopen{}\left[Y^{a=1}\right]\mathclose{} - \operatorname{E}\mathopen{}\left[Y^{a=0}\right]\mathclose{}\)</span>, which for a binary outcome equals <span class="math inline">\(\Pr[Y^{a=1} = 1] - \Pr[Y^{a=0} = 1]\)</span>; in Zeus’s family it is <span class="math inline">\(0.5 - 0.5 = 0\)</span> <span class="citation" data-cites="hernan2020causal">(<a href="#/references" role="doc-biblioref" onclick="">Hernán and Robins 2020, 6</a>, margin note)</span>.</p>
 <aside class="notes">
 <p>With more than two possible actions, the contrast of interest must be specified. “The causal effect of aspirin” means nothing until we say, for example, “taking, while alive, 150 mg of aspirin by mouth (or nasogastric tube if need be) daily for 5 years” versus “not taking aspirin.” That effect is well defined even if counterfactual outcomes under other interventions (e.g., absorbing 500 mg through the skin daily) are not <span class="citation" data-cites="hernan2020causal">(<a href="#/references" role="doc-biblioref" onclick="">Hernán and Robins 2020, 6</a>)</span>.</p>
 <style type="text/css">
@@ -451,7 +448,7 @@
 <li>6 were helped, <span class="math inline">\(Y^{a=1} - Y^{a=0} = -1\)</span> (Kronos, Poseidon, Apollo, Hermes, Hebe, Dionysus).</li>
 </ul>
 <p>The two groups being the same size is not an accident: a difference of averages equals the average of the differences, <span class="math display">\[
-\text{E}{\left[Y^{a=1}\right]} - \text{E}{\left[Y^{a=0}\right]} = \text{E}{\left[Y^{a=1} - Y^{a=0}\right]},
+\operatorname{E}\mathopen{}\left[Y^{a=1}\right]\mathclose{} - \operatorname{E}\mathopen{}\left[Y^{a=0}\right]\mathclose{} = \operatorname{E}\mathopen{}\left[Y^{a=1} - Y^{a=0}\right]\mathclose{},
 \]</span> so a null average effect means the individual effects average to zero.</p>
 <aside class="notes">
 <p>In Table 1.1 the right-hand side is <span class="math inline">\(\frac{6 \times 1 + 6 \times (-1) + 8 \times 0}{20} = \frac{0}{20} = 0\)</span>, matching <span class="math inline">\(0.5 - 0.5 = 0\)</span> on the left.</p>
@@ -509,19 +506,19 @@
 <p><strong>Technical Point 1.1: Causal Effects in the Population</strong></p>
 </div>
 <div class="callout-content">
-<p><span class="math inline">\(\text{E}{\left[Y^a\right]}\)</span> is the mean counterfactual outcome had everyone received <span class="math inline">\(a\)</span>:</p>
+<p><span class="math inline">\(\operatorname{E}\mathopen{}\left[Y^a\right]\mathclose{}\)</span> is the mean counterfactual outcome had everyone received <span class="math inline">\(a\)</span>:</p>
 <ul>
-<li>discrete outcomes: <span class="math inline">\(\text{E}{\left[Y^a\right]} = \sum_y y \, p_{Y^a}(y)\)</span> with <span class="math inline">\(p_{Y^a}(y) = \Pr[Y^a = y]\)</span>; for dichotomous outcomes <span class="math inline">\(\text{E}{\left[Y^a\right]} = \Pr[Y^a = 1]\)</span>;</li>
-<li>continuous outcomes: <span class="math inline">\(\text{E}{\left[Y^a\right]} = \int y f_{Y^a}(y)\, dy\)</span>;</li>
-<li>both: <span class="math inline">\(\text{E}{\left[Y^a\right]} = \int y \, dF_{Y^a}(y)\)</span>, with <span class="math inline">\(F_{Y^a}\)</span> the cdf of <span class="math inline">\(Y^a\)</span>.</li>
+<li>discrete outcomes: <span class="math inline">\(\operatorname{E}\mathopen{}\left[Y^a\right]\mathclose{} = \sum_y y \, p_{Y^a}(y)\)</span> with <span class="math inline">\(p_{Y^a}(y) = \Pr[Y^a = y]\)</span>; for dichotomous outcomes <span class="math inline">\(\operatorname{E}\mathopen{}\left[Y^a\right]\mathclose{} = \Pr[Y^a = 1]\)</span>;</li>
+<li>continuous outcomes: <span class="math inline">\(\operatorname{E}\mathopen{}\left[Y^a\right]\mathclose{} = \int y f_{Y^a}(y)\, dy\)</span>;</li>
+<li>both: <span class="math inline">\(\operatorname{E}\mathopen{}\left[Y^a\right]\mathclose{} = \int y \, dF_{Y^a}(y)\)</span>, with <span class="math inline">\(F_{Y^a}\)</span> the cdf of <span class="math inline">\(Y^a\)</span>.</li>
 </ul>
-<p>There is a non-null average causal effect if <span class="math inline">\(\text{E}{\left[Y^a\right]} \neq \text{E}{\left[Y^{a'}\right]}\)</span> for any two values <span class="math inline">\(a\)</span> and <span class="math inline">\(a'\)</span>.</p>
-<p>A population causal effect can also contrast other functionals (median, variance, hazard, cdf) of the marginal distributions of the counterfactual outcomes. In Table 1.1, <span class="math inline">\(Y^{a=1}\)</span> and <span class="math inline">\(Y^{a=0}\)</span> have the same distribution (10 deaths out of 20), so the population causal effect on any functional is zero, e.g.&nbsp;<span class="math inline">\(\text{Var}{\left(Y^{a=1}\right)} - \text{Var}{\left(Y^{a=0}\right)} = 0\)</span>.</p>
+<p>There is a non-null average causal effect if <span class="math inline">\(\operatorname{E}\mathopen{}\left[Y^a\right]\mathclose{} \neq \operatorname{E}\mathopen{}\left[Y^{a'}\right]\mathclose{}\)</span> for any two values <span class="math inline">\(a\)</span> and <span class="math inline">\(a'\)</span>.</p>
+<p>A population causal effect can also contrast other functionals (median, variance, hazard, cdf) of the marginal distributions of the counterfactual outcomes. In Table 1.1, <span class="math inline">\(Y^{a=1}\)</span> and <span class="math inline">\(Y^{a=0}\)</span> have the same distribution (10 deaths out of 20), so the population causal effect on any functional is zero, e.g.&nbsp;<span class="math inline">\(\operatorname{Var}\mathopen{}\left(Y^{a=1}\right)\mathclose{} - \operatorname{Var}\mathopen{}\left(Y^{a=0}\right)\mathclose{} = 0\)</span>.</p>
 <p>Unlike the mean, a difference in variances is not in general the variance of the individual effects. Let <span class="math inline">\(D = Y^{a=1} - Y^{a=0}\)</span>, which is <span class="math inline">\(-1\)</span> for 6 individuals, <span class="math inline">\(1\)</span> for 6, and <span class="math inline">\(0\)</span> for 8. Then <span class="math display">\[\begin{align}
-\text{E}{\left[D\right]} &amp;= \frac{6 \times (-1) + 6 \times 1 + 8 \times 0}{20} = 0, \\
-\text{E}{\left[D^2\right]} &amp;= \frac{6 \times 1 + 6 \times 1 + 8 \times 0}{20} = 0.6, \\
-\text{Var}{\left(D\right)} &amp;= \text{E}{\left[D^2\right]} - {\left(\text{E}{\left[D\right]}\right)}^2 = 0.6 - 0 = 0.6 &gt; 0.
-\end{align}\]</span> A randomized trial identifies <span class="math inline">\(\text{Var}{\left(Y^{a=1}\right)} - \text{Var}{\left(Y^{a=0}\right)}\)</span> but not <span class="math inline">\(\text{Var}{\left(Y^{a=1} - Y^{a=0}\right)}\)</span>, because the covariance of <span class="math inline">\(Y^{a=1}\)</span> and <span class="math inline">\(Y^{a=0}\)</span> is never observed. The same holds for any nonlinear functional <span class="citation" data-cites="hernan2020causal">(<a href="#/references" role="doc-biblioref" onclick="">Hernán and Robins 2020, 6</a>)</span>.</p>
+\operatorname{E}\mathopen{}\left[D\right]\mathclose{} &amp;= \frac{6 \times (-1) + 6 \times 1 + 8 \times 0}{20} = 0, \\
+\operatorname{E}\mathopen{}\left[D^2\right]\mathclose{} &amp;= \frac{6 \times 1 + 6 \times 1 + 8 \times 0}{20} = 0.6, \\
+\operatorname{Var}\mathopen{}\left(D\right)\mathclose{} &amp;= \operatorname{E}\mathopen{}\left[D^2\right]\mathclose{} - \mathopen{}\left(\operatorname{E}\mathopen{}\left[D\right]\mathclose{}\right)\mathclose{}^2 = 0.6 - 0 = 0.6 &gt; 0.
+\end{align}\]</span> A randomized trial identifies <span class="math inline">\(\operatorname{Var}\mathopen{}\left(Y^{a=1}\right)\mathclose{} - \operatorname{Var}\mathopen{}\left(Y^{a=0}\right)\mathclose{}\)</span> but not <span class="math inline">\(\operatorname{Var}\mathopen{}\left(Y^{a=1} - Y^{a=0}\right)\mathclose{}\)</span>, because the covariance of <span class="math inline">\(Y^{a=1}\)</span> and <span class="math inline">\(Y^{a=0}\)</span> is never observed. The same holds for any nonlinear functional <span class="citation" data-cites="hernan2020causal">(<a href="#/references" role="doc-biblioref" onclick="">Hernán and Robins 2020, 6</a>)</span>.</p>
 </div>
 </div>
 </div>
@@ -602,14 +599,14 @@
 <h2>First Source of Random Error: Sampling Variability</h2>
 <p>View the 20 individuals of Table 1.1 as a random sample from a near-infinite <strong>super-population</strong>.</p>
 <ul>
-<li>Sample proportion: <span class="math inline">\(\widehat{\Pr}[Y^{a=0} = 1] = 10/20 = 0.50\)</span>.</li>
+<li>Sample proportion: <span class="math inline">\(\mathop{\widehat{\Pr}}\nolimits\mathopen{}\left[Y^{a=0} = 1\right]\mathclose{} = 10/20 = 0.50\)</span>.</li>
 <li>Super-population probability <span class="math inline">\(\Pr[Y^{a=0} = 1]\)</span> need not equal it: it could be 0.57, with the sample giving 0.50 because of sampling variability.</li>
 </ul>
-<p>The “hat” marks an <strong>estimator</strong>: <span class="math inline">\(\widehat{\Pr}[Y^a = 1]\)</span> estimates <span class="math inline">\(\Pr[Y^a = 1]\)</span>.</p>
+<p>The “hat” marks an <strong>estimator</strong>: <span class="math inline">\(\mathop{\widehat{\Pr}}\nolimits\mathopen{}\left[Y^a = 1\right]\mathclose{}\)</span> estimates <span class="math inline">\(\Pr[Y^a = 1]\)</span>.</p>
 <div id="def-consistent-estimator" class="theorem definition">
 <p><span class="theorem-title"><strong>Definition 5 (Consistent estimator)</strong></span> An estimator <span class="math inline">\(\hat\theta\)</span> of <span class="math inline">\(\theta\)</span> is <strong>consistent</strong> if, with probability approaching 1, <span class="math inline">\(\hat\theta- \theta\)</span> approaches zero as the sample size increases towards infinity.</p>
 </div>
-<p><span class="math inline">\(\widehat{\Pr}[Y^a = 1]\)</span> is consistent for <span class="math inline">\(\Pr[Y^a = 1]\)</span> because sampling error is random and obeys the law of large numbers.</p>
+<p><span class="math inline">\(\mathop{\widehat{\Pr}}\nolimits\mathopen{}\left[Y^a = 1\right]\mathclose{}\)</span> is consistent for <span class="math inline">\(\Pr[Y^a = 1]\)</span> because sampling error is random and obeys the law of large numbers.</p>
 <aside class="notes">
 <p>Caution: “consistency” of an estimator has a different meaning from “consistency” of counterfactual outcomes (<a href="#/def-consistency-ch1" class="quarto-xref">Definition&nbsp;2</a>) <span class="citation" data-cites="hernan2020causal">(<a href="#/references" role="doc-biblioref" onclick="">Hernán and Robins 2020, 9</a>)</span>.</p>
 <p>Because super-population probabilities can only be consistently estimated, never computed, we cannot conclude with certainty that there is or is not a causal effect; a statistical procedure is needed to evaluate the evidence about the causal null hypothesis <span class="math inline">\(\Pr[Y^{a=1} = 1] = \Pr[Y^{a=0} = 1]\)</span> (Chapter 10).</p>
@@ -673,14 +670,14 @@
 <p><strong>Technical Point 1.2: Nondeterministic Counterfactuals</strong></p>
 </div>
 <div class="callout-content">
-<p>For nondeterministic counterfactuals, <span class="math inline">\(\text{E}{\left[Y^a\right]} = \sum_y y \, p_{Y^a}(y)\)</span>, where <span class="math inline">\(p_{Y^a}(\cdot) = \text{E}{\left[Q_{Y^a}(\cdot)\right]}\)</span> and <span class="math inline">\(Q_{Y^a}(y)\)</span> is an individual’s random probability of outcome <span class="math inline">\(y\)</span> under <span class="math inline">\(a\)</span> (in the text, <span class="math inline">\(Q_{Y^{a=1}}(1) = 0.9\)</span> for Zeus).</p>
+<p>For nondeterministic counterfactuals, <span class="math inline">\(\operatorname{E}\mathopen{}\left[Y^a\right]\mathclose{} = \sum_y y \, p_{Y^a}(y)\)</span>, where <span class="math inline">\(p_{Y^a}(\cdot) = \operatorname{E}\mathopen{}\left[Q_{Y^a}(\cdot)\right]\mathclose{}\)</span> and <span class="math inline">\(Q_{Y^a}(y)\)</span> is an individual’s random probability of outcome <span class="math inline">\(y\)</span> under <span class="math inline">\(a\)</span> (in the text, <span class="math inline">\(Q_{Y^{a=1}}(1) = 0.9\)</span> for Zeus).</p>
 <p>More generally, each individual has a distribution <span class="math inline">\(\Theta_{Y^a}(\cdot)\)</span> of <span class="math inline">\(Y^a\)</span>, a random cdf. Then <span class="math display">\[\begin{align}
-\text{E}{\left[Y^a\right]} &amp;= \text{E}{\left[\text{E}{\left[Y^a \mid \Theta_{Y^a}(\cdot)\right]}\right]} &amp;&amp; \text{(law of total expectation)} \\
-&amp;= \text{E}{\left[\int y \, d\Theta_{Y^a}(y)\right]} &amp;&amp; \text{(mean of the individual distribution)} \\
-&amp;= \int y \, d\,\text{E}{\left[\Theta_{Y^a}(y)\right]} &amp;&amp; \text{(exchange expectation and integral)} \\
-&amp;= \int y \, dF_{Y^a}(y), &amp;&amp; \text{with } F_{Y^a}(\cdot) = \text{E}{\left[\Theta_{Y^a}(\cdot)\right]}.
+\operatorname{E}\mathopen{}\left[Y^a\right]\mathclose{} &amp;= \operatorname{E}\mathopen{}\left[\operatorname{E}\mathopen{}\left[Y^a \mid \Theta_{Y^a}(\cdot)\right]\mathclose{}\right]\mathclose{} &amp;&amp; \text{(law of total expectation)} \\
+&amp;= \operatorname{E}\mathopen{}\left[\int y \, d\Theta_{Y^a}(y)\right]\mathclose{} &amp;&amp; \text{(mean of the individual distribution)} \\
+&amp;= \int y \, d\,\operatorname{E}\mathopen{}\left[\Theta_{Y^a}(y)\right]\mathclose{} &amp;&amp; \text{(exchange expectation and integral)} \\
+&amp;= \int y \, dF_{Y^a}(y), &amp;&amp; \text{with } F_{Y^a}(\cdot) = \operatorname{E}\mathopen{}\left[\Theta_{Y^a}(\cdot)\right]\mathclose{}.
 \end{align}\]</span></p>
-<p>For binary nondeterministic outcomes, the causal risk ratio <span class="math inline">\(\text{E}{\left[Q_{Y^{a=1}}(1)\right]} / \text{E}{\left[Q_{Y^{a=0}}(1)\right]}\)</span> equals the weighted average <span class="math inline">\(\text{E}{\left[W \, Q_{Y^{a=1}}(1) / Q_{Y^{a=0}}(1)\right]}\)</span> of the individual ratio-scale effects, with weights <span class="math inline">\(W = Q_{Y^{a=0}}(1) / \text{E}{\left[Q_{Y^{a=0}}(1)\right]}\)</span>, provided <span class="math inline">\(Q_{Y^{a=0}}(1)\)</span> is never 0 <span class="citation" data-cites="hernan2020causal">(<a href="#/references" role="doc-biblioref" onclick="">Hernán and Robins 2020, 10</a>)</span>.</p>
+<p>For binary nondeterministic outcomes, the causal risk ratio <span class="math inline">\(\operatorname{E}\mathopen{}\left[Q_{Y^{a=1}}(1)\right]\mathclose{} / \operatorname{E}\mathopen{}\left[Q_{Y^{a=0}}(1)\right]\mathclose{}\)</span> equals the weighted average <span class="math inline">\(\operatorname{E}\mathopen{}\left[W \, Q_{Y^{a=1}}(1) / Q_{Y^{a=0}}(1)\right]\mathclose{}\)</span> of the individual ratio-scale effects, with weights <span class="math inline">\(W = Q_{Y^{a=0}}(1) / \operatorname{E}\mathopen{}\left[Q_{Y^{a=0}}(1)\right]\mathclose{}\)</span>, provided <span class="math inline">\(Q_{Y^{a=0}}(1)\)</span> is never 0 <span class="citation" data-cites="hernan2020causal">(<a href="#/references" role="doc-biblioref" onclick="">Hernán and Robins 2020, 10</a>)</span>.</p>
 </div>
 </div>
 </div>
@@ -825,7 +822,7 @@
 </ol>
 <p>The left-hand sides are the <strong>associational</strong> risk difference, risk ratio, and odds ratio, collectively <strong>association measures</strong>. <span class="math inline">\(A\)</span> and <span class="math inline">\(Y\)</span> are <strong>associated</strong> (dependent) when <span class="math inline">\(\Pr[Y = 1 \mid A = 1] \neq \Pr[Y = 1 \mid A = 0]\)</span>.</p>
 <aside class="notes">
-<p>Dawid (1979) introduced the symbol <span class="math inline">\(\perp\!\!\!\perp\)</span> for independence. For a continuous outcome, <strong>mean independence</strong> is <span class="math inline">\(\text{E}{\left[Y \mid A = 1\right]} = \text{E}{\left[Y \mid A = 0\right]}\)</span>; for dichotomous outcomes, independence and mean independence coincide. So association can be written <span class="math inline">\(\text{E}{\left[Y \mid A = 1\right]} \neq \text{E}{\left[Y \mid A = 0\right]}\)</span> for both kinds of outcome. For binary <span class="math inline">\(A\)</span>, <span class="math inline">\(Y\)</span> and <span class="math inline">\(A\)</span> are not associated if and only if they are uncorrelated <span class="citation" data-cites="hernan2020causal">(<a href="#/references" role="doc-biblioref" onclick="">Hernán and Robins 2020, 10–11</a>)</span>.</p>
+<p>Dawid (1979) introduced the symbol <span class="math inline">\(\perp\!\!\!\perp\)</span> for independence. For a continuous outcome, <strong>mean independence</strong> is <span class="math inline">\(\operatorname{E}\mathopen{}\left[Y \mid A = 1\right]\mathclose{} = \operatorname{E}\mathopen{}\left[Y \mid A = 0\right]\mathclose{}\)</span>; for dichotomous outcomes, independence and mean independence coincide. So association can be written <span class="math inline">\(\operatorname{E}\mathopen{}\left[Y \mid A = 1\right]\mathclose{} \neq \operatorname{E}\mathopen{}\left[Y \mid A = 0\right]\mathclose{}\)</span> for both kinds of outcome. For binary <span class="math inline">\(A\)</span>, <span class="math inline">\(Y\)</span> and <span class="math inline">\(A\)</span> are not associated if and only if they are uncorrelated <span class="citation" data-cites="hernan2020causal">(<a href="#/references" role="doc-biblioref" onclick="">Hernán and Robins 2020, 10–11</a>)</span>.</p>
 <style type="text/css">
         span.MJX_Assistive_MathML {
           position:absolute!important;
@@ -945,7 +942,7 @@
 
 <ol type="1">
 <li><strong>Individual causal effect</strong>: the contrast <span class="math inline">\(Y^{a=1} - Y^{a=0}\)</span> for an individual, present when <span class="math inline">\(Y^{a=1} \neq Y^{a=0}\)</span>; not identified, because only one counterfactual outcome is observed (consistency: <span class="math inline">\(Y = Y^A\)</span>).</li>
-<li><strong>Average causal effect</strong>: the contrast <span class="math inline">\(\text{E}{\left[Y^{a=1}\right]} - \text{E}{\left[Y^{a=0}\right]} = \text{E}{\left[Y^{a=1} - Y^{a=0}\right]}\)</span> in a population, present when <span class="math inline">\(\text{E}{\left[Y^{a=1}\right]} \neq \text{E}{\left[Y^{a=0}\right]}\)</span>; a null average effect does not rule out individual effects (the sharp null is stronger).</li>
+<li><strong>Average causal effect</strong>: the contrast <span class="math inline">\(\operatorname{E}\mathopen{}\left[Y^{a=1}\right]\mathclose{} - \operatorname{E}\mathopen{}\left[Y^{a=0}\right]\mathclose{} = \operatorname{E}\mathopen{}\left[Y^{a=1} - Y^{a=0}\right]\mathclose{}\)</span> in a population, present when <span class="math inline">\(\operatorname{E}\mathopen{}\left[Y^{a=1}\right]\mathclose{} \neq \operatorname{E}\mathopen{}\left[Y^{a=0}\right]\mathclose{}\)</span>; a null average effect does not rule out individual effects (the sharp null is stronger).</li>
 <li><strong>Effect measures</strong>: causal risk difference, risk ratio, and odds ratio quantify one effect on different scales; for a beneficial treatment, the NNT is the reciprocal of the absolute risk difference.</li>
 <li><strong>Random variability</strong>: from sampling and possibly from nondeterministic counterfactuals; ignored until Chapter 10.</li>
 <li><strong>Causation vs.&nbsp;association</strong>: causation compares the whole population under two treatment values; association compares two subsets defined by the treatment actually received.</li>

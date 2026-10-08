@@ -229,9 +229,6 @@
 </section>
 <section class="slide level2">
 
-<!-- https://www.overleaf.com/learn/latex/Using_colors_in_LaTeX#Named_colors_provided_by_the_xcolor_package -->
-<!-- \def\or{\theta}  -->
-<!-- doesn't work for some reason -->
 <p>Every adjustment method in this book (stratification and outcome regression, standardization and the parametric g-formula, IP weighting, g-estimation) relies on the same condition: the adjustment set <span class="math inline">\(L\)</span> must be enough to make the treated and the untreated conditionally exchangeable, i.e., to block all backdoor paths between <span class="math inline">\(A\)</span> and <span class="math inline">\(Y\)</span> without opening other biasing paths. This chapter asks <strong>how to choose <span class="math inline">\(L\)</span></strong>, and how to estimate effects when the candidate covariates <span class="math inline">\(X\)</span> are high-dimensional.</p>
 <aside class="notes">
 <p>This chapter is based on <span class="citation" data-cites="hernan2020causal">Hernán and Robins (<a href="#/references" role="doc-biblioref" onclick="">2020, chap. 18</a>, pp.&nbsp;241-251)</span>.</p>
@@ -381,7 +378,7 @@
 <p>Imagine unlimited computing power and a quasi-infinite number of individuals, with <span class="math inline">\(A\)</span>, <span class="math inline">\(Y\)</span>, and a moderate number of discrete variables <span class="math inline">\(X\)</span>, some of which may be confounders.</p>
 <ul>
 <li>For <strong>prediction</strong> (under squared-error loss), the best predictor of <span class="math inline">\(Y\)</span> is the mean of <span class="math inline">\(Y\)</span> in each joint stratum of <span class="math inline">\(A\)</span> and <span class="math inline">\(X\)</span>.</li>
-<li>For the <strong>average causal effect</strong> <span class="math inline">\(\text{E}{\left[Y^{a=1}\right]} - \text{E}{\left[Y^{a=0}\right]}\)</span>, we could adjust for all of <span class="math inline">\(X\)</span>. Is there any reason to adjust for only a subset? <strong>Yes</strong>: adjusting for some variables induces bias <span class="citation" data-cites="hernan2020causal">(<a href="#/references" role="doc-biblioref" onclick="">Hernán and Robins 2020, 242–43</a>)</span>.</li>
+<li>For the <strong>average causal effect</strong> <span class="math inline">\(\operatorname{E}\mathopen{}\left[Y^{a=1}\right]\mathclose{} - \operatorname{E}\mathopen{}\left[Y^{a=0}\right]\mathclose{}\)</span>, we could adjust for all of <span class="math inline">\(X\)</span>. Is there any reason to adjust for only a subset? <strong>Yes</strong>: adjusting for some variables induces bias <span class="citation" data-cites="hernan2020causal">(<a href="#/references" role="doc-biblioref" onclick="">Hernán and Robins 2020, 242–43</a>)</span>.</li>
 </ul>
 <aside class="notes">
 <p>Collapsibility reminder: an adjusted association measure may differ from the unadjusted one even without confounding (Fine Point 4.3) <span class="citation" data-cites="hernan2020causal">(<a href="#/references" role="doc-biblioref" onclick="">Hernán and Robins 2020, 243</a>)</span>.</p>
@@ -400,9 +397,9 @@
 <section id="post-treatment-variables-that-induce-bias" class="slide level2">
 <h2>Post-Treatment Variables That Induce Bias</h2>
 <ul>
-<li><p><strong>Colliders</strong> (Figure 18.1, same as Figure 7.7): the effect of <span class="math inline">\(A\)</span> on <span class="math inline">\(Y\)</span> is null and <span class="math inline">\(\text{E}{\left[Y \mid A = 1\right]} - \text{E}{\left[Y \mid A = 0\right]}\)</span> estimates it without bias. The g-formula contrast adjusted for <span class="math inline">\(L\)</span>,</p>
+<li><p><strong>Colliders</strong> (Figure 18.1, same as Figure 7.7): the effect of <span class="math inline">\(A\)</span> on <span class="math inline">\(Y\)</span> is null and <span class="math inline">\(\operatorname{E}\mathopen{}\left[Y \mid A = 1\right]\mathclose{} - \operatorname{E}\mathopen{}\left[Y \mid A = 0\right]\mathclose{}\)</span> estimates it without bias. The g-formula contrast adjusted for <span class="math inline">\(L\)</span>,</p>
 <p><span class="math display">\[
-\textstyle\sum_l \text{E}{\left[Y \mid A = 1, L = l\right]} \Pr(L = l) - \sum_l \text{E}{\left[Y \mid A = 0, L = l\right]} \Pr(L = l),
+\textstyle\sum_l \operatorname{E}\mathopen{}\left[Y \mid A = 1, L = l\right]\mathclose{} \Pr(L = l) - \sum_l \operatorname{E}\mathopen{}\left[Y \mid A = 0, L = l\right]\mathclose{} \Pr(L = l),
 \]</span></p>
 <p>is biased, because <span class="math inline">\(L\)</span> is associated with <span class="math inline">\(Y\)</span> given <span class="math inline">\(A\)</span> and with <span class="math inline">\(A\)</span>, so <span class="math inline">\(\Pr(L = l) \neq \Pr(L = l \mid A)\)</span>. This is <strong>selection bias under the null</strong>. The same holds for a <strong>descendant of a collider</strong> (Figure 18.2).</p></li>
 <li><p><strong>Noncolliders affected by treatment</strong> (Figure 18.3): adjusting for <span class="math inline">\(L\)</span> biases a non-null effect, but under the null <span class="math inline">\(A\)</span> no longer affects <span class="math inline">\(L\)</span> and the adjusted contrast is unbiased. This is <strong>selection bias under the alternative</strong> (off the null; Section 6.5).</p></li>
@@ -504,10 +501,10 @@
 </section>
 <section class="slide level2">
 
-<p>From here on, assume <span class="math inline">\(X\)</span> includes all confounders <span class="math inline">\(L\)</span> and no variable that would induce or amplify bias, and that positivity holds. The problem is now <strong>estimation</strong> when <span class="math inline">\(X\)</span> is very high-dimensional or has many continuous variables. Since good estimates of <span class="math inline">\(\text{E}{\left[Y^{a=1}\right]}\)</span> and <span class="math inline">\(\text{E}{\left[Y^{a=0}\right]}\)</span> give a good estimate of their difference, focus on <span class="math inline">\(\text{E}{\left[Y^{a=1}\right]}\)</span>.</p>
+<p>From here on, assume <span class="math inline">\(X\)</span> includes all confounders <span class="math inline">\(L\)</span> and no variable that would induce or amplify bias, and that positivity holds. The problem is now <strong>estimation</strong> when <span class="math inline">\(X\)</span> is very high-dimensional or has many continuous variables. Since good estimates of <span class="math inline">\(\operatorname{E}\mathopen{}\left[Y^{a=1}\right]\mathclose{}\)</span> and <span class="math inline">\(\operatorname{E}\mathopen{}\left[Y^{a=0}\right]\mathclose{}\)</span> give a good estimate of their difference, focus on <span class="math inline">\(\operatorname{E}\mathopen{}\left[Y^{a=1}\right]\mathclose{}\)</span>.</p>
 <div id="def-nuisance-functions" class="theorem definition">
 <p><span class="theorem-title"><strong>Definition 1 (The Two Nuisance Functions)</strong></span> <span class="math display">\[
-b(X) \stackrel{\text{def}}{=}\text{E}{\left[Y \mid A = 1, X\right]}, \qquad \pi(X) \stackrel{\text{def}}{=}\Pr[A = 1 \mid X].
+b(X) \stackrel{\text{def}}{=}\operatorname{E}\mathopen{}\left[Y \mid A = 1, X\right]\mathclose{}, \qquad \pi(X) \stackrel{\text{def}}{=}\Pr[A = 1 \mid X].
 \]</span></p>
 <p>The plug-in g-formula (standardization) estimates <span class="math inline">\(b(X)\)</span>; IP weighting estimates <span class="math inline">\(\pi(X)\)</span> <span class="citation" data-cites="hernan2020causal">(<a href="#/references" role="doc-biblioref" onclick="">Hernán and Robins 2020, 246–47</a>)</span>.</p>
 </div>
@@ -516,7 +513,7 @@ b(X) \stackrel{\text{def}}{=}\text{E}{\left[Y \mid A = 1, X\right]}, \qquad \pi(
 <h2>Why Traditional Parametric Models Fail Here</h2>
 <ul>
 <li>With high-dimensional <span class="math inline">\(X\)</span>, low-dimensional parametric models for <span class="math inline">\(b\)</span> and <span class="math inline">\(\pi\)</span> are certain to be misspecified, so <span class="math inline">\(\hat b\)</span> and <span class="math inline">\(\hat\pi\)</span> are inconsistent.</li>
-<li><strong>Richly parameterized</strong> generalized linear models use a linear predictor <span class="math inline">\(\theta^\top s(x) = \sum_j \theta_j s_j(x)\)</span>, where <span class="math inline">\(s(X)\)</span> is a high-dimensional vector of transformations of <span class="math inline">\(X\)</span> (e.g., cubic splines and their cross-products), e.g., <span class="math inline">\(\hat b(x) = \text{expit}{\left\{\hat\theta^\top s(x)\right\}}\)</span> and <span class="math inline">\(\hat\pi(x) = \text{expit}{\left\{\hat\theta_\pi^\top s(x)\right\}}\)</span>.</li>
+<li><strong>Richly parameterized</strong> generalized linear models use a linear predictor <span class="math inline">\(\theta^\top s(x) = \sum_j \theta_j s_j(x)\)</span>, where <span class="math inline">\(s(X)\)</span> is a high-dimensional vector of transformations of <span class="math inline">\(X\)</span> (e.g., cubic splines and their cross-products), e.g., <span class="math inline">\(\hat b(x) = \operatorname{expit}\mathopen{}\left\{\hat\theta^\top s(x)\right\}\mathclose{}\)</span> and <span class="math inline">\(\hat\pi(x) = \operatorname{expit}\mathopen{}\left\{\hat\theta_\pi^\top s(x)\right\}\mathclose{}\)</span>.</li>
 <li>Even when consistent, their finite-sample errors are much larger than those of a correct low-dimensional model, and if the dimension of <span class="math inline">\(s(X)\)</span> exceeds <span class="math inline">\(n\)</span> the fit fails to converge <span class="citation" data-cites="hernan2020causal">(<a href="#/references" role="doc-biblioref" onclick="">Hernán and Robins 2020, 247</a>)</span>.</li>
 </ul>
 <aside class="notes">
@@ -551,9 +548,9 @@ b(X) \stackrel{\text{def}}{=}\text{E}{\left[Y \mid A = 1, X\right]}, \qquad \pi(
 </section>
 <section id="what-a-valid-wald-interval-requires" class="slide level2">
 <h2>What a Valid Wald Interval Requires</h2>
-<p>For <span class="math inline">\(\psi = \text{E}{\left[Y^{a=1}\right]}\)</span> <span class="citation" data-cites="hernan2020causal">(<a href="#/references" role="doc-biblioref" onclick="">Hernán and Robins 2020, 247</a>)</span>:</p>
+<p>For <span class="math inline">\(\psi = \operatorname{E}\mathopen{}\left[Y^{a=1}\right]\mathclose{}\)</span> <span class="citation" data-cites="hernan2020causal">(<a href="#/references" role="doc-biblioref" onclick="">Hernán and Robins 2020, 247</a>)</span>:</p>
 <ul>
-<li>The standard error of most estimators <span class="math inline">\(\hat{\text{E}}{\left[Y^{a=1}\right]}\)</span> scales as <span class="math inline">\(1/\sqrt{n}\)</span>, so the <strong>bias must be much smaller than <span class="math inline">\(1/\sqrt{n}\)</span></strong>.</li>
+<li>The standard error of most estimators <span class="math inline">\(\mathop{\hat{\operatorname{E}}}\nolimits\mathopen{}\left[Y^{a=1}\right]\mathclose{}\)</span> scales as <span class="math inline">\(1/\sqrt{n}\)</span>, so the <strong>bias must be much smaller than <span class="math inline">\(1/\sqrt{n}\)</span></strong>.</li>
 <li>The estimator must also be asymptotically normal (usually easier than small bias).</li>
 </ul>
 <aside class="notes">
@@ -600,9 +597,9 @@ b(X) \stackrel{\text{def}}{=}\text{E}{\left[Y \mid A = 1, X\right]}, \qquad \pi(
 </section>
 <section id="why-split-the-full-sample-aipw-estimator" class="slide level2">
 <h2>Why Split? The Full-Sample AIPW Estimator</h2>
-<p>The full-sample augmented IP weighted (AIPW) estimator of <span class="math inline">\(\text{E}{\left[Y^{a=1}\right]}\)</span> (Technical Point 13.2) is</p>
+<p>The full-sample augmented IP weighted (AIPW) estimator of <span class="math inline">\(\operatorname{E}\mathopen{}\left[Y^{a=1}\right]\mathclose{}\)</span> (Technical Point 13.2) is</p>
 <p><span class="math display">\[
-\frac{1}{n} \sum_{i=1}^n{\left\{\hat b(X_i) + \frac{A_i}{\hat\pi(X_i)} {\left[Y_i - \hat b(X_i)\right]}\right\}},
+\frac{1}{n} \sum_{i=1}^n\mathopen{}\left\{\hat b(X_i) + \frac{A_i}{\hat\pi(X_i)} \mathopen{}\left[Y_i - \hat b(X_i)\right]\mathclose{}\right\}\mathclose{},
 \]</span></p>
 <p>with <span class="math inline">\(\hat b\)</span> and <span class="math inline">\(\hat\pi\)</span> fit by machine learning on <strong>all</strong> <span class="math inline">\(n\)</span> individuals.</p>
 <ul>
@@ -631,12 +628,12 @@ b(X) \stackrel{\text{def}}{=}\text{E}{\left[Y \mid A = 1, X\right]}, \qquad \pi(
 <p><strong>Technical Point 18.1: Augmented IP Weighted Split-Sample and Cross-Fit Estimator</strong></p>
 </div>
 <div class="callout-content">
-<p>For <span class="math inline">\(\psi = \text{E}{\left[Y^{a=1}\right]}\)</span> <span class="citation" data-cites="hernan2020causal">(<a href="#/references" role="doc-biblioref" onclick="">Hernán and Robins 2020, 249</a>)</span>:</p>
+<p>For <span class="math inline">\(\psi = \operatorname{E}\mathopen{}\left[Y^{a=1}\right]\mathclose{}\)</span> <span class="citation" data-cites="hernan2020causal">(<a href="#/references" role="doc-biblioref" onclick="">Hernán and Robins 2020, 249</a>)</span>:</p>
 <ol type="1">
 <li>Randomly split the <span class="math inline">\(n\)</span> subjects into an estimation sample of size <span class="math inline">\(q\)</span> and a training sample of size <span class="math inline">\(n_{tr} = n - q\)</span>, with <span class="math inline">\(q/n \approx 1/2\)</span>.</li>
-<li>From the training sample, estimate <span class="math inline">\(b(x) = \text{E}{\left[Y \mid A = 1, X = x\right]}\)</span> and <span class="math inline">\(\pi(x) = \Pr[A = 1 \mid X = x]\)</span> by machine learning.</li>
+<li>From the training sample, estimate <span class="math inline">\(b(x) = \operatorname{E}\mathopen{}\left[Y \mid A = 1, X = x\right]\mathclose{}\)</span> and <span class="math inline">\(\pi(x) = \Pr[A = 1 \mid X = x]\)</span> by machine learning.</li>
 <li>In the estimation sample, compute <span class="math display">\[
-\hat\psi = \frac{1}{q} \sum_{i=1}^{q} {\left\{\hat b(X_i) + \frac{A_i}{\hat\pi(X_i)} {\left[Y_i - \hat b(X_i)\right]}\right\}}.
+\hat\psi = \frac{1}{q} \sum_{i=1}^{q} \mathopen{}\left\{\hat b(X_i) + \frac{A_i}{\hat\pi(X_i)} \mathopen{}\left[Y_i - \hat b(X_i)\right]\mathclose{}\right\}\mathclose{}.
 \]</span></li>
 <li>Compute <span class="math inline">\(\hat\psi_{\text{cross-fit}} = (\hat\psi + \tilde\psi)/2\)</span>, where <span class="math inline">\(\tilde\psi\)</span> is <span class="math inline">\(\hat\psi\)</span> with the training and estimation samples swapped.</li>
 </ol>
@@ -681,34 +678,34 @@ b(X) \stackrel{\text{def}}{=}\text{E}{\left[Y \mid A = 1, X\right]}, \qquad \pi(
 <section class="slide level2">
 
 <div id="prp-conditional-bias" class="theorem proposition">
-<p><span class="theorem-title"><strong>Proposition 1 (Conditional Bias of the Split-Sample AIPW Estimator)</strong></span> Assume conditional exchangeability given <span class="math inline">\(X\)</span> and positivity, so <span class="math inline">\(\psi = \text{E}{\left[b(X)\right]}\)</span>. Then</p>
+<p><span class="theorem-title"><strong>Proposition 1 (Conditional Bias of the Split-Sample AIPW Estimator)</strong></span> Assume conditional exchangeability given <span class="math inline">\(X\)</span> and positivity, so <span class="math inline">\(\psi = \operatorname{E}\mathopen{}\left[b(X)\right]\mathclose{}\)</span>. Then</p>
 <p><span class="math display">\[
-\text{E}{\left[\hat\psi - \psi \mid Tr\right]} = \text{E}{\left[\pi(X) {\left(\frac{1}{\pi(X)} - \frac{1}{\hat\pi(X)}\right)} {\left(\hat b(X) - b(X)\right)} \mid Tr\right]} .
+\operatorname{E}\mathopen{}\left[\hat\psi - \psi \mid Tr\right]\mathclose{} = \operatorname{E}\mathopen{}\left[\pi(X) \mathopen{}\left(\frac{1}{\pi(X)} - \frac{1}{\hat\pi(X)}\right)\mathclose{} \mathopen{}\left(\hat b(X) - b(X)\right)\mathclose{} \mid Tr\right]\mathclose{} .
 \]</span></p>
 </div>
 <div class="proof">
-<p><span class="proof-title"><em>Proof</em>. </span>Given <span class="math inline">\(Tr\)</span>, each term of <span class="math inline">\(\hat\psi\)</span> has the same mean, so <span class="math inline">\(\text{E}{\left[\hat\psi \mid Tr\right]}\)</span> is the mean of one term. Conditioning on <span class="math inline">\(X\)</span> first:</p>
+<p><span class="proof-title"><em>Proof</em>. </span>Given <span class="math inline">\(Tr\)</span>, each term of <span class="math inline">\(\hat\psi\)</span> has the same mean, so <span class="math inline">\(\operatorname{E}\mathopen{}\left[\hat\psi \mid Tr\right]\mathclose{}\)</span> is the mean of one term. Conditioning on <span class="math inline">\(X\)</span> first:</p>
 <p><span class="math display">\[
 \begin{aligned}
-\text{E}{\left[\frac{A}{\hat\pi(X)} {\left[Y - \hat b(X)\right]} \mid X, Tr\right]}
-&amp;= \frac{\Pr[A = 1 \mid X]}{\hat\pi(X)} \text{E}{\left[Y - \hat b(X) \mid A = 1, X, Tr\right]} &amp;&amp; \text{(only } A = 1 \text{ contributes)} \\
-&amp;= \frac{\pi(X)}{\hat\pi(X)} {\left(b(X) - \hat b(X)\right)}. &amp;&amp; (\text{estimation sample independent of } Tr)
+\operatorname{E}\mathopen{}\left[\frac{A}{\hat\pi(X)} \mathopen{}\left[Y - \hat b(X)\right]\mathclose{} \mid X, Tr\right]\mathclose{}
+&amp;= \frac{\Pr[A = 1 \mid X]}{\hat\pi(X)} \operatorname{E}\mathopen{}\left[Y - \hat b(X) \mid A = 1, X, Tr\right]\mathclose{} &amp;&amp; \text{(only } A = 1 \text{ contributes)} \\
+&amp;= \frac{\pi(X)}{\hat\pi(X)} \mathopen{}\left(b(X) - \hat b(X)\right)\mathclose{}. &amp;&amp; (\text{estimation sample independent of } Tr)
 \end{aligned}
 \]</span></p>
 <p>So</p>
 <p><span class="math display">\[
 \begin{aligned}
-\text{E}{\left[\hat\psi - \psi \mid Tr\right]}
-&amp;= \text{E}{\left[\hat b(X) + \frac{\pi(X)}{\hat\pi(X)} {\left(b(X) - \hat b(X)\right)} - b(X) \mid Tr\right]} &amp;&amp; (\psi = \text{E}{\left[b(X)\right]}) \\
-&amp;= \text{E}{\left[{\left(\hat b(X) - b(X)\right)} {\left(1 - \frac{\pi(X)}{\hat\pi(X)}\right)} \mid Tr\right]} &amp;&amp; \text{(collect terms)} \\
-&amp;= \text{E}{\left[\pi(X) {\left(\frac{1}{\pi(X)} - \frac{1}{\hat\pi(X)}\right)} {\left(\hat b(X) - b(X)\right)} \mid Tr\right]} . &amp;&amp; \text{(factor out } \pi(X))
+\operatorname{E}\mathopen{}\left[\hat\psi - \psi \mid Tr\right]\mathclose{}
+&amp;= \operatorname{E}\mathopen{}\left[\hat b(X) + \frac{\pi(X)}{\hat\pi(X)} \mathopen{}\left(b(X) - \hat b(X)\right)\mathclose{} - b(X) \mid Tr\right]\mathclose{} &amp;&amp; (\psi = \operatorname{E}\mathopen{}\left[b(X)\right]\mathclose{}) \\
+&amp;= \operatorname{E}\mathopen{}\left[\mathopen{}\left(\hat b(X) - b(X)\right)\mathclose{} \mathopen{}\left(1 - \frac{\pi(X)}{\hat\pi(X)}\right)\mathclose{} \mid Tr\right]\mathclose{} &amp;&amp; \text{(collect terms)} \\
+&amp;= \operatorname{E}\mathopen{}\left[\pi(X) \mathopen{}\left(\frac{1}{\pi(X)} - \frac{1}{\hat\pi(X)}\right)\mathclose{} \mathopen{}\left(\hat b(X) - b(X)\right)\mathclose{} \mid Tr\right]\mathclose{} . &amp;&amp; \text{(factor out } \pi(X))
 \end{aligned}
 \]</span></p>
 </div>
 <aside class="notes">
-<p>The bias is a <strong>product</strong> of the two errors, the second-order property used in this section. (The book writes the same product with both factors negated, <span class="math inline">\(\text{E}{\left[\pi(X) {\left(\frac{1}{\hat\pi(X)} - \frac{1}{\pi(X)}\right)} {\left(b(X) - \hat b(X)\right)} \mid Tr\right]}\)</span>.)</p>
+<p>The bias is a <strong>product</strong> of the two errors, the second-order property used in this section. (The book writes the same product with both factors negated, <span class="math inline">\(\operatorname{E}\mathopen{}\left[\pi(X) \mathopen{}\left(\frac{1}{\hat\pi(X)} - \frac{1}{\pi(X)}\right)\mathclose{} \mathopen{}\left(b(X) - \hat b(X)\right)\mathclose{} \mid Tr\right]\mathclose{}\)</span>.)</p>
 <p><strong>Rates</strong>: if <span class="math inline">\(1/\hat\pi(x) - 1/\pi(x)\)</span> converges at rate <span class="math inline">\(n^{-\alpha}\)</span> and <span class="math inline">\(\hat b(x) - b(x)\)</span> at rate <span class="math inline">\(n^{-\epsilon}\)</span>, the conditional bias is <span class="math inline">\(o(n^{-1/2})\)</span> when <span class="math inline">\(\alpha + \epsilon &gt; 1/2\)</span>. So <span class="math inline">\(\hat b\)</span> may converge more slowly than <span class="math inline">\(n^{-1/4}\)</span> if <span class="math inline">\(\hat\pi\)</span> converges fast enough, and vice versa <span class="citation" data-cites="hernan2020causal">(<a href="#/references" role="doc-biblioref" onclick="">Hernán and Robins 2020, 250</a>)</span>.</p>
-<p>The efficient standard error of <span class="math inline">\(\hat\psi_{\text{cross-fit}}\)</span> (scaled by <span class="math inline">\(n^{1/2}\)</span>) is <span class="math inline">\({\left\{\text{Var}{\left(b(X) + \frac{A}{\pi(X)} {\left[Y - b(X)\right]}\right)}\right\}}^{1/2}\)</span>.</p>
+<p>The efficient standard error of <span class="math inline">\(\hat\psi_{\text{cross-fit}}\)</span> (scaled by <span class="math inline">\(n^{1/2}\)</span>) is <span class="math inline">\(\mathopen{}\left\{\operatorname{Var}\mathopen{}\left(b(X) + \frac{A}{\pi(X)} \mathopen{}\left[Y - b(X)\right]\mathclose{}\right)\mathclose{}\right\}\mathclose{}^{1/2}\)</span>.</p>
 <style type="text/css">
         span.MJX_Assistive_MathML {
           position:absolute!important;

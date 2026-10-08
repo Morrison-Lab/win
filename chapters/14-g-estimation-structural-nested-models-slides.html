@@ -163,9 +163,6 @@
 </section>
 <section class="slide level2">
 
-<!-- https://www.overleaf.com/learn/latex/Using_colors_in_LaTeX#Named_colors_provided_by_the_xcolor_package -->
-<!-- \def\or{\theta}  -->
-<!-- doesn't work for some reason -->
 <p>Chapters 12 and 13 estimated the average causal effect of smoking cessation on weight gain with IP weighting and standardization. This chapter describes the third <strong>g-method</strong>: <strong>g-estimation</strong>, applied to the same NHEFS data. Models whose parameters are estimated by g-estimation are called <strong>structural nested models</strong>.</p>
 <aside class="notes">
 <p>This chapter is based on <span class="citation" data-cites="hernan2020causal">Hernán and Robins (<a href="#/references" role="doc-biblioref" onclick="">2020, chap. 14</a>, pp.&nbsp;187-198)</span>.</p>
@@ -197,7 +194,7 @@
 <li>Covariates <span class="math inline">\(L\)</span>: sex, age, race, education, intensity and duration of smoking, physical activity in daily life, recreational exercise, and weight</li>
 <li>Assumption: conditional exchangeability given <span class="math inline">\(L\)</span></li>
 </ul>
-<p>Chapters 12-13 targeted the <strong>population</strong> average causal effect <span class="math display">\[\text{E}{\left[Y^{a=1,c=0}\right]} - \text{E}{\left[Y^{a=0,c=0}\right]}\]</span> the mean weight difference had everybody been treated and uncensored vs.&nbsp;untreated and uncensored.</p>
+<p>Chapters 12-13 targeted the <strong>population</strong> average causal effect <span class="math display">\[\operatorname{E}\mathopen{}\left[Y^{a=1,c=0}\right]\mathclose{} - \operatorname{E}\mathopen{}\left[Y^{a=0,c=0}\right]\mathclose{}\]</span> the mean weight difference had everybody been treated and uncensored vs.&nbsp;untreated and uncensored.</p>
 <aside class="notes">
 <p>The analysis is restricted to individuals with known sex, age, race, weight, height, education, alcohol use, and smoking intensity at baseline (1971-75) and follow-up (1982), who answered the baseline medical history questionnaire.</p>
 <style type="text/css">
@@ -214,7 +211,7 @@
 </section>
 <section id="effects-within-strata-of-l" class="slide level2">
 <h2>Effects Within Strata of <span class="math inline">\(L\)</span></h2>
-<p>This chapter instead targets the effect <strong>within each stratum</strong> of <span class="math inline">\(L\)</span>: <span class="math display">\[\text{E}{\left[Y^{a=1,c=0} \mid L\right]} - \text{E}{\left[Y^{a=0,c=0} \mid L\right]}\]</span></p>
+<p>This chapter instead targets the effect <strong>within each stratum</strong> of <span class="math inline">\(L\)</span>: <span class="math display">\[\operatorname{E}\mathopen{}\left[Y^{a=1,c=0} \mid L\right]\mathclose{} - \operatorname{E}\mathopen{}\left[Y^{a=0,c=0} \mid L\right]\mathclose{}\]</span></p>
 <ul>
 <li>With extremely large data, one could estimate the effect separately in every stratum <span class="math inline">\(L = l\)</span> (Chapter 4), e.g., {non-quitter, female, white, age 26, college dropout, 15 cigarettes/day, 12 years of smoking, moderate exercise, very active, weight 112 kg}</li>
 <li>Alternatively, add all of <span class="math inline">\(L\)</span> and all <span class="math inline">\(A \times L\)</span> product terms to the marginal structural model (Section 12.5): then <span class="math inline">\(SW^A(L) = 1\)</span> and the unweighted outcome regression, if correctly specified, adjusts for all confounding by <span class="math inline">\(L\)</span> (Chapter 15)</li>
@@ -259,7 +256,7 @@
 </section>
 <section id="a-logistic-model-including-the-counterfactual" class="slide level2">
 <h2>A Logistic Model Including the Counterfactual</h2>
-<p><span class="math display">\[\text{logit}\Pr[A = 1 \mid Y^{a=0}, L] = \alpha_0 + \alpha_1 Y^{a=0} + \alpha_2 L\]</span></p>
+<p><span class="math display">\[\operatorname{logit}\Pr[A = 1 \mid Y^{a=0}, L] = \alpha_0 + \alpha_1 Y^{a=0} + \alpha_2 L\]</span></p>
 <ul>
 <li><span class="math inline">\(\alpha_2 L = \sum_{j=1}^{p} \alpha_{2j} L_j\)</span> for <span class="math inline">\(L = (L_1, \ldots, L_p)\)</span></li>
 <li>Same as the model for the IP weight denominator in Chapter 12, plus <span class="math inline">\(Y^{a=0}\)</span> as a covariate</li>
@@ -275,18 +272,18 @@
 </section>
 <section class="slide level2">
 
-<p>Target: <span class="math inline">\(\text{E}{\left[Y^{a=1} \mid L\right]} - \text{E}{\left[Y^{a=0} \mid L\right]} = \text{E}{\left[Y^{a=1} - Y^{a=0} \mid L\right]}\)</span> (the difference of means equals the mean of differences). Ignore censoring for now.</p>
-<p><strong>No effect modification by <span class="math inline">\(L\)</span></strong>: <span class="math display">\[\text{E}{\left[Y^a - Y^{a=0} \mid L\right]} = \beta_1 a\]</span></p>
+<p>Target: <span class="math inline">\(\operatorname{E}\mathopen{}\left[Y^{a=1} \mid L\right]\mathclose{} - \operatorname{E}\mathopen{}\left[Y^{a=0} \mid L\right]\mathclose{} = \operatorname{E}\mathopen{}\left[Y^{a=1} - Y^{a=0} \mid L\right]\mathclose{}\)</span> (the difference of means equals the mean of differences). Ignore censoring for now.</p>
+<p><strong>No effect modification by <span class="math inline">\(L\)</span></strong>: <span class="math display">\[\operatorname{E}\mathopen{}\left[Y^a - Y^{a=0} \mid L\right]\mathclose{} = \beta_1 a\]</span></p>
 <ul>
 <li>No intercept <span class="math inline">\(\beta_0\)</span> and no main effect of <span class="math inline">\(L\)</span>: these cancel in the difference</li>
 </ul>
-<p><strong>Effect modification by <span class="math inline">\(L\)</span></strong> (e.g., larger effect in heavy smokers): <span class="math display">\[\text{E}{\left[Y^a - Y^{a=0} \mid L\right]} = \beta_1 a + \beta_2 a L\]</span></p>
+<p><strong>Effect modification by <span class="math inline">\(L\)</span></strong> (e.g., larger effect in heavy smokers): <span class="math display">\[\operatorname{E}\mathopen{}\left[Y^a - Y^{a=0} \mid L\right]\mathclose{} = \beta_1 a + \beta_2 a L\]</span></p>
 </section>
 <section id="conditioning-on-treatment" class="slide level2">
 <h2>Conditioning on Treatment</h2>
 <p>Under <span class="math inline">\(Y^a \perp\!\!\!\perp A \mid L\)</span>, the treated and untreated are the same type of people within levels of <span class="math inline">\(L\)</span>, so the conditional effect is the same in both groups and we can write:</p>
 <div id="def-snmm" class="theorem definition">
-<p><span class="theorem-title"><strong>Definition 1 (Structural Nested Mean Model)</strong></span> <span class="math display">\[\text{E}{\left[Y^a - Y^{a=0} \mid A = a, L\right]} = \beta_1 a + \beta_2 a L\]</span></p>
+<p><span class="theorem-title"><strong>Definition 1 (Structural Nested Mean Model)</strong></span> <span class="math display">\[\operatorname{E}\mathopen{}\left[Y^a - Y^{a=0} \mid A = a, L\right]\mathclose{} = \beta_1 a + \beta_2 a L\]</span></p>
 <p>The parameters <span class="math inline">\(\beta_1\)</span> and <span class="math inline">\(\beta_2\)</span> (a vector), estimated by g-estimation, quantify the average causal effect of <span class="math inline">\(A\)</span> on <span class="math inline">\(Y\)</span> within levels of <span class="math inline">\(A\)</span> and <span class="math inline">\(L\)</span>.</p>
 </div>
 <aside class="notes">
@@ -320,16 +317,16 @@
 <p><strong>Fine Point 14.1: Marginal vs.&nbsp;Structural Nested Models</strong></p>
 </div>
 <div class="callout-content">
-<p>Consider the marginal structural model for a continuous covariate <span class="math inline">\(V\)</span> (a component of <span class="math inline">\(L\)</span>): <span class="math display">\[\text{E}{\left[Y^a \mid V\right]} = \beta_0 + \beta_1 a + \beta_2 a V + \beta_3 V\]</span></p>
+<p>Consider the marginal structural model for a continuous covariate <span class="math inline">\(V\)</span> (a component of <span class="math inline">\(L\)</span>): <span class="math display">\[\operatorname{E}\mathopen{}\left[Y^a \mid V\right]\mathclose{} = \beta_0 + \beta_1 a + \beta_2 a V + \beta_3 V\]</span></p>
 <ul>
-<li><span class="math inline">\(\beta_1 + \beta_2 v = \text{E}{\left[Y^{a=1} - Y^{a=0} \mid V = v\right]}\)</span>, the effect in individuals with <span class="math inline">\(V = v\)</span></li>
-<li><span class="math inline">\(\beta_0 + \beta_3 v = \text{E}{\left[Y^{a=0} \mid V = v\right]}\)</span></li>
+<li><span class="math inline">\(\beta_1 + \beta_2 v = \operatorname{E}\mathopen{}\left[Y^{a=1} - Y^{a=0} \mid V = v\right]\mathclose{}\)</span>, the effect in individuals with <span class="math inline">\(V = v\)</span></li>
+<li><span class="math inline">\(\beta_0 + \beta_3 v = \operatorname{E}\mathopen{}\left[Y^{a=0} \mid V = v\right]\mathclose{}\)</span></li>
 </ul>
-<p>If only the effect is of interest, leave <span class="math inline">\(\text{E}{\left[Y^{a=0} \mid V\right]}\)</span> unspecified: <span class="math display">\[\text{E}{\left[Y^a - Y^{a=0} \mid V\right]} = \beta_1 a + \beta_2 a V\]</span></p>
+<p>If only the effect is of interest, leave <span class="math inline">\(\operatorname{E}\mathopen{}\left[Y^{a=0} \mid V\right]\mathclose{}\)</span> unspecified: <span class="math display">\[\operatorname{E}\mathopen{}\left[Y^a - Y^{a=0} \mid V\right]\mathclose{} = \beta_1 a + \beta_2 a V\]</span></p>
 <p>This <strong>semiparametric marginal structural mean model</strong> is more robust when <span class="math inline">\(V\)</span> is continuous or high-dimensional, because a misspecified model <span class="math inline">\(\beta_0 + \beta_3 V\)</span> can bias <span class="math inline">\((\hat \beta_1, \hat \beta_2)\)</span> through correlated estimates.</p>
 <ul>
 <li>Conditional on a strict subset <span class="math inline">\(V\)</span> of <span class="math inline">\(L\)</span>, it equals a structural nested model for a “blip” of treatment given <span class="math inline">\(V\)</span>; estimate it by g-estimation with <span class="math inline">\(V\)</span> in place of <span class="math inline">\(L\)</span>, weighting each individual by <span class="math inline">\(SW^A(V) = f(A \mid V)/f(A \mid L)\)</span></li>
-<li>Conditional on all of <span class="math inline">\(L\)</span> (<span class="math inline">\(SW^A = 1\)</span>), the “faux semiparametric MSM” <span class="math inline">\(\text{E}{\left[Y^a - Y^{a=0} \mid L\right]} = \beta_1 a + \beta_2 a L\)</span> is, under conditional exchangeability, the structural nested mean model of this chapter</li>
+<li>Conditional on all of <span class="math inline">\(L\)</span> (<span class="math inline">\(SW^A = 1\)</span>), the “faux semiparametric MSM” <span class="math inline">\(\operatorname{E}\mathopen{}\left[Y^a - Y^{a=0} \mid L\right]\mathclose{} = \beta_1 a + \beta_2 a L\)</span> is, under conditional exchangeability, the structural nested mean model of this chapter</li>
 </ul>
 </div>
 </div>
@@ -338,16 +335,16 @@
 </section>
 <section id="censoring" class="slide level2">
 <h2>Censoring</h2>
-<p>With censoring, the target is <span class="math inline">\(\text{E}{\left[Y^{a=1,c=0} - Y^{a=0,c=0} \mid A, L\right]}\)</span>, which requires adjusting for both confounding and selection bias.</p>
+<p>With censoring, the target is <span class="math inline">\(\operatorname{E}\mathopen{}\left[Y^{a=1,c=0} - Y^{a=0,c=0} \mid A, L\right]\mathclose{}\)</span>, which requires adjusting for both confounding and selection bias.</p>
 <ul>
 <li>G-estimation adjusts for <strong>confounding only</strong>, not selection bias</li>
 <li>So first create a pseudo-population with nonstabilized IP weights for censoring, <span class="math inline">\(W^C = 1/\Pr[C = 0 \mid L, A]\)</span> (from Chapter 12), then g-estimate in that pseudo-population</li>
-<li>In the pseudo-population, the model is a structural model in the absence of censoring: <span class="math display">\[\text{E}{\left[Y^{a,c=0} - Y^{a=0,c=0} \mid A = a, L\right]} = \beta_1 a + \beta_2 a L\]</span></li>
+<li>In the pseudo-population, the model is a structural model in the absence of censoring: <span class="math display">\[\operatorname{E}\mathopen{}\left[Y^{a,c=0} - Y^{a=0,c=0} \mid A = a, L\right]\mathclose{} = \beta_1 a + \beta_2 a L\]</span></li>
 </ul>
 <p>The superscript <span class="math inline">\(c = 0\)</span> is omitted hereafter.</p>
 <aside class="notes">
 <p>Technically, IP weighting for censoring is not necessary with g-estimation when treatment is time-fixed and does not affect any variable in <span class="math inline">\(L\)</span>, and the outcome is measured at a single time: if <span class="math inline">\(Y^a \perp\!\!\!\perp(A, C) \mid L\)</span>, g-estimation can be applied to the uncensored individuals without weights.</p>
-<p><strong>Continuous treatments</strong>: the model must specify the dose-response function, e.g., <span class="math inline">\(\text{E}{\left[Y^a - Y^{a=0} \mid A = a, L\right]} = \beta_1 a + \beta_2 a^2 + \beta_3 a L + \beta_4 a^2 L\)</span>, or a smooth (e.g., spline) function of <span class="math inline">\(A\)</span> and <span class="math inline">\(L\)</span>.</p>
+<p><strong>Continuous treatments</strong>: the model must specify the dose-response function, e.g., <span class="math inline">\(\operatorname{E}\mathopen{}\left[Y^a - Y^{a=0} \mid A = a, L\right]\mathclose{} = \beta_1 a + \beta_2 a^2 + \beta_3 a L + \beta_4 a^2 L\)</span>, or a smooth (e.g., spline) function of <span class="math inline">\(A\)</span> and <span class="math inline">\(L\)</span>.</p>
 <style type="text/css">
         span.MJX_Assistive_MathML {
           position:absolute!important;
@@ -372,10 +369,10 @@
 <p><strong>Technical Point 14.1: Multiplicative Structural Nested Mean Models</strong></p>
 </div>
 <div class="callout-content">
-<p>For positive outcomes, a multiplicative model is often preferred: <span class="math display">\[\log{\left(\frac{\text{E}{\left[Y^a \mid A = a, L\right]}}{\text{E}{\left[Y^{a=0} \mid A = a, L\right]}}\right)} = \beta_1 a + \beta_2 a L\]</span> It can be g-estimated with <span class="math inline">\(H(\psi^\dagger) = Y \text{exp}{\left\{-\psi_1^\dagger a - \psi_2^\dagger a L\right\}}\)</span>.</p>
+<p>For positive outcomes, a multiplicative model is often preferred: <span class="math display">\[\log\mathopen{}\left(\frac{\operatorname{E}\mathopen{}\left[Y^a \mid A = a, L\right]\mathclose{}}{\operatorname{E}\mathopen{}\left[Y^{a=0} \mid A = a, L\right]\mathclose{}}\right)\mathclose{} = \beta_1 a + \beta_2 a L\]</span> It can be g-estimated with <span class="math inline">\(H(\psi^\dagger) = Y \operatorname{exp}\mathopen{}\left\{-\psi_1^\dagger a - \psi_2^\dagger a L\right\}\mathclose{}\)</span>.</p>
 <ul>
 <li>For binary outcomes, this model was originally usable only for rare outcomes (to avoid predicted probabilities above 1); Richardson, Robins, and Wang (2017) removed that restriction, and the approach was extended to time-varying treatments with doubly robust g-estimation (Wang et al.&nbsp;2022)</li>
-<li>The older alternative, a structural nested <strong>logistic</strong> model (<span class="math inline">\(\text{logit}\)</span> contrast of <span class="math inline">\(Y^a\)</span> vs.&nbsp;<span class="math inline">\(Y^{a=0}\)</span>), is not collapsible (Fine Point 4.3) and does not generalize easily to time-varying treatments <span class="citation" data-cites="hernan2020causal">(<a href="#/references" role="doc-biblioref" onclick="">Hernán and Robins 2020, 191</a>)</span></li>
+<li>The older alternative, a structural nested <strong>logistic</strong> model (<span class="math inline">\(\operatorname{logit}\)</span> contrast of <span class="math inline">\(Y^a\)</span> vs.&nbsp;<span class="math inline">\(Y^{a=0}\)</span>), is not collapsible (Fine Point 4.3) and does not generalize easily to time-varying treatments <span class="citation" data-cites="hernan2020causal">(<a href="#/references" role="doc-biblioref" onclick="">Hernán and Robins 2020, 191</a>)</span></li>
 </ul>
 </div>
 </div>
@@ -447,7 +444,7 @@
 </section>
 <section class="slide level2">
 
-<p>Goal: estimate <span class="math inline">\(\beta_1\)</span> in <span class="math inline">\(\text{E}{\left[Y^a - Y^{a=0} \mid A = a, L\right]} = \beta_1 a\)</span> (no effect modification by <span class="math inline">\(L\)</span>).</p>
+<p>Goal: estimate <span class="math inline">\(\beta_1\)</span> in <span class="math inline">\(\operatorname{E}\mathopen{}\left[Y^a - Y^{a=0} \mid A = a, L\right]\mathclose{} = \beta_1 a\)</span> (no effect modification by <span class="math inline">\(L\)</span>).</p>
 <p>Temporarily assume the rank-preserving model <span class="math inline">\(Y_i^a - Y_i^{a=0} = \psi_1 a\)</span> for all <span class="math inline">\(i\)</span>, so <span class="math inline">\(\psi_1 = \beta_1\)</span>. Rewrite it as <span class="math display">\[Y^{a=0} = Y^a - \psi_1 a\]</span></p>
 </section>
 <section id="linking-the-model-to-the-observed-data" class="slide level2">
@@ -466,7 +463,7 @@ Y^{a=0} &amp;= Y^A - \psi_1 A &amp;&amp; \text{(set } a = A\text{)} \\
 <ul>
 <li><span class="math inline">\(H(\psi^\dagger) = Y^{a=0}\)</span> only when <span class="math inline">\(\psi^\dagger = \psi_1\)</span></li>
 <li>Under conditional exchangeability, <span class="math inline">\(Y^{a=0}\)</span> does not predict <span class="math inline">\(A\)</span> given <span class="math inline">\(L\)</span> (Section 14.2)</li>
-<li>So fit, for each candidate, <span class="math display">\[\text{logit}\Pr[A = 1 \mid H(\psi^\dagger), L] = \alpha_0 + \alpha_1 H(\psi^\dagger) + \alpha_2 L\]</span></li>
+<li>So fit, for each candidate, <span class="math display">\[\operatorname{logit}\Pr[A = 1 \mid H(\psi^\dagger), L] = \alpha_0 + \alpha_1 H(\psi^\dagger) + \alpha_2 L\]</span></li>
 <li>The candidate with <span class="math inline">\(\alpha_1 = 0\)</span> is <span class="math inline">\(Y^{a=0}\)</span>; e.g., if <span class="math inline">\(H(10)\)</span> is unassociated with <span class="math inline">\(A\)</span> given <span class="math inline">\(L\)</span>, then <span class="math inline">\(\hat\psi_1 = 10\)</span></li>
 </ul>
 <div class="callout callout-important callout-titled callout-style-default">
@@ -572,7 +569,7 @@ Y^{a=0} &amp;= Y^A - \psi_1 A &amp;&amp; \text{(set } a = A\text{)} \\
 <p>Without the product term <span class="math inline">\(\beta_2 a L\)</span>, the model assumes no effect modification by <span class="math inline">\(L\)</span>.</p>
 <ul>
 <li>If some components <span class="math inline">\(V\)</span> of <span class="math inline">\(L\)</span> modify the effect and the term <span class="math inline">\(\beta_2 a V\)</span> is omitted, the structural nested model is <strong>misspecified</strong> and generally biased</li>
-<li>Contrast: the saturated MSM <span class="math inline">\(\text{E}{\left[Y^a\right]} = \beta_0 + \beta_1 a\)</span> is not misspecified when it omits <span class="math inline">\(\beta_2 a V\)</span> and <span class="math inline">\(\beta_3 V\)</span>, because it targets the population effect</li>
+<li>Contrast: the saturated MSM <span class="math inline">\(\operatorname{E}\mathopen{}\left[Y^a\right]\mathclose{} = \beta_0 + \beta_1 a\)</span> is not misspecified when it omits <span class="math inline">\(\beta_2 a V\)</span> and <span class="math inline">\(\beta_3 V\)</span>, because it targets the population effect</li>
 <li>Structural nested models, by definition, target effects <strong>within levels of <span class="math inline">\(L\)</span></strong></li>
 </ul>
 <aside class="notes">
@@ -591,10 +588,10 @@ Y^{a=0} &amp;= Y^A - \psi_1 A &amp;&amp; \text{(set } a = A\text{)} \\
 </section>
 <section id="two-parameters" class="slide level2">
 <h2>Two Parameters</h2>
-<p>Suppose the effect depends on baseline smoking intensity <span class="math inline">\(V\)</span>: <span class="math display">\[\text{E}{\left[Y^a - Y^{a=0} \mid A = a, L\right]} = \beta_1 a + \beta_2 a V\]</span></p>
+<p>Suppose the effect depends on baseline smoking intensity <span class="math inline">\(V\)</span>: <span class="math display">\[\operatorname{E}\mathopen{}\left[Y^a - Y^{a=0} \mid A = a, L\right]\mathclose{} = \beta_1 a + \beta_2 a V\]</span></p>
 <ul>
 <li>Candidate: <span class="math inline">\(\beta^\dagger = (\beta_1^\dagger, \beta_2^\dagger)\)</span> and <span class="math inline">\(H(\beta^\dagger) = Y - \beta_1^\dagger A - \beta_2^\dagger A V\)</span></li>
-<li>Fit the IP-weighted logistic model <span class="math display">\[\text{logit}\Pr[A = 1 \mid H(\beta^\dagger), L] = \alpha_0 + \alpha_1 H(\beta^\dagger) + \alpha_2 H(\beta^\dagger) V + \alpha_3 L\]</span></li>
+<li>Fit the IP-weighted logistic model <span class="math display">\[\operatorname{logit}\Pr[A = 1 \mid H(\beta^\dagger), L] = \alpha_0 + \alpha_1 H(\beta^\dagger) + \alpha_2 H(\beta^\dagger) V + \alpha_3 L\]</span></li>
 <li>Find <span class="math inline">\((\beta_1^\dagger, \beta_2^\dagger)\)</span> making <strong>both</strong> <span class="math inline">\(\alpha_1\)</span> and <span class="math inline">\(\alpha_2\)</span> zero: a two-dimensional search</li>
 </ul>
 </section>
@@ -611,15 +608,15 @@ Y^{a=0} &amp;= Y^A - \psi_1 A &amp;&amp; \text{(set } a = A\text{)} \\
 </section>
 <section id="effect-modification-by-all-of-l" class="slide level2">
 <h2>Effect Modification by All of <span class="math inline">\(L\)</span></h2>
-<p>For dichotomous <span class="math inline">\(A\)</span>, the unsaturated model <span class="math display">\[\text{E}{\left[Y^a - Y^{a=0} \mid A = a, L\right]} = \beta_1 a + a \sum_{j=1}^{p} \beta_{2j} L_j\]</span> has <span class="math inline">\(p + 1\)</span> parameters. The average causal effect in the study population is then estimated by averaging the stratum-specific effect over the <span class="math inline">\(n\)</span> individuals: <span class="math display">\[
+<p>For dichotomous <span class="math inline">\(A\)</span>, the unsaturated model <span class="math display">\[\operatorname{E}\mathopen{}\left[Y^a - Y^{a=0} \mid A = a, L\right]\mathclose{} = \beta_1 a + a \sum_{j=1}^{p} \beta_{2j} L_j\]</span> has <span class="math inline">\(p + 1\)</span> parameters. The average causal effect in the study population is then estimated by averaging the stratum-specific effect over the <span class="math inline">\(n\)</span> individuals: <span class="math display">\[
 \begin{aligned}
-\frac{1}{n} \sum_{i=1}^n{\left(\beta_1 + \sum_{j=1}^{p} \beta_{2j} L_{ij}\right)}
+\frac{1}{n} \sum_{i=1}^n\mathopen{}\left(\beta_1 + \sum_{j=1}^{p} \beta_{2j} L_{ij}\right)\mathclose{}
 &amp;= \frac{1}{n} \sum_{i=1}^n\beta_1 + \frac{1}{n} \sum_{i=1}^n\sum_{j=1}^{p} \beta_{2j} L_{ij} \\
 &amp;= \beta_1 + \frac{1}{n} \sum_{i=1}^n\sum_{j=1}^{p} \beta_{2j} L_{ij}
 \end{aligned}
 \]</span></p>
 <aside class="notes">
-<p>The book writes the left-hand side of this model as <span class="math inline">\(\text{E}{\left[Y^a - Y^{a=0}\right]}\)</span>; the conditioning on <span class="math inline">\(A = a, L\)</span> is implied by the right-hand side depending on <span class="math inline">\(L\)</span> <span class="citation" data-cites="hernan2020causal">(<a href="#/references" role="doc-biblioref" onclick="">Hernán and Robins 2020, 197</a>)</span>.</p>
+<p>The book writes the left-hand side of this model as <span class="math inline">\(\operatorname{E}\mathopen{}\left[Y^a - Y^{a=0}\right]\mathclose{}\)</span>; the conditioning on <span class="math inline">\(A = a, L\)</span> is implied by the right-hand side depending on <span class="math inline">\(L\)</span> <span class="citation" data-cites="hernan2020causal">(<a href="#/references" role="doc-biblioref" onclick="">Hernán and Robins 2020, 197</a>)</span>.</p>
 <p><strong>Next</strong>: after the three g-methods, Chapter 15 reviews arguably the most common approaches to confounding adjustment: outcome regression and propensity scores.</p>
 <style type="text/css">
         span.MJX_Assistive_MathML {
@@ -645,20 +642,20 @@ Y^{a=0} &amp;= Y^A - \psi_1 A &amp;&amp; \text{(set } a = A\text{)} \\
 <p><strong>Technical Point 14.2: G-Estimation of Structural Nested Mean Models</strong></p>
 </div>
 <div class="callout-content">
-<p>General model: <span class="math inline">\(\text{E}{\left[Y - Y^{a=0} \mid A, L\right]} = A \gamma(L; \beta)\)</span>, with <span class="math inline">\(\gamma(L; \beta^\dagger)\)</span> known and <span class="math inline">\(\gamma(L; 0) = 0\)</span>.</p>
-<p><strong>Estimating equation.</strong> Choose <span class="math inline">\(\beta^\dagger\)</span> minimizing the association between <span class="math inline">\(H(\beta^\dagger) = Y - A\gamma(L; \beta^\dagger)\)</span> and <span class="math inline">\(A\)</span> given <span class="math inline">\(L\)</span>. Basing this on a score test means solving <span class="math display">\[\sum_{i=1}^nI[C_i = 0] \, W_i^C \, H_i(\beta^\dagger) {\left(A_i - \text{E}{\left[A \mid L_i\right]}\right)} q(L_i) = 0\]</span> where <span class="math inline">\(q(L_i)\)</span> is a user-chosen vector function of the same dimension as <span class="math inline">\(\beta\)</span>, and <span class="math inline">\(W_i^C\)</span> and <span class="math inline">\(\text{E}{\left[A \mid L_i\right]} = \Pr[A = 1 \mid L_i]\)</span> are replaced by estimates. The choice of <span class="math inline">\(q\)</span> affects efficiency (CI length), not consistency; Robins (1994) derived the choice that minimizes CI length.</p>
-<p><strong>Closed form.</strong> If <span class="math inline">\(\gamma(L; \beta^\dagger) = \beta^{\dagger T} d(L)\)</span> for a known <span class="math inline">\(d(L)\)</span>, choose <span class="math inline">\(q(L) = d(L)\)</span> and write <span class="math inline">\(R_i = I[C_i = 0] W_i^C (A_i - \text{E}{\left[A \mid L_i\right]})\)</span>. Then <span class="math display">\[
+<p>General model: <span class="math inline">\(\operatorname{E}\mathopen{}\left[Y - Y^{a=0} \mid A, L\right]\mathclose{} = A \gamma(L; \beta)\)</span>, with <span class="math inline">\(\gamma(L; \beta^\dagger)\)</span> known and <span class="math inline">\(\gamma(L; 0) = 0\)</span>.</p>
+<p><strong>Estimating equation.</strong> Choose <span class="math inline">\(\beta^\dagger\)</span> minimizing the association between <span class="math inline">\(H(\beta^\dagger) = Y - A\gamma(L; \beta^\dagger)\)</span> and <span class="math inline">\(A\)</span> given <span class="math inline">\(L\)</span>. Basing this on a score test means solving <span class="math display">\[\sum_{i=1}^nI[C_i = 0] \, W_i^C \, H_i(\beta^\dagger) \mathopen{}\left(A_i - \operatorname{E}\mathopen{}\left[A \mid L_i\right]\mathclose{}\right)\mathclose{} q(L_i) = 0\]</span> where <span class="math inline">\(q(L_i)\)</span> is a user-chosen vector function of the same dimension as <span class="math inline">\(\beta\)</span>, and <span class="math inline">\(W_i^C\)</span> and <span class="math inline">\(\operatorname{E}\mathopen{}\left[A \mid L_i\right]\mathclose{} = \Pr[A = 1 \mid L_i]\)</span> are replaced by estimates. The choice of <span class="math inline">\(q\)</span> affects efficiency (CI length), not consistency; Robins (1994) derived the choice that minimizes CI length.</p>
+<p><strong>Closed form.</strong> If <span class="math inline">\(\gamma(L; \beta^\dagger) = \beta^{\dagger T} d(L)\)</span> for a known <span class="math inline">\(d(L)\)</span>, choose <span class="math inline">\(q(L) = d(L)\)</span> and write <span class="math inline">\(R_i = I[C_i = 0] W_i^C (A_i - \operatorname{E}\mathopen{}\left[A \mid L_i\right]\mathclose{})\)</span>. Then <span class="math display">\[
 \begin{aligned}
-0 &amp;= \sum_i R_i {\left(Y_i - A_i\, d(L_i)^T \beta\right)} d(L_i)
+0 &amp;= \sum_i R_i \mathopen{}\left(Y_i - A_i\, d(L_i)^T \beta\right)\mathclose{} d(L_i)
 &amp;&amp; \text{(substitute } H_i\text{; } \beta^T d = d^T \beta\text{)} \\
 \sum_i R_i A_i\, d(L_i)\, d(L_i)^T \beta &amp;= \sum_i R_i Y_i\, d(L_i)
 &amp;&amp; \text{(move the } \beta \text{ term to the left)} \\
-\hat \beta&amp;= {\left(\sum_i R_i A_i\, d(L_i)\, d(L_i)^T\right)}^{-1} \sum_i R_i Y_i\, d(L_i)
+\hat \beta&amp;= \mathopen{}\left(\sum_i R_i A_i\, d(L_i)\, d(L_i)^T\right)\mathclose{}^{-1} \sum_i R_i Y_i\, d(L_i)
 &amp;&amp; \text{(solve for } \beta\text{)}
 \end{aligned}
 \]</span></p>
-<p><strong>Mean vs.&nbsp;distributional independence.</strong> Structural nested mean models only impose <span class="math inline">\(\text{E}{\left[H(\beta_1) \mid A, L\right]} = \text{E}{\left[H(\beta_1) \mid L\right]}\)</span>, so nonlinear functions of <span class="math inline">\(H_i(\beta^\dagger)\)</span> (e.g., its cube) cannot be used in the estimating equation; they can be for <strong>structural nested distribution models</strong>, which impose <span class="math inline">\(H(\beta_1) \perp\!\!\!\perp A \mid L\)</span>.</p>
-<p><strong>Double robustness.</strong> The estimator above is consistent only if the models for <span class="math inline">\(\text{E}{\left[A \mid L\right]}\)</span> and <span class="math inline">\(\Pr[C = 1 \mid A, L]\)</span> are both correct. Replacing <span class="math inline">\(H(\beta^\dagger)\)</span> by <span class="math inline">\(H(\beta^\dagger) - \text{E}{\left[H(\beta^\dagger) \mid L\right]}\)</span>, with the latter estimated by an unweighted linear model among the uncensored, gives an estimator that is consistent if either (i) the model for <span class="math inline">\(\text{E}{\left[H(\beta^\dagger) \mid L\right]}\)</span> or (ii) both the treatment and censoring models are correct: a <strong>doubly robust</strong> estimator <span class="citation" data-cites="hernan2020causal">(<a href="#/references" role="doc-biblioref" onclick="">Hernán and Robins 2020, 198</a>)</span>.</p>
+<p><strong>Mean vs.&nbsp;distributional independence.</strong> Structural nested mean models only impose <span class="math inline">\(\operatorname{E}\mathopen{}\left[H(\beta_1) \mid A, L\right]\mathclose{} = \operatorname{E}\mathopen{}\left[H(\beta_1) \mid L\right]\mathclose{}\)</span>, so nonlinear functions of <span class="math inline">\(H_i(\beta^\dagger)\)</span> (e.g., its cube) cannot be used in the estimating equation; they can be for <strong>structural nested distribution models</strong>, which impose <span class="math inline">\(H(\beta_1) \perp\!\!\!\perp A \mid L\)</span>.</p>
+<p><strong>Double robustness.</strong> The estimator above is consistent only if the models for <span class="math inline">\(\operatorname{E}\mathopen{}\left[A \mid L\right]\mathclose{}\)</span> and <span class="math inline">\(\Pr[C = 1 \mid A, L]\)</span> are both correct. Replacing <span class="math inline">\(H(\beta^\dagger)\)</span> by <span class="math inline">\(H(\beta^\dagger) - \operatorname{E}\mathopen{}\left[H(\beta^\dagger) \mid L\right]\mathclose{}\)</span>, with the latter estimated by an unweighted linear model among the uncensored, gives an estimator that is consistent if either (i) the model for <span class="math inline">\(\operatorname{E}\mathopen{}\left[H(\beta^\dagger) \mid L\right]\mathclose{}\)</span> or (ii) both the treatment and censoring models are correct: a <strong>doubly robust</strong> estimator <span class="citation" data-cites="hernan2020causal">(<a href="#/references" role="doc-biblioref" onclick="">Hernán and Robins 2020, 198</a>)</span>.</p>
 </div>
 </div>
 </div>
@@ -672,7 +669,7 @@ Y^{a=0} &amp;= Y^A - \psi_1 A &amp;&amp; \text{(set } a = A\text{)} \\
 <section class="slide level2 scrollable">
 
 <ol type="1">
-<li><strong>Structural nested mean models</strong> <span class="math inline">\(\text{E}{\left[Y^a - Y^{a=0} \mid A = a, L\right]} = \beta_1 a + \beta_2 a L\)</span> model the effect within levels of <span class="math inline">\(L\)</span> and leave <span class="math inline">\(\text{E}{\left[Y^{a=0} \mid L\right]}\)</span> unspecified (semiparametric).</li>
+<li><strong>Structural nested mean models</strong> <span class="math inline">\(\operatorname{E}\mathopen{}\left[Y^a - Y^{a=0} \mid A = a, L\right]\mathclose{} = \beta_1 a + \beta_2 a L\)</span> model the effect within levels of <span class="math inline">\(L\)</span> and leave <span class="math inline">\(\operatorname{E}\mathopen{}\left[Y^{a=0} \mid L\right]\mathclose{}\)</span> unspecified (semiparametric).</li>
 <li><strong>Exchangeability</strong> can be written as: <span class="math inline">\(Y^{a=0}\)</span> does not predict <span class="math inline">\(A\)</span> given <span class="math inline">\(L\)</span> (<span class="math inline">\(\alpha_1 = 0\)</span>).</li>
 <li><strong>G-estimation</strong> finds the parameter value whose candidate counterfactual <span class="math inline">\(H(\psi^\dagger)\)</span> is unassociated with <span class="math inline">\(A\)</span> given <span class="math inline">\(L\)</span>; NHEFS: 3.4 kg (95% CI 2.5, 4.5).</li>
 <li><strong>Rank preservation</strong> is implausible and <strong>not required</strong>: it only simplifies the explanation.</li>

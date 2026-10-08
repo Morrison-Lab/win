@@ -163,9 +163,6 @@
 </section>
 <section class="slide level2">
 
-<!-- https://www.overleaf.com/learn/latex/Using_colors_in_LaTeX#Named_colors_provided_by_the_xcolor_package -->
-<!-- \def\or{\theta}  -->
-<!-- doesn't work for some reason -->
 <p>In Chapter 2, randomization gave us exchangeability by design. Many scientific questions, however, are answered with <strong>observational studies</strong>, in which the investigators observe and record the relevant data but do not assign treatment. Much of what we know (evolution, plate tectonics, the fact that hot coffee can burn) comes from observation rather than experiment.</p>
 <p>This chapter asks: under what conditions can an observational study support a valid causal inference?</p>
 <aside class="notes">
@@ -509,22 +506,22 @@
 <p><span class="math display">\[
 \begin{aligned}
 \text{if } (A_{i0}, A_{i1}) = (0, 1):\quad Y_{i1} - Y_{i0} &amp;= Y_{i1}^{a_1 = 1} - Y_{i0}^{a_0 = 0} &amp;&amp; \text{(consistency)} \\
-&amp;= {\left(\alpha_i + Y_{i1}^{a_1 = 0}\right)} - Y_{i0}^{a_0 = 0} &amp;&amp; \text{(ii)} \\
+&amp;= \mathopen{}\left(\alpha_i + Y_{i1}^{a_1 = 0}\right)\mathclose{} - Y_{i0}^{a_0 = 0} &amp;&amp; \text{(ii)} \\
 &amp;= \alpha_i + r_i, &amp;&amp; \text{(definition of } r_i\text{)} \\
-\text{if } (A_{i0}, A_{i1}) = (1, 0):\quad Y_{i0} - Y_{i1} &amp;= {\left(\alpha_i + Y_{i0}^{a_0 = 0}\right)} - Y_{i1}^{a_1 = 0} = \alpha_i - r_i.
+\text{if } (A_{i0}, A_{i1}) = (1, 0):\quad Y_{i0} - Y_{i1} &amp;= \mathopen{}\left(\alpha_i + Y_{i0}^{a_0 = 0}\right)\mathclose{} - Y_{i1}^{a_1 = 0} = \alpha_i - r_i.
 \end{aligned}
 \]</span></p>
 <p>Individual effects are no longer identified because <span class="math inline">\(r_i\)</span> is unknown. But, using <span class="math inline">\(A_{i0} = 1 - A_{i1}\)</span>,</p>
 <p><span class="math display">\[
 \begin{aligned}
-\text{E}{\left[(Y_{i1} - Y_{i0}) A_{i1} + (Y_{i0} - Y_{i1}) A_{i0}\right]}
-&amp;= \text{E}{\left[(\alpha_i + r_i) A_{i1} + (\alpha_i - r_i) A_{i0}\right]} \\
-&amp;= \text{E}{\left[\alpha_i (A_{i1} + A_{i0})\right]} + \text{E}{\left[r_i (A_{i1} - A_{i0})\right]} \\
-&amp;= \text{E}{\left[\alpha_i\right]} + \text{E}{\left[r_i\right]}\,\text{E}{\left[A_{i1} - A_{i0}\right]} &amp;&amp; \text{($A_{i1} + A_{i0} = 1$; randomization: } A \perp\!\!\!\perp r_i\text{)} \\
-&amp;= \text{E}{\left[\alpha_i\right]} + \text{E}{\left[r_i\right]}(0.5 - 0.5) = \text{E}{\left[\alpha_i\right]}.
+\operatorname{E}\mathopen{}\left[(Y_{i1} - Y_{i0}) A_{i1} + (Y_{i0} - Y_{i1}) A_{i0}\right]\mathclose{}
+&amp;= \operatorname{E}\mathopen{}\left[(\alpha_i + r_i) A_{i1} + (\alpha_i - r_i) A_{i0}\right]\mathclose{} \\
+&amp;= \operatorname{E}\mathopen{}\left[\alpha_i (A_{i1} + A_{i0})\right]\mathclose{} + \operatorname{E}\mathopen{}\left[r_i (A_{i1} - A_{i0})\right]\mathclose{} \\
+&amp;= \operatorname{E}\mathopen{}\left[\alpha_i\right]\mathclose{} + \operatorname{E}\mathopen{}\left[r_i\right]\mathclose{}\,\operatorname{E}\mathopen{}\left[A_{i1} - A_{i0}\right]\mathclose{} &amp;&amp; \text{($A_{i1} + A_{i0} = 1$; randomization: } A \perp\!\!\!\perp r_i\text{)} \\
+&amp;= \operatorname{E}\mathopen{}\left[\alpha_i\right]\mathclose{} + \operatorname{E}\mathopen{}\left[r_i\right]\mathclose{}(0.5 - 0.5) = \operatorname{E}\mathopen{}\left[\alpha_i\right]\mathclose{}.
 \end{aligned}
 \]</span></p>
-<p>If only (i) holds, the same mean estimates <span class="math inline">\((\text{E}{\left[\alpha_{i1}\right]} + \text{E}{\left[\alpha_{i0}\right]})/2\)</span>, the average of the period-specific average effects. The book concludes that, for the treatments and outcomes it studies, the no-carryover assumption is implausible <span class="citation" data-cites="hernan2020causal">(<a href="#/references" role="doc-biblioref" onclick="">Hernán and Robins 2020</a>, Fine Point 3.2, p.&nbsp;31)</span>.</p>
+<p>If only (i) holds, the same mean estimates <span class="math inline">\((\operatorname{E}\mathopen{}\left[\alpha_{i1}\right]\mathclose{} + \operatorname{E}\mathopen{}\left[\alpha_{i0}\right]\mathclose{})/2\)</span>, the average of the period-specific average effects. The book concludes that, for the treatments and outcomes it studies, the no-carryover assumption is implausible <span class="citation" data-cites="hernan2020causal">(<a href="#/references" role="doc-biblioref" onclick="">Hernán and Robins 2020</a>, Fine Point 3.2, p.&nbsp;31)</span>.</p>
 </div>
 </div>
 </div>
@@ -593,12 +590,12 @@
 <p><strong>Technical Point 3.1: Positivity for standardization and IP weighting</strong></p>
 </div>
 <div class="callout-content">
-<p>The standardized mean <span class="math inline">\(\sum_l \text{E}{\left[Y \mid A = a, L = l\right]} \Pr[L = l]\)</span> is defined only if <span class="math inline">\(\text{E}{\left[Y \mid A = a, L = l\right]}\)</span> is defined for every <span class="math inline">\(l\)</span> with <span class="math inline">\(\Pr[L = l] \neq 0\)</span>, i.e., only under positivity; otherwise it is undefined.</p>
-<p>For IP weighting, <span class="math inline">\(\text{E}{\left[\frac{I(A = a) Y}{f[a \mid L]}\right]}\)</span> is undefined without positivity (it involves <span class="math inline">\(0/0\)</span>). The version <span class="math inline">\(\text{E}{\left[\frac{I(A = a) Y}{f[A \mid L]}\right]}\)</span> is always defined, because <span class="math inline">\(f[A \mid L]\)</span> is never 0, but it no longer equals the counterfactual mean. Let <span class="math inline">\(Q(a) \stackrel{\text{def}}{=}\{l : \Pr[A = a \mid L = l] &gt; 0\}\)</span>. Then</p>
+<p>The standardized mean <span class="math inline">\(\sum_l \operatorname{E}\mathopen{}\left[Y \mid A = a, L = l\right]\mathclose{} \Pr[L = l]\)</span> is defined only if <span class="math inline">\(\operatorname{E}\mathopen{}\left[Y \mid A = a, L = l\right]\mathclose{}\)</span> is defined for every <span class="math inline">\(l\)</span> with <span class="math inline">\(\Pr[L = l] \neq 0\)</span>, i.e., only under positivity; otherwise it is undefined.</p>
+<p>For IP weighting, <span class="math inline">\(\operatorname{E}\mathopen{}\left[\frac{I(A = a) Y}{f[a \mid L]}\right]\mathclose{}\)</span> is undefined without positivity (it involves <span class="math inline">\(0/0\)</span>). The version <span class="math inline">\(\operatorname{E}\mathopen{}\left[\frac{I(A = a) Y}{f[A \mid L]}\right]\mathclose{}\)</span> is always defined, because <span class="math inline">\(f[A \mid L]\)</span> is never 0, but it no longer equals the counterfactual mean. Let <span class="math inline">\(Q(a) \stackrel{\text{def}}{=}\{l : \Pr[A = a \mid L = l] &gt; 0\}\)</span>. Then</p>
 <p><span class="math display">\[
-\text{E}{\left[\frac{I(A = a) Y}{f[A \mid L]}\right]} = \Pr[L \in Q(a)] \sum_l \text{E}{\left[Y \mid A = a, L = l, L \in Q(a)\right]} \Pr[L = l \mid L \in Q(a)],
+\operatorname{E}\mathopen{}\left[\frac{I(A = a) Y}{f[A \mid L]}\right]\mathclose{} = \Pr[L \in Q(a)] \sum_l \operatorname{E}\mathopen{}\left[Y \mid A = a, L = l, L \in Q(a)\right]\mathclose{} \Pr[L = l \mid L \in Q(a)],
 \]</span></p>
-<p>which under exchangeability equals <span class="math inline">\(\text{E}{\left[Y^a \mid L \in Q(a)\right]} \Pr[L \in Q(a)]\)</span>. For binary <span class="math inline">\(A\)</span> without positivity, <span class="math inline">\(Q(0) \neq Q(1)\)</span>, so the IP weighted contrast compares two different groups and has no causal interpretation even under exchangeability. Under positivity <span class="math inline">\(Q(0) = Q(1)\)</span> and the contrast is the average causal effect if exchangeability holds.</p>
+<p>which under exchangeability equals <span class="math inline">\(\operatorname{E}\mathopen{}\left[Y^a \mid L \in Q(a)\right]\mathclose{} \Pr[L \in Q(a)]\)</span>. For binary <span class="math inline">\(A\)</span> without positivity, <span class="math inline">\(Q(0) \neq Q(1)\)</span>, so the IP weighted contrast compares two different groups and has no causal interpretation even under exchangeability. Under positivity <span class="math inline">\(Q(0) = Q(1)\)</span> and the contrast is the average causal effect if exchangeability holds.</p>
 </div>
 </div>
 </div>
@@ -780,7 +777,7 @@ Y^A = A\,Y^{a=1} + (1 - A)\,Y^{a=0},
 <li>it is more plausible that (essentially) every individual has an effective intervention;</li>
 <li>direct effects may appear only with large changes (an antihypertensive drug without direct effects at low doses may be toxic at high doses).</li>
 </ul>
-<p>So <span class="math inline">\(Y^{\Delta}\)</span> and <span class="math inline">\(\text{E}{\left[Y^{\Delta} - Y^{\Delta = 0}\right]}\)</span> are (essentially) well-defined for all individuals, where <span class="math inline">\(Y^{\Delta}\)</span> is <span class="math inline">\(Y^a\)</span> evaluated at <span class="math inline">\(a = A - \Delta\)</span> and <span class="math inline">\(A\)</span> is the individual’s blood pressure before the intervention begins.</p>
+<p>So <span class="math inline">\(Y^{\Delta}\)</span> and <span class="math inline">\(\operatorname{E}\mathopen{}\left[Y^{\Delta} - Y^{\Delta = 0}\right]\mathclose{}\)</span> are (essentially) well-defined for all individuals, where <span class="math inline">\(Y^{\Delta}\)</span> is <span class="math inline">\(Y^a\)</span> evaluated at <span class="math inline">\(a = A - \Delta\)</span> and <span class="math inline">\(A\)</span> is the individual’s blood pressure before the intervention begins.</p>
 <div title="Fine Point 3.4: An interventionist approach to causal inference">
 <div class="callout callout-note callout-titled callout-style-default">
 <div class="callout-body">

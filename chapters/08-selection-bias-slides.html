@@ -163,9 +163,6 @@
 </section>
 <section class="slide level2">
 
-<!-- https://www.overleaf.com/learn/latex/Using_colors_in_LaTeX#Named_colors_provided_by_the_xcolor_package -->
-<!-- \def\or{\theta}  -->
-<!-- doesn't work for some reason -->
 <div id="exm-pedestrian-consent" class="theorem example">
 <p><span class="theorem-title"><strong>Example 1 (Looking up at the sky, with consent)</strong></span> The chapter opens with a randomized experiment: an investigator randomly looks up at the sky in front of some pedestrians and records whether they look up too. Randomization rules out confounding. But only pedestrians who later consented to the use of their data were analyzed, and two kinds of pedestrians were less likely to consent: shy ones (who are also less likely to look up) and ones in front of whom the investigator looked up (who felt tricked). Among the consenting pedestrians, those in front of whom the investigator looked up therefore tend to be less shy, and so more likely to look up. The selection process alone produces an association between the investigator’s looking up and the pedestrians’ looking up, whether or not there is any causal effect.</p>
 </div>
@@ -570,7 +567,7 @@
 </div>
 <p>The causal contrast of interest becomes</p>
 <p><span class="math display">\[\Pr[Y^{a=1,c=0} = 1] \quad \text{versus} \quad \Pr[Y^{a=0,c=0} = 1],\]</span></p>
-<p>for example the risk ratio <span class="math inline">\(\text{E}{\left[Y^{a=1,c=0}\right]} / \text{E}{\left[Y^{a=0,c=0}\right]}\)</span> or the risk difference <span class="math inline">\(\text{E}{\left[Y^{a=1,c=0}\right]} - \text{E}{\left[Y^{a=0,c=0}\right]}\)</span>.</p>
+<p>for example the risk ratio <span class="math inline">\(\operatorname{E}\mathopen{}\left[Y^{a=1,c=0}\right]\mathclose{} / \operatorname{E}\mathopen{}\left[Y^{a=0,c=0}\right]\mathclose{}\)</span> or the risk difference <span class="math inline">\(\operatorname{E}\mathopen{}\left[Y^{a=1,c=0}\right]\mathclose{} - \operatorname{E}\mathopen{}\left[Y^{a=0,c=0}\right]\mathclose{}\)</span>.</p>
 <aside class="notes">
 <p>Using counterfactuals such as <span class="math inline">\(Y^{a,c=0}\)</span> presupposes, as in <a href="../chapters/03-observational-studies.html">Chapter 3</a>, that some no-direct-effect intervention could set censoring <span class="math inline">\(C\)</span> to 0 <span class="citation" data-cites="hernan2020causal">(<a href="#/references" role="doc-biblioref" onclick="">Hernán and Robins 2020, 116</a>, margin note)</span>.</p>
 <p>Censoring often has no causal effect on the outcome (an exception: loss to follow-up that prevents people from receiving further treatment). One might then drop the superscript <span class="math inline">\(c = 0\)</span>, but keeping it makes clear that confounding for the effect of <span class="math inline">\(C\)</span> becomes central when estimating the effect of <span class="math inline">\(A\)</span> under selection. Even then, the observed <span class="math inline">\(Y\)</span> depends on <span class="math inline">\(C\)</span>: it equals <span class="math inline">\(Y^{c=0}\)</span> when <span class="math inline">\(C = 0\)</span> and is missing when <span class="math inline">\(C = 1\)</span>. So a causal diagram in which <span class="math inline">\(C\)</span> has no effect on the outcome can still replace <span class="math inline">\(Y\)</span> by <span class="math inline">\(Y^{c=0}\)</span> and add arrows <span class="math inline">\(Y^{c=0} \rightarrow Y\)</span> and <span class="math inline">\(C \rightarrow Y\)</span>, where <span class="math inline">\(C \rightarrow Y\)</span> encodes only that censoring determines whether the outcome is observed.</p>
@@ -750,25 +747,25 @@ Table&nbsp;1: Probability of remaining uncensored, IP weight for censoring <span
 <li><strong>Consistency</strong>: <span class="math inline">\(Y = Y^{a,c=0}\)</span> for every individual with <span class="math inline">\(A = a\)</span> and <span class="math inline">\(C = 0\)</span>. This requires sufficiently well-defined interventions on <span class="math inline">\(A\)</span> and <span class="math inline">\(C\)</span>, and no measurement error in <span class="math inline">\(A\)</span> or <span class="math inline">\(Y\)</span>.</li>
 <li><strong>No confounding for <span class="math inline">\(A\)</span></strong>: <span class="math inline">\(Y^{a,c=0} \perp\!\!\!\perp A\)</span>, as under marginal randomization.</li>
 </ol>
-<p>Then the mean outcome among individuals with <span class="math inline">\(A = a\)</span> in the pseudo-population equals <span class="math inline">\(\text{E}{\left[Y^{a,c=0}\right]}\)</span>, the mean outcome had everyone received <span class="math inline">\(a\)</span> and nobody been censored (<a href="#/def-counterfactual-no-censoring" class="quarto-xref">Definition&nbsp;6</a>):</p>
-<p><span class="math display">\[\frac{\text{E}{\left[I(A = a)\, (1 - C)\, W^C\, Y\right]}}{\text{E}{\left[I(A = a)\, (1 - C)\, W^C\right]}} = \text{E}{\left[Y^{a,c=0}\right]}.\]</span></p>
-<p>So if the conditions hold for every <span class="math inline">\(a\)</span>, any contrast of the pseudo-population means, such as the risk ratio, equals the same contrast of the <span class="math inline">\(\text{E}{\left[Y^{a,c=0}\right]}\)</span>.</p>
+<p>Then the mean outcome among individuals with <span class="math inline">\(A = a\)</span> in the pseudo-population equals <span class="math inline">\(\operatorname{E}\mathopen{}\left[Y^{a,c=0}\right]\mathclose{}\)</span>, the mean outcome had everyone received <span class="math inline">\(a\)</span> and nobody been censored (<a href="#/def-counterfactual-no-censoring" class="quarto-xref">Definition&nbsp;6</a>):</p>
+<p><span class="math display">\[\frac{\operatorname{E}\mathopen{}\left[I(A = a)\, (1 - C)\, W^C\, Y\right]\mathclose{}}{\operatorname{E}\mathopen{}\left[I(A = a)\, (1 - C)\, W^C\right]\mathclose{}} = \operatorname{E}\mathopen{}\left[Y^{a,c=0}\right]\mathclose{}.\]</span></p>
+<p>So if the conditions hold for every <span class="math inline">\(a\)</span>, any contrast of the pseudo-population means, such as the risk ratio, equals the same contrast of the <span class="math inline">\(\operatorname{E}\mathopen{}\left[Y^{a,c=0}\right]\mathclose{}\)</span>.</p>
 </div>
 <div class="proof">
 <p><span class="proof-title"><em>Proof</em>. </span>Write <span class="math inline">\(\pi(a, l) \stackrel{\text{def}}{=}\Pr[C = 0 \mid A = a, L = l]\)</span>, which is positive by positivity. Conditioning on <span class="math inline">\(A\)</span> and <span class="math inline">\(L\)</span>, and summing over the <span class="math inline">\(l\)</span> with <span class="math inline">\(\Pr[A = a, L = l] &gt; 0\)</span>:</p>
 <p><span class="math display">\[
 \begin{aligned}
-\text{E}{\left[I(A = a)\, (1 - C)\, W^C\, Y\right]}
-&amp;= \sum_l \Pr[A = a, L = l]\, \text{E}{\left[(1 - C)\, W^C\, Y \mid A = a, L = l\right]} &amp;&amp; \text{(law of total expectation)} \\
-&amp;= \sum_l \Pr[A = a, L = l]\, \frac{\text{E}{\left[(1 - C)\, Y \mid A = a, L = l\right]}}{\pi(a, l)} &amp;&amp; \text{(definition of } W^C\text{)} \\
-&amp;= \sum_l \Pr[A = a, L = l]\, \text{E}{\left[Y \mid A = a, C = 0, L = l\right]} &amp;&amp; \text{(conditioning on } C\text{)} \\
-&amp;= \sum_l \Pr[A = a, L = l]\, \text{E}{\left[Y^{a,c=0} \mid A = a, C = 0, L = l\right]} &amp;&amp; \text{(consistency)} \\
-&amp;= \sum_l \Pr[A = a, L = l]\, \text{E}{\left[Y^{a,c=0} \mid A = a, L = l\right]} &amp;&amp; \text{(exchangeability for censoring)} \\
-&amp;= \Pr[A = a]\, \text{E}{\left[Y^{a,c=0} \mid A = a\right]} &amp;&amp; \text{(law of total expectation)} \\
-&amp;= \Pr[A = a]\, \text{E}{\left[Y^{a,c=0}\right]} &amp;&amp; \text{(no confounding for } A\text{)}
+\operatorname{E}\mathopen{}\left[I(A = a)\, (1 - C)\, W^C\, Y\right]\mathclose{}
+&amp;= \sum_l \Pr[A = a, L = l]\, \operatorname{E}\mathopen{}\left[(1 - C)\, W^C\, Y \mid A = a, L = l\right]\mathclose{} &amp;&amp; \text{(law of total expectation)} \\
+&amp;= \sum_l \Pr[A = a, L = l]\, \frac{\operatorname{E}\mathopen{}\left[(1 - C)\, Y \mid A = a, L = l\right]\mathclose{}}{\pi(a, l)} &amp;&amp; \text{(definition of } W^C\text{)} \\
+&amp;= \sum_l \Pr[A = a, L = l]\, \operatorname{E}\mathopen{}\left[Y \mid A = a, C = 0, L = l\right]\mathclose{} &amp;&amp; \text{(conditioning on } C\text{)} \\
+&amp;= \sum_l \Pr[A = a, L = l]\, \operatorname{E}\mathopen{}\left[Y^{a,c=0} \mid A = a, C = 0, L = l\right]\mathclose{} &amp;&amp; \text{(consistency)} \\
+&amp;= \sum_l \Pr[A = a, L = l]\, \operatorname{E}\mathopen{}\left[Y^{a,c=0} \mid A = a, L = l\right]\mathclose{} &amp;&amp; \text{(exchangeability for censoring)} \\
+&amp;= \Pr[A = a]\, \operatorname{E}\mathopen{}\left[Y^{a,c=0} \mid A = a\right]\mathclose{} &amp;&amp; \text{(law of total expectation)} \\
+&amp;= \Pr[A = a]\, \operatorname{E}\mathopen{}\left[Y^{a,c=0}\right]\mathclose{} &amp;&amp; \text{(no confounding for } A\text{)}
 \end{aligned}
 \]</span></p>
-<p>The third line uses <span class="math inline">\(\text{E}{\left[(1 - C)\, Y \mid A = a, L = l\right]} = \pi(a, l)\, \text{E}{\left[Y \mid A = a, C = 0, L = l\right]}\)</span>. Replacing <span class="math inline">\(Y\)</span> by 1 in the first three lines shows that the denominator is <span class="math inline">\(\sum_l \Pr[A = a, L = l] = \Pr[A = a]\)</span>. Dividing the two gives the result.</p>
+<p>The third line uses <span class="math inline">\(\operatorname{E}\mathopen{}\left[(1 - C)\, Y \mid A = a, L = l\right]\mathclose{} = \pi(a, l)\, \operatorname{E}\mathopen{}\left[Y \mid A = a, C = 0, L = l\right]\mathclose{}\)</span>. Replacing <span class="math inline">\(Y\)</span> by 1 in the first three lines shows that the denominator is <span class="math inline">\(\sum_l \Pr[A = a, L = l] = \Pr[A = a]\)</span>. Dividing the two gives the result.</p>
 </div>
 </section>
 <section class="slide level2">
@@ -999,7 +996,7 @@ Table&nbsp;1: Probability of remaining uncensored, IP weight for censoring <span
 <p>So far selection bias has been treated as present or absent. In practice its direction and magnitude matter.</p>
 <p><strong>Direction.</strong> The sign of the association between two marginally independent causes <span class="math inline">\(A\)</span> and <span class="math inline">\(E\)</span> within strata of their common effect <span class="math inline">\(Y\)</span> depends on how they interact to cause <span class="math inline">\(Y\)</span>. Suppose an undiscovered background factor <span class="math inline">\(U\)</span>, unassociated with <span class="math inline">\(A\)</span> and <span class="math inline">\(E\)</span>, must be present for either to cause death.</p>
 <ul>
-<li><strong>“Or” mechanism</strong>: in the presence of <span class="math inline">\(U\)</span>, either <span class="math inline">\(A = 1\)</span> or <span class="math inline">\(E = 1\)</span> is sufficient and necessary for death. Among the dead (<span class="math inline">\(Y = 1\)</span>), <span class="math inline">\(A\)</span> and <span class="math inline">\(E\)</span> are negatively associated: a decedent with <span class="math inline">\(A = 0\)</span> is more likely to have <span class="math inline">\(E = 1\)</span>, since <span class="math inline">\(E\)</span> is then the more likely cause. The log of the conditional odds ratio <span class="math inline">\(\text{OR}_{AE \mid Y = 1}\)</span> approaches <span class="math inline">\(-\infty\)</span> as the prevalence of <span class="math inline">\(U\)</span> approaches 1.</li>
+<li><strong>“Or” mechanism</strong>: in the presence of <span class="math inline">\(U\)</span>, either <span class="math inline">\(A = 1\)</span> or <span class="math inline">\(E = 1\)</span> is sufficient and necessary for death. Among the dead (<span class="math inline">\(Y = 1\)</span>), <span class="math inline">\(A\)</span> and <span class="math inline">\(E\)</span> are negatively associated: a decedent with <span class="math inline">\(A = 0\)</span> is more likely to have <span class="math inline">\(E = 1\)</span>, since <span class="math inline">\(E\)</span> is then the more likely cause. The log of the conditional odds ratio <span class="math inline">\(\operatorname{OR}_{AE \mid Y = 1}\)</span> approaches <span class="math inline">\(-\infty\)</span> as the prevalence of <span class="math inline">\(U\)</span> approaches 1.</li>
 <li><strong>“And” mechanism</strong>: in the presence of <span class="math inline">\(U\)</span>, having both <span class="math inline">\(A = 1\)</span> and <span class="math inline">\(E = 1\)</span> is sufficient and necessary for death. Among the dead, those with <span class="math inline">\(A = 1\)</span> are more likely to have <span class="math inline">\(E = 1\)</span>: <span class="math inline">\(A\)</span> and <span class="math inline">\(E\)</span> are positively associated.</li>
 </ul>
 <p>A standard DAG such as Figure 8.12 cannot distinguish the two mechanisms; causal DAGs with sufficient-causation structures (VanderWeele and Robins 2007c) can.</p>

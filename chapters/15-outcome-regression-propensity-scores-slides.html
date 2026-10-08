@@ -163,9 +163,6 @@
 </section>
 <section class="slide level2">
 
-<!-- https://www.overleaf.com/learn/latex/Using_colors_in_LaTeX#Named_colors_provided_by_the_xcolor_package -->
-<!-- \def\or{\theta}  -->
-<!-- doesn't work for some reason -->
 <p>This chapter covers <strong>outcome regression</strong> and <strong>propensity score</strong> methods (stratification, standardization, and matching on the propensity score): the most commonly used parametric methods for causal inference. They work well for treatments fixed at a single time, but they are not designed for the complexities of time-varying treatments, which is why the book presents them only after the g-methods.</p>
 <aside class="notes">
 <p>This chapter is based on <span class="citation" data-cites="hernan2020causal">Hernán and Robins (<a href="#/references" role="doc-biblioref" onclick="">2020, chap. 15</a>, pp.&nbsp;199-208)</span>.</p>
@@ -193,7 +190,7 @@
 <div id="def-structural-model-with-l" class="theorem definition">
 <p><span class="theorem-title"><strong>Definition 1 (Structural Model with Parameters for <span class="math inline">\(L\)</span>)</strong></span> The <strong>structural model with parameters for <span class="math inline">\(L\)</span></strong> states that, for each <span class="math inline">\(a \in \{0, 1\}\)</span>,</p>
 <p><span class="math display">\[
-\text{E}{\left[Y^{a,c=0} \mid L\right]} = \beta_0 + \beta_1 a + a {\beta_2}^{\top} L + {\beta_3}^{\top} L,
+\operatorname{E}\mathopen{}\left[Y^{a,c=0} \mid L\right]\mathclose{} = \beta_0 + \beta_1 a + a {\beta_2}^{\top} L + {\beta_3}^{\top} L,
 \]</span></p>
 <p>where <span class="math inline">\(\beta_0\)</span> and <span class="math inline">\(\beta_1\)</span> are scalar parameters and <span class="math inline">\(\beta_2\)</span> and <span class="math inline">\(\beta_3\)</span> are vector parameters.</p>
 </div>
@@ -221,7 +218,7 @@
 <p><span class="proof-title"><em>Proof</em>. </span>Evaluate the model at <span class="math inline">\(a = 1\)</span> and <span class="math inline">\(a = 0\)</span> and subtract:</p>
 <p><span class="math display">\[
 \begin{aligned}
-&amp;\text{E}{\left[Y^{a=1,c=0} \mid L = l\right]} - \text{E}{\left[Y^{a=0,c=0} \mid L = l\right]} \\
+&amp;\operatorname{E}\mathopen{}\left[Y^{a=1,c=0} \mid L = l\right]\mathclose{} - \operatorname{E}\mathopen{}\left[Y^{a=0,c=0} \mid L = l\right]\mathclose{} \\
 &amp;\quad = (\beta_0 + \beta_1 \cdot 1 + 1 \cdot {\beta_2}^{\top} l + {\beta_3}^{\top} l) - (\beta_0 + \beta_1 \cdot 0 + 0 \cdot {\beta_2}^{\top} l + {\beta_3}^{\top} l) \\
 &amp;\quad = (\beta_0 + \beta_1 + {\beta_2}^{\top} l + {\beta_3}^{\top} l) - (\beta_0 + {\beta_3}^{\top} l) \\
 &amp;\quad = \beta_1 + {\beta_2}^{\top} l.
@@ -233,16 +230,16 @@
 <section id="estimating-the-structural-model-by-outcome-regression" class="slide level2 scrollable">
 <h2>Estimating the Structural Model by Outcome Regression</h2>
 <div id="prp-outcome-regression-identification" class="theorem proposition">
-<p><span class="theorem-title"><strong>Proposition 2 (Outcome Regression Identifies the Structural Model)</strong></span> Suppose that <span class="math inline">\(L\)</span> is discrete (it takes finitely or countably many values), and that, for each <span class="math inline">\(a \in \{0, 1\}\)</span>, <span class="math inline">\(\text{E}{\left[\left|Y^{a,c=0}\right|\right]} &lt; \infty\)</span>. Suppose also that <span class="math inline">\(L\)</span> suffices to adjust for confounding and selection bias, that is, conditional exchangeability <span class="math inline">\(Y^{a,c=0} \perp\!\!\!\perp(A, C) \mid L\)</span> holds for <span class="math inline">\(a \in \{0, 1\}\)</span>; that positivity <span class="math inline">\(\Pr[A = a, C = 0 \mid L = l] &gt; 0\)</span> holds for <span class="math inline">\(a \in \{0, 1\}\)</span> and every value <span class="math inline">\(l\)</span> with <span class="math inline">\(\Pr[L = l] &gt; 0\)</span>; and that consistency (well-defined interventions) holds: <span class="math inline">\(Y = Y^{a,c=0}\)</span> whenever <span class="math inline">\(A = a\)</span> and <span class="math inline">\(C = 0\)</span>.</p>
+<p><span class="theorem-title"><strong>Proposition 2 (Outcome Regression Identifies the Structural Model)</strong></span> Suppose that <span class="math inline">\(L\)</span> is discrete (it takes finitely or countably many values), and that, for each <span class="math inline">\(a \in \{0, 1\}\)</span>, <span class="math inline">\(\operatorname{E}\mathopen{}\left[\mathopen{}\left|Y^{a,c=0}\right|\mathclose{}\right]\mathclose{} &lt; \infty\)</span>. Suppose also that <span class="math inline">\(L\)</span> suffices to adjust for confounding and selection bias, that is, conditional exchangeability <span class="math inline">\(Y^{a,c=0} \perp\!\!\!\perp(A, C) \mid L\)</span> holds for <span class="math inline">\(a \in \{0, 1\}\)</span>; that positivity <span class="math inline">\(\Pr[A = a, C = 0 \mid L = l] &gt; 0\)</span> holds for <span class="math inline">\(a \in \{0, 1\}\)</span> and every value <span class="math inline">\(l\)</span> with <span class="math inline">\(\Pr[L = l] &gt; 0\)</span>; and that consistency (well-defined interventions) holds: <span class="math inline">\(Y = Y^{a,c=0}\)</span> whenever <span class="math inline">\(A = a\)</span> and <span class="math inline">\(C = 0\)</span>.</p>
 <ol type="1">
 <li><p>The conditional counterfactual mean is identified:</p>
 <p><span class="math display">\[
-\text{E}{\left[Y^{a,c=0} \mid L = l\right]} = \text{E}{\left[Y \mid A = a, C = 0, L = l\right]},
+\operatorname{E}\mathopen{}\left[Y^{a,c=0} \mid L = l\right]\mathclose{} = \operatorname{E}\mathopen{}\left[Y \mid A = a, C = 0, L = l\right]\mathclose{},
 \]</span></p>
 <p>for <span class="math inline">\(a \in \{0, 1\}\)</span> and every value <span class="math inline">\(l\)</span> with <span class="math inline">\(\Pr[L = l] &gt; 0\)</span>.</p></li>
-<li><p>Suppose further that the structural model of <a href="#/def-structural-model-with-l" class="quarto-xref">Definition&nbsp;1</a> holds. Let <span class="math inline">\(X \stackrel{\text{def}}{=}{(1, A, A {L}^{\top}, {L}^{\top})}^{\top}\)</span> be the regressor vector, and stack the structural parameters as <span class="math inline">\(\beta \stackrel{\text{def}}{=}{(\beta_0, \beta_1, {\beta_2}^{\top}, {\beta_3}^{\top})}^{\top}\)</span>, and suppose that <span class="math inline">\(\text{E}{\left[Y^2 \mid C = 0\right]} &lt; \infty\)</span>, that <span class="math inline">\(\text{E}{\left[\left\lVert X\right\rVert^2 \mid C = 0\right]} &lt; \infty\)</span>, and that the second-moment matrix <span class="math inline">\(\text{E}{\left[X {X}^{\top} \mid C = 0\right]}\)</span> is invertible. Then the outcome regression model</p>
+<li><p>Suppose further that the structural model of <a href="#/def-structural-model-with-l" class="quarto-xref">Definition&nbsp;1</a> holds. Let <span class="math inline">\(X \stackrel{\text{def}}{=}{(1, A, A {L}^{\top}, {L}^{\top})}^{\top}\)</span> be the regressor vector, and stack the structural parameters as <span class="math inline">\(\beta \stackrel{\text{def}}{=}{(\beta_0, \beta_1, {\beta_2}^{\top}, {\beta_3}^{\top})}^{\top}\)</span>, and suppose that <span class="math inline">\(\operatorname{E}\mathopen{}\left[Y^2 \mid C = 0\right]\mathclose{} &lt; \infty\)</span>, that <span class="math inline">\(\operatorname{E}\mathopen{}\left[\mathopen{}\left\lVert X\right\rVert^2\mathclose{} \mid C = 0\right]\mathclose{} &lt; \infty\)</span>, and that the second-moment matrix <span class="math inline">\(\operatorname{E}\mathopen{}\left[X {X}^{\top} \mid C = 0\right]\mathclose{}\)</span> is invertible. Then the outcome regression model</p>
 <p><span class="math display">\[
-\text{E}{\left[Y \mid A, C = 0, L\right]} = \alpha_0 + \alpha_1 A + A {\alpha_2}^{\top} L + {\alpha_3}^{\top} L
+\operatorname{E}\mathopen{}\left[Y \mid A, C = 0, L\right]\mathclose{} = \alpha_0 + \alpha_1 A + A {\alpha_2}^{\top} L + {\alpha_3}^{\top} L
 \]</span></p>
 <p>with stacked coefficients <span class="math inline">\(\alpha \stackrel{\text{def}}{=}{(\alpha_0, \alpha_1, {\alpha_2}^{\top}, {\alpha_3}^{\top})}^{\top}\)</span> is correctly specified, and its population least-squares coefficients satisfy <span class="math inline">\(\alpha = \beta\)</span>.</p></li>
 </ol>
@@ -251,22 +248,22 @@
 <p><span class="proof-title"><em>Proof</em>. </span>Part 1:</p>
 <p><span class="math display">\[
 \begin{aligned}
-\text{E}{\left[Y^{a,c=0} \mid L = l\right]}
-&amp;= \text{E}{\left[Y^{a,c=0} \mid A = a, C = 0, L = l\right]} &amp;&amp; \text{(conditional exchangeability; positivity makes the conditioning event non-null)} \\
-&amp;= \text{E}{\left[Y \mid A = a, C = 0, L = l\right]} &amp;&amp; \text{(consistency)}.
+\operatorname{E}\mathopen{}\left[Y^{a,c=0} \mid L = l\right]\mathclose{}
+&amp;= \operatorname{E}\mathopen{}\left[Y^{a,c=0} \mid A = a, C = 0, L = l\right]\mathclose{} &amp;&amp; \text{(conditional exchangeability; positivity makes the conditioning event non-null)} \\
+&amp;= \operatorname{E}\mathopen{}\left[Y \mid A = a, C = 0, L = l\right]\mathclose{} &amp;&amp; \text{(consistency)}.
 \end{aligned}
 \]</span></p>
-<p>Part 2: by part 1 and the structural model, <span class="math inline">\(\text{E}{\left[Y \mid A = a, C = 0, L = l\right]} = \beta_0 + \beta_1 a + a {\beta_2}^{\top} l + {\beta_3}^{\top} l\)</span> for every <span class="math inline">\((a, l)\)</span> with positive probability among the uncensored, so the linear model with <span class="math inline">\(\alpha = \beta\)</span> equals the conditional mean and is correctly specified; in vector form, <span class="math inline">\(\text{E}{\left[Y \mid A, L, C = 0\right]} = {X}^{\top} \beta\)</span>. The moment conditions make every expectation in the normal equations finite. The population least-squares coefficients <span class="math inline">\(\alpha\)</span> are the solutions of the normal equations <span class="math inline">\(\text{E}{\left[X (Y - {X}^{\top} \alpha) \mid C = 0\right]} = 0\)</span>. The vector <span class="math inline">\(\beta\)</span> solves them:</p>
+<p>Part 2: by part 1 and the structural model, <span class="math inline">\(\operatorname{E}\mathopen{}\left[Y \mid A = a, C = 0, L = l\right]\mathclose{} = \beta_0 + \beta_1 a + a {\beta_2}^{\top} l + {\beta_3}^{\top} l\)</span> for every <span class="math inline">\((a, l)\)</span> with positive probability among the uncensored, so the linear model with <span class="math inline">\(\alpha = \beta\)</span> equals the conditional mean and is correctly specified; in vector form, <span class="math inline">\(\operatorname{E}\mathopen{}\left[Y \mid A, L, C = 0\right]\mathclose{} = {X}^{\top} \beta\)</span>. The moment conditions make every expectation in the normal equations finite. The population least-squares coefficients <span class="math inline">\(\alpha\)</span> are the solutions of the normal equations <span class="math inline">\(\operatorname{E}\mathopen{}\left[X (Y - {X}^{\top} \alpha) \mid C = 0\right]\mathclose{} = 0\)</span>. The vector <span class="math inline">\(\beta\)</span> solves them:</p>
 <p><span class="math display">\[
 \begin{aligned}
-\text{E}{\left[X (Y - {X}^{\top} \beta) \mid C = 0\right]}
-&amp;= \text{E}{\left[\text{E}{\left[X (Y - {X}^{\top} \beta) \mid A, L, C = 0\right]} \mid C = 0\right]} &amp;&amp; \text{(iterated expectations)} \\
-&amp;= \text{E}{\left[X (\text{E}{\left[Y \mid A, L, C = 0\right]} - {X}^{\top} \beta) \mid C = 0\right]} &amp;&amp; \text{(} X \text{ is a function of } (A, L)\text{)} \\
-&amp;= \text{E}{\left[X ({X}^{\top} \beta - {X}^{\top} \beta) \mid C = 0\right]} &amp;&amp; \text{(correct specification)} \\
+\operatorname{E}\mathopen{}\left[X (Y - {X}^{\top} \beta) \mid C = 0\right]\mathclose{}
+&amp;= \operatorname{E}\mathopen{}\left[\operatorname{E}\mathopen{}\left[X (Y - {X}^{\top} \beta) \mid A, L, C = 0\right]\mathclose{} \mid C = 0\right]\mathclose{} &amp;&amp; \text{(iterated expectations)} \\
+&amp;= \operatorname{E}\mathopen{}\left[X (\operatorname{E}\mathopen{}\left[Y \mid A, L, C = 0\right]\mathclose{} - {X}^{\top} \beta) \mid C = 0\right]\mathclose{} &amp;&amp; \text{(} X \text{ is a function of } (A, L)\text{)} \\
+&amp;= \operatorname{E}\mathopen{}\left[X ({X}^{\top} \beta - {X}^{\top} \beta) \mid C = 0\right]\mathclose{} &amp;&amp; \text{(correct specification)} \\
 &amp;= 0.
 \end{aligned}
 \]</span></p>
-<p>Because <span class="math inline">\(\text{E}{\left[X {X}^{\top} \mid C = 0\right]}\)</span> is invertible, the normal equations have a unique solution, so <span class="math inline">\(\alpha = \beta\)</span>.</p>
+<p>Because <span class="math inline">\(\operatorname{E}\mathopen{}\left[X {X}^{\top} \mid C = 0\right]\mathclose{}\)</span> is invertible, the normal equations have a unique solution, so <span class="math inline">\(\alpha = \beta\)</span>.</p>
 </div>
 <p>So the structural parameters can be estimated by ordinary least squares, fitting the outcome regression model of <a href="#/prp-outcome-regression-identification" class="quarto-xref">Proposition&nbsp;2</a>.</p>
 <aside class="notes">
@@ -303,7 +300,7 @@
 <div id="exm-nhefs-outcome-regression" class="theorem example">
 <p><span class="theorem-title"><strong>Example 1 (Smoking Cessation and Weight Gain (NHEFS))</strong></span> Using the outcome model of Section 13.2, which has a single product term (between <span class="math inline">\(A\)</span> and smoking intensity), the book reports <span class="math inline">\(\hat \beta_1 = 2.6\)</span> and <span class="math inline">\(\hat \beta_2 = 0.05\)</span> <span class="citation" data-cites="hernan2020causal">(<a href="#/references" role="doc-biblioref" onclick="">Hernán and Robins 2020, 200</a>)</span>.</p>
 <ul>
-<li>Estimated effect <span class="math inline">\(\hat{\text{E}}{\left[Y \mid A = 1, C = 0, L\right]} - \hat{\text{E}}{\left[Y \mid A = 0, C = 0, L\right]}\)</span>: 2.8 kg (95% CI: 1.5, 4.1) for those smoking 5 cigarettes/day; 4.4 kg (95% CI: 2.8, 6.1) for those smoking 40 cigarettes/day.</li>
+<li>Estimated effect <span class="math inline">\(\mathop{\hat{\operatorname{E}}}\nolimits\mathopen{}\left[Y \mid A = 1, C = 0, L\right]\mathclose{} - \mathop{\hat{\operatorname{E}}}\nolimits\mathopen{}\left[Y \mid A = 0, C = 0, L\right]\mathclose{}\)</span>: 2.8 kg (95% CI: 1.5, 4.1) for those smoking 5 cigarettes/day; 4.4 kg (95% CI: 2.8, 6.1) for those smoking 40 cigarettes/day.</li>
 <li>Model with <strong>no</strong> product terms (assumes no effect modification by any variable in <span class="math inline">\(L\)</span>): <span class="math inline">\(\hat \beta_1 = 3.5\)</span> kg (95% CI: 2.6, 4.3), which then estimates both the conditional and the marginal effect.</li>
 </ul>
 </div>
@@ -340,8 +337,8 @@
 <div class="callout-content">
 <p>Two methods for the same effect rely on different nuisance parameters (<a href="#/def-nuisance-parameter" class="quarto-xref">Definition&nbsp;2</a>):</p>
 <ul>
-<li><strong>Outcome regression</strong> for <span class="math inline">\(\beta_1, \beta_2\)</span>: consistent (in general) only if <span class="math inline">\(\beta_0 + {\beta_3}^{\top} L\)</span> correctly models how <span class="math inline">\(\text{E}{\left[Y^{a=0,c=0} \mid L\right]}\)</span> depends on <span class="math inline">\(L\)</span>. The nuisance parameters are <span class="math inline">\(\beta_0\)</span> and <span class="math inline">\(\beta_3\)</span>.</li>
-<li><strong>G-estimation</strong> of the structural nested model <span class="math inline">\(\text{E}{\left[Y^{a,c=0} - Y^{a=0,c=0} \mid L\right]} = \beta_1 a + a {\beta_2}^{\top} L\)</span>: consistent (in general) only if the treatment model for <span class="math inline">\(\Pr[A = 1 \mid L]\)</span> is correct. The nuisance parameters are those of the treatment model, e.g., <span class="math inline">\(\gamma_0, \gamma_1\)</span> in <span class="math inline">\(\text{logit}\Pr[A = 1 \mid L] = \gamma_0 + {\gamma_1}^{\top} L\)</span>.</li>
+<li><strong>Outcome regression</strong> for <span class="math inline">\(\beta_1, \beta_2\)</span>: consistent (in general) only if <span class="math inline">\(\beta_0 + {\beta_3}^{\top} L\)</span> correctly models how <span class="math inline">\(\operatorname{E}\mathopen{}\left[Y^{a=0,c=0} \mid L\right]\mathclose{}\)</span> depends on <span class="math inline">\(L\)</span>. The nuisance parameters are <span class="math inline">\(\beta_0\)</span> and <span class="math inline">\(\beta_3\)</span>.</li>
+<li><strong>G-estimation</strong> of the structural nested model <span class="math inline">\(\operatorname{E}\mathopen{}\left[Y^{a,c=0} - Y^{a=0,c=0} \mid L\right]\mathclose{} = \beta_1 a + a {\beta_2}^{\top} L\)</span>: consistent (in general) only if the treatment model for <span class="math inline">\(\Pr[A = 1 \mid L]\)</span> is correct. The nuisance parameters are those of the treatment model, e.g., <span class="math inline">\(\gamma_0, \gamma_1\)</span> in <span class="math inline">\(\operatorname{logit}\Pr[A = 1 \mid L] = \gamma_0 + {\gamma_1}^{\top} L\)</span>.</li>
 </ul>
 <aside class="notes">
 <p>Example: if <span class="math inline">\(L\)</span> should enter as <span class="math inline">\(\beta_3 L + \beta_4 L^2\)</span> but is modeled as <span class="math inline">\(\beta_3 L\)</span> only, outcome regression is biased; g-estimation is unaffected by that error but is biased if the <span class="math inline">\(L\)</span>-<span class="math inline">\(A\)</span> relation is misspecified. For a time-fixed treatment, choosing between the two amounts to deciding which nuisance model we can specify more accurately. When possible, a better option is a doubly robust method (Fine Point 13.2) <span class="citation" data-cites="hernan2020causal">(<a href="#/references" role="doc-biblioref" onclick="">Hernán and Robins 2020, 200</a>)</span>.</p>
@@ -448,8 +445,8 @@ A \perp\!\!\!\perp L \mid \pi(L).
 <p><span class="math display">\[
 \begin{aligned}
 \Pr[A = 1 \mid \pi(L)]
-&amp;= \text{E}{\left[\Pr[A = 1 \mid L] \mid \pi(L)\right]} \\
-&amp;= \text{E}{\left[\pi(L) \mid \pi(L)\right]} \\
+&amp;= \operatorname{E}\mathopen{}\left[\Pr[A = 1 \mid L] \mid \pi(L)\right]\mathclose{} \\
+&amp;= \operatorname{E}\mathopen{}\left[\pi(L) \mid \pi(L)\right]\mathclose{} \\
 &amp;= \pi(L).
 \end{aligned}
 \]</span></p>
@@ -516,9 +513,9 @@ A \perp\!\!\!\perp L \mid \pi(L).
 <p><span class="proof-title"><em>Proof</em> (Proof of part 1). </span><span class="math display">\[
 \begin{aligned}
 \Pr[A = 1 \mid Y^a, \pi(L)]
-&amp;= \text{E}{\left[\Pr[A = 1 \mid Y^a, L] \mid Y^a, \pi(L)\right]} &amp;&amp; \text{(iterated expectations; } \pi(L) \text{ is a function of } L\text{)} \\
-&amp;= \text{E}{\left[\Pr[A = 1 \mid L] \mid Y^a, \pi(L)\right]} &amp;&amp; (Y^a \perp\!\!\!\perp A \mid L) \\
-&amp;= \text{E}{\left[\pi(L) \mid Y^a, \pi(L)\right]} &amp;&amp; \text{(definition of } \pi(L)\text{)} \\
+&amp;= \operatorname{E}\mathopen{}\left[\Pr[A = 1 \mid Y^a, L] \mid Y^a, \pi(L)\right]\mathclose{} &amp;&amp; \text{(iterated expectations; } \pi(L) \text{ is a function of } L\text{)} \\
+&amp;= \operatorname{E}\mathopen{}\left[\Pr[A = 1 \mid L] \mid Y^a, \pi(L)\right]\mathclose{} &amp;&amp; (Y^a \perp\!\!\!\perp A \mid L) \\
+&amp;= \operatorname{E}\mathopen{}\left[\pi(L) \mid Y^a, \pi(L)\right]\mathclose{} &amp;&amp; \text{(definition of } \pi(L)\text{)} \\
 &amp;= \pi(L),
 \end{aligned}
 \]</span></p>
@@ -560,19 +557,19 @@ A \perp\!\!\!\perp L \mid \pi(L).
 <section class="slide level2">
 
 <div id="prp-ps-stratum-effect" class="theorem proposition">
-<p><span class="theorem-title"><strong>Proposition 4 (Effects Within Levels of the Propensity Score)</strong></span> Let <span class="math inline">\(A\)</span> be dichotomous and <span class="math inline">\(\pi(L)\)</span> its propensity score. Suppose that <span class="math inline">\(L\)</span> is discrete (so <span class="math inline">\(\pi(L)\)</span> is discrete too), and that, for each <span class="math inline">\(a \in \{0, 1\}\)</span>, <span class="math inline">\(\text{E}{\left[\left|Y^{a,c=0}\right|\right]} &lt; \infty\)</span>. Suppose also conditional exchangeability given the propensity score, <span class="math inline">\(Y^{a,c=0} \perp\!\!\!\perp(A, C) \mid \pi(L)\)</span> for <span class="math inline">\(a \in \{0, 1\}\)</span>; positivity, <span class="math inline">\(\Pr[A = a, C = 0 \mid \pi(L) = s] &gt; 0\)</span> for <span class="math inline">\(a \in \{0, 1\}\)</span> and every <span class="math inline">\(s\)</span> with <span class="math inline">\(\Pr[\pi(L) = s] &gt; 0\)</span>; and consistency, <span class="math inline">\(Y = Y^{a,c=0}\)</span> whenever <span class="math inline">\(A = a\)</span> and <span class="math inline">\(C = 0\)</span>. Then, for each value <span class="math inline">\(s\)</span> of the propensity score with <span class="math inline">\(\Pr[\pi(L) = s] &gt; 0\)</span>,</p>
+<p><span class="theorem-title"><strong>Proposition 4 (Effects Within Levels of the Propensity Score)</strong></span> Let <span class="math inline">\(A\)</span> be dichotomous and <span class="math inline">\(\pi(L)\)</span> its propensity score. Suppose that <span class="math inline">\(L\)</span> is discrete (so <span class="math inline">\(\pi(L)\)</span> is discrete too), and that, for each <span class="math inline">\(a \in \{0, 1\}\)</span>, <span class="math inline">\(\operatorname{E}\mathopen{}\left[\mathopen{}\left|Y^{a,c=0}\right|\mathclose{}\right]\mathclose{} &lt; \infty\)</span>. Suppose also conditional exchangeability given the propensity score, <span class="math inline">\(Y^{a,c=0} \perp\!\!\!\perp(A, C) \mid \pi(L)\)</span> for <span class="math inline">\(a \in \{0, 1\}\)</span>; positivity, <span class="math inline">\(\Pr[A = a, C = 0 \mid \pi(L) = s] &gt; 0\)</span> for <span class="math inline">\(a \in \{0, 1\}\)</span> and every <span class="math inline">\(s\)</span> with <span class="math inline">\(\Pr[\pi(L) = s] &gt; 0\)</span>; and consistency, <span class="math inline">\(Y = Y^{a,c=0}\)</span> whenever <span class="math inline">\(A = a\)</span> and <span class="math inline">\(C = 0\)</span>. Then, for each value <span class="math inline">\(s\)</span> of the propensity score with <span class="math inline">\(\Pr[\pi(L) = s] &gt; 0\)</span>,</p>
 <p><span class="math display">\[
-\text{E}{\left[Y^{a=1,c=0} \mid \pi(L) = s\right]} - \text{E}{\left[Y^{a=0,c=0} \mid \pi(L) = s\right]}
-= \text{E}{\left[Y \mid A = 1, C = 0, \pi(L) = s\right]} - \text{E}{\left[Y \mid A = 0, C = 0, \pi(L) = s\right]}.
+\operatorname{E}\mathopen{}\left[Y^{a=1,c=0} \mid \pi(L) = s\right]\mathclose{} - \operatorname{E}\mathopen{}\left[Y^{a=0,c=0} \mid \pi(L) = s\right]\mathclose{}
+= \operatorname{E}\mathopen{}\left[Y \mid A = 1, C = 0, \pi(L) = s\right]\mathclose{} - \operatorname{E}\mathopen{}\left[Y \mid A = 0, C = 0, \pi(L) = s\right]\mathclose{}.
 \]</span></p>
 </div>
 <div class="proof">
 <p><span class="proof-title"><em>Proof</em>. </span>For each <span class="math inline">\(a \in \{0, 1\}\)</span>,</p>
 <p><span class="math display">\[
 \begin{aligned}
-\text{E}{\left[Y^{a,c=0} \mid \pi(L) = s\right]}
-&amp;= \text{E}{\left[Y^{a,c=0} \mid A = a, C = 0, \pi(L) = s\right]} &amp;&amp; \text{(exchangeability given } \pi(L)\text{; positivity)} \\
-&amp;= \text{E}{\left[Y \mid A = a, C = 0, \pi(L) = s\right]} &amp;&amp; \text{(consistency)}.
+\operatorname{E}\mathopen{}\left[Y^{a,c=0} \mid \pi(L) = s\right]\mathclose{}
+&amp;= \operatorname{E}\mathopen{}\left[Y^{a,c=0} \mid A = a, C = 0, \pi(L) = s\right]\mathclose{} &amp;&amp; \text{(exchangeability given } \pi(L)\text{; positivity)} \\
+&amp;= \operatorname{E}\mathopen{}\left[Y \mid A = a, C = 0, \pi(L) = s\right]\mathclose{} &amp;&amp; \text{(consistency)}.
 \end{aligned}
 \]</span></p>
 <p>Subtracting the <span class="math inline">\(a = 0\)</span> line from the <span class="math inline">\(a = 1\)</span> line gives the result.</p>
@@ -645,7 +642,7 @@ A \perp\!\!\!\perp L \mid \pi(L).
 <p><strong>Use the Propensity Score as a Continuous Covariate</strong></p>
 </div>
 <div class="callout-content">
-<p>Remedy: use the estimated <span class="math inline">\(\pi(L)\)</span> as a <strong>continuous</strong> covariate in the outcome model <span class="math inline">\(\text{E}{\left[Y \mid A, C = 0, \pi(L)\right]}\)</span>.</p>
+<p>Remedy: use the estimated <span class="math inline">\(\pi(L)\)</span> as a <strong>continuous</strong> covariate in the outcome model <span class="math inline">\(\operatorname{E}\mathopen{}\left[Y \mid A, C = 0, \pi(L)\right]\mathclose{}\)</span>.</p>
 </div>
 </div>
 </div>
@@ -687,15 +684,15 @@ A \perp\!\!\!\perp L \mid \pi(L).
 <h2>Standardizing over the Propensity Score</h2>
 <p>The outcome model on <span class="math inline">\(\pi(L)\)</span> estimates effects <strong>within</strong> levels <span class="math inline">\(s\)</span> of <span class="math inline">\(\pi(L)\)</span>.</p>
 <div id="alg-ps-standardization" class="theorem algorithm">
-<p><span class="theorem-title"><strong>Algorithm 2 (Standardization over the Propensity Score)</strong></span> For the population average causal effect <span class="math inline">\(\text{E}{\left[Y^{a=1,c=0}\right]} - \text{E}{\left[Y^{a=0,c=0}\right]}\)</span>, standardize the fitted conditional means over the distribution of an estimated adjustment score <span class="math inline">\(b(L)\)</span>: the Chapter 13 procedure with <span class="math inline">\(b(L)\)</span> in place of <span class="math inline">\(L\)</span>. When no one is censored, <span class="math inline">\(b(L) = \pi(L)\)</span>, which suffices for adjustment when exchangeability and positivity hold given <span class="math inline">\(L\)</span> (<a href="#/thm-ps-exchangeability" class="quarto-xref">Theorem&nbsp;1</a>). With censoring, <span class="math inline">\(b(L)\)</span> is a joint score with <span class="math inline">\((A, C) \perp\!\!\!\perp L \mid b(L)\)</span>, as discussed after <a href="#/prp-ps-stratum-effect" class="quarto-xref">Proposition&nbsp;4</a>, such as the vector of joint probabilities <span class="math inline">\(\Pr[A = a, C = c \mid L]\)</span> over all <span class="math inline">\((a, c)\)</span>. This joint score suffices when, for each <span class="math inline">\(a \in \{0, 1\}\)</span>, <span class="math inline">\(Y^{a,c=0} \perp\!\!\!\perp(A, C) \mid L\)</span> and <span class="math inline">\(\Pr[A = a, C = 0 \mid L] &gt; 0\)</span>: because <span class="math inline">\((A, C) \perp\!\!\!\perp L \mid b(L)\)</span>, these conditions carry over from <span class="math inline">\(L\)</span> to <span class="math inline">\(b(L)\)</span>, by the argument <a href="#/thm-ps-exchangeability" class="quarto-xref">Theorem&nbsp;1</a> gives for <span class="math inline">\(A\)</span> alone. In either case, consistency must hold, and the treatment, censoring (if any), and outcome models must be correctly specified.</p>
+<p><span class="theorem-title"><strong>Algorithm 2 (Standardization over the Propensity Score)</strong></span> For the population average causal effect <span class="math inline">\(\operatorname{E}\mathopen{}\left[Y^{a=1,c=0}\right]\mathclose{} - \operatorname{E}\mathopen{}\left[Y^{a=0,c=0}\right]\mathclose{}\)</span>, standardize the fitted conditional means over the distribution of an estimated adjustment score <span class="math inline">\(b(L)\)</span>: the Chapter 13 procedure with <span class="math inline">\(b(L)\)</span> in place of <span class="math inline">\(L\)</span>. When no one is censored, <span class="math inline">\(b(L) = \pi(L)\)</span>, which suffices for adjustment when exchangeability and positivity hold given <span class="math inline">\(L\)</span> (<a href="#/thm-ps-exchangeability" class="quarto-xref">Theorem&nbsp;1</a>). With censoring, <span class="math inline">\(b(L)\)</span> is a joint score with <span class="math inline">\((A, C) \perp\!\!\!\perp L \mid b(L)\)</span>, as discussed after <a href="#/prp-ps-stratum-effect" class="quarto-xref">Proposition&nbsp;4</a>, such as the vector of joint probabilities <span class="math inline">\(\Pr[A = a, C = c \mid L]\)</span> over all <span class="math inline">\((a, c)\)</span>. This joint score suffices when, for each <span class="math inline">\(a \in \{0, 1\}\)</span>, <span class="math inline">\(Y^{a,c=0} \perp\!\!\!\perp(A, C) \mid L\)</span> and <span class="math inline">\(\Pr[A = a, C = 0 \mid L] &gt; 0\)</span>: because <span class="math inline">\((A, C) \perp\!\!\!\perp L \mid b(L)\)</span>, these conditions carry over from <span class="math inline">\(L\)</span> to <span class="math inline">\(b(L)\)</span>, by the argument <a href="#/thm-ps-exchangeability" class="quarto-xref">Theorem&nbsp;1</a> gives for <span class="math inline">\(A\)</span> alone. In either case, consistency must hold, and the treatment, censoring (if any), and outcome models must be correctly specified.</p>
 <ol type="1">
-<li><p>Estimate the score <span class="math inline">\(\hat b(L_i)\)</span> for each individual <span class="math inline">\(i = 1, \ldots, n\)</span>, censored or not. Without censoring, <span class="math inline">\(\hat b(L_i) = \hat\pi(L_i)\)</span>. With censoring, combine a treatment model and a censoring model, <span class="math inline">\(\widehat{\Pr}[A = a, C = c \mid L] = \widehat{\Pr}[A = a \mid L] \, \widehat{\Pr}[C = c \mid L, A = a]\)</span> for each <span class="math inline">\((a, c)\)</span>.</p></li>
-<li><p>Fit an outcome model for <span class="math inline">\(\text{E}{\left[Y \mid A, C = 0, b(L)\right]}\)</span> once, among the uncensored, with <span class="math inline">\(\hat b(L)\)</span> as the covariate(s); write <span class="math inline">\(\hat m(a, s)\)</span> for its fitted value at <span class="math inline">\(A = a\)</span> and score value <span class="math inline">\(s\)</span>.</p></li>
+<li><p>Estimate the score <span class="math inline">\(\hat b(L_i)\)</span> for each individual <span class="math inline">\(i = 1, \ldots, n\)</span>, censored or not. Without censoring, <span class="math inline">\(\hat b(L_i) = \hat\pi(L_i)\)</span>. With censoring, combine a treatment model and a censoring model, <span class="math inline">\(\hat{\Pr}[A = a, C = c \mid L] = \hat{\Pr}[A = a \mid L] \, \hat{\Pr}[C = c \mid L, A = a]\)</span> for each <span class="math inline">\((a, c)\)</span>.</p></li>
+<li><p>Fit an outcome model for <span class="math inline">\(\operatorname{E}\mathopen{}\left[Y \mid A, C = 0, b(L)\right]\mathclose{}\)</span> once, among the uncensored, with <span class="math inline">\(\hat b(L)\)</span> as the covariate(s); write <span class="math inline">\(\hat m(a, s)\)</span> for its fitted value at <span class="math inline">\(A = a\)</span> and score value <span class="math inline">\(s\)</span>.</p></li>
 <li><p>For each <span class="math inline">\(a \in \{0, 1\}\)</span>, predict each individual’s outcome at <span class="math inline">\(A = a\)</span> and their own <span class="math inline">\(\hat b(L_i)\)</span>, and average the predictions over all <span class="math inline">\(n\)</span> individuals:</p>
 <p><span class="math display">\[
-\hat{\text{E}}{\left[Y^{a,c=0}\right]} = \frac{1}{n} \sum_{i=1}^n\hat m(a, \hat b(L_i)).
+\mathop{\hat{\operatorname{E}}}\nolimits\mathopen{}\left[Y^{a,c=0}\right]\mathclose{} = \frac{1}{n} \sum_{i=1}^n\hat m(a, \hat b(L_i)).
 \]</span></p></li>
-<li><p>Estimate the average causal effect by the difference <span class="math inline">\(\hat{\text{E}}{\left[Y^{a=1,c=0}\right]} - \hat{\text{E}}{\left[Y^{a=0,c=0}\right]}\)</span>.</p></li>
+<li><p>Estimate the average causal effect by the difference <span class="math inline">\(\mathop{\hat{\operatorname{E}}}\nolimits\mathopen{}\left[Y^{a=1,c=0}\right]\mathclose{} - \mathop{\hat{\operatorname{E}}}\nolimits\mathopen{}\left[Y^{a=0,c=0}\right]\mathclose{}\)</span>.</p></li>
 </ol>
 </div>
 <div id="exm-ps-standardization" class="theorem example">
@@ -1095,7 +1092,7 @@ Table&nbsp;1: Methods of this chapter and Chapter 14, the models they fit, and w
 <tbody>
 <tr class="odd">
 <td><strong>Outcome regression</strong> (faux MSM)</td>
-<td><span class="math inline">\(\text{E}{\left[Y \mid A, C = 0, L\right]}\)</span></td>
+<td><span class="math inline">\(\operatorname{E}\mathopen{}\left[Y \mid A, C = 0, L\right]\mathclose{}\)</span></td>
 <td>Correct outcome model (nuisance parameters <span class="math inline">\(\beta_0, \beta_3\)</span>; <a href="#/def-nuisance-parameter" class="quarto-xref">Definition&nbsp;2</a>)</td>
 </tr>
 <tr class="even">
@@ -1105,7 +1102,7 @@ Table&nbsp;1: Methods of this chapter and Chapter 14, the models they fit, and w
 </tr>
 <tr class="odd">
 <td><strong>Propensity stratification / outcome regression on <span class="math inline">\(\pi(L)\)</span></strong></td>
-<td><span class="math inline">\(\pi(L)\)</span> and <span class="math inline">\(\text{E}{\left[Y \mid A, C = 0, \pi(L)\right]}\)</span>; with censoring, the joint score <span class="math inline">\(b(L)\)</span> in place of <span class="math inline">\(\pi(L)\)</span></td>
+<td><span class="math inline">\(\pi(L)\)</span> and <span class="math inline">\(\operatorname{E}\mathopen{}\left[Y \mid A, C = 0, \pi(L)\right]\mathclose{}\)</span>; with censoring, the joint score <span class="math inline">\(b(L)\)</span> in place of <span class="math inline">\(\pi(L)\)</span></td>
 <td>Correct propensity model and correct score-<span class="math inline">\(Y\)</span> relation; with censoring, also a correct censoring model</td>
 </tr>
 <tr class="even">

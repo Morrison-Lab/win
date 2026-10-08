@@ -229,9 +229,6 @@
 </section>
 <section class="slide level2">
 
-<!-- https://www.overleaf.com/learn/latex/Using_colors_in_LaTeX#Named_colors_provided_by_the_xcolor_package -->
-<!-- \def\or{\theta}  -->
-<!-- doesn't work for some reason -->
 <p>This chapter uses <strong>inverse probability (IP) weighting</strong> to estimate the average causal effect of smoking cessation on weight gain from the observational NHEFS data. Chapter 2 introduced IP weighting as a nonparametric method; here IP weights are estimated with <strong>models</strong>, which lets us handle many covariates and nondichotomous treatments, and the weighted analysis is interpreted as fitting a <strong>marginal structural model</strong>.</p>
 <aside class="notes">
 <p>This chapter is based on <span class="citation" data-cites="hernan2020causal">Hernán and Robins (<a href="#/references" role="doc-biblioref" onclick="">2020, chap. 12</a>, pp.&nbsp;163-174)</span>.</p>
@@ -265,7 +262,7 @@
 <p><span class="theorem-title"><strong>Example 1 (NHEFS: Does Quitting Smoking Cause Weight Gain?)</strong></span> <strong>Population</strong>: 1566 cigarette smokers aged 25-74 years who had an NHEFS baseline visit (1971-75) and a follow-up visit about 10 years later (1982).</p>
 <p><strong>Treatment</strong>: <span class="math inline">\(A = 1\)</span> if the individual reported quitting smoking before the follow-up visit, <span class="math inline">\(A = 0\)</span> otherwise.</p>
 <p><strong>Outcome</strong>: <span class="math inline">\(Y\)</span> = body weight at follow-up minus body weight at baseline (kg).</p>
-<p><strong>Causal estimand</strong> (average causal effect on the additive scale): <span class="math display">\[\text{E}{\left[Y^{a=1}\right]} - \text{E}{\left[Y^{a=0}\right]}\]</span></p>
+<p><strong>Causal estimand</strong> (average causal effect on the additive scale): <span class="math display">\[\operatorname{E}\mathopen{}\left[Y^{a=1}\right]\mathclose{} - \operatorname{E}\mathopen{}\left[Y^{a=0}\right]\mathclose{}\]</span></p>
 </div>
 </section>
 <section id="unadjusted-comparison" class="slide level2">
@@ -273,12 +270,12 @@
 <div id="exm-nhefs-unadjusted" class="theorem example">
 <p><span class="theorem-title"><strong>Example 2 (NHEFS: Unadjusted Comparison)</strong></span> Most people gained weight, but quitters gained more on average:</p>
 <ul>
-<li><span class="math inline">\(\hat{\text{E}}{\left[Y \mid A = 1\right]} = 4.5\)</span> kg among quitters</li>
-<li><span class="math inline">\(\hat{\text{E}}{\left[Y \mid A = 0\right]} = 2.0\)</span> kg among non-quitters</li>
+<li><span class="math inline">\(\mathop{\hat{\operatorname{E}}}\nolimits\mathopen{}\left[Y \mid A = 1\right]\mathclose{} = 4.5\)</span> kg among quitters</li>
+<li><span class="math inline">\(\mathop{\hat{\operatorname{E}}}\nolimits\mathopen{}\left[Y \mid A = 0\right]\mathclose{} = 2.0\)</span> kg among non-quitters</li>
 <li>Associational difference: <span class="math inline">\(4.5 - 2.0 = 2.5\)</span> kg (95% CI: 1.7, 3.4)</li>
 </ul>
 </div>
-<p>The associational difference <span class="math inline">\(\text{E}{\left[Y \mid A = 1\right]} - \text{E}{\left[Y \mid A = 0\right]}\)</span> need not equal the causal difference if quitters and non-quitters differ in characteristics that affect weight gain.</p>
+<p>The associational difference <span class="math inline">\(\operatorname{E}\mathopen{}\left[Y \mid A = 1\right]\mathclose{} - \operatorname{E}\mathopen{}\left[Y \mid A = 0\right]\mathclose{}\)</span> need not equal the causal difference if quitters and non-quitters differ in characteristics that affect weight gain.</p>
 <aside class="notes">
 <p><strong>Age as an example</strong>: quitters were on average 4 years older than non-quitters, and older people gained less weight than younger people whether or not they quit. Age is therefore a (surrogate) confounder, and the unadjusted estimate of 2.5 kg might underestimate the causal effect <span class="citation" data-cites="hernan2020causal">(<a href="#/references" role="doc-biblioref" onclick="">Hernán and Robins 2020, chap. 12</a>, pp.&nbsp;163-164)</span>.</p>
 <style type="text/css">
@@ -467,28 +464,28 @@ Table&nbsp;1: Mean baseline characteristics of quitters and non-quitters in the 
 
 <p>IP weighting reweights individuals so that <span class="math inline">\(L\)</span> no longer predicts <span class="math inline">\(A\)</span>. Chapter 2 did this by hand (<a href="../chapters/02-randomized-experiments.html#def-ip-weights">IP weights in Chapter 2</a>); the next definition makes the reweighted population precise for a general weight.</p>
 <div id="def-pseudo-population" class="theorem definition">
-<p><span class="theorem-title"><strong>Definition 2 (Pseudo-Population)</strong></span> Let each of the <span class="math inline">\(n\)</span> individuals of a study population carry a weight <span class="math inline">\(W \geq 0\)</span> that is a function of the observed variables, with <span class="math inline">\(0 &lt; \text{E}{\left[W\right]} &lt; \infty\)</span>. The <strong>pseudo-population</strong> created by <span class="math inline">\(W\)</span> is the population in which each individual is replicated <span class="math inline">\(W\)</span> times (a non-integer number of copies is allowed). Its size is <span class="math inline">\(\sum_{i=1}^n W_i\)</span>. Its distribution is defined by its expectations: for any random variable <span class="math inline">\(h\)</span> that is a function of the observed variables and the counterfactual outcomes, with <span class="math inline">\(\text{E}{\left[W \left|h\right|\right]} &lt; \infty\)</span>, <span class="math display">\[\text{E}_{ps}{\left[h\right]} \stackrel{\text{def}}{=}\frac{\text{E}{\left[W h\right]}}{\text{E}{\left[W\right]}}.\]</span> Probabilities are expectations of indicators, <span class="math inline">\(\Pr_{ps}[E] \stackrel{\text{def}}{=}\text{E}_{ps}{\left[\mathbb{1}{\left(E\right)}\right]}\)</span> for any event <span class="math inline">\(E\)</span>, and conditional means are <span class="math inline">\(\text{E}_{ps}{\left[h \mid A = a\right]} \stackrel{\text{def}}{=}\text{E}_{ps}{\left[h \mathbb{1}{\left(A = a\right)}\right]} / \Pr_{ps}[A = a]\)</span> whenever <span class="math inline">\(\Pr_{ps}[A = a] &gt; 0\)</span>.</p>
+<p><span class="theorem-title"><strong>Definition 2 (Pseudo-Population)</strong></span> Let each of the <span class="math inline">\(n\)</span> individuals of a study population carry a weight <span class="math inline">\(W \geq 0\)</span> that is a function of the observed variables, with <span class="math inline">\(0 &lt; \operatorname{E}\mathopen{}\left[W\right]\mathclose{} &lt; \infty\)</span>. The <strong>pseudo-population</strong> created by <span class="math inline">\(W\)</span> is the population in which each individual is replicated <span class="math inline">\(W\)</span> times (a non-integer number of copies is allowed). Its size is <span class="math inline">\(\sum_{i=1}^n W_i\)</span>. Its distribution is defined by its expectations: for any random variable <span class="math inline">\(h\)</span> that is a function of the observed variables and the counterfactual outcomes, with <span class="math inline">\(\operatorname{E}\mathopen{}\left[W \mathopen{}\left|h\right|\mathclose{}\right]\mathclose{} &lt; \infty\)</span>, <span class="math display">\[\operatorname{E}_{ps}\mathopen{}\left[h\right]\mathclose{} \stackrel{\text{def}}{=}\frac{\operatorname{E}\mathopen{}\left[W h\right]\mathclose{}}{\operatorname{E}\mathopen{}\left[W\right]\mathclose{}}.\]</span> Probabilities are expectations of indicators, <span class="math inline">\(\Pr_{ps}[E] \stackrel{\text{def}}{=}\operatorname{E}_{ps}\mathopen{}\left[\mathbb{1}\mathopen{}\left(E\right)\mathclose{}\right]\mathclose{}\)</span> for any event <span class="math inline">\(E\)</span>, and conditional means are <span class="math inline">\(\operatorname{E}_{ps}\mathopen{}\left[h \mid A = a\right]\mathclose{} \stackrel{\text{def}}{=}\operatorname{E}_{ps}\mathopen{}\left[h \mathbb{1}\mathopen{}\left(A = a\right)\mathclose{}\right]\mathclose{} / \Pr_{ps}[A = a]\)</span> whenever <span class="math inline">\(\Pr_{ps}[A = a] &gt; 0\)</span>.</p>
 </div>
-<p>If the <span class="math inline">\(n\)</span> individuals are drawn independently from the population, so that each <span class="math inline">\(W_i\)</span> has the distribution of <span class="math inline">\(W\)</span>, the expected size of the pseudo-population is <span class="math inline">\(\text{E}{\left[\sum_{i=1}^n W_i\right]} = \text{E}{\left[W\right]} \cdot n\)</span>.</p>
+<p>If the <span class="math inline">\(n\)</span> individuals are drawn independently from the population, so that each <span class="math inline">\(W_i\)</span> has the distribution of <span class="math inline">\(W\)</span>, the expected size of the pseudo-population is <span class="math inline">\(\operatorname{E}\mathopen{}\left[\sum_{i=1}^n W_i\right]\mathclose{} = \operatorname{E}\mathopen{}\left[W\right]\mathclose{} \cdot n\)</span>.</p>
 <p>Different weights create different pseudo-populations; <a href="#/prp-pseudo-population" class="quarto-xref">Proposition&nbsp;1</a> is about the IP weights <span class="math inline">\(W = W^A\)</span> of <a href="#/def-ip-weights" class="quarto-xref">Definition&nbsp;1</a>.</p>
 <div id="prp-pseudo-population" class="theorem proposition">
 <p><span class="theorem-title"><strong>Proposition 1 (Properties of the IP Weighted Pseudo-Population)</strong></span> Suppose that</p>
 <ul>
 <li><span class="math inline">\(A\)</span> and <span class="math inline">\(L\)</span> take finitely many values, and the pseudo-population (<a href="#/def-pseudo-population" class="quarto-xref">Definition&nbsp;2</a>) is created by <span class="math inline">\(W = W^A = 1/f(A \mid L)\)</span> (<a href="#/def-ip-weights" class="quarto-xref">Definition&nbsp;1</a>);</li>
 <li><strong>positivity</strong> holds: <span class="math inline">\(f(a \mid l) = \Pr[A = a \mid L = l] &gt; 0\)</span> for every treatment level <span class="math inline">\(a\)</span> and every <span class="math inline">\(l\)</span> with <span class="math inline">\(\Pr[L = l] &gt; 0\)</span>;</li>
-<li>the outcome is integrable: <span class="math inline">\(\text{E}{\left[\left|Y\right|\right]} &lt; \infty\)</span>, and <span class="math inline">\(\text{E}{\left[\left|Y^a\right|\right]} &lt; \infty\)</span> for every <span class="math inline">\(a\)</span>.</li>
+<li>the outcome is integrable: <span class="math inline">\(\operatorname{E}\mathopen{}\left[\mathopen{}\left|Y\right|\mathclose{}\right]\mathclose{} &lt; \infty\)</span>, and <span class="math inline">\(\operatorname{E}\mathopen{}\left[\mathopen{}\left|Y^a\right|\mathclose{}\right]\mathclose{} &lt; \infty\)</span> for every <span class="math inline">\(a\)</span>.</li>
 </ul>
 <p>Then, with <span class="math inline">\(k\)</span> the number of treatment levels:</p>
 <ol start="0" type="1">
-<li><span class="math inline">\(\text{E}{\left[W^A\right]} = k\)</span>;</li>
+<li><span class="math inline">\(\operatorname{E}\mathopen{}\left[W^A\right]\mathclose{} = k\)</span>;</li>
 <li>in the pseudo-population, <span class="math inline">\(A\)</span> and <span class="math inline">\(L\)</span> are statistically independent; and</li>
-<li>the mean <span class="math inline">\(\text{E}_{ps}{\left[Y \mid A = a\right]}\)</span> in the pseudo-population equals the standardized mean <span class="math inline">\(\sum_l \text{E}{\left[Y \mid A = a, L = l\right]} \Pr[L = l]\)</span> in the actual population.</li>
+<li>the mean <span class="math inline">\(\operatorname{E}_{ps}\mathopen{}\left[Y \mid A = a\right]\mathclose{}\)</span> in the pseudo-population equals the standardized mean <span class="math inline">\(\sum_l \operatorname{E}\mathopen{}\left[Y \mid A = a, L = l\right]\mathclose{} \Pr[L = l]\)</span> in the actual population.</li>
 </ol>
 <p>Here and in the proof, every sum over <span class="math inline">\(l\)</span> runs over the values <span class="math inline">\(l\)</span> with <span class="math inline">\(\Pr[L = l] &gt; 0\)</span>. These three properties need no exchangeability. If, in addition, <strong>conditional exchangeability</strong> <span class="math inline">\(Y^a \perp\!\!\!\perp A \mid L\)</span> holds in the actual population for every <span class="math inline">\(a\)</span>, and <strong>consistency</strong> holds (<span class="math inline">\(Y = Y^a\)</span> for every individual with <span class="math inline">\(A = a\)</span>), then:</p>
 <ul>
 <li>unconditional exchangeability <span class="math inline">\(Y^a \perp\!\!\!\perp A\)</span> holds in the pseudo-population,</li>
-<li><span class="math inline">\(\text{E}{\left[Y^a\right]} = \text{E}_{ps}{\left[Y \mid A = a\right]}\)</span> for every <span class="math inline">\(a\)</span>, and</li>
-<li>association is causation in the pseudo-population: any contrast of the means <span class="math inline">\(\text{E}_{ps}{\left[Y \mid A = a\right]}\)</span> across levels <span class="math inline">\(a\)</span> equals the same contrast of the counterfactual means <span class="math inline">\(\text{E}{\left[Y^a\right]}\)</span>.</li>
+<li><span class="math inline">\(\operatorname{E}\mathopen{}\left[Y^a\right]\mathclose{} = \operatorname{E}_{ps}\mathopen{}\left[Y \mid A = a\right]\mathclose{}\)</span> for every <span class="math inline">\(a\)</span>, and</li>
+<li>association is causation in the pseudo-population: any contrast of the means <span class="math inline">\(\operatorname{E}_{ps}\mathopen{}\left[Y \mid A = a\right]\mathclose{}\)</span> across levels <span class="math inline">\(a\)</span> equals the same contrast of the counterfactual means <span class="math inline">\(\operatorname{E}\mathopen{}\left[Y^a\right]\mathclose{}\)</span>.</li>
 </ul>
 </div>
 <aside class="notes">
@@ -496,48 +493,48 @@ Table&nbsp;1: Mean baseline characteristics of quitters and non-quitters in the 
 <p><span class="proof-title"><em>Proof</em>. </span>As in the statement, <span class="math inline">\(k\)</span> is the number of treatment levels.</p>
 <p><strong>Step 0 (property 0: the weights cancel the treatment probability).</strong> For every level <span class="math inline">\(a\)</span> and every <span class="math inline">\(l\)</span> with <span class="math inline">\(\Pr[L = l] &gt; 0\)</span>, <span class="math display">\[
 \begin{aligned}
-\text{E}{\left[W^A \mathbb{1}{\left(A = a\right)} \mathbb{1}{\left(L = l\right)}\right]}
-&amp;= \text{E}{\left[\frac{\mathbb{1}{\left(A = a\right)} \mathbb{1}{\left(L = l\right)}}{f(a \mid l)}\right]} &amp;&amp; \text{(} W^A = 1/f(a \mid l) \text{ whenever } A = a \text{ and } L = l\text{)}\\
-&amp;= \frac{\text{E}{\left[\mathbb{1}{\left(A = a\right)} \mathbb{1}{\left(L = l\right)}\right]}}{f(a \mid l)} &amp;&amp; \text{(the constant } 1/f(a \mid l) &gt; 0 \text{ factors out, by positivity)}\\
+\operatorname{E}\mathopen{}\left[W^A \mathbb{1}\mathopen{}\left(A = a\right)\mathclose{} \mathbb{1}\mathopen{}\left(L = l\right)\mathclose{}\right]\mathclose{}
+&amp;= \operatorname{E}\mathopen{}\left[\frac{\mathbb{1}\mathopen{}\left(A = a\right)\mathclose{} \mathbb{1}\mathopen{}\left(L = l\right)\mathclose{}}{f(a \mid l)}\right]\mathclose{} &amp;&amp; \text{(} W^A = 1/f(a \mid l) \text{ whenever } A = a \text{ and } L = l\text{)}\\
+&amp;= \frac{\operatorname{E}\mathopen{}\left[\mathbb{1}\mathopen{}\left(A = a\right)\mathclose{} \mathbb{1}\mathopen{}\left(L = l\right)\mathclose{}\right]\mathclose{}}{f(a \mid l)} &amp;&amp; \text{(the constant } 1/f(a \mid l) &gt; 0 \text{ factors out, by positivity)}\\
 &amp;= \frac{\Pr[A = a, L = l]}{f(a \mid l)} &amp;&amp; \text{(expectation of an indicator)}\\
 &amp;= \frac{f(a \mid l) \Pr[L = l]}{f(a \mid l)} &amp;&amp; \text{(definition of } f(a \mid l)\text{)}\\
 &amp;= \Pr[L = l] &amp;&amp; \text{(cancel } f(a \mid l)\text{)}.
 \end{aligned}
-\]</span> Summing over all <span class="math inline">\(k\)</span> levels <span class="math inline">\(a\)</span> and all <span class="math inline">\(l\)</span> gives <span class="math inline">\(\text{E}{\left[W^A\right]} = k \sum_l \Pr[L = l] = k\)</span>, which is property 0.</p>
+\]</span> Summing over all <span class="math inline">\(k\)</span> levels <span class="math inline">\(a\)</span> and all <span class="math inline">\(l\)</span> gives <span class="math inline">\(\operatorname{E}\mathopen{}\left[W^A\right]\mathclose{} = k \sum_l \Pr[L = l] = k\)</span>, which is property 0.</p>
 <p><strong>Property 1.</strong> <span class="math display">\[
 \begin{aligned}
 \Pr_{ps}[A = a, L = l]
-&amp;= \frac{\text{E}{\left[W^A \mathbb{1}{\left(A = a\right)} \mathbb{1}{\left(L = l\right)}\right]}}{\text{E}{\left[W^A\right]}} &amp;&amp; \text{(definition of the pseudo-population)}\\
+&amp;= \frac{\operatorname{E}\mathopen{}\left[W^A \mathbb{1}\mathopen{}\left(A = a\right)\mathclose{} \mathbb{1}\mathopen{}\left(L = l\right)\mathclose{}\right]\mathclose{}}{\operatorname{E}\mathopen{}\left[W^A\right]\mathclose{}} &amp;&amp; \text{(definition of the pseudo-population)}\\
 &amp;= \frac{\Pr[L = l]}{k} &amp;&amp; \text{(Step 0, twice)}.
 \end{aligned}
 \]</span> Summing over <span class="math inline">\(l\)</span> gives <span class="math inline">\(\Pr_{ps}[A = a] = 1/k\)</span>; summing over <span class="math inline">\(a\)</span> gives <span class="math inline">\(\Pr_{ps}[L = l] = \Pr[L = l]\)</span>. So <span class="math inline">\(\Pr_{ps}[A = a, L = l] = \Pr_{ps}[A = a] \Pr_{ps}[L = l]\)</span> for all <span class="math inline">\(a\)</span> and <span class="math inline">\(l\)</span>, which is independence.</p>
 <p><strong>Property 2.</strong> <span class="math display">\[
 \begin{aligned}
-\text{E}_{ps}{\left[Y \mid A = a\right]}
-&amp;= \frac{\text{E}_{ps}{\left[Y \mathbb{1}{\left(A = a\right)}\right]}}{\Pr_{ps}[A = a]} &amp;&amp; \text{(definition of the pseudo-population)}\\
-&amp;= \frac{\text{E}{\left[W^A Y \mathbb{1}{\left(A = a\right)}\right]} / \text{E}{\left[W^A\right]}}{1/k} &amp;&amp; \text{(definition of the pseudo-population; Property 1)}\\
-&amp;= \frac{\text{E}{\left[W^A Y \mathbb{1}{\left(A = a\right)}\right]} / k}{1/k} &amp;&amp; \text{(} \text{E}{\left[W^A\right]} = k \text{, Step 0)}\\
-&amp;= \text{E}{\left[W^A Y \mathbb{1}{\left(A = a\right)}\right]} &amp;&amp; \text{(cancel } k\text{)}\\
-&amp;= \sum_l \text{E}{\left[W^A Y \mathbb{1}{\left(A = a\right)} \mid L = l\right]} \Pr[L = l] &amp;&amp; \text{(law of total expectation over } L\text{)}\\
-&amp;= \sum_l \frac{\text{E}{\left[Y \mathbb{1}{\left(A = a\right)} \mid L = l\right]}}{f(a \mid l)} \Pr[L = l] &amp;&amp; \text{(} W^A = 1/f(a \mid l) \text{ when } A = a \text{ and } L = l\text{; pull the constant out)}\\
-&amp;= \sum_l \frac{\text{E}{\left[Y \mid A = a, L = l\right]} f(a \mid l)}{f(a \mid l)} \Pr[L = l] &amp;&amp; \text{(} \text{E}{\left[Y \mathbb{1}{\left(A = a\right)} \mid L = l\right]} = \text{E}{\left[Y \mid A = a, L = l\right]} \Pr[A = a \mid L = l]\text{)}\\
-&amp;= \sum_l \text{E}{\left[Y \mid A = a, L = l\right]} \Pr[L = l] &amp;&amp; \text{(cancel } f(a \mid l)\text{)}.
+\operatorname{E}_{ps}\mathopen{}\left[Y \mid A = a\right]\mathclose{}
+&amp;= \frac{\operatorname{E}_{ps}\mathopen{}\left[Y \mathbb{1}\mathopen{}\left(A = a\right)\mathclose{}\right]\mathclose{}}{\Pr_{ps}[A = a]} &amp;&amp; \text{(definition of the pseudo-population)}\\
+&amp;= \frac{\operatorname{E}\mathopen{}\left[W^A Y \mathbb{1}\mathopen{}\left(A = a\right)\mathclose{}\right]\mathclose{} / \operatorname{E}\mathopen{}\left[W^A\right]\mathclose{}}{1/k} &amp;&amp; \text{(definition of the pseudo-population; Property 1)}\\
+&amp;= \frac{\operatorname{E}\mathopen{}\left[W^A Y \mathbb{1}\mathopen{}\left(A = a\right)\mathclose{}\right]\mathclose{} / k}{1/k} &amp;&amp; \text{(} \operatorname{E}\mathopen{}\left[W^A\right]\mathclose{} = k \text{, Step 0)}\\
+&amp;= \operatorname{E}\mathopen{}\left[W^A Y \mathbb{1}\mathopen{}\left(A = a\right)\mathclose{}\right]\mathclose{} &amp;&amp; \text{(cancel } k\text{)}\\
+&amp;= \sum_l \operatorname{E}\mathopen{}\left[W^A Y \mathbb{1}\mathopen{}\left(A = a\right)\mathclose{} \mid L = l\right]\mathclose{} \Pr[L = l] &amp;&amp; \text{(law of total expectation over } L\text{)}\\
+&amp;= \sum_l \frac{\operatorname{E}\mathopen{}\left[Y \mathbb{1}\mathopen{}\left(A = a\right)\mathclose{} \mid L = l\right]\mathclose{}}{f(a \mid l)} \Pr[L = l] &amp;&amp; \text{(} W^A = 1/f(a \mid l) \text{ when } A = a \text{ and } L = l\text{; pull the constant out)}\\
+&amp;= \sum_l \frac{\operatorname{E}\mathopen{}\left[Y \mid A = a, L = l\right]\mathclose{} f(a \mid l)}{f(a \mid l)} \Pr[L = l] &amp;&amp; \text{(} \operatorname{E}\mathopen{}\left[Y \mathbb{1}\mathopen{}\left(A = a\right)\mathclose{} \mid L = l\right]\mathclose{} = \operatorname{E}\mathopen{}\left[Y \mid A = a, L = l\right]\mathclose{} \Pr[A = a \mid L = l]\text{)}\\
+&amp;= \sum_l \operatorname{E}\mathopen{}\left[Y \mid A = a, L = l\right]\mathclose{} \Pr[L = l] &amp;&amp; \text{(cancel } f(a \mid l)\text{)}.
 \end{aligned}
 \]</span></p>
 <p><strong>Exchangeability in the pseudo-population.</strong> Fix a level <span class="math inline">\(a\)</span>, a set <span class="math inline">\(B\)</span> of outcome values, and a level <span class="math inline">\(a'\)</span>. <span class="math display">\[
 \begin{aligned}
 \Pr_{ps}[Y^a \in B, A = a']
-&amp;= \frac{\text{E}{\left[W^A \mathbb{1}{\left(Y^a \in B\right)} \mathbb{1}{\left(A = a'\right)}\right]}}{\text{E}{\left[W^A\right]}} &amp;&amp; \text{(definition of the pseudo-population)}\\
-&amp;= \frac{1}{k} \text{E}{\left[W^A \mathbb{1}{\left(Y^a \in B\right)} \mathbb{1}{\left(A = a'\right)}\right]} &amp;&amp; \text{(} \text{E}{\left[W^A\right]} = k \text{, Step 0)}\\
-&amp;= \frac{1}{k} \sum_l \text{E}{\left[W^A \mathbb{1}{\left(Y^a \in B\right)} \mathbb{1}{\left(A = a'\right)} \mid L = l\right]} \Pr[L = l] &amp;&amp; \text{(law of total expectation over } L\text{)}\\
-&amp;= \frac{1}{k} \sum_l \frac{\text{E}{\left[\mathbb{1}{\left(Y^a \in B\right)} \mathbb{1}{\left(A = a'\right)} \mid L = l\right]}}{f(a' \mid l)} \Pr[L = l] &amp;&amp; \text{(} W^A = 1/f(a' \mid l) \text{ when } A = a' \text{ and } L = l\text{; pull the constant out)}\\
+&amp;= \frac{\operatorname{E}\mathopen{}\left[W^A \mathbb{1}\mathopen{}\left(Y^a \in B\right)\mathclose{} \mathbb{1}\mathopen{}\left(A = a'\right)\mathclose{}\right]\mathclose{}}{\operatorname{E}\mathopen{}\left[W^A\right]\mathclose{}} &amp;&amp; \text{(definition of the pseudo-population)}\\
+&amp;= \frac{1}{k} \operatorname{E}\mathopen{}\left[W^A \mathbb{1}\mathopen{}\left(Y^a \in B\right)\mathclose{} \mathbb{1}\mathopen{}\left(A = a'\right)\mathclose{}\right]\mathclose{} &amp;&amp; \text{(} \operatorname{E}\mathopen{}\left[W^A\right]\mathclose{} = k \text{, Step 0)}\\
+&amp;= \frac{1}{k} \sum_l \operatorname{E}\mathopen{}\left[W^A \mathbb{1}\mathopen{}\left(Y^a \in B\right)\mathclose{} \mathbb{1}\mathopen{}\left(A = a'\right)\mathclose{} \mid L = l\right]\mathclose{} \Pr[L = l] &amp;&amp; \text{(law of total expectation over } L\text{)}\\
+&amp;= \frac{1}{k} \sum_l \frac{\operatorname{E}\mathopen{}\left[\mathbb{1}\mathopen{}\left(Y^a \in B\right)\mathclose{} \mathbb{1}\mathopen{}\left(A = a'\right)\mathclose{} \mid L = l\right]\mathclose{}}{f(a' \mid l)} \Pr[L = l] &amp;&amp; \text{(} W^A = 1/f(a' \mid l) \text{ when } A = a' \text{ and } L = l\text{; pull the constant out)}\\
 &amp;= \frac{1}{k} \sum_l \frac{\Pr[Y^a \in B, A = a' \mid L = l]}{f(a' \mid l)} \Pr[L = l] &amp;&amp; \text{(expectation of an indicator)}\\
 &amp;= \frac{1}{k} \sum_l \frac{\Pr[Y^a \in B \mid L = l] f(a' \mid l)}{f(a' \mid l)} \Pr[L = l] &amp;&amp; \text{(conditional exchangeability } Y^a \perp\!\!\!\perp A \mid L\text{)}\\
 &amp;= \frac{1}{k} \sum_l \Pr[Y^a \in B \mid L = l] \Pr[L = l] &amp;&amp; \text{(cancel } f(a' \mid l)\text{)}\\
 &amp;= \frac{1}{k} \Pr[Y^a \in B] &amp;&amp; \text{(law of total probability)}.
 \end{aligned}
 \]</span> Summing over the <span class="math inline">\(k\)</span> levels <span class="math inline">\(a'\)</span> gives <span class="math inline">\(\Pr_{ps}[Y^a \in B] = \Pr[Y^a \in B]\)</span>. Hence <span class="math inline">\(\Pr_{ps}[Y^a \in B, A = a'] = \Pr_{ps}[Y^a \in B] \Pr_{ps}[A = a']\)</span> (using <span class="math inline">\(\Pr_{ps}[A = a'] = 1/k\)</span> from Property 1), which is <span class="math inline">\(Y^a \perp\!\!\!\perp A\)</span> in the pseudo-population.</p>
-<p><strong>Causal mean.</strong> Under conditional exchangeability, positivity, and consistency, the standardization theorem of Chapter 7 (<a href="../chapters/07-confounding.html#thm-standardization-ch7">standardization under conditional exchangeability</a>) gives <span class="math inline">\(\text{E}{\left[Y^a\right]} = \sum_l \text{E}{\left[Y \mid L = l, A = a\right]} \Pr[L = l]\)</span>, which equals <span class="math inline">\(\text{E}_{ps}{\left[Y \mid A = a\right]}\)</span> by Property 2. This holds for every <span class="math inline">\(a\)</span>, so every contrast of the pseudo-population means equals the matching causal contrast.</p>
+<p><strong>Causal mean.</strong> Under conditional exchangeability, positivity, and consistency, the standardization theorem of Chapter 7 (<a href="../chapters/07-confounding.html#thm-standardization-ch7">standardization under conditional exchangeability</a>) gives <span class="math inline">\(\operatorname{E}\mathopen{}\left[Y^a\right]\mathclose{} = \sum_l \operatorname{E}\mathopen{}\left[Y \mid L = l, A = a\right]\mathclose{} \Pr[L = l]\)</span>, which equals <span class="math inline">\(\operatorname{E}_{ps}\mathopen{}\left[Y \mid A = a\right]\mathclose{}\)</span> by Property 2. This holds for every <span class="math inline">\(a\)</span>, so every contrast of the pseudo-population means equals the matching causal contrast.</p>
 </div>
 <style type="text/css">
         span.MJX_Assistive_MathML {
@@ -550,7 +547,7 @@ Table&nbsp;1: Mean baseline characteristics of quitters and non-quitters in the 
           overflow: hidden!important;
           display:block!important;
       }</style></aside>
-<p>By <a href="#/prp-pseudo-population" class="quarto-xref">Proposition&nbsp;1</a>, <span class="math inline">\(\text{E}{\left[W^A\right]} = k\)</span>, so for a dichotomous treatment the expected size of this pseudo-population is <span class="math inline">\(2n\)</span>, twice the study population.</p>
+<p>By <a href="#/prp-pseudo-population" class="quarto-xref">Proposition&nbsp;1</a>, <span class="math inline">\(\operatorname{E}\mathopen{}\left[W^A\right]\mathclose{} = k\)</span>, so for a dichotomous treatment the expected size of this pseudo-population is <span class="math inline">\(2n\)</span>, twice the study population.</p>
 </section>
 <section id="why-modeling-is-needed" class="slide level2">
 <h2>Why Modeling Is Needed</h2>
@@ -576,14 +573,14 @@ Table&nbsp;1: Mean baseline characteristics of quitters and non-quitters in the 
 </ul></li>
 <li><p>For each individual, compute</p>
 <ul>
-<li><span class="math inline">\(\hat{f}(1 \mid L) = \hat{\Pr}[A = 1 \mid L]\)</span> if <span class="math inline">\(A = 1\)</span>,</li>
-<li><span class="math inline">\(\hat{f}(0 \mid L) = 1 - \hat{\Pr}[A = 1 \mid L]\)</span> if <span class="math inline">\(A = 0\)</span>.</li>
+<li><span class="math inline">\(\hat{f}(1 \mid L) = \mathop{\widehat{\Pr}}\nolimits\mathopen{}\left[A = 1 \mid L\right]\mathclose{}\)</span> if <span class="math inline">\(A = 1\)</span>,</li>
+<li><span class="math inline">\(\hat{f}(0 \mid L) = 1 - \mathop{\widehat{\Pr}}\nolimits\mathopen{}\left[A = 1 \mid L\right]\mathclose{}\)</span> if <span class="math inline">\(A = 0\)</span>.</li>
 </ul></li>
 <li><p>Set <span class="math inline">\(\hat{W}^A = 1 / \hat{f}(A \mid L)\)</span>.</p></li>
 </ol>
 </div>
 <aside class="notes">
-<p><strong>What the model assumes</strong>: on the logit scale, the relation between each continuous covariate and the probability of quitting is a parabola, and each covariate contributes to the logit independently of the others. Under these parametric restrictions, we get an estimate <span class="math inline">\(\hat{\Pr}[A = 1 \mid L]\)</span> for every combination of <span class="math inline">\(L\)</span> values, and hence for each of the 1566 individuals <span class="citation" data-cites="hernan2020causal">(<a href="#/references" role="doc-biblioref" onclick="">Hernán and Robins 2020, chap. 12</a>, p.&nbsp;165)</span>.</p>
+<p><strong>What the model assumes</strong>: on the logit scale, the relation between each continuous covariate and the probability of quitting is a parabola, and each covariate contributes to the logit independently of the others. Under these parametric restrictions, we get an estimate <span class="math inline">\(\mathop{\widehat{\Pr}}\nolimits\mathopen{}\left[A = 1 \mid L\right]\mathclose{}\)</span> for every combination of <span class="math inline">\(L\)</span> values, and hence for each of the 1566 individuals <span class="citation" data-cites="hernan2020causal">(<a href="#/references" role="doc-biblioref" onclick="">Hernán and Robins 2020, chap. 12</a>, p.&nbsp;165)</span>.</p>
 <style type="text/css">
         span.MJX_Assistive_MathML {
           position:absolute!important;
@@ -598,13 +595,13 @@ Table&nbsp;1: Mean baseline characteristics of quitters and non-quitters in the 
 </section>
 <section id="estimating-the-effect-in-the-pseudo-population" class="slide level2">
 <h2>Estimating the Effect in the Pseudo-Population</h2>
-<p>Fit the (saturated) linear mean model <span class="math display">\[\text{E}{\left[Y \mid A\right]} = \theta_0 + \theta_1 A\]</span> by weighted least squares with weights <span class="math inline">\(\hat{W}^A\)</span>.</p>
+<p>Fit the (saturated) linear mean model <span class="math display">\[\operatorname{E}\mathopen{}\left[Y \mid A\right]\mathclose{} = \theta_0 + \theta_1 A\]</span> by weighted least squares with weights <span class="math inline">\(\hat{W}^A\)</span>.</p>
 <div id="def-weighted-least-squares" class="theorem definition">
-<p><span class="theorem-title"><strong>Definition 3 (Weighted Least Squares)</strong></span> Given weights <span class="math inline">\(\hat{W}_i\)</span>, the <strong>weighted least squares</strong> estimates <span class="math inline">\(\hat\theta_0, \hat\theta_1\)</span> of the model <span class="math inline">\(\text{E}{\left[Y \mid A\right]} = \theta_0 + \theta_1 A\)</span> are the values that minimize <span class="math display">\[\sum_i \hat{W}_i {\left[Y_i - (\theta_0 + \theta_1 A_i)\right]}^2.\]</span></p>
+<p><span class="theorem-title"><strong>Definition 3 (Weighted Least Squares)</strong></span> Given weights <span class="math inline">\(\hat{W}_i\)</span>, the <strong>weighted least squares</strong> estimates <span class="math inline">\(\hat\theta_0, \hat\theta_1\)</span> of the model <span class="math inline">\(\operatorname{E}\mathopen{}\left[Y \mid A\right]\mathclose{} = \theta_0 + \theta_1 A\)</span> are the values that minimize <span class="math display">\[\sum_i \hat{W}_i \mathopen{}\left[Y_i - (\theta_0 + \theta_1 A_i)\right]\mathclose{}^2.\]</span></p>
 </div>
 <aside class="notes">
-<p>The model <span class="math inline">\(\text{E}{\left[Y \mid A\right]} = \theta_0 + \theta_1 A\)</span> is saturated: it has two parameters for the two quantities <span class="math inline">\(\text{E}{\left[Y \mid A = 1\right]}\)</span> and <span class="math inline">\(\text{E}{\left[Y \mid A = 0\right]}\)</span>, and <span class="math inline">\(\theta_1 = \text{E}{\left[Y \mid A = 1\right]} - \text{E}{\left[Y \mid A = 0\right]}\)</span>. With <span class="math inline">\(\hat{W}_i = 1\)</span> for everyone, weighted least squares reduces to the ordinary least squares of Chapter 11 <span class="citation" data-cites="hernan2020causal">(<a href="#/references" role="doc-biblioref" onclick="">Hernán and Robins 2020, chap. 12</a>, pp.&nbsp;165-166)</span>.</p>
-<p>If there is no confounding in the pseudo-population (<a href="#/def-pseudo-population" class="quarto-xref">Definition&nbsp;2</a>) and the model for <span class="math inline">\(\Pr[A = 1 \mid L]\)</span> is correct, an unbiased estimator of <span class="math inline">\(\text{E}_{ps}{\left[Y \mid A = 1\right]} - \text{E}_{ps}{\left[Y \mid A = 0\right]}\)</span> is also an unbiased estimator of <span class="math inline">\(\text{E}{\left[Y^{a=1}\right]} - \text{E}{\left[Y^{a=0}\right]}\)</span>.</p>
+<p>The model <span class="math inline">\(\operatorname{E}\mathopen{}\left[Y \mid A\right]\mathclose{} = \theta_0 + \theta_1 A\)</span> is saturated: it has two parameters for the two quantities <span class="math inline">\(\operatorname{E}\mathopen{}\left[Y \mid A = 1\right]\mathclose{}\)</span> and <span class="math inline">\(\operatorname{E}\mathopen{}\left[Y \mid A = 0\right]\mathclose{}\)</span>, and <span class="math inline">\(\theta_1 = \operatorname{E}\mathopen{}\left[Y \mid A = 1\right]\mathclose{} - \operatorname{E}\mathopen{}\left[Y \mid A = 0\right]\mathclose{}\)</span>. With <span class="math inline">\(\hat{W}_i = 1\)</span> for everyone, weighted least squares reduces to the ordinary least squares of Chapter 11 <span class="citation" data-cites="hernan2020causal">(<a href="#/references" role="doc-biblioref" onclick="">Hernán and Robins 2020, chap. 12</a>, pp.&nbsp;165-166)</span>.</p>
+<p>If there is no confounding in the pseudo-population (<a href="#/def-pseudo-population" class="quarto-xref">Definition&nbsp;2</a>) and the model for <span class="math inline">\(\Pr[A = 1 \mid L]\)</span> is correct, an unbiased estimator of <span class="math inline">\(\operatorname{E}_{ps}\mathopen{}\left[Y \mid A = 1\right]\mathclose{} - \operatorname{E}_{ps}\mathopen{}\left[Y \mid A = 0\right]\mathclose{}\)</span> is also an unbiased estimator of <span class="math inline">\(\operatorname{E}\mathopen{}\left[Y^{a=1}\right]\mathclose{} - \operatorname{E}\mathopen{}\left[Y^{a=0}\right]\mathclose{}\)</span>.</p>
 <style type="text/css">
         span.MJX_Assistive_MathML {
           position:absolute!important;
@@ -629,7 +626,7 @@ Table&nbsp;1: Mean baseline characteristics of quitters and non-quitters in the 
 <p>Compare with the unadjusted difference of 2.5 kg.</p>
 </div>
 <aside class="notes">
-<p>The mean of the nonstabilized weights is about 2 because <span class="math inline">\(\text{E}{\left[W^A\right]} = k = 2\)</span> for a dichotomous treatment (property 0 of <a href="#/prp-pseudo-population" class="quarto-xref">Proposition&nbsp;1</a>).</p>
+<p>The mean of the nonstabilized weights is about 2 because <span class="math inline">\(\operatorname{E}\mathopen{}\left[W^A\right]\mathclose{} = k = 2\)</span> for a dichotomous treatment (property 0 of <a href="#/prp-pseudo-population" class="quarto-xref">Proposition&nbsp;1</a>).</p>
 <style type="text/css">
         span.MJX_Assistive_MathML {
           position:absolute!important;
@@ -679,30 +676,30 @@ Table&nbsp;1: Mean baseline characteristics of quitters and non-quitters in the 
 <p><strong>Technical Point 12.1: Horvitz-Thompson and Hajek Estimators</strong></p>
 </div>
 <div class="callout-content">
-<p>Two sample estimators of the IP weighted mean <span class="math inline">\(\text{E}{\left[Y^a\right]}\)</span> differ only in how they normalize the weights.</p>
+<p>Two sample estimators of the IP weighted mean <span class="math inline">\(\operatorname{E}\mathopen{}\left[Y^a\right]\mathclose{}\)</span> differ only in how they normalize the weights.</p>
 </div>
 </div>
 </div>
 </div>
 <div id="def-ht-hajek" class="theorem definition">
-<p><span class="theorem-title"><strong>Definition 4 (Horvitz-Thompson and Hajek Estimators)</strong></span> With <span class="math inline">\(\hat{\text{E}}{\left[\cdot\right]}\)</span> the sample average:</p>
+<p><span class="theorem-title"><strong>Definition 4 (Horvitz-Thompson and Hajek Estimators)</strong></span> With <span class="math inline">\(\mathop{\hat{\operatorname{E}}}\nolimits\mathopen{}\left[\cdot\right]\mathclose{}\)</span> the sample average:</p>
 <ul>
-<li><strong>Horvitz-Thompson estimator</strong> (f known): <span class="math display">\[\hat{\text{E}}{\left[\frac{\mathbb{1}{\left(A = a\right)} Y}{f(A \mid L)}\right]}\]</span></li>
-<li><strong>Hajek estimator</strong> (modified Horvitz-Thompson): <span class="math display">\[\frac{\hat{\text{E}}{\left[\mathbb{1}{\left(A = a\right)} Y / f(A \mid L)\right]}}{\hat{\text{E}}{\left[\mathbb{1}{\left(A = a\right)} / f(A \mid L)\right]}}\]</span></li>
+<li><strong>Horvitz-Thompson estimator</strong> (f known): <span class="math display">\[\mathop{\hat{\operatorname{E}}}\nolimits\mathopen{}\left[\frac{\mathbb{1}\mathopen{}\left(A = a\right)\mathclose{} Y}{f(A \mid L)}\right]\mathclose{}\]</span></li>
+<li><strong>Hajek estimator</strong> (modified Horvitz-Thompson): <span class="math display">\[\frac{\mathop{\hat{\operatorname{E}}}\nolimits\mathopen{}\left[\mathbb{1}\mathopen{}\left(A = a\right)\mathclose{} Y / f(A \mid L)\right]\mathclose{}}{\mathop{\hat{\operatorname{E}}}\nolimits\mathopen{}\left[\mathbb{1}\mathopen{}\left(A = a\right)\mathclose{} / f(A \mid L)\right]\mathclose{}}\]</span></li>
 </ul>
 <p>For binary <span class="math inline">\(A\)</span>, the IP weighted least squares estimate <span class="math inline">\(\hat\theta_0 + \hat\theta_1 a\)</span> is the Hajek estimator.</p>
 </div>
 <aside class="notes">
-<p><strong>Why the two agree in the limit under positivity</strong> <span class="citation" data-cites="hernan2020causal">(<a href="#/references" role="doc-biblioref" onclick="">Hernán and Robins 2020</a>, Technical Point 12.1, p.&nbsp;166)</span>. The Hajek estimator is (asymptotically) unbiased for the ratio <span class="math display">\[\frac{\text{E}{\left[\mathbb{1}{\left(A = a\right)} Y / f(A \mid L)\right]}}{\text{E}{\left[\mathbb{1}{\left(A = a\right)} / f(A \mid L)\right]}}.\]</span> Under positivity, the denominator equals 1: <span class="math display">\[
+<p><strong>Why the two agree in the limit under positivity</strong> <span class="citation" data-cites="hernan2020causal">(<a href="#/references" role="doc-biblioref" onclick="">Hernán and Robins 2020</a>, Technical Point 12.1, p.&nbsp;166)</span>. The Hajek estimator is (asymptotically) unbiased for the ratio <span class="math display">\[\frac{\operatorname{E}\mathopen{}\left[\mathbb{1}\mathopen{}\left(A = a\right)\mathclose{} Y / f(A \mid L)\right]\mathclose{}}{\operatorname{E}\mathopen{}\left[\mathbb{1}\mathopen{}\left(A = a\right)\mathclose{} / f(A \mid L)\right]\mathclose{}}.\]</span> Under positivity, the denominator equals 1: <span class="math display">\[
 \begin{aligned}
-\text{E}{\left[\frac{\mathbb{1}{\left(A = a\right)}}{f(A \mid L)}\right]}
-&amp;= \text{E}{\left[\text{E}{\left[\frac{\mathbb{1}{\left(A = a\right)}}{f(a \mid L)} \,\middle|\, L\right]}\right]} &amp;&amp; \text{(iterated expectations; } \mathbb{1}{\left(A=a\right)} \text{ forces } A = a\text{)}\\
-&amp;= \text{E}{\left[\frac{\Pr[A = a \mid L]}{f(a \mid L)}\right]} &amp;&amp; \text{(} \text{E}{\left[\mathbb{1}{\left(A = a\right)} \mid L\right]} = \Pr[A = a \mid L]\text{)}\\
-&amp;= \text{E}{\left[1\right]} = 1 &amp;&amp; \text{(} f(a \mid L) = \Pr[A = a \mid L] &gt; 0 \text{ by positivity)}
+\operatorname{E}\mathopen{}\left[\frac{\mathbb{1}\mathopen{}\left(A = a\right)\mathclose{}}{f(A \mid L)}\right]\mathclose{}
+&amp;= \operatorname{E}\mathopen{}\left[\operatorname{E}\mathopen{}\left[\frac{\mathbb{1}\mathopen{}\left(A = a\right)\mathclose{}}{f(a \mid L)} \,\middle|\, L\right]\mathclose{}\right]\mathclose{} &amp;&amp; \text{(iterated expectations; } \mathbb{1}\mathopen{}\left(A=a\right)\mathclose{} \text{ forces } A = a\text{)}\\
+&amp;= \operatorname{E}\mathopen{}\left[\frac{\Pr[A = a \mid L]}{f(a \mid L)}\right]\mathclose{} &amp;&amp; \text{(} \operatorname{E}\mathopen{}\left[\mathbb{1}\mathopen{}\left(A = a\right)\mathclose{} \mid L\right]\mathclose{} = \Pr[A = a \mid L]\text{)}\\
+&amp;= \operatorname{E}\mathopen{}\left[1\right]\mathclose{} = 1 &amp;&amp; \text{(} f(a \mid L) = \Pr[A = a \mid L] &gt; 0 \text{ by positivity)}
 \end{aligned}
-\]</span> so the ratio equals the IP weighted mean <span class="math inline">\(\text{E}{\left[\mathbb{1}{\left(A = a\right)} Y / f(A \mid L)\right]}\)</span>, which equals <span class="math inline">\(\text{E}{\left[Y^a\right]}\)</span> under conditional exchangeability, positivity, and consistency (Technical Point 3.1).</p>
+\]</span> so the ratio equals the IP weighted mean <span class="math inline">\(\operatorname{E}\mathopen{}\left[\mathbb{1}\mathopen{}\left(A = a\right)\mathclose{} Y / f(A \mid L)\right]\mathclose{}\)</span>, which equals <span class="math inline">\(\operatorname{E}\mathopen{}\left[Y^a\right]\mathclose{}\)</span> under conditional exchangeability, positivity, and consistency (Technical Point 3.1).</p>
 <p><strong>Why the Hajek estimator is preferred in practice</strong>: even when <span class="math inline">\(f(A \mid L)\)</span> is replaced by predictions from a misspecified model, the Hajek estimator stays within <span class="math inline">\([0, 1]\)</span> for a dichotomous <span class="math inline">\(Y\)</span>; the Horvitz-Thompson estimator need not.</p>
-<p><strong>Without positivity</strong>: let <span class="math inline">\(Q(a) = \{l : \Pr(A = a \mid L = l) &gt; 0\}\)</span>. The Hajek ratio then equals <span class="math inline">\(\sum_l \text{E}{\left[Y \mid A = a, L = l, L \in Q(a)\right]} \Pr[L = l \mid L \in Q(a)]\)</span>, which under conditional exchangeability and consistency is <span class="math inline">\(\text{E}{\left[Y^a \mid L \in Q(a)\right]}\)</span>. Its denominator converges to <span class="math inline">\(\Pr[Q(a)]\)</span> rather than 1, so the ratio of the Horvitz-Thompson limit to the Hajek limit is <span class="math inline">\(\Pr[Q(a)]\)</span>, and the difference of Hajek estimators for <span class="math inline">\(a = 1\)</span> versus <span class="math inline">\(a = 0\)</span> has no causal interpretation.</p>
+<p><strong>Without positivity</strong>: let <span class="math inline">\(Q(a) = \{l : \Pr(A = a \mid L = l) &gt; 0\}\)</span>. The Hajek ratio then equals <span class="math inline">\(\sum_l \operatorname{E}\mathopen{}\left[Y \mid A = a, L = l, L \in Q(a)\right]\mathclose{} \Pr[L = l \mid L \in Q(a)]\)</span>, which under conditional exchangeability and consistency is <span class="math inline">\(\operatorname{E}\mathopen{}\left[Y^a \mid L \in Q(a)\right]\mathclose{}\)</span>. Its denominator converges to <span class="math inline">\(\Pr[Q(a)]\)</span> rather than 1, so the ratio of the Horvitz-Thompson limit to the Hajek limit is <span class="math inline">\(\Pr[Q(a)]\)</span>, and the difference of Hajek estimators for <span class="math inline">\(a = 1\)</span> versus <span class="math inline">\(a = 0\)</span> has no causal interpretation.</p>
 <style type="text/css">
         span.MJX_Assistive_MathML {
           position:absolute!important;
@@ -726,8 +723,8 @@ Table&nbsp;1: Mean baseline characteristics of quitters and non-quitters in the 
 <div id="rem-other-weights" class="proof remark">
 <p><span class="proof-title"><em>Remark 3</em> (Other Weights Give the Same Pseudo-Population Contrast). </span></p>
 <ul>
-<li>With weights <span class="math inline">\(1/f(A \mid L)\)</span>, a dichotomous treatment yields a pseudo-population of expected size <span class="math inline">\(\text{E}{\left[W\right]} \cdot n = 2n\)</span>, twice the size of the study population: one treated copy and one untreated copy.</li>
-<li>With weights <span class="math inline">\(0.5/f(A \mid L)\)</span>, everyone has probability 0.5 of each treatment level regardless of <span class="math inline">\(L\)</span>; this pseudo-population has expected size <span class="math inline">\(\text{E}{\left[W\right]} \cdot n = n\)</span>, the same as the study population.</li>
+<li>With weights <span class="math inline">\(1/f(A \mid L)\)</span>, a dichotomous treatment yields a pseudo-population of expected size <span class="math inline">\(\operatorname{E}\mathopen{}\left[W\right]\mathclose{} \cdot n = 2n\)</span>, twice the size of the study population: one treated copy and one untreated copy.</li>
+<li>With weights <span class="math inline">\(0.5/f(A \mid L)\)</span>, everyone has probability 0.5 of each treatment level regardless of <span class="math inline">\(L\)</span>; this pseudo-population has expected size <span class="math inline">\(\operatorname{E}\mathopen{}\left[W\right]\mathclose{} \cdot n = n\)</span>, the same as the study population.</li>
 <li>More generally, any weights <span class="math inline">\(p/f(A \mid L)\)</span> with <span class="math inline">\(0 &lt; p \leq 1\)</span> give the <strong>same effect estimate</strong>.</li>
 </ul>
 </div>
@@ -740,9 +737,9 @@ Table&nbsp;1: Mean baseline characteristics of quitters and non-quitters in the 
 <div class="proof">
 <p><span class="proof-title"><em>Proof</em>. </span><span class="math display">\[
 \begin{aligned}
-\frac{\hat{\text{E}}{\left[p \, \mathbb{1}{\left(A = a\right)} Y / f(A \mid L)\right]}}{\hat{\text{E}}{\left[p \, \mathbb{1}{\left(A = a\right)} / f(A \mid L)\right]}}
-&amp;= \frac{p \, \hat{\text{E}}{\left[\mathbb{1}{\left(A = a\right)} Y / f(A \mid L)\right]}}{p \, \hat{\text{E}}{\left[\mathbb{1}{\left(A = a\right)} / f(A \mid L)\right]}} &amp;&amp; \text{(constants factor out of averages)}\\
-&amp;= \frac{\hat{\text{E}}{\left[\mathbb{1}{\left(A = a\right)} Y / f(A \mid L)\right]}}{\hat{\text{E}}{\left[\mathbb{1}{\left(A = a\right)} / f(A \mid L)\right]}} &amp;&amp; \text{(cancel } p\text{)}
+\frac{\mathop{\hat{\operatorname{E}}}\nolimits\mathopen{}\left[p \, \mathbb{1}\mathopen{}\left(A = a\right)\mathclose{} Y / f(A \mid L)\right]\mathclose{}}{\mathop{\hat{\operatorname{E}}}\nolimits\mathopen{}\left[p \, \mathbb{1}\mathopen{}\left(A = a\right)\mathclose{} / f(A \mid L)\right]\mathclose{}}
+&amp;= \frac{p \, \mathop{\hat{\operatorname{E}}}\nolimits\mathopen{}\left[\mathbb{1}\mathopen{}\left(A = a\right)\mathclose{} Y / f(A \mid L)\right]\mathclose{}}{p \, \mathop{\hat{\operatorname{E}}}\nolimits\mathopen{}\left[\mathbb{1}\mathopen{}\left(A = a\right)\mathclose{} / f(A \mid L)\right]\mathclose{}} &amp;&amp; \text{(constants factor out of averages)}\\
+&amp;= \frac{\mathop{\hat{\operatorname{E}}}\nolimits\mathopen{}\left[\mathbb{1}\mathopen{}\left(A = a\right)\mathclose{} Y / f(A \mid L)\right]\mathclose{}}{\mathop{\hat{\operatorname{E}}}\nolimits\mathopen{}\left[\mathbb{1}\mathopen{}\left(A = a\right)\mathclose{} / f(A \mid L)\right]\mathclose{}} &amp;&amp; \text{(cancel } p\text{)}
 \end{aligned}
 \]</span> The same holds for every treatment level <span class="math inline">\(a\)</span>, so the difference between levels is unchanged.</p>
 </div>
@@ -764,15 +761,15 @@ Table&nbsp;1: Mean baseline characteristics of quitters and non-quitters in the 
 <p>Applied to the data of Figure 2.1, where <span class="math inline">\(\Pr[A = 1] = 13/20 = 0.65\)</span> and <span class="math inline">\(\Pr[A = 0] = 7/20 = 0.35\)</span>, the weights <span class="math inline">\(f(A)/f(A \mid L)\)</span> produce a pseudo-population (Figure 12.1 of the book) resembling a randomized experiment in which 65% of individuals are assigned to <span class="math inline">\(A = 1\)</span> and 35% to <span class="math inline">\(A = 0\)</span>. Preserving the 65/35 ratio requires non-integer numbers of individuals in some branches, which is no problem mathematically <span class="citation" data-cites="hernan2020causal">(<a href="#/references" role="doc-biblioref" onclick="">Hernán and Robins 2020, chap. 12</a>, p.&nbsp;167)</span>.</p>
 <p>With <span class="math inline">\(A\)</span> and <span class="math inline">\(L\)</span> each taking finitely many values and positivity holding, as in <a href="#/prp-pseudo-population" class="quarto-xref">Proposition&nbsp;1</a>, and with every sum over <span class="math inline">\(l\)</span> running over the values with <span class="math inline">\(\Pr[L = l] &gt; 0\)</span>, the stabilized weights have mean 1: <span class="math display">\[
 \begin{aligned}
-\text{E}{\left[SW^A\right]}
-&amp;= \sum_a \sum_l \text{E}{\left[SW^A \mathbb{1}{\left(A = a\right)} \mathbb{1}{\left(L = l\right)}\right]} &amp;&amp; \text{(linearity, since } \textstyle\sum_a \sum_l \mathbb{1}{\left(A = a\right)} \mathbb{1}{\left(L = l\right)} = 1 \text{ almost surely)}\\
-&amp;= \sum_a \sum_l f(a) \text{E}{\left[W^A \mathbb{1}{\left(A = a\right)} \mathbb{1}{\left(L = l\right)}\right]} &amp;&amp; \text{(} SW^A = f(a) W^A \text{ whenever } A = a\text{)}\\
+\operatorname{E}\mathopen{}\left[SW^A\right]\mathclose{}
+&amp;= \sum_a \sum_l \operatorname{E}\mathopen{}\left[SW^A \mathbb{1}\mathopen{}\left(A = a\right)\mathclose{} \mathbb{1}\mathopen{}\left(L = l\right)\mathclose{}\right]\mathclose{} &amp;&amp; \text{(linearity, since } \textstyle\sum_a \sum_l \mathbb{1}\mathopen{}\left(A = a\right)\mathclose{} \mathbb{1}\mathopen{}\left(L = l\right)\mathclose{} = 1 \text{ almost surely)}\\
+&amp;= \sum_a \sum_l f(a) \operatorname{E}\mathopen{}\left[W^A \mathbb{1}\mathopen{}\left(A = a\right)\mathclose{} \mathbb{1}\mathopen{}\left(L = l\right)\mathclose{}\right]\mathclose{} &amp;&amp; \text{(} SW^A = f(a) W^A \text{ whenever } A = a\text{)}\\
 &amp;= \sum_a \sum_l f(a) \Pr[L = l] &amp;&amp; \text{(Step 0 of the proof of the pseudo-population proposition)}\\
 &amp;= \sum_a f(a) \sum_l \Pr[L = l] &amp;&amp; \text{(} f(a) \text{ does not depend on } l\text{)}\\
 &amp;= \sum_a f(a) &amp;&amp; \text{(} \textstyle\sum_l \Pr[L = l] = 1\text{)}\\
 &amp;= 1 &amp;&amp; \text{(} \textstyle\sum_a f(a) = 1\text{)}.
 \end{aligned}
-\]</span> So, for individuals sampled as described after <a href="#/def-pseudo-population" class="quarto-xref">Definition&nbsp;2</a>, the pseudo-population created by <span class="math inline">\(SW^A\)</span> has expected size <span class="math inline">\(\text{E}{\left[SW^A\right]} \cdot n = n\)</span>, the same as the study population, and the sample mean <span class="math inline">\(\frac{1}{n} \sum_{i=1}^n SW^A_i\)</span> has expectation 1. When the models for <span class="math inline">\(f(A \mid L)\)</span> and <span class="math inline">\(f(A)\)</span> are correct and <span class="math inline">\(n\)</span> is large, the mean of the estimated stabilized weights should therefore be close to 1, and in data analyses one should check it: a mean far from 1 suggests model misspecification or (near) violations of positivity <span class="citation" data-cites="hernan2020causal">(<a href="#/references" role="doc-biblioref" onclick="">Hernán and Robins 2020, chap. 12</a>, p.&nbsp;168)</span>.</p>
+\]</span> So, for individuals sampled as described after <a href="#/def-pseudo-population" class="quarto-xref">Definition&nbsp;2</a>, the pseudo-population created by <span class="math inline">\(SW^A\)</span> has expected size <span class="math inline">\(\operatorname{E}\mathopen{}\left[SW^A\right]\mathclose{} \cdot n = n\)</span>, the same as the study population, and the sample mean <span class="math inline">\(\frac{1}{n} \sum_{i=1}^n SW^A_i\)</span> has expectation 1. When the models for <span class="math inline">\(f(A \mid L)\)</span> and <span class="math inline">\(f(A)\)</span> are correct and <span class="math inline">\(n\)</span> is large, the mean of the estimated stabilized weights should therefore be close to 1, and in data analyses one should check it: a mean far from 1 suggests model misspecification or (near) violations of positivity <span class="citation" data-cites="hernan2020causal">(<a href="#/references" role="doc-biblioref" onclick="">Hernán and Robins 2020, chap. 12</a>, p.&nbsp;168)</span>.</p>
 <p>To estimate the average causal effect in the treated rather than in the whole population, use <span class="math inline">\(\Pr[A = 1 \mid L]\)</span> as the numerator instead (Technical Point 4.1).</p>
 <style type="text/css">
         span.MJX_Assistive_MathML {
@@ -792,8 +789,8 @@ Table&nbsp;1: Mean baseline characteristics of quitters and non-quitters in the 
 <p><span class="theorem-title"><strong>Algorithm 2 (Estimating Stabilized IP Weights)</strong></span> &nbsp;</p>
 <ul>
 <li><strong>Denominator</strong>: same logistic model for <span class="math inline">\(\Pr[A = 1 \mid L]\)</span> as in Section 12.2.</li>
-<li><strong>Numerator</strong>: <span class="math inline">\(\hat{\Pr}[A = 1] = 403/1566\)</span>, equivalently a saturated (intercept-only) logistic model.</li>
-<li>Fit <span class="math inline">\(\text{E}{\left[Y \mid A\right]} = \theta_0 + \theta_1 A\)</span> by weighted least squares with weights <span class="math inline">\(\hat{\Pr}[A = 1]/\hat{\Pr}[A = 1 \mid L]\)</span> for quitters and <span class="math inline">\((1 - \hat{\Pr}[A = 1])/(1 - \hat{\Pr}[A = 1 \mid L])\)</span> for non-quitters.</li>
+<li><strong>Numerator</strong>: <span class="math inline">\(\mathop{\widehat{\Pr}}\nolimits\mathopen{}\left[A = 1\right]\mathclose{} = 403/1566\)</span>, equivalently a saturated (intercept-only) logistic model.</li>
+<li>Fit <span class="math inline">\(\operatorname{E}\mathopen{}\left[Y \mid A\right]\mathclose{} = \theta_0 + \theta_1 A\)</span> by weighted least squares with weights <span class="math inline">\(\mathop{\widehat{\Pr}}\nolimits\mathopen{}\left[A = 1\right]\mathclose{}/\mathop{\widehat{\Pr}}\nolimits\mathopen{}\left[A = 1 \mid L\right]\mathclose{}\)</span> for quitters and <span class="math inline">\((1 - \mathop{\widehat{\Pr}}\nolimits\mathopen{}\left[A = 1\right]\mathclose{})/(1 - \mathop{\widehat{\Pr}}\nolimits\mathopen{}\left[A = 1 \mid L\right]\mathclose{})\)</span> for non-quitters.</li>
 </ul>
 </div>
 <div id="exm-nhefs-sw" class="theorem example">
@@ -811,7 +808,7 @@ Table&nbsp;1: Mean baseline characteristics of quitters and non-quitters in the 
 <ul>
 <li>Stabilized weights typically give <strong>narrower confidence intervals</strong>.</li>
 <li>But this advantage can occur only when the weighted model is <strong>not saturated</strong>.</li>
-<li>Here, <span class="math inline">\(\text{E}{\left[Y \mid A\right]} = \theta_0 + \theta_1 A\)</span> is saturated because <span class="math inline">\(A\)</span> is dichotomous, so the two sets of weights agree.</li>
+<li>Here, <span class="math inline">\(\operatorname{E}\mathopen{}\left[Y \mid A\right]\mathclose{} = \theta_0 + \theta_1 A\)</span> is saturated because <span class="math inline">\(A\)</span> is dichotomous, so the two sets of weights agree.</li>
 <li>With time-varying or continuous treatments the weighted model cannot be saturated, and stabilized weights are used (Section 12.4).</li>
 </ul>
 </div>
@@ -865,16 +862,16 @@ Table&nbsp;1: Mean baseline characteristics of quitters and non-quitters in the 
 
 <div id="def-msm" class="theorem definition">
 <p><span class="theorem-title"><strong>Definition 6 (Marginal Structural Model)</strong></span> A <strong>marginal structural mean model</strong> is a model for the marginal mean of a counterfactual outcome, such as</p>
-<p><span class="math display">\[\text{E}{\left[Y^a\right]} = \beta_0 + \beta_1 a\]</span></p>
+<p><span class="math display">\[\operatorname{E}\mathopen{}\left[Y^a\right]\mathclose{} = \beta_0 + \beta_1 a\]</span></p>
 <p>Because the outcome <span class="math inline">\(Y^a\)</span> is counterfactual (generally unobserved), the model cannot be fit directly to the data of any real-world study.</p>
 </div>
 <div id="prp-msm-parameter-causal" class="theorem proposition">
-<p><span class="theorem-title"><strong>Proposition 3 (MSM Treatment Parameters Are Average Causal Effects)</strong></span> In the marginal structural model <span class="math inline">\(\text{E}{\left[Y^a\right]} = \beta_0 + \beta_1 a\)</span> of <a href="#/def-msm" class="quarto-xref">Definition&nbsp;6</a>, <span class="math display">\[\beta_1 = \text{E}{\left[Y^{a=1}\right]} - \text{E}{\left[Y^{a=0}\right]}.\]</span></p>
+<p><span class="theorem-title"><strong>Proposition 3 (MSM Treatment Parameters Are Average Causal Effects)</strong></span> In the marginal structural model <span class="math inline">\(\operatorname{E}\mathopen{}\left[Y^a\right]\mathclose{} = \beta_0 + \beta_1 a\)</span> of <a href="#/def-msm" class="quarto-xref">Definition&nbsp;6</a>, <span class="math display">\[\beta_1 = \operatorname{E}\mathopen{}\left[Y^{a=1}\right]\mathclose{} - \operatorname{E}\mathopen{}\left[Y^{a=0}\right]\mathclose{}.\]</span></p>
 </div>
 <div class="proof">
 <p><span class="proof-title"><em>Proof</em>. </span><span class="math display">\[
 \begin{aligned}
-\text{E}{\left[Y^{a=1}\right]} - \text{E}{\left[Y^{a=0}\right]}
+\operatorname{E}\mathopen{}\left[Y^{a=1}\right]\mathclose{} - \operatorname{E}\mathopen{}\left[Y^{a=0}\right]\mathclose{}
 &amp;= (\beta_0 + \beta_1 \cdot 1) - (\beta_0 + \beta_1 \cdot 0) &amp;&amp; \text{(evaluate the model at } a = 1, 0\text{)}\\
 &amp;= \beta_1 &amp;&amp; \text{(cancel } \beta_0\text{)}
 \end{aligned}
@@ -888,8 +885,8 @@ Table&nbsp;1: Mean baseline characteristics of quitters and non-quitters in the 
 <p><span class="theorem-title"><strong>Algorithm 3 (Estimating Marginal Structural Model Parameters by IP Weighting)</strong></span> &nbsp;</p>
 <ol type="1">
 <li>Use IP weights to create a pseudo-population (<a href="#/def-pseudo-population" class="quarto-xref">Definition&nbsp;2</a>) in which, under the assumptions of <a href="#/prp-pseudo-population" class="quarto-xref">Proposition&nbsp;1</a>, association is causation.</li>
-<li>Fit the associational model <span class="math inline">\(\text{E}{\left[Y \mid A\right]} = \theta_0 + \theta_1 A\)</span> to the pseudo-population, i.e., by IP weighted least squares.</li>
-<li><span class="math inline">\(\theta_1\)</span> then has the same causal interpretation as <span class="math inline">\(\beta_1\)</span>, so a consistent estimator <span class="math inline">\(\hat\theta_1\)</span> is a consistent estimator of <span class="math inline">\(\beta_1 = \text{E}{\left[Y^{a=1}\right]} - \text{E}{\left[Y^{a=0}\right]}\)</span>.</li>
+<li>Fit the associational model <span class="math inline">\(\operatorname{E}\mathopen{}\left[Y \mid A\right]\mathclose{} = \theta_0 + \theta_1 A\)</span> to the pseudo-population, i.e., by IP weighted least squares.</li>
+<li><span class="math inline">\(\theta_1\)</span> then has the same causal interpretation as <span class="math inline">\(\beta_1\)</span>, so a consistent estimator <span class="math inline">\(\hat\theta_1\)</span> is a consistent estimator of <span class="math inline">\(\beta_1 = \operatorname{E}\mathopen{}\left[Y^{a=1}\right]\mathclose{} - \operatorname{E}\mathopen{}\left[Y^{a=0}\right]\mathclose{}\)</span>.</li>
 </ol>
 </div>
 <div id="lst-msm-wls" class="listing quarto-float quarto-figure quarto-figure-left">
@@ -906,8 +903,8 @@ Listing&nbsp;1: Pseudo-code for fitting a marginal structural model by IP weight
 </figure>
 </div>
 <aside class="notes">
-<p>The model <span class="math inline">\(\text{E}{\left[Y^a\right]} = \beta_0 + \beta_1 a\)</span> is <strong>saturated</strong> because <span class="math inline">\(A\)</span> is dichotomous: two unknowns on each side (<span class="math inline">\(\text{E}{\left[Y^{a=1}\right]}\)</span> and <span class="math inline">\(\text{E}{\left[Y^{a=0}\right]}\)</span> on the left, <span class="math inline">\(\beta_0\)</span> and <span class="math inline">\(\beta_1\)</span> on the right). That is why sample averages in the pseudo-population sufficed <span class="citation" data-cites="hernan2020causal">(<a href="#/references" role="doc-biblioref" onclick="">Hernán and Robins 2020, chap. 12</a>, p.&nbsp;170)</span>.</p>
-<p><strong>Null preservation</strong> (Chapter 9): if treatment has no average causal effect, any model for the marginal mean <span class="math inline">\(\text{E}{\left[Y^a\right]}\)</span> that has an intercept, with treatment terms whose coefficients can all be 0, is correctly specified. For example, <span class="math inline">\(\text{E}{\left[Y^a\right]} = \beta_0 + \beta_1 a + \beta_2 a^2\)</span> is then correctly specified with <span class="math inline">\(\beta_1 = \beta_2 = 0\)</span> and <span class="math inline">\(\beta_0 = \text{E}{\left[Y^a\right]}\)</span> for every <span class="math inline">\(a\)</span>.</p>
+<p>The model <span class="math inline">\(\operatorname{E}\mathopen{}\left[Y^a\right]\mathclose{} = \beta_0 + \beta_1 a\)</span> is <strong>saturated</strong> because <span class="math inline">\(A\)</span> is dichotomous: two unknowns on each side (<span class="math inline">\(\operatorname{E}\mathopen{}\left[Y^{a=1}\right]\mathclose{}\)</span> and <span class="math inline">\(\operatorname{E}\mathopen{}\left[Y^{a=0}\right]\mathclose{}\)</span> on the left, <span class="math inline">\(\beta_0\)</span> and <span class="math inline">\(\beta_1\)</span> on the right). That is why sample averages in the pseudo-population sufficed <span class="citation" data-cites="hernan2020causal">(<a href="#/references" role="doc-biblioref" onclick="">Hernán and Robins 2020, chap. 12</a>, p.&nbsp;170)</span>.</p>
+<p><strong>Null preservation</strong> (Chapter 9): if treatment has no average causal effect, any model for the marginal mean <span class="math inline">\(\operatorname{E}\mathopen{}\left[Y^a\right]\mathclose{}\)</span> that has an intercept, with treatment terms whose coefficients can all be 0, is correctly specified. For example, <span class="math inline">\(\operatorname{E}\mathopen{}\left[Y^a\right]\mathclose{} = \beta_0 + \beta_1 a + \beta_2 a^2\)</span> is then correctly specified with <span class="math inline">\(\beta_1 = \beta_2 = 0\)</span> and <span class="math inline">\(\beta_0 = \operatorname{E}\mathopen{}\left[Y^a\right]\mathclose{}\)</span> for every <span class="math inline">\(a\)</span>.</p>
 <style type="text/css">
         span.MJX_Assistive_MathML {
           position:absolute!important;
@@ -923,10 +920,10 @@ Listing&nbsp;1: Pseudo-code for fitting a marginal structural model by IP weight
 <section id="continuous-treatment-change-in-smoking-intensity" class="slide level2">
 <h2>Continuous Treatment: Change in Smoking Intensity</h2>
 <p>New treatment: <span class="math inline">\(A\)</span> = cigarettes per day in 1982 minus cigarettes per day at baseline (e.g., <span class="math inline">\(-25\)</span> or <span class="math inline">\(+40\)</span>), restricted to the 1162 individuals whose baseline smoking was at most 25 cigarettes per day.</p>
-<p>Goal: <span class="math inline">\(\text{E}{\left[Y^a\right]} - \text{E}{\left[Y^{a'}\right]}\)</span> for any <span class="math inline">\(a, a'\)</span>. A saturated model is impractical with dozens of treatment values, so we posit a <strong>nonsaturated</strong> marginal structural model (a parabolic dose-response curve):</p>
+<p>Goal: <span class="math inline">\(\operatorname{E}\mathopen{}\left[Y^a\right]\mathclose{} - \operatorname{E}\mathopen{}\left[Y^{a'}\right]\mathclose{}\)</span> for any <span class="math inline">\(a, a'\)</span>. A saturated model is impractical with dozens of treatment values, so we posit a <strong>nonsaturated</strong> marginal structural model (a parabolic dose-response curve):</p>
 <div id="def-msm-continuous" class="theorem definition">
-<p><span class="theorem-title"><strong>Definition 7 (Nonsaturated Marginal Structural Model for a Continuous Treatment)</strong></span> <span class="math display">\[\text{E}{\left[Y^a\right]} = \beta_0 + \beta_1 a + \beta_2 a^2\]</span></p>
-<p>where <span class="math inline">\(\beta_0 = \text{E}{\left[Y^{a=0}\right]}\)</span> is the mean weight gain with no change in smoking intensity.</p>
+<p><span class="theorem-title"><strong>Definition 7 (Nonsaturated Marginal Structural Model for a Continuous Treatment)</strong></span> <span class="math display">\[\operatorname{E}\mathopen{}\left[Y^a\right]\mathclose{} = \beta_0 + \beta_1 a + \beta_2 a^2\]</span></p>
+<p>where <span class="math inline">\(\beta_0 = \operatorname{E}\mathopen{}\left[Y^{a=0}\right]\mathclose{}\)</span> is the mean weight gain with no change in smoking intensity.</p>
 </div>
 </section>
 <section id="effect-of-increasing-intensity-by-20-cigarettesday" class="slide level2">
@@ -934,13 +931,13 @@ Listing&nbsp;1: Pseudo-code for fitting a marginal structural model by IP weight
 <div id="exm-msm-20-cigarettes" class="theorem example">
 <p><span class="theorem-title"><strong>Example 6 (Effect of 20 More Cigarettes per Day)</strong></span> Under the model of <a href="#/def-msm-continuous" class="quarto-xref">Definition&nbsp;7</a>, <span class="math display">\[
 \begin{aligned}
-\text{E}{\left[Y^{a=20}\right]} - \text{E}{\left[Y^{a=0}\right]}
+\operatorname{E}\mathopen{}\left[Y^{a=20}\right]\mathclose{} - \operatorname{E}\mathopen{}\left[Y^{a=0}\right]\mathclose{}
 &amp;= (\beta_0 + 20\beta_1 + 20^2 \beta_2) - \beta_0 &amp;&amp; \text{(evaluate the model at } a = 20, 0\text{)}\\
 &amp;= 20\beta_1 + 400\beta_2 &amp;&amp; \text{(cancel } \beta_0\text{; } 20^2 = 400\text{)}
 \end{aligned}
 \]</span></p>
 </div>
-<p>To estimate <span class="math inline">\(\beta_1, \beta_2\)</span>: estimate <span class="math inline">\(SW^A\)</span>, then fit <span class="math inline">\(\text{E}{\left[Y \mid A\right]} = \theta_0 + \theta_1 A + \theta_2 A^2\)</span> to the pseudo-population.</p>
+<p>To estimate <span class="math inline">\(\beta_1, \beta_2\)</span>: estimate <span class="math inline">\(SW^A\)</span>, then fit <span class="math inline">\(\operatorname{E}\mathopen{}\left[Y \mid A\right]\mathclose{} = \theta_0 + \theta_1 A + \theta_2 A^2\)</span> to the pseudo-population.</p>
 </section>
 <section id="weights-for-a-continuous-treatment" class="slide level2">
 <h2>Weights for a Continuous Treatment</h2>
@@ -948,7 +945,7 @@ Listing&nbsp;1: Pseudo-code for fitting a marginal structural model by IP weight
 <div id="exm-nhefs-continuous-weights" class="theorem example">
 <p><span class="theorem-title"><strong>Example 7 (NHEFS: Weights for Change in Smoking Intensity)</strong></span> &nbsp;</p>
 <ul>
-<li><span class="math inline">\(f(A \mid L)\)</span>: normal with mean <span class="math inline">\(\mu_L = \text{E}{\left[A \mid L\right]}\)</span> (estimated by linear regression) and constant variance <span class="math inline">\(\sigma^2\)</span> (the residual variance);</li>
+<li><span class="math inline">\(f(A \mid L)\)</span>: normal with mean <span class="math inline">\(\mu_L = \operatorname{E}\mathopen{}\left[A \mid L\right]\mathclose{}\)</span> (estimated by linear regression) and constant variance <span class="math inline">\(\sigma^2\)</span> (the residual variance);</li>
 <li><span class="math inline">\(f(A)\)</span> in the numerator: also normal;</li>
 <li>estimated <span class="math inline">\(\hat{SW}^A\)</span> ranged from 0.19 to 5.10, with mean 1.00.</li>
 </ul>
@@ -994,15 +991,15 @@ Listing&nbsp;1: Pseudo-code for fitting a marginal structural model by IP weight
 </thead>
 <tbody>
 <tr class="odd">
-<td><span class="math inline">\(\text{E}{\left[Y^{a=0}\right]}\)</span> (no change in intensity)</td>
+<td><span class="math inline">\(\operatorname{E}\mathopen{}\left[Y^{a=0}\right]\mathclose{}\)</span> (no change in intensity)</td>
 <td>2.0 kg (1.4, 2.6)</td>
 </tr>
 <tr class="even">
-<td><span class="math inline">\(\text{E}{\left[Y^{a=20}\right]}\)</span> (+20 cigarettes/day)</td>
+<td><span class="math inline">\(\operatorname{E}\mathopen{}\left[Y^{a=20}\right]\mathclose{}\)</span> (+20 cigarettes/day)</td>
 <td>0.9 kg (<span class="math inline">\(-1.7\)</span>, 3.5)</td>
 </tr>
 <tr class="odd">
-<td><span class="math inline">\(\text{E}{\left[Y^{a=20}\right]} - \text{E}{\left[Y^{a=0}\right]}\)</span></td>
+<td><span class="math inline">\(\operatorname{E}\mathopen{}\left[Y^{a=20}\right]\mathclose{} - \operatorname{E}\mathopen{}\left[Y^{a=0}\right]\mathclose{}\)</span></td>
 <td><span class="math inline">\(0.9 - 2.0 = -1.1\)</span> kg</td>
 </tr>
 </tbody>
@@ -1046,11 +1043,11 @@ Listing&nbsp;1: Pseudo-code for fitting a marginal structural model by IP weight
 <section id="dichotomous-outcome-marginal-structural-logistic-model" class="slide level2">
 <h2>Dichotomous Outcome: Marginal Structural Logistic Model</h2>
 <div id="def-msm-logistic" class="theorem definition">
-<p><span class="theorem-title"><strong>Definition 8 (Marginal Structural Logistic Model)</strong></span> For a dichotomous outcome <span class="math inline">\(D\)</span> (1: yes, 0: no), a <strong>marginal structural logistic model</strong> is a model for the counterfactual risk on the logit scale, such as <span class="math display">\[\text{logit}\Pr[D^a = 1] = \alpha_0 + \alpha_1 a.\]</span></p>
+<p><span class="theorem-title"><strong>Definition 8 (Marginal Structural Logistic Model)</strong></span> For a dichotomous outcome <span class="math inline">\(D\)</span> (1: yes, 0: no), a <strong>marginal structural logistic model</strong> is a model for the counterfactual risk on the logit scale, such as <span class="math display">\[\operatorname{logit}\Pr[D^a = 1] = \alpha_0 + \alpha_1 a.\]</span></p>
 </div>
-<p>For a dichotomous treatment, <span class="math inline">\(\text{exp}{\left\{\alpha_1\right\}}\)</span> in <a href="#/def-msm-logistic" class="quarto-xref">Definition&nbsp;8</a> is the causal odds ratio comparing <span class="math inline">\(a = 1\)</span> with <span class="math inline">\(a = 0\)</span>. <span class="math inline">\(\text{exp}{\left\{\alpha_1\right\}}\)</span> is estimated by <span class="math inline">\(\text{exp}{\left\{\hat\theta_1\right\}}\)</span> from fitting <span class="math inline">\(\text{logit}\Pr[D = 1 \mid A] = \theta_0 + \theta_1 A\)</span> to the IP weighted pseudo-population (<a href="#/def-pseudo-population" class="quarto-xref">Definition&nbsp;2</a>).</p>
+<p>For a dichotomous treatment, <span class="math inline">\(\operatorname{exp}\mathopen{}\left\{\alpha_1\right\}\mathclose{}\)</span> in <a href="#/def-msm-logistic" class="quarto-xref">Definition&nbsp;8</a> is the causal odds ratio comparing <span class="math inline">\(a = 1\)</span> with <span class="math inline">\(a = 0\)</span>. <span class="math inline">\(\operatorname{exp}\mathopen{}\left\{\alpha_1\right\}\mathclose{}\)</span> is estimated by <span class="math inline">\(\operatorname{exp}\mathopen{}\left\{\hat\theta_1\right\}\mathclose{}\)</span> from fitting <span class="math inline">\(\operatorname{logit}\Pr[D = 1 \mid A] = \theta_0 + \theta_1 A\)</span> to the IP weighted pseudo-population (<a href="#/def-pseudo-population" class="quarto-xref">Definition&nbsp;2</a>).</p>
 <div id="exm-nhefs-death" class="theorem example">
-<p><span class="theorem-title"><strong>Example 9 (NHEFS: Quitting Smoking and Death by 1992)</strong></span> With <span class="math inline">\(A\)</span> = quitting smoking and <span class="math inline">\(D\)</span> = death by 1992, the IP weighted estimate of the causal odds ratio was <span class="math inline">\(\text{exp}{\left\{\hat\theta_1\right\}} = 1.0\)</span> (95% CI: 0.8, 1.4).</p>
+<p><span class="theorem-title"><strong>Example 9 (NHEFS: Quitting Smoking and Death by 1992)</strong></span> With <span class="math inline">\(A\)</span> = quitting smoking and <span class="math inline">\(D\)</span> = death by 1992, the IP weighted estimate of the causal odds ratio was <span class="math inline">\(\operatorname{exp}\mathopen{}\left\{\hat\theta_1\right\}\mathclose{} = 1.0\)</span> (95% CI: 0.8, 1.4).</p>
 </div>
 <aside class="notes">
 <p>This model is saturated for a dichotomous treatment; for a continuous treatment one would specify a nonsaturated logistic model <span class="citation" data-cites="hernan2020causal">(<a href="#/references" role="doc-biblioref" onclick="">Hernán and Robins 2020, chap. 12</a>, p.&nbsp;171)</span>.</p>
@@ -1075,10 +1072,10 @@ Listing&nbsp;1: Pseudo-code for fitting a marginal structural model by IP weight
 
 <p>Marginal structural models for the population average causal effect include no covariates. To assess <strong>effect modification</strong> by a covariate <span class="math inline">\(V\)</span> (which need not be a confounder), add it to the model.</p>
 <div id="def-msm-effect-modification" class="theorem definition">
-<p><span class="theorem-title"><strong>Definition 9 (Marginal Structural Model with an Effect Modifier)</strong></span> <span class="math display">\[\text{E}{\left[Y^a \mid V\right]} = \beta_0 + \beta_1 a + \beta_2 V a + \beta_3 V\]</span></p>
+<p><span class="theorem-title"><strong>Definition 9 (Marginal Structural Model with an Effect Modifier)</strong></span> <span class="math display">\[\operatorname{E}\mathopen{}\left[Y^a \mid V\right]\mathclose{} = \beta_0 + \beta_1 a + \beta_2 V a + \beta_3 V\]</span></p>
 <p>Additive effect modification by <span class="math inline">\(V\)</span> is present if <span class="math inline">\(\beta_2 \neq 0\)</span>. The causal effect within level <span class="math inline">\(V = v\)</span> is <span class="math display">\[
 \begin{aligned}
-\text{E}{\left[Y^{a=1} \mid V = v\right]} - \text{E}{\left[Y^{a=0} \mid V = v\right]}
+\operatorname{E}\mathopen{}\left[Y^{a=1} \mid V = v\right]\mathclose{} - \operatorname{E}\mathopen{}\left[Y^{a=0} \mid V = v\right]\mathclose{}
 &amp;= (\beta_0 + \beta_1 \cdot 1 + \beta_2 v \cdot 1 + \beta_3 v) - (\beta_0 + \beta_1 \cdot 0 + \beta_2 v \cdot 0 + \beta_3 v)
 &amp;&amp; \text{(model evaluated at } a = 1 \text{ and } a = 0 \text{, with } V = v\text{)}\\
 &amp;= (\beta_0 + \beta_1 + \beta_2 v + \beta_3 v) - (\beta_0 + \beta_3 v)
@@ -1108,7 +1105,7 @@ Listing&nbsp;1: Pseudo-code for fitting a marginal structural model by IP weight
 <div id="alg-fit-msm-effect-modifier" class="theorem algorithm">
 <p><span class="theorem-title"><strong>Algorithm 4 (Fitting a Marginal Structural Model with an Effect Modifier)</strong></span> &nbsp;</p>
 <ul>
-<li>Fit <span class="math inline">\(\text{E}{\left[Y \mid A, V\right]} = \theta_0 + \theta_1 A + \theta_2 V A + \theta_3 V\)</span> by weighted least squares with weights <span class="math inline">\(W^A\)</span> or <span class="math inline">\(SW^A\)</span>.</li>
+<li>Fit <span class="math inline">\(\operatorname{E}\mathopen{}\left[Y \mid A, V\right]\mathclose{} = \theta_0 + \theta_1 A + \theta_2 V A + \theta_3 V\)</span> by weighted least squares with weights <span class="math inline">\(W^A\)</span> or <span class="math inline">\(SW^A\)</span>.</li>
 <li>In most settings <span class="math inline">\(L\)</span> should include <span class="math inline">\(V\)</span>; even when <span class="math inline">\(V\)</span> is not needed for exchangeability, including it generally improves efficiency.</li>
 <li>Because the model is within levels of <span class="math inline">\(V\)</span>, the numerator can be <span class="math inline">\(f[A \mid V]\)</span>.</li>
 </ul>
@@ -1191,7 +1188,7 @@ Listing&nbsp;1: Pseudo-code for fitting a marginal structural model by IP weight
 <div id="def-censoring-indicator" class="theorem definition">
 <p><span class="theorem-title"><strong>Definition 12 (Censoring Indicator)</strong></span> The <strong>censoring indicator</strong> <span class="math inline">\(C\)</span> equals 1 if an individual’s outcome is unmeasured (censored) and 0 if it is measured.</p>
 </div>
-<p>The analyses of Sections 12.2-12.4 actually fit <span class="math display">\[\text{E}{\left[Y \mid A, C = 0\right]} = \theta_0 + \theta_1 A\]</span> among individuals with <span class="math inline">\(C = 0\)</span>.</p>
+<p>The analyses of Sections 12.2-12.4 actually fit <span class="math display">\[\operatorname{E}\mathopen{}\left[Y \mid A, C = 0\right]\mathclose{} = \theta_0 + \theta_1 A\]</span> among individuals with <span class="math inline">\(C = 0\)</span>.</p>
 </section>
 <section id="can-censoring-cause-selection-bias-here" class="slide level2">
 <h2>Can Censoring Cause Selection Bias Here?</h2>
@@ -1206,7 +1203,7 @@ Listing&nbsp;1: Pseudo-code for fitting a marginal structural model by IP weight
 <section id="the-target-a-joint-effect" class="slide level2">
 <h2>The Target: A Joint Effect</h2>
 <div id="def-effect-without-censoring" class="theorem definition">
-<p><span class="theorem-title"><strong>Definition 13 (Causal Effect in the Absence of Censoring)</strong></span> The average causal effect of <span class="math inline">\(A\)</span> had nobody been censored is <span class="math display">\[\text{E}{\left[Y^{a=1, c=0}\right]} - \text{E}{\left[Y^{a=0, c=0}\right]},\]</span> a joint effect of <span class="math inline">\(A\)</span> and <span class="math inline">\(C\)</span> (Chapter 8).</p>
+<p><span class="theorem-title"><strong>Definition 13 (Causal Effect in the Absence of Censoring)</strong></span> The average causal effect of <span class="math inline">\(A\)</span> had nobody been censored is <span class="math display">\[\operatorname{E}\mathopen{}\left[Y^{a=1, c=0}\right]\mathclose{} - \operatorname{E}\mathopen{}\left[Y^{a=0, c=0}\right]\mathclose{},\]</span> a joint effect of <span class="math inline">\(A\)</span> and <span class="math inline">\(C\)</span> (Chapter 8).</p>
 </div>
 <p>The superscript <span class="math inline">\(c = 0\)</span> makes explicit what many investigators mean by “the causal effect of <span class="math inline">\(A\)</span>” even when they omit it.</p>
 </section>
@@ -1289,7 +1286,7 @@ SW^C \stackrel{\text{def}}{=}
 </tr>
 </tbody>
 </table>
-<p>With either, fit the weighted model <span class="math inline">\(\text{E}{\left[Y \mid A, C = 0\right]} = \theta_0 + \theta_1 A\)</span> to estimate the marginal structural model <span class="math inline">\(\text{E}{\left[Y^{a, c=0}\right]} = \beta_0 + \beta_1 a\)</span>; the stabilized version uses <span class="math inline">\(SW^{A,C}\)</span> (<a href="#/def-stabilized-censoring-weights" class="quarto-xref">Definition&nbsp;16</a>).</p>
+<p>With either, fit the weighted model <span class="math inline">\(\operatorname{E}\mathopen{}\left[Y \mid A, C = 0\right]\mathclose{} = \theta_0 + \theta_1 A\)</span> to estimate the marginal structural model <span class="math inline">\(\operatorname{E}\mathopen{}\left[Y^{a, c=0}\right]\mathclose{} = \beta_0 + \beta_1 a\)</span>; the stabilized version uses <span class="math inline">\(SW^{A,C}\)</span> (<a href="#/def-stabilized-censoring-weights" class="quarto-xref">Definition&nbsp;16</a>).</p>
 <aside class="notes">
 <p>The estimated <span class="math inline">\(SW^C\)</span> have mean 1 when the model for <span class="math inline">\(\Pr[C = 0 \mid A]\)</span> is correctly specified <span class="citation" data-cites="hernan2020causal">(<a href="#/references" role="doc-biblioref" onclick="">Hernán and Robins 2020, chap. 12</a>, p.&nbsp;173)</span>.</p>
 <style type="text/css">
@@ -1343,17 +1340,17 @@ SW^C \stackrel{\text{def}}{=}
 </div>
 <div class="callout-content">
 <p>The stabilized weights <span class="math inline">\(f[A]/f[A \mid L]\)</span> belong to a larger class <span class="math inline">\(g[A]/f[A \mid L]\)</span>, where <span class="math inline">\(g[A]\)</span> is any positive function of <span class="math inline">\(A\)</span> that is not a function of <span class="math inline">\(L\)</span>. With unsaturated marginal structural models, such weights are preferable to <span class="math inline">\(1/f[A \mid L]\)</span> because some <span class="math inline">\(g[A]\)</span> (often <span class="math inline">\(f[A]\)</span>) yield more efficient estimators <span class="citation" data-cites="hernan2020causal">(<a href="#/references" role="doc-biblioref" onclick="">Hernán and Robins 2020</a>, Technical Point 12.2, p.&nbsp;174)</span>.</p>
-<p>The IP weighted mean <span class="math inline">\(\text{E}{\left[g(A) \mathbb{1}{\left(A = a\right)} Y / f(A \mid L)\right]}\)</span> no longer equals <span class="math inline">\(\text{E}{\left[Y^a\right]}\)</span>, but the <strong>Hajek</strong> version does. Under conditional exchangeability, positivity, and consistency: <span class="math display">\[
+<p>The IP weighted mean <span class="math inline">\(\operatorname{E}\mathopen{}\left[g(A) \mathbb{1}\mathopen{}\left(A = a\right)\mathclose{} Y / f(A \mid L)\right]\mathclose{}\)</span> no longer equals <span class="math inline">\(\operatorname{E}\mathopen{}\left[Y^a\right]\mathclose{}\)</span>, but the <strong>Hajek</strong> version does. Under conditional exchangeability, positivity, and consistency: <span class="math display">\[
 \begin{aligned}
-\text{E}{\left[\frac{g(A) \mathbb{1}{\left(A = a\right)} Y}{f(A \mid L)}\right]}
-&amp;= g(a) \, \text{E}{\left[\frac{\mathbb{1}{\left(A = a\right)} Y}{f(A \mid L)}\right]} &amp;&amp; \text{(} \mathbb{1}{\left(A = a\right)} \text{ forces } g(A) = g(a)\text{)}\\
-&amp;= g(a) \, \text{E}{\left[Y^a\right]} &amp;&amp; \text{(Technical Point 3.1)}\\
-\text{E}{\left[\frac{g(A) \mathbb{1}{\left(A = a\right)}}{f(A \mid L)}\right]}
-&amp;= g(a) \, \text{E}{\left[\frac{\mathbb{1}{\left(A = a\right)}}{f(A \mid L)}\right]} &amp;&amp; \text{(same reason)}\\
+\operatorname{E}\mathopen{}\left[\frac{g(A) \mathbb{1}\mathopen{}\left(A = a\right)\mathclose{} Y}{f(A \mid L)}\right]\mathclose{}
+&amp;= g(a) \, \operatorname{E}\mathopen{}\left[\frac{\mathbb{1}\mathopen{}\left(A = a\right)\mathclose{} Y}{f(A \mid L)}\right]\mathclose{} &amp;&amp; \text{(} \mathbb{1}\mathopen{}\left(A = a\right)\mathclose{} \text{ forces } g(A) = g(a)\text{)}\\
+&amp;= g(a) \, \operatorname{E}\mathopen{}\left[Y^a\right]\mathclose{} &amp;&amp; \text{(Technical Point 3.1)}\\
+\operatorname{E}\mathopen{}\left[\frac{g(A) \mathbb{1}\mathopen{}\left(A = a\right)\mathclose{}}{f(A \mid L)}\right]\mathclose{}
+&amp;= g(a) \, \operatorname{E}\mathopen{}\left[\frac{\mathbb{1}\mathopen{}\left(A = a\right)\mathclose{}}{f(A \mid L)}\right]\mathclose{} &amp;&amp; \text{(same reason)}\\
 &amp;= g(a) &amp;&amp; \text{(Technical Point 12.1)}
 \end{aligned}
-\]</span> so the ratio of the two equals <span class="math inline">\(g(a)\text{E}{\left[Y^a\right]}/g(a) = \text{E}{\left[Y^a\right]}\)</span> (since <span class="math inline">\(g(a) &gt; 0\)</span>).</p>
-<p>The Hajek mean is the solution <span class="math inline">\(u\)</span> of <span class="math inline">\(\text{E}{\left[\frac{g[A] \mathbb{1}{\left(A = a\right)}}{f[A \mid L]} (Y - u)\right]} = 0\)</span>, since solving for <span class="math inline">\(u\)</span> gives the ratio of the two expectations. (The book prints this equation without the indicator <span class="math inline">\(\mathbb{1}{\left(A = a\right)}\)</span> <span class="citation" data-cites="hernan2020causal">(<a href="#/references" role="doc-biblioref" onclick="">Hernán and Robins 2020</a>, Technical Point 12.2, p.&nbsp;174)</span>; without it, the solution would average <span class="math inline">\(Y\)</span> over all treatment levels rather than estimate <span class="math inline">\(\text{E}{\left[Y^a\right]}\)</span>.) Similarly, for <span class="math inline">\(\text{E}{\left[Y^a\right]} = \beta_0 + \beta_1 a\)</span>, the weighted least squares estimators with weights <span class="math inline">\(g[A]/f[A \mid L]\)</span> solve <span class="math display">\[\hat{\text{E}}{\left[\frac{g[A]}{f[A \mid L]} {\left[Y - (\beta_0 + \beta_1 A)\right]} \begin{pmatrix} 1 \\ A \end{pmatrix}\right]} = 0,\]</span> and <span class="math inline">\(\hat \beta_0\)</span> and <span class="math inline">\(\hat \beta_0 + \hat \beta_1\)</span> are exactly the Hajek estimators of <span class="math inline">\(\text{E}{\left[Y^{a=0}\right]}\)</span> and <span class="math inline">\(\text{E}{\left[Y^{a=1}\right]}\)</span>. For a treatment <span class="math inline">\(A\)</span> with finitely many levels, under conditional exchangeability, positivity, and consistency, in the pseudo-population created by <span class="math inline">\(W = g[A]/f[A \mid L]\)</span> (<a href="#/def-pseudo-population" class="quarto-xref">Definition&nbsp;2</a>), the mean of <span class="math inline">\(Y\)</span> given <span class="math inline">\(A = a\)</span> still equals <span class="math inline">\(\text{E}{\left[Y^a\right]}\)</span>.</p>
+\]</span> so the ratio of the two equals <span class="math inline">\(g(a)\operatorname{E}\mathopen{}\left[Y^a\right]\mathclose{}/g(a) = \operatorname{E}\mathopen{}\left[Y^a\right]\mathclose{}\)</span> (since <span class="math inline">\(g(a) &gt; 0\)</span>).</p>
+<p>The Hajek mean is the solution <span class="math inline">\(u\)</span> of <span class="math inline">\(\operatorname{E}\mathopen{}\left[\frac{g[A] \mathbb{1}\mathopen{}\left(A = a\right)\mathclose{}}{f[A \mid L]} (Y - u)\right]\mathclose{} = 0\)</span>, since solving for <span class="math inline">\(u\)</span> gives the ratio of the two expectations. (The book prints this equation without the indicator <span class="math inline">\(\mathbb{1}\mathopen{}\left(A = a\right)\mathclose{}\)</span> <span class="citation" data-cites="hernan2020causal">(<a href="#/references" role="doc-biblioref" onclick="">Hernán and Robins 2020</a>, Technical Point 12.2, p.&nbsp;174)</span>; without it, the solution would average <span class="math inline">\(Y\)</span> over all treatment levels rather than estimate <span class="math inline">\(\operatorname{E}\mathopen{}\left[Y^a\right]\mathclose{}\)</span>.) Similarly, for <span class="math inline">\(\operatorname{E}\mathopen{}\left[Y^a\right]\mathclose{} = \beta_0 + \beta_1 a\)</span>, the weighted least squares estimators with weights <span class="math inline">\(g[A]/f[A \mid L]\)</span> solve <span class="math display">\[\mathop{\hat{\operatorname{E}}}\nolimits\mathopen{}\left[\frac{g[A]}{f[A \mid L]} \mathopen{}\left[Y - (\beta_0 + \beta_1 A)\right]\mathclose{} \begin{pmatrix} 1 \\ A \end{pmatrix}\right]\mathclose{} = 0,\]</span> and <span class="math inline">\(\hat \beta_0\)</span> and <span class="math inline">\(\hat \beta_0 + \hat \beta_1\)</span> are exactly the Hajek estimators of <span class="math inline">\(\operatorname{E}\mathopen{}\left[Y^{a=0}\right]\mathclose{}\)</span> and <span class="math inline">\(\operatorname{E}\mathopen{}\left[Y^{a=1}\right]\mathclose{}\)</span>. For a treatment <span class="math inline">\(A\)</span> with finitely many levels, under conditional exchangeability, positivity, and consistency, in the pseudo-population created by <span class="math inline">\(W = g[A]/f[A \mid L]\)</span> (<a href="#/def-pseudo-population" class="quarto-xref">Definition&nbsp;2</a>), the mean of <span class="math inline">\(Y\)</span> given <span class="math inline">\(A = a\)</span> still equals <span class="math inline">\(\operatorname{E}\mathopen{}\left[Y^a\right]\mathclose{}\)</span>.</p>
 </div>
 </div>
 </div>
@@ -1383,7 +1380,7 @@ SW^C \stackrel{\text{def}}{=}
 <li><strong>Stabilized weights</strong> <span class="math inline">\(f(A)/f(A \mid L)\)</span>: same estimate as nonstabilized weights for a saturated model, generally narrower confidence intervals for nonsaturated models</li>
 <li><strong>Marginal structural models</strong>: models for the mean counterfactual outcome, fit by IP weighted regression</li>
 <li><strong>Effect modification</strong>: add <span class="math inline">\(V\)</span> (and <span class="math inline">\(V \times a\)</span> terms) to the marginal structural model; use <span class="math inline">\(SW^A(V)\)</span></li>
-<li><strong>Censoring weights</strong>: <span class="math inline">\(W^{A,C} = W^A \times W^C\)</span> target the joint effect <span class="math inline">\(\text{E}{\left[Y^{a, c=0}\right]}\)</span></li>
+<li><strong>Censoring weights</strong>: <span class="math inline">\(W^{A,C} = W^A \times W^C\)</span> target the joint effect <span class="math inline">\(\operatorname{E}\mathopen{}\left[Y^{a, c=0}\right]\mathclose{}\)</span></li>
 </ol>
 <p><strong>NHEFS results</strong>: unadjusted 2.5 kg; IP weighted 3.4 kg (95% CI: 2.4, 4.5); also adjusting for censoring 3.5 kg (95% CI: 2.5, 4.5).</p>
 <div title="Cautions">
