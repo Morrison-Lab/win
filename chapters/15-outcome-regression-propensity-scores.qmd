@@ -533,19 +533,30 @@ The outcome model on $\pi(L)$ estimates effects **within** levels $s$ of $\pi(L)
 ::: {#alg-ps-standardization}
 ## Standardization over the Propensity Score
 
-For the population average causal effect $\E{Y^{a=1,c=0}} - \E{Y^{a=0,c=0}}$, standardize the fitted conditional means over the distribution of the estimated $\pi(L)$:
-the Chapter 13 procedure with $\pi(L)$ in place of $L$.
-This procedure assumes $\pi(L)$ suffices for adjustment,
-as it does when no one is censored and exchangeability and positivity hold given $L$ (@thm-ps-exchangeability);
-with censoring, replace $\pi(L)$ by a joint score $b(L)$ with $(A, C) \ind L \mid b(L)$, as discussed after @prp-ps-stratum-effect.
+For the population average causal effect $\E{Y^{a=1,c=0}} - \E{Y^{a=0,c=0}}$,
+standardize the fitted conditional means over the distribution of an estimated adjustment score $b(L)$:
+the Chapter 13 procedure with $b(L)$ in place of $L$.
+When no one is censored, $b(L) = \pi(L)$,
+which suffices for adjustment when exchangeability and positivity hold given $L$ (@thm-ps-exchangeability).
+With censoring, $b(L)$ is a joint score with $(A, C) \ind L \mid b(L)$, as discussed after @prp-ps-stratum-effect,
+such as the vector of joint probabilities $\Pr[A = a, C = c \mid L]$ over all $(a, c)$.
+This joint score suffices when, for each $a \in \{0, 1\}$, $Y^{a,c=0} \ind (A, C) \mid L$
+and $\Pr[A = a, C = 0 \mid L] > 0$:
+because $(A, C) \ind L \mid b(L)$, these conditions carry over from $L$ to $b(L)$,
+by the argument @thm-ps-exchangeability gives for $A$ alone.
+In either case, consistency must hold,
+and the treatment, censoring (if any), and outcome models must be correctly specified.
 
-1. Estimate the propensity score $\hat\pi(L_i)$ for each individual $i = 1, \ldots, n$.
-2. Fit an outcome model for $\E{Y \mid A, C = 0, \pi(L)}$ once, among the uncensored, with $\hat\pi(L)$ as the covariate;
-   write $\hat m(a, s)$ for its fitted value at $A = a$ and propensity score $s$.
-3. For each $a \in \{0, 1\}$, predict each individual's outcome at $A = a$ and their own $\hat\pi(L_i)$, and average the predictions:
+1. Estimate the score $\hat b(L_i)$ for each individual $i = 1, \ldots, n$, censored or not.
+   Without censoring, $\hat b(L_i) = \hat\pi(L_i)$.
+   With censoring, combine a treatment model and a censoring model,
+   $\est{\Pr}[A = a, C = c \mid L] = \est{\Pr}[A = a \mid L] \, \est{\Pr}[C = c \mid L, A = a]$ for each $(a, c)$.
+2. Fit an outcome model for $\E{Y \mid A, C = 0, b(L)}$ once, among the uncensored, with $\hat b(L)$ as the covariate(s);
+   write $\hat m(a, s)$ for its fitted value at $A = a$ and score value $s$.
+3. For each $a \in \{0, 1\}$, predict each individual's outcome at $A = a$ and their own $\hat b(L_i)$, and average the predictions over all $n$ individuals:
 
    $$
-   \hE{Y^{a,c=0}} = \frac{1}{n} \sumin \hat m(a, \hat\pi(L_i)).
+   \hE{Y^{a,c=0}} = \frac{1}{n} \sumin \hat m(a, \hat b(L_i)).
    $$
 
 4. Estimate the average causal effect by the difference $\hE{Y^{a=1,c=0}} - \hE{Y^{a=0,c=0}}$.
@@ -582,6 +593,9 @@ or approximately the same when matches need only fall within a caliper.
   with the approximation improving as the sample grows.
 - Caliper matching adds a second approximation:
   some bias may remain, and it typically shrinks as the caliper narrows.
+- With censoring, outcomes are observed only for the uncensored members of the matched population.
+  One way to account for that is to weight the uncensored by the inverse of $\Pr[C = 0 \mid L, A]$ (Chapter 12),
+  which needs a correct censoring model, $Y^{a,c=0} \ind C \mid A, L$, and $\Pr[C = 0 \mid L, A] > 0$.
 
 ::: {.notes}
 The matched population can be given the $\pi(L)$ distribution of the treated, of the untreated, or any other distribution [@hernan2020causal, p. 204].
@@ -826,13 +840,16 @@ Chapter 16 presents a method that does not require exchangeability of treatment.
 | Method | Model used | Additional modeling requirement |
 |--------|------------|----------|
 | **Outcome regression** (faux MSM) | $\E{Y \mid A, C = 0, L}$ | Correct outcome model (nuisance parameters $\beta_0, \beta_3$; @def-nuisance-parameter) |
-| **G-estimation** (SNM) | $\Pr[A = 1 \mid L]$ | Correct treatment model and correct structural nested model |
-| **Propensity stratification / outcome regression on $\pi(L)$** | $\pi(L)$ and $\E{Y \mid A, C = 0, \pi(L)}$ | Correct propensity model and correct $\pi(L)$-$Y$ relation |
+| **G-estimation** (SNM) | $\Pr[A = 1 \mid L]$; with censoring, also $\Pr[C = 0 \mid L, A]$ for the censoring weights | Correct treatment model and correct structural nested model; with censoring, also a correct censoring model |
+| **Propensity stratification / outcome regression on $\pi(L)$** | $\pi(L)$ and $\E{Y \mid A, C = 0, \pi(L)}$; with censoring, the joint score $b(L)$ in place of $\pi(L)$ | Correct propensity model and correct score-$Y$ relation; with censoring, also a correct censoring model |
 | **Propensity standardization** | as above | as above; targets the population effect |
-| **Propensity matching** | $\pi(L)$ | Correct propensity model; estimate refers to the matched population |
+| **Propensity matching** | $\pi(L)$; with censoring, also $\Pr[C = 0 \mid L, A]$ | Correct propensity model; with censoring, also a correct censoring model; estimate refers to the matched population |
 
 Methods of this chapter and Chapter 14, the models they fit, and what each requires beyond the identifying conditions.
 All of these methods also need exchangeability, positivity, and consistency.
+Outcome regression handles censoring by fitting its model among the uncensored;
+the other methods need a model for censoring as well,
+except that g-estimation can skip the censoring weights under the conditions noted in Chapter 14.
 :::
 
 ::: {#exm-nhefs-ch15-estimates}
