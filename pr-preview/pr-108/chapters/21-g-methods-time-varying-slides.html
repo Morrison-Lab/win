@@ -282,7 +282,21 @@ Table&nbsp;1: The sequentially randomized experiment of Table 21.1 <span class="
 </div>
 <aside class="notes">
 <p>Robins (1986, 1987) introduced the g-formula for time-varying treatments, as cited in <span class="citation" data-cites="hernan2020causal">Hernán and Robins (<a href="#/references" role="doc-biblioref" onclick="">2020, 278</a>)</span>. Every factor is conditional on prior treatment and covariate history; this conditioning is unnecessary in the time-fixed case, where treatment and confounders are measured at a single time.</p>
+<div title="Positivity Is Needed to Compute the G-Formula">
+<div class="callout callout-warning callout-titled callout-style-default">
+<div class="callout-body">
+<div class="callout-title">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<p><strong>Positivity Is Needed to Compute the G-Formula</strong></p>
+</div>
+<div class="callout-content">
 <p><strong>Positivity</strong>: the g-formula is computable only if, for every <span class="math inline">\(l_1\)</span> with <span class="math inline">\(f(l_1 \mid a_0) \neq 0\)</span>, some individuals have <span class="math inline">\((A_0 = a_0, A_1 = a_1, L_1 = l_1)\)</span> (the definition of positivity in Technical Point 19.2).</p>
+</div>
+</div>
+</div>
+</div>
 <style type="text/css">
         span.MJX_Assistive_MathML {
           position:absolute!important;
@@ -335,13 +349,29 @@ Table&nbsp;1: The sequentially randomized experiment of Table 21.1 <span class="
 </section>
 <section id="the-g-formula-as-a-simulation" class="slide level2 scrollable">
 <h2>The G-Formula as a Simulation</h2>
-<p>Under sequential exchangeability for <span class="math inline">\(Y\)</span> and <span class="math inline">\(\bar{L}\)</span> jointly, the g-formula simulates the joint distribution of the counterfactuals <span class="math inline">\((Y^{\bar{a}}, \bar{L}^{\bar{a}})\)</span> that would have been observed had everybody followed strategy <span class="math inline">\(\bar{a}\)</span>. On the tree graph (Figures 21.1-21.2), this means building a new tree in which everyone receives <span class="math inline">\(a_0\)</span> and <span class="math inline">\(a_1\)</span> with probability 1, while <span class="math inline">\(\Pr[L_1 = l_1 \mid A_0 = a_0]\)</span> and <span class="math inline">\(\text{E}{\left[Y \mid A_0 = a_0, A_1 = a_1, L_1 = l_1\right]}\)</span> keep their observed values.</p>
+<div id="rem-g-formula-simulation" class="proof remark">
+<p><span class="proof-title"><em>Remark 1</em> (The g-formula simulates the counterfactual joint distribution). </span>Under sequential exchangeability for <span class="math inline">\(Y\)</span> and <span class="math inline">\(\bar{L}\)</span> jointly, the g-formula simulates the joint distribution of the counterfactuals <span class="math inline">\((Y^{\bar{a}}, \bar{L}^{\bar{a}})\)</span> that would have been observed had everybody followed strategy <span class="math inline">\(\bar{a}\)</span>. On the tree graph (Figures 21.1-21.2), this means building a new tree in which everyone receives <span class="math inline">\(a_0\)</span> and <span class="math inline">\(a_1\)</span> with probability 1, while <span class="math inline">\(\Pr[L_1 = l_1 \mid A_0 = a_0]\)</span> and <span class="math inline">\(\text{E}{\left[Y \mid A_0 = a_0, A_1 = a_1, L_1 = l_1\right]}\)</span> keep their observed values.</p>
+</div>
 <aside class="notes">
+<div title="Two Cautions About the G-Formula">
+<div class="callout callout-warning callout-titled callout-style-default">
+<div class="callout-body">
+<div class="callout-title">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<p><strong>Two Cautions About the G-Formula</strong></p>
+</div>
+<div class="callout-content">
 <p>Two cautions <span class="citation" data-cites="hernan2020causal">(<a href="#/references" role="doc-biblioref" onclick="">Hernán and Robins 2020, 279</a>)</span>:</p>
 <ol type="1">
 <li><strong>The value of the g-formula depends on what is in <span class="math inline">\(L\)</span>.</strong> If we wrongly omit <span class="math inline">\(L_1\)</span> (believing it is not a confounder), the g-formula reduces to <span class="math inline">\(\text{E}{\left[Y \mid A_0 = a_0, A_1 = a_1\right]}\)</span>, which has no causal interpretation when <span class="math inline">\(L_1\)</span> affects <span class="math inline">\(A_1\)</span> (Figure 20.8).</li>
 <li><strong>The g-formula can be causal even when its components are not.</strong> Under Figure 20.9, where only static sequential exchangeability holds, the g-formula including <span class="math inline">\(L_1\)</span> still identifies <span class="math inline">\(\text{E}{\left[Y^{\bar{a}}\right]}\)</span>, yet neither <span class="math inline">\(\Pr[L_1 = l_1 \mid A_0 = a_0]\)</span> nor <span class="math inline">\(\text{E}{\left[Y \mid A_0 = a_0, A_1 = a_1, L_1 = l_1\right]}\)</span> equals its counterfactual analogue. In a sequentially randomized trial (Figures 20.1 and 20.2) the components are causal as well: <span class="math inline">\(\Pr[L_1 = l_1 \mid A_0 = a_0] = \Pr[L_1^{a_0} = l_1]\)</span> and <span class="math inline">\(\text{E}{\left[Y \mid A_0 = a_0, A_1 = a_1, L_1 = l_1\right]} = \text{E}{\left[Y^{a_0, a_1} \mid L_1^{a_0} = l_1\right]}\)</span>, so the g-formula is <span class="math inline">\(\sum_{l_1} \text{E}{\left[Y^{a_0, a_1} \mid L_1^{a_0} = l_1\right]} \Pr[L_1^{a_0} = l_1] = \text{E}{\left[Y^{a_0, a_1}\right]}\)</span>.</li>
 </ol>
+</div>
+</div>
+</div>
+</div>
 <style type="text/css">
         span.MJX_Assistive_MathML {
           position:absolute!important;
@@ -356,18 +386,22 @@ Table&nbsp;1: The sequentially randomized experiment of Table 21.1 <span class="
 </section>
 <section id="estimation-the-plug-in-parametric-g-formula" class="slide level2">
 <h2>Estimation: the Plug-In (Parametric) G-Formula</h2>
-<p>With many confounders or time points, the components must be estimated, for example</p>
+<div id="def-plug-in-g-formula" class="theorem definition">
+<p><span class="theorem-title"><strong>Definition 2 (Plug-in and parametric g-formula)</strong></span> With many confounders or time points, the components must be estimated, for example</p>
 <ul>
 <li>a linear regression model for <span class="math inline">\(\text{E}{\left[Y \mid \bar{A} = \bar{a}, \bar{L} = \bar{l}\right]}\)</span>, and</li>
 <li>logistic regression models for the discrete confounders <span class="math inline">\(L_k\)</span>, <span class="math inline">\(k \neq 0\)</span> (the distribution of <span class="math inline">\(L_0\)</span> can be estimated without a model, as in Section 13.3).</li>
 </ul>
 <p>Plugging the estimates into the formula gives the <strong>plug-in g-formula</strong>; when the estimates come from parametric models, the <strong>parametric g-formula</strong>.</p>
+</div>
 <aside class="notes">
-<p><strong>Random strategies</strong>: under sequential exchangeability the g-formula also handles a random strategy <span class="math inline">\(f^{int}\)</span>, such as “at each <span class="math inline">\(k\)</span>, independently treat with probability 0.3” (so <span class="math inline">\(f^{int}(1 \mid \bar{a}_{k-1}, \bar{l}_k) = 0.3\)</span>). The general expression is</p>
+<div id="def-g-formula-random-strategy" class="theorem definition">
+<p><span class="theorem-title"><strong>Definition 3 (The g-formula for a random strategy)</strong></span> <strong>Random strategies</strong>: under sequential exchangeability the g-formula also handles a random strategy <span class="math inline">\(f^{int}\)</span>, such as “at each <span class="math inline">\(k\)</span>, independently treat with probability 0.3” (so <span class="math inline">\(f^{int}(1 \mid \bar{a}_{k-1}, \bar{l}_k) = 0.3\)</span>). The general expression is</p>
 <p><span class="math display">\[\sum_{\bar{a}, \bar{l}} \text{E}{\left[Y \mid \bar{A} = \bar{a}, \bar{L} = \bar{l}\right]}
 \prod_{k=0}^{K} f{\left(l_k \mid \bar{a}_{k-1}, \bar{l}_{k-1}\right)}
 \prod_{k=0}^{K} f^{int}{\left(a_k \mid \bar{a}_{k-1}, \bar{l}_k\right)}.\]</span></p>
 <p>Replacing <span class="math inline">\(f^{int}\)</span> by the observed <span class="math inline">\(f(a_k \mid \bar{a}_{k-1}, \bar{l}_k)\)</span> gives the observed mean of <span class="math inline">\(Y\)</span>. For a deterministic strategy, <span class="math inline">\(f^{int}\)</span> is 1 for the mandated treatment values and 0 otherwise, so the <span class="math inline">\(f^{int}\)</span> factors and the sum over <span class="math inline">\(\bar{a}\)</span> can be dropped.</p>
+</div>
 <style type="text/css">
         span.MJX_Assistive_MathML {
           position:absolute!important;
@@ -395,7 +429,21 @@ Table&nbsp;1: The sequentially randomized experiment of Table 21.1 <span class="
 </div>
 </div>
 <aside class="notes">
+<div title="Software for the Parametric G-Formula">
+<div class="callout callout-tip callout-titled callout-style-default">
+<div class="callout-body">
+<div class="callout-title">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<p><strong>Software for the Parametric G-Formula</strong></p>
+</div>
+<div class="callout-content">
 <p><strong>Software</strong>: the <code>gfoRmula</code> R package (Lin et al.&nbsp;2019) is on CRAN, and a GFORMULA SAS macro is available on GitHub <span class="citation" data-cites="hernan2020causal">(<a href="#/references" role="doc-biblioref" onclick="">Hernán and Robins 2020, 281</a>)</span>.</p>
+</div>
+</div>
+</div>
+</div>
 <style type="text/css">
         span.MJX_Assistive_MathML {
           position:absolute!important;
@@ -417,16 +465,33 @@ Table&nbsp;1: The sequentially randomized experiment of Table 21.1 <span class="
 
 <p>For the time-fixed treatment <span class="math inline">\(A_1\)</span> alone (Chapter 12), the weights are <span class="math inline">\(W^{A_1} = 1/f(A_1 \mid L_1)\)</span> or <span class="math inline">\(SW^{A_1} = f(A_1)/f(A_1 \mid L_1)\)</span>. For a time-varying treatment, the denominator becomes each individual’s probability of the <strong>treatment history</strong> they received, given their treatment and covariate history.</p>
 <div id="def-ipw-tv" class="theorem definition">
-<p><span class="theorem-title"><strong>Definition 2 (IP Weights for Time-Varying Treatments)</strong></span> With <span class="math inline">\(A_{-1} \equiv 0\)</span> by definition, the <strong>nonstabilized</strong> IP weights are</p>
+<p><span class="theorem-title"><strong>Definition 4 (IP Weights for Time-Varying Treatments)</strong></span> With <span class="math inline">\(A_{-1} \equiv 0\)</span> by definition, the <strong>nonstabilized</strong> IP weights are</p>
 <p><span class="math display">\[W^{\bar{A}} = \prod_{k=0}^{K} \frac{1}{f{\left(A_k \mid \bar{A}_{k-1}, \bar{L}_k\right)}},\]</span></p>
 <p>and the <strong>stabilized</strong> IP weights are</p>
 <p><span class="math display">\[SW^{\bar{A}} = \prod_{k=0}^{K} \frac{f{\left(A_k \mid \bar{A}_{k-1}\right)}}{f{\left(A_k \mid \bar{A}_{k-1}, \bar{L}_k\right)}}.\]</span></p>
 <p>For <span class="math inline">\(K = 1\)</span>: <span class="math inline">\(W^{\bar{A}} = \dfrac{1}{f(A_0 \mid L_0)} \times \dfrac{1}{f(A_1 \mid A_0, L_0, L_1)}\)</span>.</p>
 </div>
-<p>Under the identifiability conditions, <span class="math inline">\(\text{E}{\left[Y^{a_0, a_1}\right]}\)</span> equals the mean <span class="math inline">\(\text{E}_{ps}{\left[Y \mid A_0 = a_0, A_1 = a_1\right]}\)</span> in the pseudo-population created by either set of weights.</p>
+<div id="prp-ipw-tv-identification" class="theorem proposition">
+<p><span class="theorem-title"><strong>Proposition 1 (IP weighting identifies the counterfactual mean)</strong></span> Under the identifiability conditions (sequential exchangeability, positivity, and consistency), <span class="math inline">\(\text{E}{\left[Y^{a_0, a_1}\right]}\)</span> equals the mean <span class="math inline">\(\text{E}_{ps}{\left[Y \mid A_0 = a_0, A_1 = a_1\right]}\)</span> in the pseudo-population created by either set of weights in <a href="#/def-ipw-tv" class="quarto-xref">Definition&nbsp;4</a>.</p>
+</div>
 <aside class="notes">
 <p>As in Technical Point 12.2, the pseudo-population mean equals <span class="math inline">\(\text{E}{\left[W^{\bar{A}} Y I(A_0 = a_0, A_1 = a_1)\right]}\)</span> (nonstabilized) or the ratio <span class="math inline">\(\text{E}{\left[SW^{\bar{A}} Y I(\cdot)\right]} / \text{E}{\left[SW^{\bar{A}} I(\cdot)\right]}\)</span> (stabilized), whether or not sequential exchangeability holds <span class="citation" data-cites="hernan2020causal">(<a href="#/references" role="doc-biblioref" onclick="">Hernán and Robins 2020, 282</a>)</span>.</p>
-<p>In the pseudo-population, the probability of treatment at each <span class="math inline">\(k\)</span> is the constant <span class="math inline">\(1/2\)</span> (nonstabilized weights) or depends at most on past treatment (stabilized weights), so sequential <em>unconditional</em> exchangeability holds there, and <span class="math inline">\(\text{E}{\left[Y^{\bar{a}}\right]} - \text{E}{\left[Y^{\bar{a}'}\right]} = \text{E}_{ps}{\left[Y \mid \bar{A} = \bar{a}\right]} - \text{E}_{ps}{\left[Y \mid \bar{A} = \bar{a}'\right]}\)</span>. In a true sequentially randomized trial the treatment probabilities are known by design, so nonstabilized-weight estimates are unbiased; in observational studies they must be estimated, for example by a pooled logistic model for <span class="math inline">\(\Pr[A_k = 1 \mid \bar{A}_{k-1}, \bar{L}_k]\)</span> that includes functions of time <span class="math inline">\(k\)</span>. A misspecified denominator model biases the estimate; a misspecified numerator model for <span class="math inline">\(f(A_k \mid \bar{A}_{k-1})\)</span> does not.</p>
+<p>In the pseudo-population, the probability of treatment at each <span class="math inline">\(k\)</span> is the constant <span class="math inline">\(1/2\)</span> (nonstabilized weights) or depends at most on past treatment (stabilized weights), so sequential <em>unconditional</em> exchangeability holds there, and <span class="math inline">\(\text{E}{\left[Y^{\bar{a}}\right]} - \text{E}{\left[Y^{\bar{a}'}\right]} = \text{E}_{ps}{\left[Y \mid \bar{A} = \bar{a}\right]} - \text{E}_{ps}{\left[Y \mid \bar{A} = \bar{a}'\right]}\)</span>. In a true sequentially randomized trial the treatment probabilities are known by design, so nonstabilized-weight estimates are unbiased; in observational studies they must be estimated, for example by a pooled logistic model for <span class="math inline">\(\Pr[A_k = 1 \mid \bar{A}_{k-1}, \bar{L}_k]\)</span> that includes functions of time <span class="math inline">\(k\)</span>.</p>
+<div title="The Denominator Model Must Be Correct">
+<div class="callout callout-warning callout-titled callout-style-default">
+<div class="callout-body">
+<div class="callout-title">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<p><strong>The Denominator Model Must Be Correct</strong></p>
+</div>
+<div class="callout-content">
+<p>A misspecified denominator model biases the estimate; a misspecified numerator model for <span class="math inline">\(f(A_k \mid \bar{A}_{k-1})\)</span> does not.</p>
+</div>
+</div>
+</div>
+</div>
 <style type="text/css">
         span.MJX_Assistive_MathML {
           position:absolute!important;
@@ -458,8 +523,24 @@ Table&nbsp;1: The sequentially randomized experiment of Table 21.1 <span class="
 <p>The same calculation for <span class="math inline">\((1, 1)\)</span> also gives 60, so the IP weighted effect estimate is 0. The whole pseudo-population has <span class="math inline">\(4 \times 32000 = 128000\)</span> individuals, the 32,000 study individuals times the 4 static strategies <span class="citation" data-cites="hernan2020causal">(<a href="#/references" role="doc-biblioref" onclick="">Hernán and Robins 2020, 282–83</a>)</span>.</p>
 </div>
 <aside class="notes">
-<p>The nonparametric g-formula and IP weighted estimates are exactly equal. That equality has nothing to do with causality: it holds even when the identifiability conditions fail and neither estimate has a causal interpretation. Stabilized weights give the same estimate of 0 here (check for yourself) <span class="citation" data-cites="hernan2020causal">(<a href="#/references" role="doc-biblioref" onclick="">Hernán and Robins 2020, 283</a>)</span>.</p>
+<div id="rem-g-formula-ipw-equal" class="proof remark">
+<p><span class="proof-title"><em>Remark 2</em> (Equal nonparametric estimates are not evidence of causality). </span>The nonparametric g-formula and IP weighted estimates are exactly equal. That equality has nothing to do with causality: it holds even when the identifiability conditions fail and neither estimate has a causal interpretation. Stabilized weights give the same estimate of 0 here (check for yourself) <span class="citation" data-cites="hernan2020causal">(<a href="#/references" role="doc-biblioref" onclick="">Hernán and Robins 2020, 283</a>)</span>.</p>
+</div>
+<div title="Estimate the Counterfactual Mean Both Ways">
+<div class="callout callout-tip callout-titled callout-style-default">
+<div class="callout-body">
+<div class="callout-title">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<p><strong>Estimate the Counterfactual Mean Both Ways</strong></p>
+</div>
+<div class="callout-content">
 <p><strong>Comparing the two parametric estimators</strong>: if the parametric g-formula and the parametric IP weighted estimates differ by more than sampling variability (quantified by bootstrapping the difference), then at least one set of models is misspecified, whether or not the identifiability assumptions hold. Similar estimates do not prove the models are correct, because both may be biased in the same direction. The book recommends estimating <span class="math inline">\(\text{E}{\left[Y^{\bar{a}}\right]}\)</span> both ways and, if they differ substantially by a prespecified criterion, revisiting the models <span class="citation" data-cites="hernan2020causal">(<a href="#/references" role="doc-biblioref" onclick="">Hernán and Robins 2020, 284</a>)</span>.</p>
+</div>
+</div>
+</div>
+</div>
 <style type="text/css">
         span.MJX_Assistive_MathML {
           position:absolute!important;
@@ -474,19 +555,86 @@ Table&nbsp;1: The sequentially randomized experiment of Table 21.1 <span class="
 </section>
 <section id="marginal-structural-models" class="slide level2">
 <h2>Marginal Structural Models</h2>
-<p>There are far more strategies <span class="math inline">\(\bar{a}\)</span> than can be estimated one at a time, so we pool information with a <strong>marginal structural mean model</strong>, for example</p>
+<div id="def-msm-tv" class="theorem definition">
+<p><span class="theorem-title"><strong>Definition 5 (Marginal structural mean model for a time-varying treatment)</strong></span> There are far more strategies <span class="math inline">\(\bar{a}\)</span> than can be estimated one at a time, so we pool information with a <strong>marginal structural mean model</strong>, for example</p>
 <p><span class="math display">\[\text{E}{\left[Y^{\bar{a}}\right]} = \beta_0 + \beta_1 \, \mathrm{cum}(\bar{a}), \qquad \mathrm{cum}(\bar{a}) = \sum_{k=0}^{K} a_k.\]</span></p>
 <p>This model is unsaturated: one unknown per strategy on the left, two parameters on the right. The average causal effect is <span class="math inline">\(\text{E}{\left[Y^{\bar{a}}\right]} - \text{E}{\left[Y^{\bar{a} = \bar{0}}\right]} = \beta_1 \times \mathrm{cum}(\bar{a})\)</span>.</p>
+</div>
 </section>
 <section class="slide level2">
 
-<p>Estimate <span class="math inline">\(\beta\)</span> by fitting <span class="math inline">\(\text{E}{\left[Y \mid \bar{A}\right]} = \theta_0 + \theta_1 \, \mathrm{cum}(\bar{A})\)</span> by weighted least squares with weights <span class="math inline">\(SW^{\bar{A}}\)</span> or <span class="math inline">\(W^{\bar{A}}\)</span>. Under the identifiability conditions, <span class="math inline">\(\hat\theta_1\)</span> is consistent for the causal <span class="math inline">\(\beta_1\)</span>, not for the associational <span class="math inline">\(\theta_1\)</span>.</p>
+<div id="prp-msm-tv-wls" class="theorem proposition">
+<p><span class="theorem-title"><strong>Proposition 2 (IP weighted least squares is consistent for the marginal structural model)</strong></span> Suppose the marginal structural model of <a href="#/def-msm-tv" class="quarto-xref">Definition&nbsp;5</a> is correctly specified, and the identifiability conditions (sequential exchangeability, positivity, and consistency) hold. Let <span class="math inline">\(\hat \beta_1\)</span> be the coefficient of <span class="math inline">\(\mathrm{cum}(\bar{A})\)</span> in the fit of the model <span class="math inline">\(\text{E}{\left[Y \mid \bar{A}\right]} = \theta_0 + \theta_1 \, \mathrm{cum}(\bar{A})\)</span> by weighted least squares with weights <span class="math inline">\(SW^{\bar{A}}\)</span> or <span class="math inline">\(W^{\bar{A}}\)</span> of <a href="#/def-ipw-tv" class="quarto-xref">Definition&nbsp;4</a> (known, or estimated from a correctly specified treatment model). Then <span class="math inline">\(\hat \beta_1\)</span> is consistent for the causal <span class="math inline">\(\beta_1\)</span>, which in general differs from the associational <span class="math inline">\(\theta_1\)</span> of the unweighted data.</p>
+</div>
 <aside class="notes">
+<div title="Variance Estimation and Choice of Weights">
+<div class="callout callout-tip callout-titled callout-style-default">
+<div class="callout-body">
+<div class="callout-title">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<p><strong>Variance Estimation and Choice of Weights</strong></p>
+</div>
+<div class="callout-content">
 <p><strong>Variance</strong>: use the nonparametric bootstrap, the analytic variance, or a conservative 95% interval from the robust variance estimator. For a non-saturated model, intervals are typically narrower with <span class="math inline">\(SW^{\bar{A}}\)</span> than with <span class="math inline">\(W^{\bar{A}}\)</span>, so <span class="math inline">\(SW^{\bar{A}}\)</span> is preferred <span class="citation" data-cites="hernan2020causal">(<a href="#/references" role="doc-biblioref" onclick="">Hernán and Robins 2020, 285</a>)</span>.</p>
+</div>
+</div>
+</div>
+</div>
+<div title="Checking the Marginal Structural Model">
+<div class="callout callout-tip callout-titled callout-style-default">
+<div class="callout-body">
+<div class="callout-title">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<p><strong>Checking the Marginal Structural Model</strong></p>
+</div>
+<div class="callout-content">
 <p><strong>Checking the MSM</strong>: fitting</p>
 <p><span class="math display">\[\text{E}{\left[Y \mid \bar{A}\right]} = \theta_0 + \theta_1 \mathrm{cum}(\bar{A}) + \theta_2 \mathrm{cum}_{-5}(\bar{A}) + \theta_3 \mathrm{cum}(\bar{A})^2\]</span></p>
 <p>with the same weights, where <span class="math inline">\(\mathrm{cum}_{-5}\)</span> is cumulative treatment in the final 5 months, gives a 2-degree-of-freedom Wald test of <span class="math inline">\(\theta_2 = \theta_3 = 0\)</span>, a test that the original MSM is correctly specified. In practice one may use other summaries of treatment history and flexible functions such as cubic splines.</p>
-<p><strong>Effect modification</strong>: for a dichotomous <em>baseline</em> variable <span class="math inline">\(V\)</span> in <span class="math inline">\(L_0\)</span>, the model <span class="math inline">\(\text{E}{\left[Y^{\bar{a}} \mid V\right]} = \beta_0 + \beta_1 \mathrm{cum}(\bar{a}) + \beta_2 V + \beta_3 \mathrm{cum}(\bar{a}) V\)</span> is estimated by fitting the associational model <span class="math inline">\(\text{E}{\left[Y \mid \bar{A}, V\right]} = \theta_0 + \theta_1 \mathrm{cum}(\bar{A}) + \theta_2 V + \theta_3 \mathrm{cum}(\bar{A}) V\)</span> by weighted least squares with <span class="math inline">\(W^{\bar{A}}\)</span> or, better, <span class="math inline">\(SW^{\bar{A}}(V) = \prod_{k=0}^{K} f(A_k \mid \bar{A}_{k-1}, V) / f(A_k \mid \bar{A}_{k-1}, \bar{L}_k)\)</span>, so that <span class="math inline">\(\theta_1\)</span> and <span class="math inline">\(\theta_3\)</span> estimate the causal <span class="math inline">\(\beta_1\)</span> and <span class="math inline">\(\beta_3\)</span>. With treatment-confounder feedback, <span class="math inline">\(V\)</span> may include only baseline variables; if <span class="math inline">\(V\)</span> included any <span class="math inline">\(L_k\)</span> with <span class="math inline">\(k &gt; 0\)</span>, the weighted estimates of <span class="math inline">\(\theta_1\)</span> and <span class="math inline">\(\theta_3\)</span> could be non-null even though <span class="math inline">\(\beta_1 = \beta_3 = 0\)</span> under the null <span class="citation" data-cites="hernan2020causal">(<a href="#/references" role="doc-biblioref" onclick="">Hernán and Robins 2020, 285</a>)</span>.</p>
+</div>
+</div>
+</div>
+</div>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside>
+<div id="def-msm-effect-modification-tv" class="theorem definition">
+<p><span class="theorem-title"><strong>Definition 6 (Marginal structural model with a baseline effect modifier)</strong></span> <strong>Effect modification</strong>: for a dichotomous <em>baseline</em> variable <span class="math inline">\(V\)</span> in <span class="math inline">\(L_0\)</span>, a marginal structural model with effect modification by <span class="math inline">\(V\)</span> is <span class="math inline">\(\text{E}{\left[Y^{\bar{a}} \mid V\right]} = \beta_0 + \beta_1 \mathrm{cum}(\bar{a}) + \beta_2 V + \beta_3 \mathrm{cum}(\bar{a}) V\)</span>. Its parameters are estimated by fitting the associational model <span class="math inline">\(\text{E}{\left[Y \mid \bar{A}, V\right]} = \theta_0 + \theta_1 \mathrm{cum}(\bar{A}) + \theta_2 V + \theta_3 \mathrm{cum}(\bar{A}) V\)</span> by weighted least squares with <span class="math inline">\(W^{\bar{A}}\)</span> or, better, <span class="math inline">\(SW^{\bar{A}}(V) = \prod_{k=0}^{K} f(A_k \mid \bar{A}_{k-1}, V) / f(A_k \mid \bar{A}_{k-1}, \bar{L}_k)\)</span>.</p>
+</div>
+</section>
+<section class="slide level2">
+
+<div id="prp-msm-effect-modification-tv-wls" class="theorem proposition">
+<p><span class="theorem-title"><strong>Proposition 3 (IP weighted least squares is consistent for the effect-modification model)</strong></span> Suppose the marginal structural model of <a href="#/def-msm-effect-modification-tv" class="quarto-xref">Definition&nbsp;6</a> is correctly specified, the identifiability conditions (sequential exchangeability, positivity, and consistency) hold, and <span class="math inline">\(V\)</span> is a baseline variable in <span class="math inline">\(L_0\)</span>. Let <span class="math inline">\(\hat \beta_1\)</span> and <span class="math inline">\(\hat \beta_3\)</span> be the coefficients of <span class="math inline">\(\mathrm{cum}(\bar{A})\)</span> and <span class="math inline">\(\mathrm{cum}(\bar{A}) V\)</span> in the fit of the associational model of <a href="#/def-msm-effect-modification-tv" class="quarto-xref">Definition&nbsp;6</a> by weighted least squares with weights <span class="math inline">\(SW^{\bar{A}}(V)\)</span> of <a href="#/def-msm-effect-modification-tv" class="quarto-xref">Definition&nbsp;6</a> or <span class="math inline">\(W^{\bar{A}}\)</span> of <a href="#/def-ipw-tv" class="quarto-xref">Definition&nbsp;4</a> (known, or estimated from a correctly specified model for treatment in the denominator). Then <span class="math inline">\(\hat \beta_1\)</span> and <span class="math inline">\(\hat \beta_3\)</span> are consistent for the causal <span class="math inline">\(\beta_1\)</span> and <span class="math inline">\(\beta_3\)</span>.</p>
+</div>
+<aside class="notes">
+<div title="Only Baseline Variables as Effect Modifiers">
+<div class="callout callout-warning callout-titled callout-style-default">
+<div class="callout-body">
+<div class="callout-title">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<p><strong>Only Baseline Variables as Effect Modifiers</strong></p>
+</div>
+<div class="callout-content">
+<p>With treatment-confounder feedback, <span class="math inline">\(V\)</span> may include only baseline variables; if <span class="math inline">\(V\)</span> included any <span class="math inline">\(L_k\)</span> with <span class="math inline">\(k &gt; 0\)</span>, the weighted-fit coefficients of <span class="math inline">\(\mathrm{cum}(\bar{A})\)</span> and <span class="math inline">\(\mathrm{cum}(\bar{A}) V\)</span> could be non-null even though <span class="math inline">\(\beta_1 = \beta_3 = 0\)</span> under the null <span class="citation" data-cites="hernan2020causal">(<a href="#/references" role="doc-biblioref" onclick="">Hernán and Robins 2020, 285</a>)</span>.</p>
+</div>
+</div>
+</div>
+</div>
 <style type="text/css">
         span.MJX_Assistive_MathML {
           position:absolute!important;
@@ -536,29 +684,49 @@ Table&nbsp;1: The sequentially randomized experiment of Table 21.1 <span class="
 </section>
 <section class="slide level2">
 
-<p>IP weighting needs a correct model for treatment given confounders; the g-formula needs a correct model for the outcome given treatment and confounders. A <strong>doubly robust</strong> estimator is consistent if <em>either</em> model is correct, without our knowing which, giving “two chances to get it right” <span class="citation" data-cites="hernan2020causal">(<a href="#/references" role="doc-biblioref" onclick="">Hernán and Robins 2020, 286</a>)</span>.</p>
+<div id="def-doubly-robust-tv" class="theorem definition">
+<p><span class="theorem-title"><strong>Definition 7 (Doubly robust estimator)</strong></span> IP weighting needs a correct model for treatment given confounders; the g-formula needs a correct model for the outcome given treatment and confounders. A <strong>doubly robust</strong> estimator is consistent if <em>either</em> model is correct, without our knowing which, giving “two chances to get it right” <span class="citation" data-cites="hernan2020causal">(<a href="#/references" role="doc-biblioref" onclick="">Hernán and Robins 2020, 286</a>)</span>.</p>
+</div>
 </section>
 <section id="review-a-doubly-robust-plug-in-estimator-for-a-time-fixed-treatment" class="slide level2 scrollable">
 <h2>Review: a Doubly Robust Plug-In Estimator for a Time-Fixed Treatment</h2>
-<p>For a binary <span class="math inline">\(A\)</span>, binary <span class="math inline">\(Y\)</span>, and many confounders <span class="math inline">\(L\)</span>, estimate <span class="math inline">\(\text{E}{\left[Y^a\right]}\)</span> in three steps:</p>
+<div id="alg-dr-time-fixed" class="theorem algorithm">
+<p><span class="theorem-title"><strong>Algorithm 1 (Doubly robust plug-in estimator for a time-fixed treatment)</strong></span> For a binary <span class="math inline">\(A\)</span>, binary <span class="math inline">\(Y\)</span>, and many confounders <span class="math inline">\(L\)</span>, estimate <span class="math inline">\(\text{E}{\left[Y^a\right]}\)</span> in three steps:</p>
 <ol type="1">
 <li>Fit a treatment model and compute <span class="math inline">\(\hat{f}(a \mid L) = \widehat{\Pr}[A = a \mid L]\)</span>.</li>
 <li>Among individuals with <span class="math inline">\(A = a\)</span>, fit by maximum likelihood an outcome model that includes <span class="math inline">\(\hat{W}^a = 1/\hat{f}(a \mid L)\)</span> as a covariate, such as <span class="math inline">\(b(a, L; \theta) = \text{expit}(\theta_{a,0} + \theta_{a,1} L + \theta_{a,2} \hat{W}^a)\)</span>.</li>
 <li>Average the predictions <span class="math inline">\(b(a, L; \hat\theta)\)</span> over <strong>all</strong> individuals, treated and untreated.</li>
 </ol>
 <p>The difference of the step-3 averages for <span class="math inline">\(a = 1\)</span> and <span class="math inline">\(a = 0\)</span> is a doubly robust estimator of <span class="math inline">\(\text{E}{\left[Y^{a=1}\right]} - \text{E}{\left[Y^{a=0}\right]}\)</span>.</p>
+</div>
 </section>
 <section id="extension-to-time-varying-treatments" class="slide level2 scrollable">
 <h2>Extension to Time-Varying Treatments</h2>
-<p>To estimate <span class="math inline">\(\text{E}{\left[Y^{\bar{a} = \bar{1}}\right]}\)</span> (“always treated”):</p>
+<div id="alg-dr-time-varying" class="theorem algorithm">
+<p><span class="theorem-title"><strong>Algorithm 2 (Doubly robust plug-in estimator for a time-varying treatment)</strong></span> To estimate <span class="math inline">\(\text{E}{\left[Y^{\bar{a} = \bar{1}}\right]}\)</span> (“always treated”):</p>
 <ol type="1">
 <li><strong>Treatment model</strong>: fit a model <span class="math inline">\(\pi_k(\bar{L}_k; \alpha)\)</span> for <span class="math inline">\(\Pr[A_k = 1 \mid \bar{A}_{k-1} = \bar{1}_{k-1}, \bar{L}_k]\)</span>, pooled over persons and times, using only individuals treated through <span class="math inline">\(k - 1\)</span>. For those treated through <span class="math inline">\(m\)</span>, compute the time-varying weights <span class="math inline">\(\hat{W}^{\bar{1}_m} = \prod_{k=0}^{m} 1/\hat{\pi}_k\)</span>.</li>
 <li><strong>Sequential outcome models</strong>: for <span class="math inline">\(m = K, K-1, \ldots, 0\)</span>, among individuals treated through <span class="math inline">\(m\)</span>, fit a model <span class="math inline">\(b_m(\bar{L}_m; \beta_m)\)</span> that includes <span class="math inline">\(\hat{W}^{\bar{1}_m}\)</span> as a covariate. The time-<span class="math inline">\(K\)</span> model has dependent variable <span class="math inline">\(Y\)</span>; the time-<span class="math inline">\(m\)</span> model, <span class="math inline">\(m &lt; K\)</span>, has as dependent variable the predictions <span class="math inline">\(\hat{B}_{m+1} = b_{m+1}(\bar{L}_{m+1}; \hat \beta_{m+1})\)</span> from the time-<span class="math inline">\((m+1)\)</span> model.</li>
 <li><strong>Average</strong>: estimate <span class="math inline">\(\text{E}{\left[Y^{\bar{a} = \bar{1}}\right]}\)</span> by the sample average of <span class="math inline">\(\hat{B}_0\)</span> over all individuals.</li>
 </ol>
 <p>Repeat with <span class="math inline">\(\bar{a} = \bar{0}\)</span> for “never treated”; the difference estimates the average causal effect.</p>
+</div>
 <aside class="notes">
+<div title="Choosing the Sequential Outcome Models">
+<div class="callout callout-tip callout-titled callout-style-default">
+<div class="callout-body">
+<div class="callout-title">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<p><strong>Choosing the Sequential Outcome Models</strong></p>
+</div>
+<div class="callout-content">
 <p>For a binary <span class="math inline">\(Y\)</span>, the time-<span class="math inline">\(m\)</span> model can be logistic, <span class="math inline">\(\text{expit}(\gamma_m X_m + \varsigma_m \hat{W}^{\bar{1}_m})\)</span> with <span class="math inline">\(X_m\)</span> a function of <span class="math inline">\(\bar{L}_m\)</span>: although <span class="math inline">\(\hat{B}_{m+1}\)</span> is not 0 or 1, it lies in <span class="math inline">\([0, 1]\)</span>. For a continuous <span class="math inline">\(Y\)</span>, use a linear model <span class="citation" data-cites="hernan2020causal">(<a href="#/references" role="doc-biblioref" onclick="">Hernán and Robins 2020, 288</a>)</span>.</p>
+</div>
+</div>
+</div>
+</div>
 <p>This estimator is due to Bang and Robins (2005), building on Robins (2000). It is a targeted minimum loss-based estimator (TMLE) in the terminology of van der Laan and coauthors <span class="citation" data-cites="hernan2020causal">(<a href="#/references" role="doc-biblioref" onclick="">Hernán and Robins 2020, 287</a>)</span>.</p>
 <style type="text/css">
         span.MJX_Assistive_MathML {
@@ -574,7 +742,9 @@ Table&nbsp;1: The sequentially randomized experiment of Table 21.1 <span class="
 </section>
 <section class="slide level2">
 
-<p><strong>Robustness.</strong> The estimator is consistent if (i) the outcome models <span class="math inline">\(b_m\)</span> are correct for all <span class="math inline">\(m\)</span>, or (ii) the treatment models <span class="math inline">\(\pi_k\)</span> are correct for all <span class="math inline">\(k\)</span>. In fact it is <strong><span class="math inline">\(K + 2\)</span> robust</strong>: it is also consistent if, for some <span class="math inline">\(m \in \{0, \ldots, K - 1\}\)</span>, the treatment model is correct for times <span class="math inline">\(0\)</span> to <span class="math inline">\(m\)</span> and the outcome model is correct for times <span class="math inline">\(m + 1\)</span> to <span class="math inline">\(K\)</span> <span class="citation" data-cites="hernan2020causal">(<a href="#/references" role="doc-biblioref" onclick="">Hernán and Robins 2020, 288</a>)</span>.</p>
+<div id="prp-dr-k-plus-2-robust" class="theorem proposition">
+<p><span class="theorem-title"><strong>Proposition 4 (The time-varying doubly robust estimator is <span class="math inline">\(K + 2\)</span> robust)</strong></span> Suppose each sequential outcome model <span class="math inline">\(b_m\)</span> of <a href="#/alg-dr-time-varying" class="quarto-xref">alg.&nbsp;2</a> is fit by solving the score equations of a generalized linear model with a canonical link (logistic for a binary <span class="math inline">\(Y\)</span>, linear for a continuous <span class="math inline">\(Y\)</span>). For a binary <span class="math inline">\(Y\)</span> and <span class="math inline">\(m &lt; K\)</span>, the response <span class="math inline">\(\hat{B}_{m+1}\)</span> lies in <span class="math inline">\([0, 1]\)</span> rather than <span class="math inline">\(\{0, 1\}\)</span>, so the logistic fit is a quasi-likelihood fit. Suppose also that each <span class="math inline">\(b_m\)</span> includes the weight <span class="math inline">\(\hat{W}^{\bar{1}_m}\)</span> as a covariate. Suppose further that positivity holds for the strategy <span class="math inline">\(\bar{a} = \bar{1}\)</span>. Then the estimator of <a href="#/alg-dr-time-varying" class="quarto-xref">alg.&nbsp;2</a> is consistent for the g-formula functional of <a href="#/def-g-formula-tv" class="quarto-xref">Definition&nbsp;1</a> at <span class="math inline">\(\bar{a} = \bar{1}\)</span> if (i) the outcome models <span class="math inline">\(b_m\)</span> are correct for all <span class="math inline">\(m\)</span>, or (ii) the treatment models <span class="math inline">\(\pi_k\)</span> are correct for all <span class="math inline">\(k\)</span>. In fact it is <strong><span class="math inline">\(K + 2\)</span> robust</strong>: it is also consistent if, for some <span class="math inline">\(m \in \{0, \ldots, K - 1\}\)</span>, the treatment model is correct for times <span class="math inline">\(0\)</span> to <span class="math inline">\(m\)</span> and the outcome model is correct for times <span class="math inline">\(m + 1\)</span> to <span class="math inline">\(K\)</span> <span class="citation" data-cites="hernan2020causal">(<a href="#/references" role="doc-biblioref" onclick="">Hernán and Robins 2020, 288</a>)</span>. If, in addition, sequential exchangeability and consistency hold, that functional equals <span class="math inline">\(\text{E}{\left[Y^{\bar{a} = \bar{1}}\right]}\)</span>, so the estimator is consistent for the counterfactual mean.</p>
+</div>
 <div title="Technical Point 21.4: A K+2 Robust Augmented IP Weighted Estimator">
 <div class="callout callout-note callout-titled callout-style-default">
 <div class="callout-body">
@@ -595,12 +765,26 @@ Table&nbsp;1: The sequentially randomized experiment of Table 21.1 <span class="
 </div>
 </div>
 <aside class="notes">
+<div title="Fact-Check: A Term in the Book's First Display of the Estimator">
+<div class="callout callout-warning callout-titled callout-style-default">
+<div class="callout-body">
+<div class="callout-title">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<p><strong>Fact-Check: A Term in the Book’s First Display of the Estimator</strong></p>
+</div>
+<div class="callout-content">
 <p><em>Fact-check note</em>: the book’s first display of <span class="math inline">\(\hat{U}_{TR}\)</span> <span class="citation" data-cites="hernan2020causal">(<a href="#/references" role="doc-biblioref" onclick="">Hernán and Robins 2020, 288</a>)</span> writes the <span class="math inline">\(\hat{b}_1\)</span> term as <span class="math inline">\(-\{A_0 A_1/(\hat{\pi}_0 \hat{\pi}_1) - 1\}\hat{b}_1\)</span>, which disagrees with the rearranged form the same Technical Point gives (the one shown here). Expanding the rearranged form term by term gives</p>
 <p><span class="math display">\[\hat{b}_0 + \frac{A_0 A_1}{\hat{\pi}_0 \hat{\pi}_1}{\left(Y - \hat{b}_1\right)} + \frac{A_0}{\hat{\pi}_0}{\left(\hat{b}_1 - \hat{b}_0\right)}
 = \frac{A_0 A_1 Y}{\hat{\pi}_0 \hat{\pi}_1}
 - {\left\{\frac{A_0 A_1}{\hat{\pi}_0 \hat{\pi}_1} - \frac{A_0}{\hat{\pi}_0}\right\}}\hat{b}_1
 - {\left\{\frac{A_0}{\hat{\pi}_0} - 1\right\}}\hat{b}_0,\]</span></p>
 <p>so the “<span class="math inline">\(-1\)</span>” inside the braces on <span class="math inline">\(\hat{b}_1\)</span> should be <span class="math inline">\(-A_0/\hat{\pi}_0\)</span>. The two versions differ by <span class="math inline">\((1 - A_0/\hat{\pi}_0)\,\hat{b}_1\)</span>, which does not average to 0 in general, so only the corrected form supports the three robustness arguments. The book’s third rearrangement (used for the Molina et al.&nbsp;argument) agrees with the corrected form.</p>
+</div>
+</div>
+</div>
+</div>
 <style type="text/css">
         span.MJX_Assistive_MathML {
           position:absolute!important;
@@ -650,7 +834,21 @@ Table&nbsp;1: The sequentially randomized experiment of Table 21.1 <span class="
 </section>
 <section class="slide level2">
 
-<p>A structural nested mean model (SNMM) for a time-varying treatment has <strong>one equation per time point</strong>. For <a href="#/tbl-seq-rand" class="quarto-xref">Table&nbsp;1</a> (<span class="math inline">\(K = 1\)</span>), a saturated additive SNMM is</p>
+<div id="def-snmm-tv" class="theorem definition">
+<p><span class="theorem-title"><strong>Definition 8 (Structural Nested Mean Model)</strong></span> A <strong>structural nested mean model</strong> (SNMM) for a time-varying treatment specifies, for each <span class="math inline">\(k = 0, \ldots, K\)</span>,</p>
+<p><span class="math display">\[\text{E}{\left[Y^{\bar{a}_{k-1}, a_k, \underline{0}_{k+1}} - Y^{\bar{a}_{k-1}, \underline{0}_k}
+\mid \bar{L}_k^{\bar{a}_{k-1}} = \bar{l}_k, \bar{A}_{k-1} = \bar{a}_{k-1}, A_k = a_k\right]}
+= a_k \, \gamma_k{\left(\bar{a}_{k-1}, \bar{l}_k, \beta\right)},\]</span></p>
+<p>where <span class="math inline">\((\bar{a}_{k-1}, a_k, \underline{0}_{k+1})\)</span> follows <span class="math inline">\(\bar{a}_{k-1}\)</span> through <span class="math inline">\(k - 1\)</span>, gives <span class="math inline">\(a_k\)</span> at <span class="math inline">\(k\)</span>, and gives no treatment from <span class="math inline">\(k + 1\)</span> to <span class="math inline">\(K\)</span>; <span class="math inline">\(\gamma_k(\bar{a}_{k-1}, \bar{l}_k, \psi^\dagger)\)</span> is a known function of past treatment, covariate history, and a parameter value <span class="math inline">\(\psi^\dagger\)</span>, with <span class="math inline">\(\gamma_k(\bar{a}_{k-1}, \bar{l}_k, 0) = 0\)</span>; and <span class="math inline">\(\beta\)</span> is the unknown true value of that parameter.</p>
+</div>
+<div id="rem-snmm-last-blip" class="proof remark">
+<p><span class="proof-title"><em>Remark 3</em> (What an SNMM models). </span>An SNMM models the effect on the mean of <span class="math inline">\(Y\)</span> of a <strong>last blip</strong> of treatment <span class="math inline">\(a_k\)</span> at time <span class="math inline">\(k\)</span>, as a function of past treatment and covariate history. Because <span class="math inline">\(\gamma_k(\cdot, 0) = 0\)</span>, the null hypothesis of no effect corresponds to <span class="math inline">\(\beta = 0\)</span>.</p>
+</div>
+</section>
+<section class="slide level2">
+
+<div id="exm-snmm-saturated-two-times" class="theorem example">
+<p><span class="theorem-title"><strong>Example 3 (A saturated SNMM for two time points)</strong></span> An SNMM (<a href="#/def-snmm-tv" class="quarto-xref">Definition&nbsp;8</a>) has <strong>one equation per time point</strong>. For <a href="#/tbl-seq-rand" class="quarto-xref">Table&nbsp;1</a> (<span class="math inline">\(K = 1\)</span>), a saturated additive SNMM is</p>
 <p><span class="math display">\[
 \begin{aligned}
 k = 0: &amp;\quad \text{E}{\left[Y^{a_0, a_1 = 0} - Y^{a_0 = 0, a_1 = 0} \mid A_0 = a_0\right]} = \beta_0 a_0, \\
@@ -659,6 +857,7 @@ k = 1: &amp;\quad \text{E}{\left[Y^{a_0, a_1} - Y^{a_0, a_1 = 0} \mid L_1^{a_0} 
 \end{aligned}
 \]</span></p>
 <p>The first equation is the effect of treating at time 0 and never again; the second, of treating at time 1 and never again. Under sequential exchangeability, <span class="math inline">\(A_0 = a_0\)</span> and <span class="math inline">\(A_1^{a_0} = a_1\)</span> can be dropped from the conditioning events.</p>
+</div>
 <aside class="notes">
 <p>Both equations are saturated: <span class="math inline">\(\beta_0\)</span> covers the single possible history at time 0, and the four <span class="math inline">\(\beta_{1j}\)</span> cover the four histories <span class="math inline">\((A_0, L_1)\)</span> at time 1. The effect of <span class="math inline">\(a_1\)</span> is</p>
 <ul>
@@ -682,14 +881,31 @@ k = 1: &amp;\quad \text{E}{\left[Y^{a_0, a_1} - Y^{a_0, a_1 = 0} \mid L_1^{a_0} 
 </section>
 <section class="slide level2">
 
-<p>As in Chapter 14, g-estimation starts from the additive <strong>rank-preserving</strong> model for each individual <span class="math inline">\(i\)</span>:</p>
+<div id="def-rank-preserving-snmm-tv" class="theorem definition">
+<p><span class="theorem-title"><strong>Definition 9 (Additive rank-preserving model for two time points)</strong></span> As in Chapter 14, g-estimation starts from the additive <strong>rank-preserving</strong> model for each individual <span class="math inline">\(i\)</span>:</p>
 <p><span class="math display">\[
 \begin{aligned}
 Y_i^{a_0, 0} &amp;= Y_i^{0, 0} + \psi_0 a_0, \\
 Y_i^{a_0, a_1} &amp;= Y_i^{a_0, 0} + \psi_{11} a_1 + \psi_{12} a_1 L_{1,i}^{a_0} + \psi_{13} a_1 a_0 + \psi_{14} a_1 a_0 L_{1,i}^{a_0}.
 \end{aligned}
 \]</span></p>
-<p>The second equation is only <em>locally</em> rank-preserving: ranks are preserved among individuals with the same <span class="math inline">\(a_0\)</span> and <span class="math inline">\(l_1\)</span>. Rank preservation is biologically implausible, but under sequential exchangeability for <span class="math inline">\(Y\)</span> the g-estimators of <span class="math inline">\(\psi\)</span> below are consistent for the SNMM parameters <span class="math inline">\(\beta\)</span> even if the rank-preserving model is wrong.</p>
+<p>The second equation is only <em>locally</em> rank-preserving: ranks are preserved among individuals with the same <span class="math inline">\(a_0\)</span> and <span class="math inline">\(l_1\)</span>.</p>
+</div>
+<div title="Rank Preservation Is Implausible but Not Required">
+<div class="callout callout-warning callout-titled callout-style-default">
+<div class="callout-body">
+<div class="callout-title">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<p><strong>Rank Preservation Is Implausible but Not Required</strong></p>
+</div>
+<div class="callout-content">
+<p>Rank preservation is biologically implausible, but it is not needed. G-estimation (the Chapter 14 method, extended here to time-varying treatment) is consistent for the SNMM parameters <span class="math inline">\(\beta\)</span> of <a href="#/def-snmm-tv" class="quarto-xref">Definition&nbsp;8</a> even if the rank-preserving model is wrong, provided the SNMM is correctly specified, sequential exchangeability for <span class="math inline">\(Y\)</span> and consistency hold, and the model for treatment given past treatment and covariates is correctly specified.</p>
+</div>
+</div>
+</div>
+</div>
 <aside class="notes">
 <p>The proof is in Robins (1994). To fit an unsaturated SNMM by g-estimation, positivity is not required <span class="citation" data-cites="hernan2020causal">(<a href="#/references" role="doc-biblioref" onclick="">Hernán and Robins 2020, 292</a>)</span>.</p>
 <style type="text/css">
@@ -706,19 +922,23 @@ Y_i^{a_0, a_1} &amp;= Y_i^{a_0, 0} + \psi_{11} a_1 + \psi_{12} a_1 L_{1,i}^{a_0}
 </section>
 <section class="slide level2">
 
-<p>By consistency (<span class="math inline">\(Y^{A_0, A_1} = Y\)</span> and <span class="math inline">\(L_1^{A_0} = L_1\)</span>), the model can be written in terms of observed data. Replacing <span class="math inline">\(\psi\)</span> by a candidate value <span class="math inline">\(\psi^\dagger\)</span> defines the <strong>candidate counterfactuals</strong></p>
+<div id="def-candidate-counterfactuals-tv" class="theorem definition">
+<p><span class="theorem-title"><strong>Definition 10 (Candidate counterfactuals for two time points)</strong></span> By consistency (<span class="math inline">\(Y^{A_0, A_1} = Y\)</span> and <span class="math inline">\(L_1^{A_0} = L_1\)</span>), the model can be written in terms of observed data. Replacing <span class="math inline">\(\psi\)</span> by a candidate value <span class="math inline">\(\psi^\dagger\)</span> defines the <strong>candidate counterfactuals</strong></p>
 <p><span class="math display">\[
 \begin{aligned}
 H_1(\psi^\dagger) &amp;= Y - {\left(\psi_{11}^\dagger A_1 + \psi_{12}^\dagger A_1 L_1 + \psi_{13}^\dagger A_1 A_0 + \psi_{14}^\dagger A_1 A_0 L_1\right)}, \\
 H_0(\psi^\dagger) &amp;= H_1(\psi^\dagger) - \psi_0^\dagger A_0.
 \end{aligned}
 \]</span></p>
-<p>When <span class="math inline">\(\psi^\dagger = \psi\)</span>, <span class="math inline">\(H_k(\psi^\dagger)\)</span> equals the counterfactual <span class="math inline">\(Y^{\bar{A}_{k-1}, \bar{0}_k}\)</span>: observed treatment through <span class="math inline">\(k - 1\)</span> and no treatment afterwards. Sequential exchangeability then says <span class="math inline">\(H_k(\psi)\)</span> is independent of <span class="math inline">\(A_k\)</span> given the past.</p>
+</div>
+<div id="rem-candidate-counterfactuals-true-psi" class="proof remark">
+<p><span class="proof-title"><em>Remark 4</em> (Candidate counterfactuals at the true parameter). </span>When <span class="math inline">\(\psi^\dagger = \psi\)</span>, <span class="math inline">\(H_k(\psi^\dagger)\)</span> equals the counterfactual <span class="math inline">\(Y^{\bar{A}_{k-1}, \bar{0}_k}\)</span>: observed treatment through <span class="math inline">\(k - 1\)</span> and no treatment afterwards. Sequential exchangeability then says <span class="math inline">\(H_k(\psi)\)</span> is independent of <span class="math inline">\(A_k\)</span> given the past.</p>
+</div>
 </section>
 <section class="slide level2">
 
 <div id="exm-g-estimation-saturated" class="theorem example">
-<p><span class="theorem-title"><strong>Example 3 (G-Estimation in the Sequentially Randomized Experiment (Fine Point 21.3))</strong></span> <strong>Time 1.</strong> Within each stratum of <span class="math inline">\((A_0, L_1)\)</span>, the mean of <span class="math inline">\(H_1(\psi)\)</span> must not depend on <span class="math inline">\(A_1\)</span>. The means of <span class="math inline">\(H_1(\psi)\)</span> by row of <a href="#/tbl-seq-rand" class="quarto-xref">Table&nbsp;1</a> are <span class="math inline">\(84\)</span> and <span class="math inline">\(84 - \psi_{11}\)</span> in stratum <span class="math inline">\((0, 0)\)</span>, <span class="math inline">\(52\)</span> and <span class="math inline">\(52 - \psi_{11} - \psi_{12}\)</span> in <span class="math inline">\((0, 1)\)</span>, <span class="math inline">\(76\)</span> and <span class="math inline">\(76 - \psi_{11} - \psi_{13}\)</span> in <span class="math inline">\((1, 0)\)</span>, and <span class="math inline">\(44\)</span> and <span class="math inline">\(44 - \psi_{11} - \psi_{12} - \psi_{13} - \psi_{14}\)</span> in <span class="math inline">\((1, 1)\)</span> (for <span class="math inline">\(A_1 = 0\)</span> and <span class="math inline">\(A_1 = 1\)</span> respectively). Equating within strata:</p>
+<p><span class="theorem-title"><strong>Example 4 (G-Estimation in the Sequentially Randomized Experiment (Fine Point 21.3))</strong></span> <strong>Time 1.</strong> Within each stratum of <span class="math inline">\((A_0, L_1)\)</span>, the mean of <span class="math inline">\(H_1(\psi)\)</span> must not depend on <span class="math inline">\(A_1\)</span>. The means of <span class="math inline">\(H_1(\psi)\)</span> by row of <a href="#/tbl-seq-rand" class="quarto-xref">Table&nbsp;1</a> are <span class="math inline">\(84\)</span> and <span class="math inline">\(84 - \psi_{11}\)</span> in stratum <span class="math inline">\((0, 0)\)</span>, <span class="math inline">\(52\)</span> and <span class="math inline">\(52 - \psi_{11} - \psi_{12}\)</span> in <span class="math inline">\((0, 1)\)</span>, <span class="math inline">\(76\)</span> and <span class="math inline">\(76 - \psi_{11} - \psi_{13}\)</span> in <span class="math inline">\((1, 0)\)</span>, and <span class="math inline">\(44\)</span> and <span class="math inline">\(44 - \psi_{11} - \psi_{12} - \psi_{13} - \psi_{14}\)</span> in <span class="math inline">\((1, 1)\)</span> (for <span class="math inline">\(A_1 = 0\)</span> and <span class="math inline">\(A_1 = 1\)</span> respectively). Equating within strata:</p>
 <p><span class="math display">\[
 \begin{aligned}
 84 = 84 - \psi_{11} &amp;\implies \psi_{11} = 0, \\
@@ -739,18 +959,17 @@ A_0 = 1: &amp;\quad (76 - \psi_0) \times 0.5 + (44 - \psi_0) \times 0.5 = 60 - \
 </section>
 <section id="general-structural-nested-mean-models" class="slide level2">
 <h2>General Structural Nested Mean Models</h2>
-<div id="def-snmm-tv" class="theorem definition">
-<p><span class="theorem-title"><strong>Definition 3 (Structural Nested Mean Model)</strong></span> For each <span class="math inline">\(k = 0, \ldots, K\)</span>,</p>
-<p><span class="math display">\[\text{E}{\left[Y^{\bar{a}_{k-1}, a_k, \underline{0}_{k+1}} - Y^{\bar{a}_{k-1}, \underline{0}_k}
-\mid \bar{L}_k^{\bar{a}_{k-1}} = \bar{l}_k, \bar{A}_{k-1} = \bar{a}_{k-1}, A_k = a_k\right]}
-= a_k \, \gamma_k{\left(\bar{a}_{k-1}, \bar{l}_k, \beta\right)},\]</span></p>
-<p>where <span class="math inline">\((\bar{a}_{k-1}, a_k, \underline{0}_{k+1})\)</span> follows <span class="math inline">\(\bar{a}_{k-1}\)</span> through <span class="math inline">\(k - 1\)</span>, gives <span class="math inline">\(a_k\)</span> at <span class="math inline">\(k\)</span>, and gives no treatment from <span class="math inline">\(k + 1\)</span> to <span class="math inline">\(K\)</span>; <span class="math inline">\(\gamma_k(\bar{a}_{k-1}, \bar{l}_k, \psi^\dagger)\)</span> is a known function with <span class="math inline">\(\gamma_k(\bar{a}_{k-1}, \bar{l}_k, 0) = 0\)</span>; and <span class="math inline">\(\beta\)</span> is the true value of <span class="math inline">\(\psi^\dagger\)</span>.</p>
-</div>
-<p>An SNMM models the effect on the mean of <span class="math inline">\(Y\)</span> of a <strong>last blip</strong> of treatment <span class="math inline">\(a_k\)</span> at time <span class="math inline">\(k\)</span>, as a function of past treatment and covariate history. Because <span class="math inline">\(\gamma_k(\cdot, 0) = 0\)</span>, the null hypothesis of no effect corresponds to <span class="math inline">\(\beta = 0\)</span>. The candidate counterfactuals generalize to</p>
+<div id="def-candidate-counterfactuals-snmm" class="theorem definition">
+<p><span class="theorem-title"><strong>Definition 11 (Candidate counterfactuals for a general SNMM)</strong></span> The candidate counterfactuals generalize to</p>
 <p><span class="math display">\[H_k(\psi^\dagger) = Y - \sum_{j=k}^{K} A_j \, \gamma_j{\left(\bar{A}_{j-1}, \bar{L}_j, \psi^\dagger\right)}.\]</span></p>
+</div>
 <aside class="notes">
-<p>Even when local rank preservation is false (as it essentially always is when treatment has an effect), a correct SNMM still gives <span class="math inline">\(\text{E}{\left[H_k(\beta) \mid \bar{A}_k, \bar{L}_k\right]} = \text{E}{\left[Y^{\bar{A}_{k-1}, \underline{0}_k} \mid \bar{A}_k, \bar{L}_k\right]}\)</span> and <span class="math inline">\(\text{E}{\left[H_0(\beta)\right]} = \text{E}{\left[Y^{\bar{0}}\right]}\)</span>, so <span class="math inline">\(\text{E}{\left[Y^{\bar{0}}\right]}\)</span> is consistently estimated by the sample average of <span class="math inline">\(H_0(\hat \beta)\)</span> <span class="citation" data-cites="hernan2020causal">(<a href="#/references" role="doc-biblioref" onclick="">Hernán and Robins 2020, 294</a>)</span>.</p>
-<p>Unsaturated examples of the blip function: <span class="math inline">\(\beta_1\)</span> (same effect for all histories and times), <span class="math inline">\(\beta_1 + \beta_2 k\)</span> (effect varies linearly with time), and <span class="math inline">\(\beta_1 + \beta_2 k + \beta_3 a_{k-1} + \beta_4 l_k + \beta_5 l_k a_{k-1}\)</span> (modification by the most recent treatment and covariate).</p>
+<div id="prp-snmm-h-mean" class="theorem proposition">
+<p><span class="theorem-title"><strong>Proposition 5 (Mean of the candidate counterfactuals at the true parameter)</strong></span> Suppose the SNMM of <a href="#/def-snmm-tv" class="quarto-xref">Definition&nbsp;8</a> is correctly specified and consistency holds. Even when local rank preservation is false (as it essentially always is when treatment has an effect), <span class="math inline">\(\text{E}{\left[H_k(\beta) \mid \bar{A}_k, \bar{L}_k\right]} = \text{E}{\left[Y^{\bar{A}_{k-1}, \underline{0}_k} \mid \bar{A}_k, \bar{L}_k\right]}\)</span> and <span class="math inline">\(\text{E}{\left[H_0(\beta)\right]} = \text{E}{\left[Y^{\bar{0}}\right]}\)</span>. Hence, if <span class="math inline">\(\hat \beta\)</span> is consistent for <span class="math inline">\(\beta\)</span>, <span class="math inline">\(\text{E}{\left[Y^{\bar{0}}\right]}\)</span> is consistently estimated by the sample average of <span class="math inline">\(H_0(\hat \beta)\)</span> <span class="citation" data-cites="hernan2020causal">(<a href="#/references" role="doc-biblioref" onclick="">Hernán and Robins 2020, 294</a>)</span>.</p>
+</div>
+<div id="exm-blip-functions" class="theorem example">
+<p><span class="theorem-title"><strong>Example 5 (Unsaturated blip functions)</strong></span> Unsaturated examples of the blip function: <span class="math inline">\(\beta_1\)</span> (same effect for all histories and times), <span class="math inline">\(\beta_1 + \beta_2 k\)</span> (effect varies linearly with time), and <span class="math inline">\(\beta_1 + \beta_2 k + \beta_3 a_{k-1} + \beta_4 l_k + \beta_5 l_k a_{k-1}\)</span> (modification by the most recent treatment and covariate).</p>
+</div>
 <style type="text/css">
         span.MJX_Assistive_MathML {
           position:absolute!important;
@@ -780,20 +999,29 @@ A_0 = 1: &amp;\quad (76 - \psi_0) \times 0.5 + (44 - \psi_0) \times 0.5 = 60 - \
 </section>
 <section id="g-estimation-algorithm-one-parameter" class="slide level2 scrollable">
 <h2>G-Estimation Algorithm (One Parameter)</h2>
-<p>Take <span class="math inline">\(\gamma_k(\bar{a}_{k-1}, \bar{l}_k, \beta) = \beta_1\)</span>, so <span class="math inline">\(H_k(\psi^\dagger) = Y - \sum_{j=k}^{K} A_j \psi^\dagger\)</span>.</p>
+<div id="alg-g-estimation-one-parameter" class="theorem algorithm">
+<p><span class="theorem-title"><strong>Algorithm 3 (G-estimation of a one-parameter SNMM)</strong></span> Take <span class="math inline">\(\gamma_k(\bar{a}_{k-1}, \bar{l}_k, \psi^\dagger) = \psi^\dagger\)</span> (true value <span class="math inline">\(\beta_1\)</span>), so <span class="math inline">\(H_k(\psi^\dagger) = Y - \sum_{j=k}^{K} A_j \psi^\dagger\)</span>.</p>
 <ol type="1">
 <li>For each <span class="math inline">\(\psi^\dagger\)</span> on a grid from <span class="math inline">\(\psi_{low}\)</span> to <span class="math inline">\(\psi_{up}\)</span> (e.g., steps of 0.1), compute <span class="math inline">\(H_k(\psi^\dagger)\)</span> for every person and time.</li>
 <li>Fit the pooled logistic model <span class="math inline">\(\text{logit}\Pr[A_k = 1 \mid H_k(\psi^\dagger), \bar{L}_k, \bar{A}_{k-1}] = \alpha_0 + \alpha_1 H_k(\psi^\dagger) + \alpha_2 W_k\)</span>, where <span class="math inline">\(W_k = w_k(\bar{L}_k, \bar{A}_{k-1})\)</span> and each person contributes <span class="math inline">\(K + 1\)</span> rows.</li>
 <li>The g-estimate <span class="math inline">\(\hat \beta\)</span> is the <span class="math inline">\(\psi^\dagger\)</span> with <span class="math inline">\(\hat{\alpha}_1\)</span> closest to 0; the 95% confidence interval is the set of <span class="math inline">\(\psi^\dagger\)</span> with <span class="math inline">\(P &gt; 0.05\)</span> for <span class="math inline">\(\alpha_1 = 0\)</span>.</li>
 </ol>
+</div>
 </section>
 <section class="slide level2">
 
-<p>Equivalently, <span class="math inline">\(\hat \beta\)</span> is the <span class="math inline">\(\psi^\dagger\)</span> at which the score test of <span class="math inline">\(\alpha_1 = 0\)</span> has <span class="math inline">\(P = 1\)</span>, that is, the solution of</p>
+<div id="rem-g-estimating-equation" class="proof remark">
+<p><span class="proof-title"><em>Remark 5</em> (G-estimation as solving an estimating equation). </span>Equivalently, <span class="math inline">\(\hat \beta\)</span> is the <span class="math inline">\(\psi^\dagger\)</span> at which the score test of <span class="math inline">\(\alpha_1 = 0\)</span> has <span class="math inline">\(P = 1\)</span>, that is, the solution of</p>
 <p><span class="math display">\[\sum_{i=1}^{N} \sum_{k=0}^{K} {\left\{A_{i,k} - \text{expit}{\left(\hat{\alpha}_0 + \hat{\alpha}_2 W_{i,k}\right)}\right\}} H_{i,k}(\psi^\dagger) = 0,\]</span></p>
-<p>with <span class="math inline">\(\hat{\alpha}_0, \hat{\alpha}_2\)</span> from the model fit with <span class="math inline">\(\alpha_1 = 0\)</span>. <span class="math inline">\(\hat \beta\)</span> is consistent if (i) the SNMM is correct, (ii) sequential exchangeability for <span class="math inline">\(Y\)</span> holds, (iii) the treatment model <span class="math inline">\(\text{logit}\Pr[A_k = 1 \mid \bar{L}_k, \bar{A}_{k-1}] = \alpha_0 + \alpha_2 W_k\)</span> is correct, and (iv) <span class="math inline">\(H_k(\psi^\dagger)\)</span> enters the treatment model linearly (Technical Point 14.2).</p>
+<p>with <span class="math inline">\(\hat{\alpha}_0, \hat{\alpha}_2\)</span> from the model fit with <span class="math inline">\(\alpha_1 = 0\)</span>.</p>
+</div>
+<div id="prp-g-estimator-consistent" class="theorem proposition">
+<p><span class="theorem-title"><strong>Proposition 6 (Consistency of the g-estimator)</strong></span> Let <span class="math inline">\(\hat \beta\)</span> be the solution of the estimating equation of <a href="#/rem-g-estimating-equation" class="quarto-xref">Remark&nbsp;5</a> (equivalently, the limit of the grid-search estimate of <a href="#/alg-g-estimation-one-parameter" class="quarto-xref">alg.&nbsp;3</a> as the grid step goes to 0). Then <span class="math inline">\(\hat \beta\)</span> is consistent for the true <span class="math inline">\(\beta_1\)</span> if (i) the one-parameter SNMM of <a href="#/alg-g-estimation-one-parameter" class="quarto-xref">alg.&nbsp;3</a>, <span class="math inline">\(\gamma_k(\bar{a}_{k-1}, \bar{l}_k, \beta) = \beta_1\)</span>, is correct, (ii) sequential exchangeability for <span class="math inline">\(Y\)</span> holds, (iii) consistency holds, <span class="math inline">\(Y^{\bar{A}} = Y\)</span>, (iv) the treatment model <span class="math inline">\(\text{logit}\Pr[A_k = 1 \mid \bar{L}_k, \bar{A}_{k-1}] = \alpha_0 + \alpha_2 W_k\)</span> is correct, and (v) <span class="math inline">\(H_k(\psi^\dagger)\)</span> enters the treatment model linearly (Technical Point 14.2).</p>
+</div>
 <aside class="notes">
-<p><strong>Vector <span class="math inline">\(\beta\)</span></strong>: for the five-parameter blip <span class="math inline">\(\beta_0 + \beta_1 k + \beta_2 a_{k-1} + \beta_3 l_k + \beta_4 l_k a_{k-1}\)</span>, the treatment model needs five terms involving <span class="math inline">\(H_k(\psi^\dagger)\)</span>, e.g. <span class="math inline">\(\alpha_0 + H_k(\psi^\dagger)(\alpha_1 + \alpha_2 k + \alpha_3 A_{k-1} + \alpha_4 L_k + \alpha_5 L_k A_{k-1}) + \alpha_6 W_k\)</span>, and <span class="math inline">\(\hat \beta\)</span> solves the corresponding five-dimensional estimating equation. The choice of these terms affects the width of the confidence interval, not consistency. A grid search is impractical beyond about two dimensions (<span class="math inline">\(20^5\)</span> points for 20 values per component), but for an SNMM linear in <span class="math inline">\(\beta\)</span> the estimating equation has a closed-form solution (Technical Point 21.8, which also gives a <span class="math inline">\(2^{K+1}\)</span> multiply robust version) <span class="citation" data-cites="hernan2020causal">(<a href="#/references" role="doc-biblioref" onclick="">Hernán and Robins 2020, 295–96</a>)</span>.</p>
+<div id="rem-g-estimation-vector-beta" class="proof remark">
+<p><span class="proof-title"><em>Remark 6</em> (G-estimation of a vector parameter). </span><strong>Vector <span class="math inline">\(\beta\)</span></strong>: for the five-parameter blip <span class="math inline">\(\beta_0 + \beta_1 k + \beta_2 a_{k-1} + \beta_3 l_k + \beta_4 l_k a_{k-1}\)</span>, the treatment model needs five terms involving <span class="math inline">\(H_k(\psi^\dagger)\)</span>, e.g. <span class="math inline">\(\alpha_0 + H_k(\psi^\dagger)(\alpha_1 + \alpha_2 k + \alpha_3 A_{k-1} + \alpha_4 L_k + \alpha_5 L_k A_{k-1}) + \alpha_6 W_k\)</span>, and <span class="math inline">\(\hat \beta\)</span> solves the corresponding five-dimensional estimating equation. The choice of these terms affects the width of the confidence interval, not consistency. A grid search is impractical beyond about two dimensions (<span class="math inline">\(20^5\)</span> points for 20 values per component), but for an SNMM linear in <span class="math inline">\(\beta\)</span> the estimating equation has a closed-form solution (Technical Point 21.8, which also gives a <span class="math inline">\(2^{K+1}\)</span> multiply robust version) <span class="citation" data-cites="hernan2020causal">(<a href="#/references" role="doc-biblioref" onclick="">Hernán and Robins 2020, 295–96</a>)</span>.</p>
+</div>
 <style type="text/css">
         span.MJX_Assistive_MathML {
           position:absolute!important;
@@ -808,11 +1036,14 @@ A_0 = 1: &amp;\quad (76 - \psi_0) \times 0.5 + (44 - \psi_0) \times 0.5 = 60 - \
 </section>
 <section id="from-hat-beta-to-counterfactual-means" class="slide level2">
 <h2>From <span class="math inline">\(\hat \beta\)</span> to Counterfactual Means</h2>
+<div id="rem-counterfactual-means-after-g-estimation" class="proof remark">
+<p><span class="proof-title"><em>Remark 7</em> (Counterfactual means after g-estimation). </span>Given <span class="math inline">\(\hat \beta\)</span>, how to estimate a counterfactual mean depends on the strategy and the blip function:</p>
 <ul>
 <li><span class="math inline">\(\text{E}{\left[Y^{\bar{0}}\right]}\)</span>: the sample average of <span class="math inline">\(H_0(\hat \beta)\)</span>.</li>
 <li>If there is no effect modification by past covariates, <span class="math inline">\(\gamma_k(\bar{a}_{k-1}, \bar{l}_k, \beta) = \gamma_k(\bar{a}_{k-1}, \beta)\)</span>, and for a static <span class="math inline">\(\bar{a}\)</span> <span class="math display">\[\hat{\text{E}}{\left[Y^{\bar{a}}\right]} = \hat{\text{E}}{\left[Y^{\bar{0}}\right]} + \sum_{k=0}^{K} a_k \gamma_k(\bar{a}_{k-1}, \hat \beta).\]</span></li>
 <li>If <span class="math inline">\(\gamma_k\)</span> depends on <span class="math inline">\(\bar{l}_k\)</span>, or <span class="math inline">\(g\)</span> is dynamic, simulate <span class="math inline">\(L_k\)</span> from a model for <span class="math inline">\(f(l_k \mid \bar{a}_{k-1}, \bar{l}_{k-1})\)</span> (Technical Point 21.9).</li>
 </ul>
+</div>
 <div title="Technical Point 21.9: Estimating a Counterfactual Mean After g-estimation of a Structural Nested Mean Model">
 <div class="callout callout-note callout-titled callout-style-default">
 <div class="callout-body">
@@ -851,21 +1082,43 @@ A_0 = 1: &amp;\quad (76 - \psi_0) \times 0.5 + (44 - \psi_0) \times 0.5 = 60 - \
 </section>
 <section class="slide level2">
 
-<p>Part II treated censoring <span class="math inline">\(C\)</span> as time-fixed. More realistically, censoring is time-varying: <span class="math inline">\(C_1, C_2, \ldots, C_{K+1}\)</span>, where <span class="math inline">\(C_m = 0\)</span> if the individual is still uncensored at <span class="math inline">\(m\)</span> and 1 otherwise.</p>
+<p>Part II treated censoring <span class="math inline">\(C\)</span> as time-fixed.</p>
+<div id="def-time-varying-censoring-tv" class="theorem definition">
+<p><span class="theorem-title"><strong>Definition 12 (Time-varying censoring)</strong></span> More realistically, censoring is time-varying: <span class="math inline">\(C_1, C_2, \ldots, C_{K+1}\)</span>, where <span class="math inline">\(C_m = 0\)</span> if the individual is still uncensored at <span class="math inline">\(m\)</span> and 1 otherwise.</p>
 <ul>
 <li>Censoring is <strong>monotone</strong>: <span class="math inline">\(C_m = 0\)</span> implies <span class="math inline">\(C_1 = \cdots = C_{m-1} = 0\)</span>.</li>
 <li><span class="math inline">\(C_0 = 0\)</span> for everybody, since otherwise they would not be in the study.</li>
 <li>After censoring, treatments, confounders, and outcomes are unobserved, so analyses are restricted to uncensored person-times.</li>
 </ul>
+</div>
 </section>
 <section class="slide level2">
 
-<p>The g-formula of Section 21.1 becomes</p>
+<div id="def-g-formula-censoring" class="theorem definition">
+<p><span class="theorem-title"><strong>Definition 13 (The g-formula with time-varying censoring)</strong></span> With time-varying censoring, the g-formula of <a href="#/def-g-formula-tv" class="quarto-xref">Definition&nbsp;1</a> for strategy <span class="math inline">\(\bar{a}\)</span> becomes</p>
 <p><span class="math display">\[\sum_{\bar{l}} \text{E}{\left[Y \mid \bar{C} = \bar{0}, \bar{A} = \bar{a}, \bar{L} = \bar{l}\right]}
-\prod_{k=0}^{K} f{\left(l_k \mid c_k = 0, \bar{a}_{k-1}, \bar{l}_{k-1}\right)}.\]</span></p>
-<p>If the identifiability conditions hold with <span class="math inline">\(A_m\)</span> replaced by <span class="math inline">\((A_m, C_{m+1})\)</span> at all <span class="math inline">\(m\)</span>, this is the g-formula for <span class="math inline">\(\text{E}{\left[Y^{\bar{a}, \bar{c} = \bar{0}}\right]}\)</span>: the mean outcome had everyone followed <span class="math inline">\(\bar{a}\)</span> and nobody been lost to follow-up.</p>
+\prod_{k=0}^{K} f{\left(l_k \mid \bar{c}_k = \bar{0}, \bar{a}_{k-1}, \bar{l}_{k-1}\right)}.\]</span></p>
+</div>
+<div id="prp-g-formula-censoring-identifies" class="theorem proposition">
+<p><span class="theorem-title"><strong>Proposition 7 (The censored g-formula identifies the uncensored counterfactual mean)</strong></span> If sequential exchangeability, positivity, and consistency hold with <span class="math inline">\(A_m\)</span> replaced by the joint treatment <span class="math inline">\((A_m, C_{m+1})\)</span> at every <span class="math inline">\(m\)</span>, then the g-formula of <a href="#/def-g-formula-censoring" class="quarto-xref">Definition&nbsp;13</a> equals <span class="math inline">\(\text{E}{\left[Y^{\bar{a}, \bar{c} = \bar{0}}\right]}\)</span>: the mean outcome had everyone followed <span class="math inline">\(\bar{a}\)</span> and nobody been lost to follow-up.</p>
+</div>
 <aside class="notes">
-<p>The superscript <span class="math inline">\(\bar{c} = \bar{0}\)</span> makes explicit the contrast many investigators have in mind when they speak of “the effect of treatment” <span class="citation" data-cites="hernan2020causal">(<a href="#/references" role="doc-biblioref" onclick="">Hernán and Robins 2020, 298</a>)</span>. Conditioning on being uncensored induces selection bias under the null when <span class="math inline">\(C\)</span> is a collider on a path between <span class="math inline">\(A\)</span> and <span class="math inline">\(Y\)</span>, or a descendant of one (Chapter 8).</p>
+<p>The superscript <span class="math inline">\(\bar{c} = \bar{0}\)</span> makes explicit the contrast many investigators have in mind when they speak of “the effect of treatment” <span class="citation" data-cites="hernan2020causal">(<a href="#/references" role="doc-biblioref" onclick="">Hernán and Robins 2020, 298</a>)</span>.</p>
+<div title="Conditioning on Being Uncensored Can Create Selection Bias">
+<div class="callout callout-warning callout-titled callout-style-default">
+<div class="callout-body">
+<div class="callout-title">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<p><strong>Conditioning on Being Uncensored Can Create Selection Bias</strong></p>
+</div>
+<div class="callout-content">
+<p>Conditioning on being uncensored induces selection bias under the null when <span class="math inline">\(C\)</span> is a collider on a path between <span class="math inline">\(A\)</span> and <span class="math inline">\(Y\)</span>, or a descendant of one (Chapter 8).</p>
+</div>
+</div>
+</div>
+</div>
 <style type="text/css">
         span.MJX_Assistive_MathML {
           position:absolute!important;
@@ -880,23 +1133,58 @@ A_0 = 1: &amp;\quad (76 - \psi_0) \times 0.5 + (44 - \psi_0) \times 0.5 = 60 - \
 </section>
 <section id="ip-weighting-with-censoring" class="slide level2">
 <h2>IP Weighting with Censoring</h2>
-<p>Fit, for example, <span class="math inline">\(\text{E}{\left[Y \mid \bar{A}, \bar{C} = \bar{0}\right]} = \theta_0 + \theta_1 \mathrm{cum}(\bar{A})\)</span> in the pseudo-population created by <span class="math inline">\(W^{\bar{A}} \times W^{\bar{C}}\)</span> or <span class="math inline">\(SW^{\bar{A}} \times SW^{\bar{C}}\)</span>, where</p>
+<div id="alg-ipw-censoring-tv" class="theorem algorithm">
+<p><span class="theorem-title"><strong>Algorithm 4 (IP weighting with time-varying censoring)</strong></span> Fit, for example, <span class="math inline">\(\text{E}{\left[Y \mid \bar{A}, \bar{C} = \bar{0}\right]} = \theta_0 + \theta_1 \mathrm{cum}(\bar{A})\)</span> in the pseudo-population created by <span class="math inline">\(W^{\bar{A}} \times W^{\bar{C}}\)</span> or <span class="math inline">\(SW^{\bar{A}} \times SW^{\bar{C}}\)</span>, where</p>
 <p><span class="math display">\[W^{\bar{C}} = \prod_{k=1}^{K+1} \frac{1}{\Pr{\left[C_k = 0 \mid C_{k-1} = 0, \bar{A}_{k-1}, \bar{L}_{k-1}\right]}},
 \qquad
 SW^{\bar{C}} = \prod_{k=1}^{K+1} \frac{\Pr{\left[C_k = 0 \mid C_{k-1} = 0, \bar{A}_{k-1}\right]}}{\Pr{\left[C_k = 0 \mid C_{k-1} = 0, \bar{A}_{k-1}, \bar{L}_{k-1}\right]}}.\]</span></p>
 <p>Numerator and denominator are estimated with separate logistic models.</p>
+</div>
 </section>
 <section class="slide level2">
 
+<div id="rem-censoring-pseudo-population" class="proof remark">
+<p><span class="proof-title"><em>Remark 8</em> (The pseudo-population created by censoring weights). </span></p>
 <ul>
 <li><strong>Nonstabilized</strong> weights replace censored individuals by copies of uncensored ones with the same treatment and covariate history: the pseudo-population has the size of the study population <strong>before</strong> censoring, and censoring is abolished.</li>
 <li><strong>Stabilized</strong> weights keep the size <strong>after</strong> censoring (the same proportion censored at each <span class="math inline">\(k\)</span>), but make censoring occur at random with respect to <span class="math inline">\(\bar{L}_k\)</span>: selection, but no selection bias.</li>
 <li>With nonstabilized weights the pseudo-population has no arrows from <span class="math inline">\(L_k\)</span> or <span class="math inline">\(A_k\)</span> into later <span class="math inline">\(C_m\)</span> (<span class="math inline">\(m &gt; k\)</span>). With stabilized weights it has no arrows from <span class="math inline">\(L_k\)</span> into later <span class="math inline">\(C_m\)</span>, but censoring may still depend on past treatment, because the numerator conditions on <span class="math inline">\(\bar{A}_{k-1}\)</span> (as for <span class="math inline">\(SW^C\)</span> in Chapter 12). Either way, censoring no longer depends on the measured covariate history, so IP weighting can estimate the joint effect of <span class="math inline">\((\bar{A}, \bar{C})\)</span> even when <span class="math inline">\(\bar{L}\)</span> is affected by prior treatment.</li>
 </ul>
-<p><strong>G-estimation with censoring</strong>: first create, with nonstabilized weights <span class="math inline">\(W^{\bar{C}}\)</span>, a pseudo-population in which nobody is censored, then g-estimate in it.</p>
+</div>
+<div id="rem-g-estimation-censoring" class="proof remark">
+<p><span class="proof-title"><em>Remark 9</em> (G-estimation with censoring). </span><strong>G-estimation with censoring</strong>: first create, with nonstabilized weights <span class="math inline">\(W^{\bar{C}}\)</span>, a pseudo-population in which nobody is censored, then g-estimate in it.</p>
+</div>
 <aside class="notes">
-<p>The estimated <span class="math inline">\(SW^{\bar{C}}\)</span> have mean 1 when the censoring model is correctly specified <span class="citation" data-cites="hernan2020causal">(<a href="#/references" role="doc-biblioref" onclick="">Hernán and Robins 2020, 298</a>)</span>.</p>
+<div title="Check the Mean of the Stabilized Weights">
+<div class="callout callout-tip callout-titled callout-style-default">
+<div class="callout-body">
+<div class="callout-title">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<p><strong>Check the Mean of the Stabilized Weights</strong></p>
+</div>
+<div class="callout-content">
+<p>After fitting the censoring models, compute the sample mean of the estimated <span class="math inline">\(SW^{\bar{C}}\)</span>. Correctly specified models give a mean close to 1 <span class="citation" data-cites="hernan2020causal">(<a href="#/references" role="doc-biblioref" onclick="">Hernán and Robins 2020, 298</a>)</span>, so for <span class="math inline">\(SW^{\bar{C}}\)</span> a mean well away from 1 suggests that the numerator or the denominator model is misspecified. The same check applies to <span class="math inline">\(SW^{\bar{A}}\)</span> with a narrower reading: given a correct denominator <span class="math inline">\(f_k\)</span>, taking iterated expectations over <span class="math inline">\(a_k\)</span> at each time <span class="math inline">\(k\)</span> gives <span class="math inline">\(\text{E}{\left[\prod_k n_k / f_k\right]} = 1\)</span> for any proper conditional numerator <span class="math inline">\(n_k\)</span>, so for <span class="math inline">\(SW^{\bar{A}}\)</span> a mean away from 1 points to the denominator (treatment) model, or to extreme weights from near-violations of positivity, not to the numerator.</p>
+</div>
+</div>
+</div>
+</div>
+<div title="Fact-Check: Stabilized Weights Keep Arrows from Past Treatment">
+<div class="callout callout-warning callout-titled callout-style-default">
+<div class="callout-body">
+<div class="callout-title">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<p><strong>Fact-Check: Stabilized Weights Keep Arrows from Past Treatment</strong></p>
+</div>
+<div class="callout-content">
 <p><em>Fact-check note</em>: the book states that “regardless of the type of IP weights used”, the pseudo-population has no arrows from <span class="math inline">\(L_k\)</span> and <span class="math inline">\(A_k\)</span> into future <span class="math inline">\(C_m\)</span> <span class="citation" data-cites="hernan2020causal">(<a href="#/references" role="doc-biblioref" onclick="">Hernán and Robins 2020, 299</a>)</span>. For stabilized weights this holds for <span class="math inline">\(L_k\)</span> only: their numerator <span class="math inline">\(\Pr[C_k = 0 \mid C_{k-1} = 0, \bar{A}_{k-1}]\)</span> keeps the dependence of censoring on past treatment, which is harmless because the analysis conditions on <span class="math inline">\(\bar{A}\)</span>.</p>
+</div>
+</div>
+</div>
+</div>
 <style type="text/css">
         span.MJX_Assistive_MathML {
           position:absolute!important;
@@ -933,36 +1221,44 @@ SW^{\bar{C}} = \prod_{k=1}^{K+1} \frac{\Pr{\left[C_k = 0 \mid C_{k-1} = 0, \bar{
 
 <p>This part of the book relies on sequential exchangeability given the measured <span class="math inline">\(L\)</span> and identification by the g-formula, because few realistic longitudinal analyses use other identifying conditions (such as the front door criterion). But all identifying formulas are mathematically linked to the g-formula based on <strong>all</strong> variables, measured and unmeasured.</p>
 <div id="def-big-g-formula" class="theorem definition">
-<p><span class="theorem-title"><strong>Definition 4 (The Big G-Formula)</strong></span> Given a causal DAG with treatment <span class="math inline">\(A\)</span>, outcome <span class="math inline">\(Y\)</span>, measured covariates <span class="math inline">\(L\)</span>, and unmeasured variables <span class="math inline">\(U\)</span>, let <span class="math inline">\(X = (L, U)\)</span>. Every parent of a treatment node is in <span class="math inline">\(A\)</span> or <span class="math inline">\(X\)</span>, so <span class="math inline">\(X\)</span> ensures sequential exchangeability. The <strong>big g-formula</strong> is the g-formula with <span class="math inline">\(L\)</span> replaced by <span class="math inline">\(X\)</span>. If positivity held, it would identify <span class="math inline">\(\text{E}{\left[Y^g\right]}\)</span> under any strategy <span class="math inline">\(g\)</span> <span class="citation" data-cites="hernan2020causal">(<a href="#/references" role="doc-biblioref" onclick="">Hernán and Robins 2020, 300</a>)</span>.</p>
+<p><span class="theorem-title"><strong>Definition 14 (The Big G-Formula)</strong></span> Given a causal DAG with treatment <span class="math inline">\(A\)</span>, outcome <span class="math inline">\(Y\)</span>, measured covariates <span class="math inline">\(L\)</span>, and unmeasured variables <span class="math inline">\(U\)</span>, let <span class="math inline">\(X = (L, U)\)</span>. Every parent of a treatment node is in <span class="math inline">\(A\)</span> or <span class="math inline">\(X\)</span>, so <span class="math inline">\(X\)</span> ensures sequential exchangeability. The <strong>big g-formula</strong> is the g-formula with <span class="math inline">\(L\)</span> replaced by <span class="math inline">\(X\)</span>. If positivity held, it would identify <span class="math inline">\(\text{E}{\left[Y^g\right]}\)</span> under any strategy <span class="math inline">\(g\)</span> <span class="citation" data-cites="hernan2020causal">(<a href="#/references" role="doc-biblioref" onclick="">Hernán and Robins 2020, 300</a>)</span>.</p>
 </div>
-<p>The big g-formula is a function of the distribution of the <strong>factuals</strong> <span class="math inline">\((A, L, Y, U)\)</span> alone, but it includes unmeasured <span class="math inline">\(U\)</span>, so it cannot be computed directly.</p>
-<aside class="notes">
-<p><em>Factuals</em> are variables of the actual world, in contrast to counterfactuals; some factuals, like <span class="math inline">\(U\)</span>, are unavailable for analysis because they were not measured <span class="citation" data-cites="hernan2020causal">(<a href="#/references" role="doc-biblioref" onclick="">Hernán and Robins 2020, 300</a>)</span>.</p>
-<style type="text/css">
-        span.MJX_Assistive_MathML {
-          position:absolute!important;
-          clip: rect(1px, 1px, 1px, 1px);
-          padding: 1px 0 0 0!important;
-          border: 0!important;
-          height: 1px!important;
-          width: 1px!important;
-          overflow: hidden!important;
-          display:block!important;
-      }</style></aside>
+<div id="def-factuals" class="theorem definition">
+<p><span class="theorem-title"><strong>Definition 15 (Factuals)</strong></span> <em>Factuals</em> are variables of the actual world, in contrast to counterfactuals; some factuals, like <span class="math inline">\(U\)</span>, are unavailable for analysis because they were not measured <span class="citation" data-cites="hernan2020causal">(<a href="#/references" role="doc-biblioref" onclick="">Hernán and Robins 2020, 300</a>)</span>.</p>
+</div>
+<div id="rem-big-g-formula-not-computable" class="proof remark">
+<p><span class="proof-title"><em>Remark 10</em> (The big g-formula cannot be computed directly). </span>The big g-formula is a function of the distribution of the factuals <span class="math inline">\((A, L, Y, U)\)</span> (<a href="#/def-factuals" class="quarto-xref">Definition&nbsp;15</a>) alone, but it includes unmeasured <span class="math inline">\(U\)</span>, so it cannot be computed directly.</p>
+</div>
 </section>
 <section id="reducing-the-big-g-formula-to-observed-data" class="slide level2">
 <h2>Reducing the Big G-Formula to Observed Data</h2>
-<p>The key question: can the big g-formula be rewritten as a functional of the distribution of the observed <span class="math inline">\((A, L, Y)\)</span> only? If so, the new formula reproduces the big g-formula and can be used in data analysis.</p>
+<div id="rem-reducing-big-g-formula" class="proof remark">
+<p><span class="proof-title"><em>Remark 11</em> (When the big g-formula reduces to an observed-data formula). </span>The key question: can the big g-formula be rewritten as a functional of the distribution of the observed <span class="math inline">\((A, L, Y)\)</span> only? If so, the new formula reproduces the big g-formula and can be used in data analysis.</p>
 <ul>
 <li>Under the <strong>front door</strong> criterion (Figure 7.14), the big g-formula for <span class="math inline">\(\text{E}{\left[Y^a\right]}\)</span> reduces to the front door formula (Technical Point 21.11).</li>
 <li>In general, whether such a reduction exists, and what the formula is, using only the d-separations implied by the DAG, was settled by Tian and Pearl (2002), Shpitser and Pearl (2006), and Huang and Valtorta (2006).</li>
 </ul>
+</div>
+<div title="A Reduction Is Causal Only If the DAG Is">
+<div class="callout callout-warning callout-titled callout-style-default">
+<div class="callout-body">
+<div class="callout-title">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<p><strong>A Reduction Is Causal Only If the DAG Is</strong></p>
+</div>
+<div class="callout-content">
 <p>These are purely mathematical questions about distributions obeying d-separation; they acquire a causal meaning only if the DAG is truly causal, which we can never know for certain in an observational study.</p>
+</div>
+</div>
+</div>
+</div>
 </section>
 <section class="slide level2">
 
 <div id="exm-front-door-big-g" class="theorem example">
-<p><span class="theorem-title"><strong>Example 4 (The Front Door Formula from the Big G-Formula (Technical Point 21.11))</strong></span> Under Figure 7.14 (<span class="math inline">\(A \to M \to Y\)</span>, with <span class="math inline">\(U\)</span> a common cause of <span class="math inline">\(A\)</span> and <span class="math inline">\(Y\)</span>), the big g-formula for <span class="math inline">\(\Pr[Y^a = y]\)</span> is</p>
+<p><span class="theorem-title"><strong>Example 6 (The Front Door Formula from the Big G-Formula (Technical Point 21.11))</strong></span> Under Figure 7.14 (<span class="math inline">\(A \to M \to Y\)</span>, with <span class="math inline">\(U\)</span> a common cause of <span class="math inline">\(A\)</span> and <span class="math inline">\(Y\)</span>), the big g-formula for <span class="math inline">\(\Pr[Y^a = y]\)</span> is</p>
 <p><span class="math display">\[\sum_m \sum_u \Pr[Y = y \mid M = m, A = a, U = u] \Pr[M = m \mid A = a, U = u] \Pr[U = u].\]</span></p>
 <p>Step 1: by <span class="math inline">\(A \perp\!\!\!\perp Y \mid M, U\)</span>, drop <span class="math inline">\(A = a\)</span> from the first factor; by <span class="math inline">\(U \perp\!\!\!\perp M \mid A\)</span>, replace <span class="math inline">\(\Pr[M = m \mid A = a, U = u]\)</span> by <span class="math inline">\(\Pr[M = m \mid A = a]\)</span>; and write <span class="math inline">\(\Pr[U = u] = \sum_{a'} \Pr[U = u \mid A = a'] \Pr[A = a']\)</span>:</p>
 <p><span class="math display">\[\sum_m \Pr[M = m \mid A = a] \sum_u \Pr[Y = y \mid M = m, U = u] \sum_{a'} \Pr[U = u \mid A = a'] \Pr[A = a'].\]</span></p>
@@ -973,7 +1269,9 @@ SW^{\bar{C}} = \prod_{k=1}^{K+1} \frac{\Pr{\left[C_k = 0 \mid C_{k-1} = 0, \bar{
 <p>which involves observed variables only. This proof does not require that counterfactuals <span class="math inline">\(Y^m\)</span> exist <span class="citation" data-cites="hernan2020causal">(<a href="#/references" role="doc-biblioref" onclick="">Hernán and Robins 2020, 301</a>)</span>.</p>
 </div>
 <aside class="notes">
-<p>Technical Point 21.11 also gives a coupling argument, and Technical Point 21.12 a proof based on a SWIG property (Shpitser et al.&nbsp;2022): if a fixed treatment node <span class="math inline">\(a_m\)</span> is d-separated from <span class="math inline">\(B^a\)</span> given <span class="math inline">\(C^a\)</span> on the SWIG, then <span class="math inline">\(\Pr[B^a = b \mid C^a = c]\)</span> does not depend on <span class="math inline">\(a_m\)</span> <span class="citation" data-cites="hernan2020causal">(<a href="#/references" role="doc-biblioref" onclick="">Hernán and Robins 2020, 301–2</a>)</span>.</p>
+<div id="rem-front-door-other-proofs" class="proof remark">
+<p><span class="proof-title"><em>Remark 12</em> (Other proofs of the front door formula). </span>Technical Point 21.11 also gives a coupling argument, and Technical Point 21.12 a proof based on a SWIG property (Shpitser et al.&nbsp;2022): if a fixed treatment node <span class="math inline">\(a_m\)</span> is d-separated from <span class="math inline">\(B^a\)</span> given <span class="math inline">\(C^a\)</span> on the SWIG, then <span class="math inline">\(\Pr[B^a = b \mid C^a = c]\)</span> does not depend on <span class="math inline">\(a_m\)</span> <span class="citation" data-cites="hernan2020causal">(<a href="#/references" role="doc-biblioref" onclick="">Hernán and Robins 2020, 301–2</a>)</span>.</p>
+</div>
 <style type="text/css">
         span.MJX_Assistive_MathML {
           position:absolute!important;
