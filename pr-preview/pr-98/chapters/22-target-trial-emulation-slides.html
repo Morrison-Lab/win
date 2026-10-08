@@ -6,9 +6,9 @@
 <script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
 <link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
 <link href="../site_libs/quarto-html/light-border.css" rel="stylesheet">
-<link href="../site_libs/quarto-html/quarto-syntax-highlighting-64a204ab8560d761af7679ceaba22944.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-bf27225e3a48a9273f3daa8f8e829971.css" rel="stylesheet" id="quarto-text-highlighting-styles">
 <link href="../site_libs/quarto-contrib/code-language-labels-1.0.2/code-language-labels.css" rel="stylesheet"><meta charset="utf-8">
-  <meta name="generator" content="quarto-1.10.18">
+  <meta name="generator" content="quarto-1.10.19">
 
   <title>What If? - Lecture Notes – Chapter 22: Target Trial Emulation</title>
   <meta name="apple-mobile-web-app-capable" content="yes">
@@ -163,7 +163,7 @@
 </section>
 <section class="slide level2">
 
-<p>Part I described causal inference from observational data as an attempt to emulate a hypothetical randomized trial, the <strong>target trial</strong>, but only for simple target trials comparing time-fixed treatments. With the g-methods of Chapters 19-21 in hand, we can now specify realistic target trials that compare <strong>sustained treatment strategies</strong>, and emulate them with either randomized or observational data.</p>
+<p>Part I described causal inference from observational data as an attempt to emulate a hypothetical randomized trial, the <strong><a href="../chapters/03-observational-studies.html#def-target-trial">target trial</a></strong>, but only for simple target trials comparing time-fixed treatments. With the g-methods of Chapters 19-21 in hand, we can now specify realistic target trials that compare <strong>sustained treatment strategies</strong>, and emulate them with either randomized or observational data.</p>
 <aside class="notes">
 <p>This chapter is based on <span class="citation" data-cites="hernan2020causal">Hernán and Robins (<a href="#/references" role="doc-biblioref" onclick="">2020, chap. 22</a>, pp.&nbsp;305-322)</span>.</p>
 <p>The chapter does three things:</p>
@@ -192,7 +192,8 @@
 </section>
 <section class="slide level2">
 
-<p>Consider a randomized trial of a virus that can kill:</p>
+<div id="exm-vaccine-antiviral-trial" class="theorem example">
+<p><span class="theorem-title"><strong>Example 1 (A trial of vaccination plus an antiviral)</strong></span> Consider a randomized trial of a virus that can kill:</p>
 <ul>
 <li><span class="math inline">\(Z\)</span>: <strong>assigned</strong> treatment (1: immediate vaccination plus an experimental antiviral if infected; 0: standard of care, with neither);</li>
 <li><span class="math inline">\(A\)</span>: <strong>received</strong> treatment (vaccinated or not);</li>
@@ -200,6 +201,7 @@
 <li><span class="math inline">\(U\)</span>: unmeasured risk factors that influence the decision to get vaccinated.</li>
 </ul>
 <p><span class="math inline">\(Z\)</span> and <span class="math inline">\(A\)</span> can differ: some people assigned to vaccine refuse it, and some assigned to no vaccine get vaccinated outside the study.</p>
+</div>
 <aside class="notes">
 <p>In the book’s Figure 22.1, <span class="math inline">\(Z\)</span> affects <span class="math inline">\(Y\)</span> through two pathways:</p>
 <ul>
@@ -242,7 +244,16 @@
 <div id="def-itt" class="theorem definition">
 <p><span class="theorem-title"><strong>Definition 1 (Intention-to-Treat (ITT) Effect)</strong></span> The <strong>intention-to-treat effect</strong> is the causal effect of randomized <em>assignment</em> <span class="math inline">\(Z\)</span>, for example the causal risk ratio <span class="math display">\[\frac{\Pr[Y^{z=1} = 1]}{\Pr[Y^{z=0} = 1]}.\]</span> It is “the effect of having the intention of treating with <span class="math inline">\(A\)</span>,” not “the effect of treating with <span class="math inline">\(A\)</span>” <span class="citation" data-cites="hernan2020causal">(<a href="#/references" role="doc-biblioref" onclick="">Hernán and Robins 2020, 306</a>)</span>.</p>
 </div>
-<p>Because <span class="math inline">\(Z\)</span> is randomized, there are no backdoor paths from <span class="math inline">\(Z\)</span> to <span class="math inline">\(Y\)</span>, so <span class="math inline">\(Y^z \perp\!\!\!\perp Z\)</span> and the associational risk ratio equals the ITT risk ratio: <span class="math display">\[\frac{\Pr[Y = 1 \mid Z = 1]}{\Pr[Y = 1 \mid Z = 0]} = \frac{\Pr[Y^{z=1} = 1]}{\Pr[Y^{z=0} = 1]}.\]</span> Estimating the ITT effect by this unadjusted association is an <strong>intention-to-treat analysis</strong>.</p>
+<p>Because <span class="math inline">\(Z\)</span> is randomized, there are no backdoor paths from <span class="math inline">\(Z\)</span> to <span class="math inline">\(Y\)</span>, so <span class="math inline">\(Y^z \perp\!\!\!\perp Z\)</span>.</p>
+<div id="prp-itt-association" class="theorem proposition">
+<p><span class="theorem-title"><strong>Proposition 1 (The ITT effect equals the association between assignment and outcome)</strong></span> Suppose <span class="math inline">\(Z\)</span> is randomized, so that <span class="math inline">\(Y^z \perp\!\!\!\perp Z\)</span> for <span class="math inline">\(z = 0, 1\)</span>, that consistency holds for <span class="math inline">\(Z\)</span> (<span class="math inline">\(Y = Y^z\)</span> whenever <span class="math inline">\(Z = z\)</span>), and that <span class="math inline">\(\Pr[Z = z] &gt; 0\)</span> for <span class="math inline">\(z = 0, 1\)</span>. Then, for <span class="math inline">\(z = 0, 1\)</span>, <span class="math display">\[\Pr[Y = 1 \mid Z = z] = \Pr[Y^z = 1].\]</span> Hence, whenever <span class="math inline">\(\Pr[Y = 1 \mid Z = 0] &gt; 0\)</span> (equivalently, <span class="math inline">\(\Pr[Y^{z=0} = 1] &gt; 0\)</span>), the associational risk ratio equals the ITT risk ratio: <span class="math display">\[\frac{\Pr[Y = 1 \mid Z = 1]}{\Pr[Y = 1 \mid Z = 0]} = \frac{\Pr[Y^{z=1} = 1]}{\Pr[Y^{z=0} = 1]}.\]</span></p>
+</div>
+<div class="proof">
+<p><span class="proof-title"><em>Proof</em>. </span>For each <span class="math inline">\(z\)</span>, <span class="math inline">\(\Pr[Y = 1 \mid Z = z] = \Pr[Y^z = 1 \mid Z = z]\)</span> by consistency, and <span class="math inline">\(\Pr[Y^z = 1 \mid Z = z] = \Pr[Y^z = 1]\)</span> by <span class="math inline">\(Y^z \perp\!\!\!\perp Z\)</span>. This proves the per-arm equality. When <span class="math inline">\(\Pr[Y = 1 \mid Z = 0] &gt; 0\)</span>, the per-arm equality makes the two denominators equal and nonzero, so taking the ratio of the <span class="math inline">\(z = 1\)</span> and <span class="math inline">\(z = 0\)</span> expressions gives the risk ratio equality.</p>
+</div>
+<div id="def-itt-analysis" class="theorem definition">
+<p><span class="theorem-title"><strong>Definition 2 (Intention-to-treat analysis)</strong></span> Estimating the ITT effect by the unadjusted associational risk ratio <span class="math inline">\(\Pr[Y = 1 \mid Z = 1] / \Pr[Y = 1 \mid Z = 0]\)</span> (<a href="#/prp-itt-association" class="quarto-xref">Proposition&nbsp;1</a>), or another unadjusted contrast of the randomized groups, is an <strong>intention-to-treat analysis</strong>.</p>
+</div>
 <div title="Fine Point 22.2: Pseudo- and Modified Intention-to-Treat Analyses">
 <div class="callout callout-note callout-titled callout-style-default">
 <div class="callout-body">
@@ -253,7 +264,7 @@
 <p><strong>Fine Point 22.2: Pseudo- and Modified Intention-to-Treat Analyses</strong></p>
 </div>
 <div class="callout-content">
-<p>An ITT analysis is unbiased because it includes <em>all</em> randomized individuals; variations that include only a subset may be biased.</p>
+<p>An ITT analysis (<a href="#/def-itt-analysis" class="quarto-xref">Definition&nbsp;2</a>) is unbiased because it includes <em>all</em> randomized individuals; variations that include only a subset may be biased.</p>
 <ul>
 <li><strong>Pseudo-intention-to-treat analysis</strong>: with loss to follow-up, the analysis is restricted to the uncensored, <span class="math inline">\(\Pr[Y = 1 \mid Z = 1, C = 0] / \Pr[Y = 1 \mid Z = 0, C = 0]\)</span>. Censoring can induce selection bias (Chapter 8) in either direction, so adjustment for selection bias is needed (Section 21.5).</li>
 <li><strong>Modified intention-to-treat analysis</strong>: limited to those who started their assigned strategy at least once (for instance, took one or more pills). It usually needs adjustment for the risk factors of adherence.</li>
@@ -269,10 +280,15 @@
 <section class="slide level2">
 
 <div id="def-pp" class="theorem definition">
-<p><span class="theorem-title"><strong>Definition 2 (Per-Protocol (PP) Effect)</strong></span> The <strong>per-protocol effect</strong> is the causal effect under full adherence, that is, if everyone had followed the protocol’s instructions for the treatment they were assigned: the contrast of <span class="math inline">\(\Pr[Y^{z=1,a=1} = 1]\)</span> versus <span class="math inline">\(\Pr[Y^{z=0,a=0} = 1]\)</span>, or, under the exclusion restriction, of <span class="math inline">\(\Pr[Y^{a=1} = 1]\)</span> versus <span class="math inline">\(\Pr[Y^{a=0} = 1]\)</span>.</p>
+<p><span class="theorem-title"><strong>Definition 3 (Per-Protocol (PP) Effect)</strong></span> The <strong>per-protocol effect</strong> is the causal effect under full adherence, that is, if everyone had followed the protocol’s instructions for the treatment they were assigned: the contrast of <span class="math inline">\(\Pr[Y^{z=1,a=1} = 1]\)</span> versus <span class="math inline">\(\Pr[Y^{z=0,a=0} = 1]\)</span>, or, under the exclusion restriction, of <span class="math inline">\(\Pr[Y^{a=1} = 1]\)</span> versus <span class="math inline">\(\Pr[Y^{a=0} = 1]\)</span>.</p>
 </div>
-<p>Unlike the ITT effect, the PP effect is generally <strong>confounded</strong>. Suppose <span class="math inline">\(U\)</span> is high risk of infection, and high-risk people assigned <span class="math inline">\(Z=0\)</span> seek vaccination outside the study. Then the backdoor path <span class="math inline">\(A \leftarrow U \rightarrow Y\)</span> makes <span class="math inline">\(\Pr[Y = 1 \mid A = 1] / \Pr[Y = 1 \mid A = 0]\)</span> differ from <span class="math inline">\(\Pr[Y^{a=1} = 1] / \Pr[Y^{a=0} = 1]\)</span>.</p>
-<p>Estimating the PP effect requires viewing the trial as an observational study: adjustment under conditional exchangeability given measured covariates, or alternative assumptions such as those of instrumental variable estimation (Chapter 16).</p>
+<p>Unlike the ITT effect, the PP effect is generally <strong>confounded</strong>.</p>
+<div id="exm-pp-confounding" class="theorem example">
+<p><span class="theorem-title"><strong>Example 2 (Confounding of the per-protocol effect)</strong></span> Suppose <span class="math inline">\(U\)</span> is high risk of infection, and high-risk people assigned <span class="math inline">\(Z=0\)</span> seek vaccination outside the study. Then the backdoor path <span class="math inline">\(A \leftarrow U \rightarrow Y\)</span> makes <span class="math inline">\(\Pr[Y = 1 \mid A = 1] / \Pr[Y = 1 \mid A = 0]\)</span> differ from <span class="math inline">\(\Pr[Y^{a=1} = 1] / \Pr[Y^{a=0} = 1]\)</span>.</p>
+</div>
+<div id="rem-pp-observational" class="proof remark">
+<p><span class="proof-title"><em>Remark 1</em> (A trial viewed as an observational study). </span>Estimating the PP effect requires viewing the trial as an observational study: adjustment under conditional exchangeability given measured covariates, or alternative assumptions such as those of instrumental variable estimation (Chapter 16).</p>
+</div>
 <div title="Fine Point 22.3: Naive Per-Protocol Analyses">
 <div class="callout callout-note callout-titled callout-style-default">
 <div class="callout-body">
@@ -285,7 +301,7 @@
 <div class="callout-content">
 <ul>
 <li><strong>As-treated analysis</strong>: compares <span class="math inline">\(A = 1\)</span> with <span class="math inline">\(A = 0\)</span> regardless of <span class="math inline">\(Z\)</span>. It is confounded by unmeasured <span class="math inline">\(U\)</span> (Figures 22.1 and 22.2); if measured factors <span class="math inline">\(L\)</span> block all backdoor paths (Figure 22.3), it must adjust for <span class="math inline">\(L\)</span>.</li>
-<li><strong>Conventional per-protocol (on-treatment) analysis</strong>: an ITT analysis restricted to the “per-protocol population” with <span class="math inline">\(A = Z\)</span>. With selection indicator <span class="math inline">\(S\)</span> (<span class="math inline">\(S = 1\)</span> if <span class="math inline">\(A = Z\)</span>), conditioning on <span class="math inline">\(S = 1\)</span> opens the noncausal path <span class="math inline">\(Z \to A \leftarrow L \leftarrow U \to Y\)</span> (Figure 22.4), so the analysis is biased unless it measures and adjusts for <span class="math inline">\(L\)</span>.</li>
+<li><strong>Conventional per-protocol (on-treatment) analysis</strong>: an ITT analysis (<a href="#/def-itt-analysis" class="quarto-xref">Definition&nbsp;2</a>) restricted to the “per-protocol population” with <span class="math inline">\(A = Z\)</span>. With selection indicator <span class="math inline">\(S\)</span> (<span class="math inline">\(S = 1\)</span> if <span class="math inline">\(A = Z\)</span>), conditioning on <span class="math inline">\(S = 1\)</span> opens the noncausal path <span class="math inline">\(Z \to A \leftarrow L \leftarrow U \to Y\)</span> (Figure 22.4), so the analysis is biased unless it measures and adjusts for <span class="math inline">\(L\)</span>.</li>
 </ul>
 <p>Both are observational analyses of a randomized experiment and require adjustment for confounding and selection bias <span class="citation" data-cites="hernan2020causal">(<a href="#/references" role="doc-biblioref" onclick="">Hernán and Robins 2020</a>, Fine Point 22.3, p.&nbsp;308)</span>.</p>
 </div>
@@ -298,15 +314,31 @@
 </section>
 <section class="slide level2 scrollable">
 
+<div title="The ITT Effect Need Not Preserve the Null or Be Conservative">
+<div class="callout callout-warning callout-titled callout-style-default">
+<div class="callout-body">
+<div class="callout-title">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<p><strong>The ITT Effect Need Not Preserve the Null or Be Conservative</strong></p>
+</div>
+<div class="callout-content">
 <p>The ITT effect is privileged largely because it is unconfounded, not because it is the effect we want. Two common justifications deserve “a grain of salt” <span class="citation" data-cites="hernan2020causal">(<a href="#/references" role="doc-biblioref" onclick="">Hernán and Robins 2020, 307</a>)</span>:</p>
 <ol type="1">
 <li><strong>It preserves the null.</strong> Under the sharp causal null <em>and</em> the exclusion restriction, <span class="math inline">\(\Pr[Y = 1 \mid Z = 1] / \Pr[Y = 1 \mid Z = 0] = \Pr[Y^{a=1} = 1] / \Pr[Y^{a=0} = 1] = 1\)</span>. Without the exclusion restriction (no double-blind placebo control), the effect of <span class="math inline">\(A\)</span> can be null while the effect of <span class="math inline">\(Z\)</span> is not: erase <span class="math inline">\(A \to Y\)</span> in Figure 22.1 and <span class="math inline">\(Z \to Y\)</span> remains.</li>
 <li><strong>It is conservative</strong> (between 1 and the PP risk ratio). This holds only if non-adherence attenuates the effect, which is not guaranteed. Even when it holds, a near-null ITT effect on an adverse outcome can wrongly suggest a harmful treatment is safe, because many assigned to <span class="math inline">\(Z = 1\)</span> stopped treatment before the harm occurred.</li>
 </ol>
+</div>
+</div>
+</div>
+</div>
 <aside class="notes">
-<p>The argument against conservative ITT analyses also applies to <strong>non-inferiority trials</strong>, whose goal is to show that one treatment is not inferior to another.</p>
+<div id="rem-itt-noninferiority-sustained" class="proof remark">
+<p><span class="proof-title"><em>Remark 2</em> (Limits of exclusive reliance on the ITT effect). </span>The argument against conservative ITT analyses (<a href="#/def-itt-analysis" class="quarto-xref">Definition&nbsp;2</a>) also applies to <strong>non-inferiority trials</strong>, whose goal is to show that one treatment is not inferior to another.</p>
 <p>The book’s conclusion: exclusive reliance on ITT estimates is hard to justify for trials with substantial non-adherence and for trials of harms. The PP effect is often the more natural estimand for clinicians, patients, and other decision makers.</p>
 <p>With <strong>sustained</strong> strategies, the probability of non-adherence increases greatly, the ITT effect becomes increasingly uninformative relative to the PP effect, and estimating the PP effect, in a trial or in an observational emulation, generally requires g-methods.</p>
+</div>
 <style type="text/css">
         span.MJX_Assistive_MathML {
           position:absolute!important;
@@ -334,7 +366,7 @@
 <li>if real-world effectiveness were the goal, we should not run double-blind placebo-controlled trials, which remove the effects of assignment awareness that exist in practice;</li>
 <li>people who plan to adhere to their prescribed treatment care more about the PP effect.</li>
 </ul>
-<p><strong>“ITT is always conservative.”</strong> Not if the effect is non-monotonic (Technical Point 5.2) and non-adherence is high. Even for monotonic effects, it can fail in head-to-head trials: in a trial of an expensive drug (<span class="math inline">\(Z = 1\)</span>) versus ibuprofen (<span class="math inline">\(Z = 0\)</span>) for severe pain at 1 year, both drugs are equally effective (PP risk ratio 1), but adherence to ibuprofen is lower because of an easily palliated side effect. The ITT comparison then wrongly suggests ibuprofen is less effective <span class="citation" data-cites="hernan2020causal">(<a href="#/references" role="doc-biblioref" onclick="">Hernán and Robins 2020</a>, Fine Point 22.4, p.&nbsp;309)</span>.</p>
+<p><strong>“ITT is always conservative.”</strong> Not if the effect is non-monotonic (Technical Point 5.2) and non-adherence is high. Even for monotonic effects, it can fail in head-to-head trials: in a trial of an expensive drug (<span class="math inline">\(Z = 1\)</span>) versus ibuprofen (<span class="math inline">\(Z = 0\)</span>) for severe pain at 1 year, both drugs are equally effective (PP risk ratio 1), but adherence to ibuprofen is lower because of an easily palliated side effect. The ITT comparison (<a href="#/def-itt-analysis" class="quarto-xref">Definition&nbsp;2</a>) then wrongly suggests ibuprofen is less effective <span class="citation" data-cites="hernan2020causal">(<a href="#/references" role="doc-biblioref" onclick="">Hernán and Robins 2020</a>, Fine Point 22.4, p.&nbsp;309)</span>.</p>
 </div>
 </div>
 </div>
@@ -347,14 +379,17 @@
 </section>
 <section class="slide level2">
 
-<p>Because the goal is to emulate target trials with real-world data, we consider <strong>pragmatic</strong> trials:</p>
+<div id="def-pragmatic-trial" class="theorem definition">
+<p><span class="theorem-title"><strong>Definition 4 (Pragmatic trial)</strong></span> A <strong>pragmatic trial</strong> is a trial designed to estimate the effect of treatment strategies under conditions close to those of routine clinical care.</p>
+</div>
+<p>Because the goal is to emulate target trials with real-world data, we consider pragmatic trials with these features:</p>
 <ul>
 <li>treatment assignment is not blinded;</li>
 <li>nobody receives a placebo (strategies involve active treatments or no treatment);</li>
 <li>participants are monitored as often and as intensely as regular patients.</li>
 </ul>
 <div id="exm-target-trial-hiv" class="theorem example">
-<p><span class="theorem-title"><strong>Example 1 (A Target Trial of Antiretroviral Therapy)</strong></span> &nbsp;</p>
+<p><span class="theorem-title"><strong>Example 3 (A Target Trial of Antiretroviral Therapy)</strong></span> &nbsp;</p>
 <table class="caption-top">
 <colgroup>
 <col style="width: 42%">
@@ -414,12 +449,43 @@
 </section>
 <section class="slide level2">
 
+<div id="def-itt-pp-sustained" class="theorem definition">
+<p><span class="theorem-title"><strong>Definition 5 (ITT and PP effects for sustained strategies)</strong></span> With the strategies and notation of <a href="#/exm-target-trial-hiv" class="quarto-xref">Example&nbsp;3</a>:</p>
 <p><strong>ITT effect at time <span class="math inline">\(k\)</span></strong>: a contrast of the static strategies “be assigned to <span class="math inline">\(g_1\)</span> (or <span class="math inline">\(g_0\)</span>) at baseline, with no loss to follow-up”: <span class="math display">\[\Pr\mathopen{}\left[D_k^{z=1, \bar{c}_k = \bar{0}} = 1\right]\mathclose{} - \Pr\mathopen{}\left[D_k^{z=0, \bar{c}_k = \bar{0}} = 1\right]\mathclose{}.\]</span></p>
 <p><strong>PP effect at time <span class="math inline">\(k\)</span></strong>: a contrast of “receive strategy <span class="math inline">\(g_1\)</span> (or <span class="math inline">\(g_0\)</span>) continuously between baseline and end of follow-up”: <span class="math display">\[\Pr\mathopen{}\left[D_k^{g_1, \bar{c}_k = \bar{0}} = 1\right]\mathclose{} - \Pr\mathopen{}\left[D_k^{g_0, \bar{c}_k = \bar{0}} = 1\right]\mathclose{}.\]</span></p>
 <p>Both are defined as if nobody had been lost to follow-up through time <span class="math inline">\(k\)</span> (<span class="math inline">\(\bar{c}_k = \bar{0}\)</span>).</p>
+</div>
 <aside class="notes">
-<p>When assignment and initiation always coincide (everyone assigned to <span class="math inline">\(g_1\)</span> starts treatment at time 0 and nobody assigned to <span class="math inline">\(g_0\)</span> does, whatever happens later), the ITT effect is also the effect of <strong>initiation</strong>: <span class="math display">\[\Pr\mathopen{}\left[D_k^{a_0=1, \bar{c}_k = \bar{0}} = 1\right]\mathclose{} - \Pr\mathopen{}\left[D_k^{a_0=0, \bar{c}_k = \bar{0}} = 1\right]\mathclose{}.\]</span></p>
+<div id="rem-itt-effect-of-initiation" class="proof remark">
+<p><span class="proof-title"><em>Remark 3</em> (The ITT effect as an effect of initiation). </span>When assignment and initiation always coincide (everyone assigned to <span class="math inline">\(g_1\)</span> starts treatment at time 0 and nobody assigned to <span class="math inline">\(g_0\)</span> does, whatever happens later), the ITT effect is also the effect of <strong>initiation</strong>: <span class="math display">\[\Pr\mathopen{}\left[D_k^{a_0=1, \bar{c}_k = \bar{0}} = 1\right]\mathclose{} - \Pr\mathopen{}\left[D_k^{a_0=0, \bar{c}_k = \bar{0}} = 1\right]\mathclose{}.\]</span></p>
+</div>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside>
+<aside class="notes">
+<div title="ITT Effects Depend on Deviation Patterns">
+<div class="callout callout-warning callout-titled callout-style-default">
+<div class="callout-body">
+<div class="callout-title">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<p><strong>ITT Effects Depend on Deviation Patterns</strong></p>
+</div>
+<div class="callout-content">
 <p>The ITT effect is agnostic about post-baseline protocol deviations (stopping treatment for no clinical reason, starting it in the <span class="math inline">\(g_0\)</span> arm, non-approved concomitant treatments). Its magnitude can therefore depend heavily on the deviation patterns in each trial: two trials with the same protocol in different settings can have different ITT effects, and neither is biased. This limitation is why the ITT effect should be complemented with the PP effect.</p>
+</div>
+</div>
+</div>
+</div>
 <style type="text/css">
         span.MJX_Assistive_MathML {
           position:absolute!important;
@@ -437,10 +503,40 @@
 </section>
 <section class="slide level2">
 
-<p>Sensible protocols do not mandate treatment no matter what: <span class="math inline">\(g_1\)</span> requires stopping therapy when a contraindication or toxicity arises. So the PP effect generally compares <strong>dynamic</strong> strategies (“do this; if X happens, do this other thing”).</p>
+<div id="rem-pp-dynamic" class="proof remark">
+<p><span class="proof-title"><em>Remark 4</em> (Dynamic strategies). </span>Sensible protocols do not mandate treatment no matter what: <span class="math inline">\(g_1\)</span> requires stopping therapy when a contraindication or toxicity arises. So the PP effect generally compares <a href="../chapters/19-time-varying-treatments.html#def-dynamic-static">dynamic</a> strategies (“do this; if X happens, do this other thing”).</p>
+</div>
+<div title="Stopping for Toxicity Is Adherence">
+<div class="callout callout-warning callout-titled callout-style-default">
+<div class="callout-body">
+<div class="callout-title">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<p><strong>Stopping for Toxicity Is Adherence</strong></p>
+</div>
+<div class="callout-content">
 <p>An individual assigned to <span class="math inline">\(g_1\)</span> who stops therapy because of toxicity is <em>adhering</em> to <span class="math inline">\(g_1\)</span>, not deviating from it, even if the protocol describes <span class="math inline">\(g_1\)</span> loosely as “treat continuously.”</p>
+</div>
+</div>
+</div>
+</div>
 <aside class="notes">
+<div title="Specify the Strategies Fully">
+<div class="callout callout-tip callout-titled callout-style-default">
+<div class="callout-body">
+<div class="callout-title">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<p><strong>Specify the Strategies Fully</strong></p>
+</div>
+<div class="callout-content">
 <p>Ideally the protocol fully specifies the strategies, so that the per-protocol effect is well defined (Hernán and Robins, 2017, as cited in the book).</p>
+</div>
+</div>
+</div>
+</div>
 <p>The PP effect is often the <em>implicit</em> target of inference. When investigators complain that the interventions implemented in a trial were not faithful to the protocol and call that “bias,” they are really interested in the PP effect: non-adherence after baseline cannot bias the effect of baseline assignment.</p>
 <style type="text/css">
         span.MJX_Assistive_MathML {
@@ -459,12 +555,42 @@
 </section>
 <section class="slide level2">
 
-<p>Suppose that during the trial a consensus emerges that <span class="math inline">\(g_0\)</span> is inferior, and physicians start treating <span class="math inline">\(g_0\)</span> participants once their CD4 count (<span class="math inline">\(L_k\)</span>) first drops below 200 cells/µL. Many <span class="math inline">\(g_0\)</span> participants then follow</p>
+<div id="exm-alternative-target-trial" class="theorem example">
+<p><span class="theorem-title"><strong>Example 4 (An alternative target trial)</strong></span> Suppose that during the trial a consensus emerges that <span class="math inline">\(g_0\)</span> is inferior, and physicians start treating <span class="math inline">\(g_0\)</span> participants once their CD4 count (<span class="math inline">\(L_k\)</span>) first drops below 200 cells/µL. Many <span class="math inline">\(g_0\)</span> participants then follow</p>
 <p><span class="math inline">\(g_0'\)</span>: “receive <span class="math inline">\(A_k = 0\)</span> continuously, but switch to <span class="math inline">\(A_k = 1\)</span> after <span class="math inline">\(L_k &lt; 200\)</span>.”</p>
 <p>The contrast of <span class="math inline">\(g_1\)</span> versus <span class="math inline">\(g_0'\)</span> is neither the ITT nor the original PP effect. It is the <strong>PP effect of another target trial</strong>, randomizing <span class="math inline">\(g_1\)</span> versus <span class="math inline">\(g_0'\)</span>, which can be emulated with the actual trial’s data.</p>
+</div>
 <aside class="notes">
-<p>Paradoxically, complete adherence would make this impossible: if everyone followed the original protocol, nobody in the data followed <span class="math inline">\(g_0'\)</span>. A fully adherent trial of CD4 thresholds for initiating therapy is of little use to emulate a trial of continuous treatment versus no treatment, and vice versa. It is precisely non-adherence that lets one trial’s data answer other, perhaps more relevant, causal questions.</p>
+<div id="rem-nonadherence-alternative-trials" class="proof remark">
+<p><span class="proof-title"><em>Remark 5</em> (Non-adherence enables alternative target trials). </span>Paradoxically, complete adherence would make this impossible: if everyone followed the original protocol, nobody in the data followed <span class="math inline">\(g_0'\)</span>. A fully adherent trial of CD4 thresholds for initiating therapy is of little use to emulate a trial of continuous treatment versus no treatment, and vice versa. It is precisely non-adherence that lets one trial’s data answer other, perhaps more relevant, causal questions.</p>
+</div>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside>
+<aside class="notes">
+<div title="Collect Post-Randomization Data">
+<div class="callout callout-tip callout-titled callout-style-default">
+<div class="callout-body">
+<div class="callout-title">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<p><strong>Collect Post-Randomization Data</strong></p>
+</div>
+<div class="callout-content">
 <p>Estimating per-protocol effects of sustained strategies in a trial raises the same issues as in an observational study: trial investigators need to collect post-randomization data on adherence and on time-varying prognostic factors associated with adherence.</p>
+</div>
+</div>
+</div>
+</div>
 <style type="text/css">
         span.MJX_Assistive_MathML {
           position:absolute!important;
@@ -518,17 +644,35 @@
 </section>
 <section class="slide level2">
 
-<p>When a pragmatic trial is not possible, we emulate it with existing observational data; the trial is then the <strong>target trial</strong> of the observational analysis. At a minimum, its protocol specifies:</p>
+<p>When a pragmatic trial (<a href="#/def-pragmatic-trial" class="quarto-xref">Definition&nbsp;4</a>) is not possible, we emulate it with existing observational data; the trial is then the target trial of the observational analysis.</p>
+<div id="def-target-trial-protocol" class="theorem definition">
+<p><span class="theorem-title"><strong>Definition 6 (Target trial protocol)</strong></span> At a minimum, the <strong>protocol</strong> of a target trial specifies:</p>
 <ul>
 <li>eligibility criteria;</li>
 <li>start and end of follow-up;</li>
 <li>treatment strategies;</li>
+<li>assignment procedures;</li>
 <li>outcomes of interest;</li>
 <li>causal contrast;</li>
 <li>data analysis plan.</li>
 </ul>
+</div>
 <aside class="notes">
+<div title="Explore the Data Before Fixing the Protocol">
+<div class="callout callout-tip callout-titled callout-style-default">
+<div class="callout-body">
+<div class="callout-title">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<p><strong>Explore the Data Before Fixing the Protocol</strong></p>
+</div>
+<div class="callout-content">
 <p>Specifying the protocol precisely may require some exploration of the available data. For example, a target trial of individuals with HIV is a reasonable proposal only after confirming that the data include information on HIV diagnosis.</p>
+</div>
+</div>
+</div>
+</div>
 <style type="text/css">
         span.MJX_Assistive_MathML {
           position:absolute!important;
@@ -546,10 +690,14 @@
 </section>
 <section class="slide level2">
 
-<p>The actual assignment is unknown in existing observational data, so a true ITT effect can rarely be emulated. The closest analog compares <strong>initiators</strong> of the strategies, “initiate <span class="math inline">\(A_0 = 1\)</span> (or <span class="math inline">\(A_0 = 0\)</span>) at baseline, with no loss to follow-up”: <span class="math display">\[\Pr\mathopen{}\left[D_k^{a_0=1, \bar{c}_k = \bar{0}} = 1\right]\mathclose{} - \Pr\mathopen{}\left[D_k^{a_0=0, \bar{c}_k = \bar{0}} = 1\right]\mathclose{}.\]</span></p>
+<div id="def-observational-itt-analog" class="theorem definition">
+<p><span class="theorem-title"><strong>Definition 7 (Observational analog of the ITT effect)</strong></span> The actual assignment is unknown in existing observational data, so a true ITT effect can rarely be emulated. The closest analog compares <strong>initiators</strong> of the strategies, “initiate <span class="math inline">\(A_0 = 1\)</span> (or <span class="math inline">\(A_0 = 0\)</span>) at baseline, with no loss to follow-up”: <span class="math display">\[\Pr\mathopen{}\left[D_k^{a_0=1, \bar{c}_k = \bar{0}} = 1\right]\mathclose{} - \Pr\mathopen{}\left[D_k^{a_0=0, \bar{c}_k = \bar{0}} = 1\right]\mathclose{}.\]</span></p>
+</div>
 <aside class="notes">
-<p>This contrast groups people by <strong>initiation</strong> rather than <strong>assignment</strong>. Used in a randomized trial, it would put everyone who took no dose at baseline in the same group, whether assigned to <span class="math inline">\(g_1\)</span> or <span class="math inline">\(g_0\)</span>. It is therefore equivalent to the modified ITT analysis of Fine Point 22.2. If initiation occurs shortly after assignment, it roughly preserves a key ITT feature: the contrast refers to interventions taken soon after baseline.</p>
-<p>With prescription (rather than dispensing) data, a comparison by whether therapy was prescribed at baseline would come a little closer to the target trial’s ITT analysis.</p>
+<div id="rem-initiators-vs-assignment" class="proof remark">
+<p><span class="proof-title"><em>Remark 6</em> (Grouping by initiation instead of assignment). </span>This contrast groups people by <strong>initiation</strong> rather than <strong>assignment</strong>. Used in a randomized trial, it would put everyone who took no dose at baseline in the same group, whether assigned to <span class="math inline">\(g_1\)</span> or <span class="math inline">\(g_0\)</span>. It is therefore equivalent to the modified ITT analysis of Fine Point 22.2. If initiation occurs shortly after assignment, it roughly preserves a key ITT feature: the contrast refers to interventions taken soon after baseline.</p>
+<p>With prescription (rather than dispensing) data, a comparison by whether therapy was prescribed at baseline would come a little closer to the target trial’s ITT analysis (<a href="#/def-itt-analysis" class="quarto-xref">Definition&nbsp;2</a>).</p>
+</div>
 <style type="text/css">
         span.MJX_Assistive_MathML {
           position:absolute!important;
@@ -567,14 +715,32 @@
 </section>
 <section class="slide level2">
 
-<p>The observational analog of the PP effect is defined exactly as in the target trial. Without a pre-specified protocol, every per-protocol effect corresponds to some target trial, so there is no distinction between the “original” PP effect and PP effects of alternative trials.</p>
+<div id="rem-observational-pp-analog" class="proof remark">
+<p><span class="proof-title"><em>Remark 7</em> (Observational analog of the PP effect). </span>The observational analog of the PP effect is defined exactly as in the target trial. Without a pre-specified protocol, every per-protocol effect corresponds to some target trial, so there is no distinction between the “original” PP effect and PP effects of alternative trials.</p>
+</div>
+<div title="Only Strategies Followed in the Data Can Be Emulated">
+<div class="callout callout-warning callout-titled callout-style-default">
+<div class="callout-body">
+<div class="callout-title">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<p><strong>Only Strategies Followed in the Data Can Be Emulated</strong></p>
+</div>
+<div class="callout-content">
 <p>We can only emulate target trials whose strategies are actually followed by at least some individuals in the data, unless we are willing to extrapolate with models such as dose-response structural models.</p>
+</div>
+</div>
+</div>
+</div>
 <aside class="notes">
-<p><strong>Why explicit strategies help</strong>:</p>
+<div id="rem-why-explicit-strategies" class="proof remark">
+<p><span class="proof-title"><em>Remark 8</em> (Why explicit strategies help). </span></p>
 <ul>
 <li>they prevent bias, by exposing analyses whose comparisons cannot be translated into a contrast between hypothetical interventions (Sections 3.5 and 3.6);</li>
 <li>they add clarity. The labels “efficacy” (effect under perfect conditions) and “effectiveness” (effect under realistic conditions) are ambiguous: the ITT effect of a trial is sometimes called effectiveness and sometimes efficacy, and the PP effect of an emulation is sometimes called effectiveness. It is more helpful to accept that all causal effects lie somewhere on an effectiveness continuum, and to define explicitly the strategies that decision makers can choose between.</li>
 </ul>
+</div>
 <style type="text/css">
         span.MJX_Assistive_MathML {
           position:absolute!important;
@@ -595,16 +761,44 @@
 <section class="slide level2 scrollable">
 
 <div id="def-time-zero" class="theorem definition">
-<p><span class="theorem-title"><strong>Definition 3 (Time Zero)</strong></span> <strong>Time zero</strong> (baseline, start of follow-up) is the time at which eligibility criteria must be met (but not later) and after which outcomes begin to be counted (but not earlier). In a randomized trial, it is the time an eligible individual is assigned to a strategy.</p>
+<p><span class="theorem-title"><strong>Definition 8 (Time Zero)</strong></span> <strong>Time zero</strong> (baseline, start of follow-up) is the time at which eligibility criteria must be met (but not later) and after which outcomes begin to be counted (but not earlier). In a randomized trial, it is the time an eligible individual is assigned to a strategy.</p>
 </div>
+<div title="Start Follow-Up as the Target Trial Would">
+<div class="callout callout-tip callout-titled callout-style-default">
+<div class="callout-body">
+<div class="callout-title">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<p><strong>Start Follow-Up as the Target Trial Would</strong></p>
+</div>
+<div class="callout-content">
 <p>Follow-up in the emulation should start when it would have started in the target trial.</p>
+</div>
+</div>
+</div>
+</div>
 <aside class="notes">
+<div title="Misplaced Time Zero">
+<div class="callout callout-warning callout-titled callout-style-default">
+<div class="callout-body">
+<div class="callout-title">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<p><strong>Misplaced Time Zero</strong></p>
+</div>
+<div class="callout-content">
 <p>In our antiretroviral therapy trial, follow-up does not start 2 years before or after assignment:</p>
 <ul>
 <li><strong>before</strong>: the strategies have not been assigned and the eligibility criteria have not been met, or even defined;</li>
 <li><strong>after</strong>: deaths in the first 2 years are excluded and short-term effects are missed. Worse, if treatment has a short-term effect, more susceptible individuals would have died by year 2 in the active arm but not in the other, destroying baseline comparability and opening the door to <strong>selection bias</strong>.</li>
 </ul>
 <p>The same rules apply to observational analyses, for the same reasons. Errors in emulating time zero are nevertheless frequent. For example, the discrepancy between observational and randomized estimates of the effect of postmenopausal hormone therapy on heart disease was partly due to mishandling time zero in the observational studies (Hernán et al., 2008, as cited in <span class="citation" data-cites="hernan2020causal">Hernán and Robins (<a href="#/references" role="doc-biblioref" onclick="">2020, 315</a>)</span>).</p>
+</div>
+</div>
+</div>
+</div>
 <style type="text/css">
         span.MJX_Assistive_MathML {
           position:absolute!important;
@@ -616,30 +810,64 @@
           overflow: hidden!important;
           display:block!important;
       }</style></aside>
+<div title="Two Sources of Time Zero Errors">
+<div class="callout callout-warning callout-titled callout-style-default">
+<div class="callout-body">
+<div class="callout-title">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<p><strong>Two Sources of Time Zero Errors</strong></p>
+</div>
+<div class="callout-content">
 <p>Two problems cause errors in emulating time zero:</p>
 <ol type="1">
 <li>there may be no unique choice of time zero;</li>
 <li>the treatment strategies may not be uniquely assignable at time zero.</li>
 </ol>
+</div>
+</div>
+</div>
+</div>
 </section>
 <section id="problem-1-multiple-eligible-times" class="slide level2">
 <h2>Problem 1: Multiple Eligible Times</h2>
 </section>
 <section class="slide level2">
 
+<div id="exm-multiple-eligible-times" class="theorem example">
+<p><span class="theorem-title"><strong>Example 5 (Eligible once versus eligible many times)</strong></span> &nbsp;</p>
 <ul>
 <li><strong>Eligible once</strong>: follow-up starts at the only eligible time. Example: comparing initiation of therapy when CD4 first drops below 500 cells/µL versus below 350 cells/µL; follow-up starts when CD4 first drops below 500.</li>
 <li><strong>Eligible many times</strong>: e.g., initiation versus no initiation of hormone therapy in postmenopausal women with no chronic disease and no hormone therapy in the previous two years. A woman eligible continuously from age 51 to 65 could start follow-up at 51, 52, 53, …</li>
 </ul>
-<p>Options for time zero: (a) the first eligible time, (b) a random eligible time, or (c) <strong>every</strong> eligible time, which means emulating <strong>sequential target trials</strong>.</p>
+</div>
+<p>Options for time zero: (a) the first eligible time, (b) a random eligible time, or (c) <strong>every</strong> eligible time.</p>
+<div id="def-sequential-target-trials" class="theorem definition">
+<p><span class="theorem-title"><strong>Definition 9 (Sequential target trials)</strong></span> Emulating <strong>sequential target trials</strong> means starting a new emulated trial at every time an individual meets the eligibility criteria, as in option (c).</p>
+</div>
 <aside class="notes">
+<div title="Choosing the Time Unit for Sequential Trials">
+<div class="callout callout-tip callout-titled callout-style-default">
+<div class="callout-body">
+<div class="callout-title">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<p><strong>Choosing the Time Unit for Sequential Trials</strong></p>
+</div>
+<div class="callout-content">
 <p>The number of sequential trials depends on how often treatment and covariates are measured:</p>
 <ul>
 <li>with a fixed data-collection schedule (e.g., every two years in many cohorts), emulate a new trial at each scheduled time;</li>
 <li>with subject-specific schedules (e.g., electronic medical records), choose a time unit (day, week, month) and emulate a new trial at each unit.</li>
 </ul>
 <p>The choice of time unit matters: if treatment and confounders change more than once a week for many individuals, a week or month unit introduces bias that a daily unit could eliminate; without daily data the bias cannot be fully corrected.</p>
-<p>Strategy (c) can be more efficient because it uses more of the data, but individuals contribute to multiple trials, so the variance must be adjusted, e.g., by bootstrapping the entire analysis.</p>
+<p>Option (c) (<a href="#/def-sequential-target-trials" class="quarto-xref">Definition&nbsp;9</a>) can be more efficient because it uses more of the data, but individuals contribute to multiple trials, so the variance must be adjusted, e.g., by bootstrapping the entire analysis.</p>
+</div>
+</div>
+</div>
+</div>
 <style type="text/css">
         span.MJX_Assistive_MathML {
           position:absolute!important;
@@ -657,18 +885,24 @@
 </section>
 <section class="slide level2 scrollable">
 
-<p>Target trial: individuals whose CD4 count just dropped below 500 cells/µL are assigned to start therapy</p>
+<div id="exm-several-compatible-strategies" class="theorem example">
+<p><span class="theorem-title"><strong>Example 6 (Data compatible with several strategies)</strong></span> Target trial: individuals whose CD4 count just dropped below 500 cells/µL are assigned to start therapy</p>
 <ol type="1">
 <li>immediately,</li>
 <li>when CD4 drops below 350, or</li>
 <li>when CD4 drops below 200.</li>
 </ol>
 <p>Those who started at time zero follow strategy 1, but those who did not are compatible with both 2 and 3.</p>
-<p><strong>Cloning + censoring + weighting</strong>: copy each such individual into two <strong>clones</strong>, one per strategy, and censor each clone when its data stop being consistent with its strategy. The likely informative censoring is corrected by IP weighting for time-varying factors.</p>
+</div>
+<div id="alg-cloning-censoring-weighting" class="theorem algorithm">
+<p><span class="theorem-title"><strong>Algorithm 1 (Cloning, censoring, and weighting)</strong></span> Copy each individual whose data are compatible with more than one strategy (as in <a href="#/exm-several-compatible-strategies" class="quarto-xref">Example&nbsp;6</a>) into one <strong>clone</strong> per compatible strategy, and censor each clone when its data stop being consistent with its strategy. The likely informative censoring is corrected by IP weighting for time-varying factors.</p>
+</div>
 <aside class="notes">
-<p>Assigning these individuals to one strategy at random would be statistically inefficient.</p>
+<div id="rem-cloning-double-allocation" class="proof remark">
+<p><span class="proof-title"><em>Remark 9</em> (Why clone instead of randomly assigning). </span>Assigning these individuals to one strategy at random would be statistically inefficient.</p>
 <p>If an individual dies before either clone is censored, the death is counted under both strategies. This double allocation prevents the bias that would arise if events during the waiting period were systematically assigned to one strategy only.</p>
 <p>Because individuals appear multiple times through their clones, the variance must again be adjusted by bootstrapping. Cloning, censoring, and weighting can be combined with sequential trial emulation when eligibility can be met at multiple times. See Robins et al.&nbsp;(2008) and Cain et al.&nbsp;(2010), as cited in the book; for related work, van der Laan and Petersen (2007).</p>
+</div>
 <style type="text/css">
         span.MJX_Assistive_MathML {
           position:absolute!important;
@@ -708,12 +942,17 @@
 </section>
 <section class="slide level2">
 
-<p>The book’s chapter does not use the term, but a classic consequence of misaligned time zero is <strong>immortal time bias</strong>: a period of follow-up during which, by the way groups are defined, the treated cannot experience the outcome.</p>
+<p>The book’s chapter does not use the term, but misaligned time zero classically produces a bias that has its own name.</p>
+<div id="def-immortal-time" class="theorem definition">
+<p><span class="theorem-title"><strong>Definition 10 (Immortal time)</strong></span> <strong>Immortal time</strong> is a period of follow-up during which, by the way groups are defined, the treated cannot experience the outcome. The bias that results from misclassifying such a period as treated person-time, or from excluding it from the analysis, is <strong>immortal time bias</strong>.</p>
+</div>
 <div id="exm-immortal-time" class="theorem example">
-<p><span class="theorem-title"><strong>Example 2 (Immortal Time Bias: Statins and Mortality)</strong></span> Define “statin users” as people who filled a statin prescription at any time during a one-year window, and compare their mortality over that year with “non-users.” Anyone who dies before filling a prescription is automatically a non-user, and users must survive until their first fill. The time from the start of follow-up to the first fill is “immortal” for users, which produces a spurious survival advantage. Starting follow-up when eligibility is met and strategies are assigned, as the target trial requires, avoids this bias (see Hernán, Sauer, Hernández-Díaz, Platt, and Shrier, 2016, listed in the book’s references).</p>
+<p><span class="theorem-title"><strong>Example 7 (Immortal Time Bias: Statins and Mortality)</strong></span> Define “statin users” as people who filled a statin prescription at any time during a one-year window, and compare their mortality over that year with “non-users.” Anyone who dies before filling a prescription is automatically a non-user, and users must survive until their first fill. The time from the start of follow-up to the first fill is “immortal” for users (<a href="#/def-immortal-time" class="quarto-xref">Definition&nbsp;10</a>), which produces a spurious survival advantage. Starting users’ follow-up at their first fill instead, while non-users are followed from the start of the window, still favors users: the early deaths of people who would have filled a prescription stay in the non-user group. Starting follow-up when eligibility is met and strategies are assigned, as the target trial requires, avoids this bias (see Hernán, Sauer, Hernández-Díaz, Platt, and Shrier, 2016, listed in the book’s references).</p>
 </div>
 <aside class="notes">
-<p>A related design point: eligibility criteria such as “no hormone therapy during the previous two years” restrict the target trial to <strong>new users</strong>. Section 20.5 explains why comparing current users with nonusers can be biased unless past treatment is adjusted for or the analysis is restricted to new users.</p>
+<div id="rem-new-users" class="proof remark">
+<p><span class="proof-title"><em>Remark 10</em> (New users). </span>A related design point: eligibility criteria such as “no hormone therapy during the previous two years” restrict the target trial to <strong>new users</strong>. Section 20.5 explains why comparing current users with nonusers can be biased unless past treatment is adjusted for or the analysis is restricted to new users.</p>
+</div>
 <style type="text/css">
         span.MJX_Assistive_MathML {
           position:absolute!important;
@@ -733,12 +972,14 @@
 </section>
 <section class="slide level2">
 
-<p>Explicit target trial emulation brings together the two frameworks of this book, counterfactuals and causal diagrams, and grounds them in actionable causal inference:</p>
+<div id="rem-target-trial-unified" class="proof remark">
+<p><span class="proof-title"><em>Remark 11</em> (Target trial emulation as a unifying framework). </span>Explicit target trial emulation brings together the two frameworks of this book, counterfactuals and causal diagrams, and grounds them in actionable causal inference:</p>
 <ul>
 <li>organizing the analysis around a familiar concept, the experiment, helps articulate a well-defined causal question, from which design and analysis follow;</li>
 <li>it applies across disciplines, whatever their vocabulary (economists’ “omitted variable bias” and “selection on observables” are confounding and conditional exchangeability);</li>
 <li>it gives randomized and observational studies a <strong>common language</strong>.</li>
 </ul>
+</div>
 <aside class="notes">
 <p>All health and social scientists face the same fundamental task: articulating causal questions as contrasts of well-defined counterfactuals. The target trial helps by specifying the well-defined interventions that lead to well-defined counterfactuals.</p>
 <style type="text/css">
@@ -758,10 +999,12 @@
 </section>
 <section class="slide level2 scrollable">
 
-<p>A randomized trial is a follow-up study with baseline randomization; observational longitudinal data form a follow-up study without it. Long-term trials of sustained strategies in real-world settings, with imperfect adherence and loss to follow-up, suffer the confounding and selection biases usually associated with observational studies.</p>
+<div id="rem-trials-observational-differ" class="proof remark">
+<p><span class="proof-title"><em>Remark 12</em> (Randomization is the only difference). </span>A randomized trial is a follow-up study with baseline randomization; observational longitudinal data form a follow-up study without it. Long-term trials of sustained strategies in real-world settings, with imperfect adherence and loss to follow-up, suffer the confounding and selection biases usually associated with observational studies.</p>
 <blockquote>
 <p>“Time-varying confounding in observational studies is a bias with the same structure as nonrandom noncompliance in randomized trials” <span class="citation" data-cites="hernan2020causal">(<a href="#/references" role="doc-biblioref" onclick="">Hernán and Robins 2020, 318</a>)</span>.</p>
 </blockquote>
+</div>
 <div title="Fine Point 22.6: How Do Randomized and Observational Data Differ?">
 <div class="callout callout-note callout-titled callout-style-default">
 <div class="callout-body">
@@ -789,16 +1032,58 @@
 </section>
 <section class="slide level2 scrollable">
 
-<p><strong>ITT analysis</strong> (unadjusted comparison of randomized groups): randomization rules out baseline and post-randomization confounding for the effect of assignment, but not selection bias from <strong>loss to follow-up</strong>. Valid ITT estimation may need adjustment for time-varying prognostic factors, e.g., g-methods if dropout depends on symptom onset.</p>
+<div title="ITT Analyses Can Suffer Selection Bias">
+<div class="callout callout-warning callout-titled callout-style-default">
+<div class="callout-body">
+<div class="callout-title">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<p><strong>ITT Analyses Can Suffer Selection Bias</strong></p>
+</div>
+<div class="callout-content">
+<p><strong>ITT analysis</strong> (<a href="#/def-itt-analysis" class="quarto-xref">Definition&nbsp;2</a>, an unadjusted comparison of randomized groups): randomization rules out baseline and post-randomization confounding for the effect of assignment, but not selection bias from <strong>loss to follow-up</strong>. Valid ITT estimation may need adjustment for time-varying prognostic factors, e.g., g-methods if dropout depends on symptom onset.</p>
+</div>
+</div>
+</div>
+</div>
+<div title="Conventional Per-Protocol Analyses Are Questionable">
+<div class="callout callout-warning callout-titled callout-style-default">
+<div class="callout-body">
+<div class="callout-title">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<p><strong>Conventional Per-Protocol Analyses Are Questionable</strong></p>
+</div>
+<div class="callout-content">
 <p><strong>Conventional per-protocol analysis</strong> (censor at the first deviation, no adjustment) is questionable for three reasons:</p>
 <ol type="1">
 <li>selection bias from differential loss to follow-up;</li>
 <li>those remaining on protocol in each arm need not be exchangeable, so g-methods are needed for time-varying factors that affect staying on protocol (or instrumental variable methods, with their own strong assumptions; Technical Point 16.6);</li>
 <li>it ignores that the strategies are <strong>dynamic</strong>: censoring people who stop treatment because of toxicity or a contraindication (the “on-treatment” analysis) treats adherence as deviation.</li>
 </ol>
+</div>
+</div>
+</div>
+</div>
 <aside class="notes">
-<p>Fine Point 22.2’s unadjusted ITT analysis is the <strong>pseudo-intention-to-treat</strong> analysis, and Fine Point 22.3’s unadjusted per-protocol analysis is the <strong>naive per-protocol</strong> analysis.</p>
+<p>Fine Point 22.2’s unadjusted ITT analysis (<a href="#/def-itt-analysis" class="quarto-xref">Definition&nbsp;2</a>) is the <strong>pseudo-intention-to-treat</strong> analysis, and Fine Point 22.3’s unadjusted per-protocol analysis is the <strong>naive per-protocol</strong> analysis.</p>
+<div title="Failure-Time Outcomes Always Need G-Methods">
+<div class="callout callout-warning callout-titled callout-style-default">
+<div class="callout-body">
+<div class="callout-title">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<p><strong>Failure-Time Outcomes Always Need G-Methods</strong></p>
+</div>
+<div class="callout-content">
 <p>For failure-time outcomes, g-methods are <em>always</em> needed when treatment affects the outcome, because <span class="math inline">\(A_k\)</span> affects all later variables through its effect on <span class="math inline">\(D_{k+1}\)</span> (Technical Point 21.10).</p>
+</div>
+</div>
+</div>
+</div>
 <p>The upshot: when the goal is a per-protocol effect or its observational analog, randomized trials and observational studies should be analyzed identically. Any reason to adjust for time-varying confounding and selection bias in an observational study is equally a reason to adjust for them in a randomized trial <span class="citation" data-cites="hernan2020causal">(<a href="#/references" role="doc-biblioref" onclick="">Hernán and Robins 2020, chap. 22</a>, p.&nbsp;320)</span>.</p>
 <style type="text/css">
         span.MJX_Assistive_MathML {
@@ -817,7 +1102,22 @@
 </section>
 <section class="slide level2">
 
-<p>Randomized trials may be expensive, infeasible, unethical, or too slow for an urgent decision, so many decisions must be made without them. When we cannot run the trial that would answer our question, the observational analysis should explicitly emulate it and be judged by how well it emulates its target trial.</p>
+<p>Randomized trials may be expensive, infeasible, unethical, or too slow for an urgent decision, so many decisions must be made without them.</p>
+<div title="Judge an Observational Analysis by Its Emulation">
+<div class="callout callout-tip callout-titled callout-style-default">
+<div class="callout-body">
+<div class="callout-title">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<p><strong>Judge an Observational Analysis by Its Emulation</strong></p>
+</div>
+<div class="callout-content">
+<p>When we cannot run the trial that would answer our question, the observational analysis should explicitly emulate it and be judged by how well it emulates its target trial.</p>
+</div>
+</div>
+</div>
+</div>
 <aside class="notes">
 <p>In very unusual situations, a decision informed by a well-conducted randomized trial can be worse than one informed by badly confounded observational data (Fine Points 22.7 and 22.8).</p>
 <p><strong>Further reading</strong> (listed in the book’s references): Hernán and Robins (2016), “Using big data to emulate a target trial when a randomized trial is not available,” <em>American Journal of Epidemiology</em>; Hernán and Robins (2017), “Per-protocol analyses of pragmatic trials,” <em>New England Journal of Medicine</em>.</p>
@@ -883,7 +1183,7 @@
 <li>The <strong>PP effect</strong> is the effect of adhering to the assigned strategies; it is often the more relevant estimand and generally requires adjustment, for sustained strategies via g-methods, in trials and observational studies alike.</li>
 <li>PP strategies are usually <strong>dynamic</strong>: stopping for toxicity is adherence, not deviation.</li>
 <li>Non-adherence in a trial allows emulation of <strong>alternative target trials</strong>.</li>
-<li>A <strong>target trial</strong> protocol specifies eligibility, follow-up, strategies, outcomes, causal contrast, and analysis plan; observational analogs are the comparison of initiators (ITT) and the PP effect.</li>
+<li>A <strong>target trial</strong> protocol specifies eligibility, follow-up, strategies, assignment procedures, outcomes, causal contrast, and analysis plan; observational analogs are the comparison of initiators (ITT) and the PP effect.</li>
 <li><strong>Time zero</strong> must align eligibility, assignment, and start of follow-up; multiple eligible times call for <strong>sequential trials</strong>, and data compatible with several strategies call for <strong>cloning, censoring, and weighting</strong>.</li>
 <li>Aside from baseline randomization, randomized and observational studies of sustained strategies should be <strong>analyzed the same way</strong>.</li>
 </ul>

@@ -6,9 +6,9 @@
 <script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
 <link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
 <link href="../site_libs/quarto-html/light-border.css" rel="stylesheet">
-<link href="../site_libs/quarto-html/quarto-syntax-highlighting-64a204ab8560d761af7679ceaba22944.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-bf27225e3a48a9273f3daa8f8e829971.css" rel="stylesheet" id="quarto-text-highlighting-styles">
 <link href="../site_libs/quarto-contrib/code-language-labels-1.0.2/code-language-labels.css" rel="stylesheet"><meta charset="utf-8">
-  <meta name="generator" content="quarto-1.10.18">
+  <meta name="generator" content="quarto-1.10.19">
 
   <title>What If? - Lecture Notes – Chapter 15: Outcome Regression and Propensity Scores</title>
   <meta name="apple-mobile-web-app-capable" content="yes">
@@ -166,7 +166,7 @@
 <p>This chapter covers <strong>outcome regression</strong> and <strong>propensity score</strong> methods (stratification, standardization, and matching on the propensity score): the most commonly used parametric methods for causal inference. They work well for treatments fixed at a single time, but they are not designed for the complexities of time-varying treatments, which is why the book presents them only after the g-methods.</p>
 <aside class="notes">
 <p>This chapter is based on <span class="citation" data-cites="hernan2020causal">Hernán and Robins (<a href="#/references" role="doc-biblioref" onclick="">2020, chap. 15</a>, pp.&nbsp;199-208)</span>.</p>
-<p><strong>Key theme</strong>: outcome regression and propensity score methods need the same identifying conditions as every other method (exchangeability, positivity, and consistency / well-defined interventions), plus correct models for their nuisance parameters. Unlike the g-methods of Chapters 12-14, they have limited applicability to complex longitudinal data <span class="citation" data-cites="hernan2020causal">(<a href="#/references" role="doc-biblioref" onclick="">Hernán and Robins 2020, 199</a>)</span>.</p>
+<p><strong>Key theme</strong>: outcome regression and propensity score methods need the same identifying conditions as every other method (exchangeability, positivity, and consistency / well-defined interventions), plus correctly specified models for the quantities they estimate along the way. Unlike the g-methods of Chapters 12-14, they have limited applicability to complex longitudinal data <span class="citation" data-cites="hernan2020causal">(<a href="#/references" role="doc-biblioref" onclick="">Hernán and Robins 2020, 199</a>)</span>.</p>
 <style type="text/css">
         span.MJX_Assistive_MathML {
           position:absolute!important;
@@ -186,11 +186,14 @@
 </section>
 <section id="a-structural-model-with-parameters-for-l" class="slide level2">
 <h2>A Structural Model with Parameters for <span class="math inline">\(L\)</span></h2>
-<p>Structural nested models (Chapter 14) contain parameters for <span class="math inline">\(A\)</span> and for <span class="math inline">\(A \times L\)</span> product terms only, so g-estimation is agnostic about the <span class="math inline">\(L\)</span>-<span class="math inline">\(Y\)</span> relation. If instead we are willing to specify the <span class="math inline">\(L\)</span>-<span class="math inline">\(Y\)</span> relation within levels of <span class="math inline">\(A\)</span>, we can use the structural model</p>
+<p>Structural nested models (Chapter 14) contain parameters for <span class="math inline">\(A\)</span> and for <span class="math inline">\(A \times L\)</span> product terms only, so g-estimation is agnostic about the <span class="math inline">\(L\)</span>-<span class="math inline">\(Y\)</span> relation. If instead we are willing to specify the <span class="math inline">\(L\)</span>-<span class="math inline">\(Y\)</span> relation within levels of <span class="math inline">\(A\)</span>, we can use a structural model that also has parameters for <span class="math inline">\(L\)</span>.</p>
+<div id="def-structural-model-with-l" class="theorem definition">
+<p><span class="theorem-title"><strong>Definition 1 (Structural Model with Parameters for <span class="math inline">\(L\)</span>)</strong></span> The <strong>structural model with parameters for <span class="math inline">\(L\)</span></strong> states that, for each <span class="math inline">\(a \in \{0, 1\}\)</span>,</p>
 <p><span class="math display">\[
-\operatorname{E}\mathopen{}\left[Y^{a,c=0} \mid L\right]\mathclose{} = \beta_0 + \beta_1 a + \beta_2 a L + \beta_3 L
+\operatorname{E}\mathopen{}\left[Y^{a,c=0} \mid L\right]\mathclose{} = \beta_0 + \beta_1 a + a {\beta_2}^{\top} L + {\beta_3}^{\top} L,
 \]</span></p>
-<p>where <span class="math inline">\(\beta_2\)</span> and <span class="math inline">\(\beta_3\)</span> are vector parameters.</p>
+<p>where <span class="math inline">\(\beta_0\)</span> and <span class="math inline">\(\beta_1\)</span> are scalar parameters and <span class="math inline">\(\beta_2\)</span> and <span class="math inline">\(\beta_3\)</span> are vector parameters.</p>
+</div>
 <aside class="notes">
 <p>In Chapter 12 this model was called a <strong>faux marginal structural model</strong>: it has the form of a marginal structural model, but because it conditions on the entire vector <span class="math inline">\(L\)</span> (not a subset <span class="math inline">\(V\)</span>), the stabilized IP weights <span class="math inline">\(SW^A(L)\)</span> all equal 1 and no weighting is needed <span class="citation" data-cites="hernan2020causal">(<a href="#/references" role="doc-biblioref" onclick="">Hernán and Robins 2020, 199</a>)</span>.</p>
 <p><span class="math inline">\(\beta_3\)</span> is often called the “main effect” of <span class="math inline">\(L\)</span>, but it need not have a causal interpretation (the <span class="math inline">\(L\)</span>-<span class="math inline">\(Y\)</span> relation may itself be confounded); it only describes how the mean of <span class="math inline">\(Y^{a=0,c=0}\)</span> varies with <span class="math inline">\(L\)</span>.</p>
@@ -209,35 +212,77 @@
 <section id="conditional-effects-from-the-structural-model" class="slide level2">
 <h2>Conditional Effects from the Structural Model</h2>
 <div id="prp-conditional-effect" class="theorem proposition">
-<p><span class="theorem-title"><strong>Proposition 1 (Stratum-Specific Effect)</strong></span> Under the structural model, the average causal effect in stratum <span class="math inline">\(L = l\)</span> is <span class="math inline">\(\beta_1 + \beta_2 l\)</span>.</p>
+<p><span class="theorem-title"><strong>Proposition 1 (Stratum-Specific Effect)</strong></span> Under the structural model of <a href="#/def-structural-model-with-l" class="quarto-xref">Definition&nbsp;1</a>, the average causal effect in stratum <span class="math inline">\(L = l\)</span> is <span class="math inline">\(\beta_1 + {\beta_2}^{\top} l\)</span>.</p>
 </div>
 <div class="proof">
 <p><span class="proof-title"><em>Proof</em>. </span>Evaluate the model at <span class="math inline">\(a = 1\)</span> and <span class="math inline">\(a = 0\)</span> and subtract:</p>
 <p><span class="math display">\[
 \begin{aligned}
 &amp;\operatorname{E}\mathopen{}\left[Y^{a=1,c=0} \mid L = l\right]\mathclose{} - \operatorname{E}\mathopen{}\left[Y^{a=0,c=0} \mid L = l\right]\mathclose{} \\
-&amp;\quad = (\beta_0 + \beta_1 \cdot 1 + \beta_2 \cdot 1 \cdot l + \beta_3 l) - (\beta_0 + \beta_1 \cdot 0 + \beta_2 \cdot 0 \cdot l + \beta_3 l) \\
-&amp;\quad = (\beta_0 + \beta_1 + \beta_2 l + \beta_3 l) - (\beta_0 + \beta_3 l) \\
-&amp;\quad = \beta_1 + \beta_2 l.
+&amp;\quad = (\beta_0 + \beta_1 \cdot 1 + 1 \cdot {\beta_2}^{\top} l + {\beta_3}^{\top} l) - (\beta_0 + \beta_1 \cdot 0 + 0 \cdot {\beta_2}^{\top} l + {\beta_3}^{\top} l) \\
+&amp;\quad = (\beta_0 + \beta_1 + {\beta_2}^{\top} l + {\beta_3}^{\top} l) - (\beta_0 + {\beta_3}^{\top} l) \\
+&amp;\quad = \beta_1 + {\beta_2}^{\top} l.
 \end{aligned}
 \]</span></p>
 </div>
 <p>So the stratum-specific effects depend only on <span class="math inline">\((\beta_1, \beta_2)\)</span>; the counterfactual means under no treatment depend on <span class="math inline">\((\beta_0, \beta_3)\)</span>.</p>
 </section>
-<section id="estimating-the-structural-model-by-outcome-regression" class="slide level2">
+<section id="estimating-the-structural-model-by-outcome-regression" class="slide level2 scrollable">
 <h2>Estimating the Structural Model by Outcome Regression</h2>
-<p>Under exchangeability, positivity, and well-defined interventions,</p>
+<div id="prp-outcome-regression-identification" class="theorem proposition">
+<p><span class="theorem-title"><strong>Proposition 2 (Outcome Regression Identifies the Structural Model)</strong></span> Suppose that <span class="math inline">\(L\)</span> is discrete (it takes finitely or countably many values), and that, for each <span class="math inline">\(a \in \{0, 1\}\)</span>, <span class="math inline">\(\operatorname{E}\mathopen{}\left[\mathopen{}\left|Y^{a,c=0}\right|\mathclose{}\right]\mathclose{} &lt; \infty\)</span>. Suppose also that <span class="math inline">\(L\)</span> suffices to adjust for confounding and selection bias, that is, conditional exchangeability <span class="math inline">\(Y^{a,c=0} \perp\!\!\!\perp(A, C) \mid L\)</span> holds for <span class="math inline">\(a \in \{0, 1\}\)</span>; that positivity <span class="math inline">\(\Pr[A = a, C = 0 \mid L = l] &gt; 0\)</span> holds for <span class="math inline">\(a \in \{0, 1\}\)</span> and every value <span class="math inline">\(l\)</span> with <span class="math inline">\(\Pr[L = l] &gt; 0\)</span>; and that consistency (well-defined interventions) holds: <span class="math inline">\(Y = Y^{a,c=0}\)</span> whenever <span class="math inline">\(A = a\)</span> and <span class="math inline">\(C = 0\)</span>.</p>
+<ol type="1">
+<li><p>The conditional counterfactual mean is identified:</p>
 <p><span class="math display">\[
 \operatorname{E}\mathopen{}\left[Y^{a,c=0} \mid L = l\right]\mathclose{} = \operatorname{E}\mathopen{}\left[Y \mid A = a, C = 0, L = l\right]\mathclose{},
 \]</span></p>
-<p>so the structural parameters can be estimated by ordinary least squares, fitting the outcome regression model</p>
+<p>for <span class="math inline">\(a \in \{0, 1\}\)</span> and every value <span class="math inline">\(l\)</span> with <span class="math inline">\(\Pr[L = l] &gt; 0\)</span>.</p></li>
+<li><p>Suppose further that the structural model of <a href="#/def-structural-model-with-l" class="quarto-xref">Definition&nbsp;1</a> holds. Let <span class="math inline">\(X \stackrel{\text{def}}{=}{(1, A, A {L}^{\top}, {L}^{\top})}^{\top}\)</span> be the regressor vector, and stack the structural parameters as <span class="math inline">\(\beta \stackrel{\text{def}}{=}{(\beta_0, \beta_1, {\beta_2}^{\top}, {\beta_3}^{\top})}^{\top}\)</span>, and suppose that <span class="math inline">\(\operatorname{E}\mathopen{}\left[Y^2 \mid C = 0\right]\mathclose{} &lt; \infty\)</span>, that <span class="math inline">\(\operatorname{E}\mathopen{}\left[\mathopen{}\left\lVert X\right\rVert^2\mathclose{} \mid C = 0\right]\mathclose{} &lt; \infty\)</span>, and that the second-moment matrix <span class="math inline">\(\operatorname{E}\mathopen{}\left[X {X}^{\top} \mid C = 0\right]\mathclose{}\)</span> is invertible. Then the outcome regression model</p>
 <p><span class="math display">\[
-\operatorname{E}\mathopen{}\left[Y \mid A, C = 0, L\right]\mathclose{} = \alpha_0 + \alpha_1 A + \alpha_2 A L + \alpha_3 L .
+\operatorname{E}\mathopen{}\left[Y \mid A, C = 0, L\right]\mathclose{} = \alpha_0 + \alpha_1 A + A {\alpha_2}^{\top} L + {\alpha_3}^{\top} L
 \]</span></p>
-<p>If <span class="math inline">\(L\)</span> suffices to adjust for confounding and selection bias and the outcome model is correctly specified, then <span class="math inline">\(\alpha = \beta\)</span>.</p>
+<p>with stacked coefficients <span class="math inline">\(\alpha \stackrel{\text{def}}{=}{(\alpha_0, \alpha_1, {\alpha_2}^{\top}, {\alpha_3}^{\top})}^{\top}\)</span> is correctly specified, and its population least-squares coefficients satisfy <span class="math inline">\(\alpha = \beta\)</span>.</p></li>
+</ol>
+</div>
+<div class="proof">
+<p><span class="proof-title"><em>Proof</em>. </span>Part 1:</p>
+<p><span class="math display">\[
+\begin{aligned}
+\operatorname{E}\mathopen{}\left[Y^{a,c=0} \mid L = l\right]\mathclose{}
+&amp;= \operatorname{E}\mathopen{}\left[Y^{a,c=0} \mid A = a, C = 0, L = l\right]\mathclose{} &amp;&amp; \text{(conditional exchangeability; positivity makes the conditioning event non-null)} \\
+&amp;= \operatorname{E}\mathopen{}\left[Y \mid A = a, C = 0, L = l\right]\mathclose{} &amp;&amp; \text{(consistency)}.
+\end{aligned}
+\]</span></p>
+<p>Part 2: by part 1 and the structural model, <span class="math inline">\(\operatorname{E}\mathopen{}\left[Y \mid A = a, C = 0, L = l\right]\mathclose{} = \beta_0 + \beta_1 a + a {\beta_2}^{\top} l + {\beta_3}^{\top} l\)</span> for every <span class="math inline">\((a, l)\)</span> with positive probability among the uncensored, so the linear model with <span class="math inline">\(\alpha = \beta\)</span> equals the conditional mean and is correctly specified; in vector form, <span class="math inline">\(\operatorname{E}\mathopen{}\left[Y \mid A, L, C = 0\right]\mathclose{} = {X}^{\top} \beta\)</span>. The moment conditions make every expectation in the normal equations finite. The population least-squares coefficients <span class="math inline">\(\alpha\)</span> are the solutions of the normal equations <span class="math inline">\(\operatorname{E}\mathopen{}\left[X (Y - {X}^{\top} \alpha) \mid C = 0\right]\mathclose{} = 0\)</span>. The vector <span class="math inline">\(\beta\)</span> solves them:</p>
+<p><span class="math display">\[
+\begin{aligned}
+\operatorname{E}\mathopen{}\left[X (Y - {X}^{\top} \beta) \mid C = 0\right]\mathclose{}
+&amp;= \operatorname{E}\mathopen{}\left[\operatorname{E}\mathopen{}\left[X (Y - {X}^{\top} \beta) \mid A, L, C = 0\right]\mathclose{} \mid C = 0\right]\mathclose{} &amp;&amp; \text{(iterated expectations)} \\
+&amp;= \operatorname{E}\mathopen{}\left[X (\operatorname{E}\mathopen{}\left[Y \mid A, L, C = 0\right]\mathclose{} - {X}^{\top} \beta) \mid C = 0\right]\mathclose{} &amp;&amp; \text{(} X \text{ is a function of } (A, L)\text{)} \\
+&amp;= \operatorname{E}\mathopen{}\left[X ({X}^{\top} \beta - {X}^{\top} \beta) \mid C = 0\right]\mathclose{} &amp;&amp; \text{(correct specification)} \\
+&amp;= 0.
+\end{aligned}
+\]</span></p>
+<p>Because <span class="math inline">\(\operatorname{E}\mathopen{}\left[X {X}^{\top} \mid C = 0\right]\mathclose{}\)</span> is invertible, the normal equations have a unique solution, so <span class="math inline">\(\alpha = \beta\)</span>.</p>
+</div>
+<p>So the structural parameters can be estimated by ordinary least squares, fitting the outcome regression model of <a href="#/prp-outcome-regression-identification" class="quarto-xref">Proposition&nbsp;2</a>.</p>
 <aside class="notes">
 <p>Like stratification (Chapter 3), outcome regression adjusts for confounding by estimating the effect <strong>within strata of <span class="math inline">\(L\)</span></strong>. In Section 13.2, the outcome regression was an intermediate step toward a standardized (marginal) mean; here the regression is the end of the procedure: we compare conditional means instead of standardizing them <span class="citation" data-cites="hernan2020causal">(<a href="#/references" role="doc-biblioref" onclick="">Hernán and Robins 2020, 200</a>)</span>.</p>
+<div title="Discrete Outcomes">
+<div class="callout callout-tip callout-titled callout-style-default">
+<div class="callout-body">
+<div class="callout-title">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<p><strong>Discrete Outcomes</strong></p>
+</div>
+<div class="callout-content">
 <p>The same approach works for discrete outcomes, e.g., a logistic model for <span class="math inline">\(\Pr[Y = 1 \mid A = a, C = 0, L]\)</span> when <span class="math inline">\(Y\)</span> is dichotomous.</p>
+</div>
+</div>
+</div>
+</div>
 <style type="text/css">
         span.MJX_Assistive_MathML {
           position:absolute!important;
@@ -260,7 +305,9 @@
 </ul>
 </div>
 <aside class="notes">
-<p>By <a href="#/prp-conditional-effect" class="quarto-xref">Proposition&nbsp;1</a>, each stratum-specific estimate is <span class="math inline">\(\hat \beta_1 + \hat \beta_2 \times (\text{cigarettes/day})\)</span>. The book reports the coefficients rounded to one or two decimals, so plugging the rounded values into that formula reproduces the reported effect estimates only approximately (e.g., <span class="math inline">\(2.6 + 0.05 \times 40 = 4.6\)</span> versus the reported 4.4).</p>
+<div id="rem-nhefs-rounded-coefficients" class="proof remark">
+<p><span class="proof-title"><em>Remark 1</em> (Rounded Coefficients). </span>By <a href="#/prp-conditional-effect" class="quarto-xref">Proposition&nbsp;1</a>, each stratum-specific estimate is <span class="math inline">\(\hat \beta_1 + \hat \beta_2 \times (\text{cigarettes/day})\)</span>. The book reports the coefficients rounded to one or two decimals, so plugging the rounded values into that formula reproduces the reported effect estimates only approximately (e.g., <span class="math inline">\(2.6 + 0.05 \times 40 = 4.6\)</span> versus the reported 4.4).</p>
+</div>
 <style type="text/css">
         span.MJX_Assistive_MathML {
           position:absolute!important;
@@ -275,6 +322,9 @@
 </section>
 <section class="slide level2">
 
+<div id="def-nuisance-parameter" class="theorem definition">
+<p><span class="theorem-title"><strong>Definition 2 (Nuisance Parameter)</strong></span> A <strong>nuisance parameter</strong> is a parameter that a model must contain but that is not itself the target of inference.</p>
+</div>
 <div title="Fine Point 15.1: Nuisance Parameters">
 <div class="callout callout-note callout-titled callout-style-default">
 <div class="callout-body">
@@ -285,9 +335,10 @@
 <p><strong>Fine Point 15.1: Nuisance Parameters</strong></p>
 </div>
 <div class="callout-content">
+<p>Two methods for the same effect rely on different nuisance parameters (<a href="#/def-nuisance-parameter" class="quarto-xref">Definition&nbsp;2</a>):</p>
 <ul>
-<li><strong>Outcome regression</strong> for <span class="math inline">\(\beta_1, \beta_2\)</span>: consistent (in general) only if <span class="math inline">\(\beta_0 + \beta_3 L\)</span> correctly models how <span class="math inline"><mark class="preview-text-changed">\(\operatorname{E}\mathopen{}\left[Y^{a=0,c=0}</mark> \mid <mark class="preview-text-changed">L\right]\mathclose{}\)</mark></span> depends on <span class="math inline">\(L\)</span>. The nuisance parameters are <span class="math inline">\(\beta_0\)</span> and <span class="math inline">\(\beta_3\)</span>.</li>
-<li><strong>G-estimation</strong> of the structural nested model <span class="math inline"><mark class="preview-text-changed">\(\operatorname{E}\mathopen{}\left[Y^{a,c=0}</mark> - Y^{a=0,c=0} \mid <mark class="preview-text-changed">L\right]\mathclose{}</mark> = \beta_1 a + \beta_2 a L\)</span>: consistent (in general) only if the treatment model for <span class="math inline">\(\Pr[A = 1 \mid L]\)</span> is correct. The nuisance parameters are those of the treatment model, e.g., <span class="math inline">\(\alpha_0, \alpha_1\)</span> in <span class="math inline"><mark class="preview-text-changed">\(\operatorname{logit}\Pr[A</mark> = 1 \mid L] = \alpha_0 + \alpha_1 L\)</span>.</li>
+<li><strong>Outcome regression</strong> for <span class="math inline">\(\beta_1, \beta_2\)</span>: consistent (in general) only if <span class="math inline">\(\beta_0 + {\beta_3}^{\top} L\)</span> correctly models how <span class="math inline">\(\operatorname{E}\mathopen{}\left[Y^{a=0,c=0} \mid L\right]\mathclose{}\)</span> depends on <span class="math inline">\(L\)</span>. The nuisance parameters are <span class="math inline">\(\beta_0\)</span> and <span class="math inline">\(\beta_3\)</span>.</li>
+<li><strong>G-estimation</strong> of the structural nested model <span class="math inline">\(\operatorname{E}\mathopen{}\left[Y^{a,c=0} - Y^{a=0,c=0} \mid L\right]\mathclose{} = \beta_1 a + a {\beta_2}^{\top} L\)</span>: consistent (in general) only if the treatment model for <span class="math inline">\(\Pr[A = 1 \mid L]\)</span> is correct. The nuisance parameters are those of the treatment model, e.g., <span class="math inline">\(\gamma_0, \gamma_1\)</span> in <span class="math inline">\(\operatorname{logit}\Pr[A = 1 \mid L] = \gamma_0 + {\gamma_1}^{\top} L\)</span>.</li>
 </ul>
 <aside class="notes">
 <p>Example: if <span class="math inline">\(L\)</span> should enter as <span class="math inline">\(\beta_3 L + \beta_4 L^2\)</span> but is modeled as <span class="math inline">\(\beta_3 L\)</span> only, outcome regression is biased; g-estimation is unaffected by that error but is biased if the <span class="math inline">\(L\)</span>-<span class="math inline">\(A\)</span> relation is misspecified. For a time-fixed treatment, choosing between the two amounts to deciding which nuisance model we can specify more accurately. When possible, a better option is a doubly robust method (Fine Point 13.2) <span class="citation" data-cites="hernan2020causal">(<a href="#/references" role="doc-biblioref" onclick="">Hernán and Robins 2020, 200</a>)</span>.</p>
@@ -315,17 +366,21 @@
 <section class="slide level2">
 
 <div id="def-propensity-score" class="theorem definition">
-<p><span class="theorem-title"><strong>Definition 1 (Propensity Score)</strong></span> For a dichotomous treatment <span class="math inline">\(A\)</span>, the <strong>propensity score</strong> is the conditional probability of treatment given the covariates:</p>
+<p><span class="theorem-title"><strong>Definition 3 (Propensity Score)</strong></span> For a dichotomous treatment <span class="math inline">\(A\)</span>, the <strong>propensity score</strong> is the conditional probability of treatment given the covariates:</p>
 <p><span class="math display">\[
 \pi(L) \stackrel{\text{def}}{=}\Pr[A = 1 \mid L].
 \]</span></p>
 </div>
-<ul>
-<li>In an ideal randomized trial assigning half the individuals to <span class="math inline">\(A = 1\)</span>, <span class="math inline">\(\pi(L) = 0.5\)</span> for everyone, whatever <span class="math inline">\(L\)</span> is.</li>
-<li>In an observational study, <span class="math inline">\(\pi(L)\)</span> is unknown and must be estimated, e.g., with the same logistic model used for IP weighting and g-estimation in Chapters 12 and 14.</li>
-</ul>
+<div id="exm-propensity-score-randomized-trial" class="theorem example">
+<p><span class="theorem-title"><strong>Example 2 (Propensity Score in a Randomized Trial)</strong></span> In an ideal randomized trial assigning half the individuals to <span class="math inline">\(A = 1\)</span>, <span class="math inline">\(\pi(L) = 0.5\)</span> for everyone, whatever <span class="math inline">\(L\)</span> is.</p>
+</div>
+<div id="rem-propensity-score-estimated" class="proof remark">
+<p><span class="proof-title"><em>Remark 2</em> (The Propensity Score Must Usually Be Estimated). </span>In an observational study, <span class="math inline">\(\pi(L)\)</span> is unknown and must be estimated, e.g., with the same logistic model used for IP weighting and g-estimation in Chapters 12 and 14.</p>
+</div>
 <aside class="notes">
-<p>The book restricts attention to dichotomous treatments: propensity score methods other than IP weighting, g-estimation, and related doubly robust estimators are difficult to generalize to non-dichotomous treatments <span class="citation" data-cites="hernan2020causal">(<a href="#/references" role="doc-biblioref" onclick="">Hernán and Robins 2020, 201</a>)</span>.</p>
+<div id="rem-propensity-score-dichotomous" class="proof remark">
+<p><span class="proof-title"><em>Remark 3</em> (Dichotomous Treatments Only). </span>The book restricts attention to dichotomous treatments: propensity score methods other than IP weighting, g-estimation, and related doubly robust estimators are difficult to generalize to non-dichotomous treatments <span class="citation" data-cites="hernan2020causal">(<a href="#/references" role="doc-biblioref" onclick="">Hernán and Robins 2020, 201</a>)</span>.</p>
+</div>
 <style type="text/css">
         span.MJX_Assistive_MathML {
           position:absolute!important;
@@ -341,7 +396,7 @@
 <section class="slide level2">
 
 <div id="exm-nhefs-propensity" class="theorem example">
-<p><span class="theorem-title"><strong>Example 2 (Estimated Propensity Scores in NHEFS)</strong></span> From the logistic model for quitting smoking given <span class="math inline">\(L\)</span> <span class="citation" data-cites="hernan2020causal">(<a href="#/references" role="doc-biblioref" onclick="">Hernán and Robins 2020, 201</a>)</span>:</p>
+<p><span class="theorem-title"><strong>Example 3 (Estimated Propensity Scores in NHEFS)</strong></span> From the logistic model for quitting smoking given <span class="math inline">\(L\)</span> <span class="citation" data-cites="hernan2020causal">(<a href="#/references" role="doc-biblioref" onclick="">Hernán and Robins 2020, 201</a>)</span>:</p>
 <ul>
 <li>lowest estimated propensity score: 0.053 (individual 22941);</li>
 <li>highest: 0.793 (individual 24949);</li>
@@ -350,7 +405,7 @@
 <p>Figure 15.1 of the book shows the two distributions; they overlap over most of the range.</p>
 </div>
 <aside class="notes">
-<p>If the distribution of <span class="math inline">\(\pi(L)\)</span> were the same in the treated and the untreated, there would be no confounding by <span class="math inline">\(L\)</span> (no open path from <span class="math inline">\(L\)</span> to <span class="math inline">\(A\)</span>). Quitters having a higher average estimated probability of quitting is exactly what we expect when <span class="math inline">\(L\)</span> predicts quitting.</p>
+<p>Quitters having a higher average estimated probability of quitting is exactly what we expect when <span class="math inline">\(L\)</span> predicts quitting.</p>
 <style type="text/css">
         span.MJX_Assistive_MathML {
           position:absolute!important;
@@ -365,17 +420,60 @@
 </section>
 <section id="the-balancing-property" class="slide level2">
 <h2>The Balancing Property</h2>
-<p>Individuals with the same <span class="math inline">\(\pi(L)\)</span> may differ in <span class="math inline">\(L\)</span> (e.g., smoking intensity and exercise), but among all individuals with a given value of <span class="math inline">\(\pi(L)\)</span> in the super-population, the distribution of <span class="math inline">\(L\)</span> is the same in the treated and the untreated:</p>
+<div id="def-balancing-score" class="theorem definition">
+<p><span class="theorem-title"><strong>Definition 4 (Balancing Score and Prognostic Score (Technical Point 15.1))</strong></span> &nbsp;</p>
+<ul>
+<li>A <strong>balancing score</strong> <span class="math inline">\(b(L)\)</span> is any function of <span class="math inline">\(L\)</span> such that <span class="math inline">\(A \perp\!\!\!\perp L \mid b(L)\)</span>. We then say that <span class="math inline">\(b(L)\)</span> <strong>balances</strong> the covariates <span class="math inline">\(L\)</span>.</li>
+<li>A <strong>prognostic score</strong> <span class="math inline">\(s(L)\)</span> is a function of <span class="math inline">\(L\)</span> such that <span class="math inline">\(Y^{a=0} \perp\!\!\!\perp L \mid s(L)\)</span>.</li>
+</ul>
+</div>
+</section>
+<section class="slide level2">
+
+<div id="prp-ps-balancing" class="theorem proposition">
+<p><span class="theorem-title"><strong>Proposition 3 (The Propensity Score Balances <span class="math inline">\(L\)</span>)</strong></span> Let <span class="math inline">\(A\)</span> be dichotomous and <span class="math inline">\(\pi(L)\)</span> its propensity score (<a href="#/def-propensity-score" class="quarto-xref">Definition&nbsp;3</a>). Then <span class="math inline">\(\pi(L)\)</span> is a balancing score (<a href="#/def-balancing-score" class="quarto-xref">Definition&nbsp;4</a>):</p>
 <p><span class="math display">\[
 A \perp\!\!\!\perp L \mid \pi(L).
 \]</span></p>
-<p>We say the propensity score <strong>balances</strong> the covariates.</p>
+</div>
+<div class="proof">
+<p><span class="proof-title"><em>Proof</em>. </span>The book argues graphically (Technical Point 15.1); the same result follows from iterated expectations. Since <span class="math inline">\(\pi(L)\)</span> is a function of <span class="math inline">\(L\)</span>, conditioning on <span class="math inline">\((L, \pi(L))\)</span> is the same as conditioning on <span class="math inline">\(L\)</span>:</p>
+<p><span class="math display">\[
+\Pr[A = 1 \mid L, \pi(L)] = \Pr[A = 1 \mid L] = \pi(L).
+\]</span></p>
+<p>Conditioning on <span class="math inline">\(\pi(L)\)</span> alone, by the law of iterated expectations:</p>
+<p><span class="math display">\[
+\begin{aligned}
+\Pr[A = 1 \mid \pi(L)]
+&amp;= \operatorname{E}\mathopen{}\left[\Pr[A = 1 \mid L] \mid \pi(L)\right]\mathclose{} \\
+&amp;= \operatorname{E}\mathopen{}\left[\pi(L) \mid \pi(L)\right]\mathclose{} \\
+&amp;= \pi(L).
+\end{aligned}
+\]</span></p>
+<p>The two probabilities are equal, so <span class="math inline">\(A\)</span> does not depend on <span class="math inline">\(L\)</span> once <span class="math inline">\(\pi(L)\)</span> is fixed: <span class="math inline">\(A \perp\!\!\!\perp L \mid \pi(L)\)</span>.</p>
+</div>
+<p>In words: individuals with the same <span class="math inline">\(\pi(L)\)</span> may differ in <span class="math inline">\(L\)</span> (e.g., smoking intensity and exercise), but among all individuals with a given value of <span class="math inline">\(\pi(L)\)</span> in the super-population, the distribution of <span class="math inline">\(L\)</span> is the same in the treated and the untreated. A function <span class="math inline">\(b(L)\)</span> is a balancing score exactly when <span class="math inline">\(\pi(L)\)</span> can be written as a function of <span class="math inline">\(b(L)\)</span> <span class="citation" data-cites="rosenbaum1983central">(<a href="#/references" role="doc-biblioref" onclick="">Rosenbaum and Rubin 1983</a>, Theorem 2)</span>, so the propensity score is the coarsest balancing score.</p>
 <aside class="notes">
+<p>If the distribution of <span class="math inline">\(\pi(L)\)</span> were the same in the treated and the untreated, there would be no association between <span class="math inline">\(L\)</span> and <span class="math inline">\(A\)</span>: then <span class="math inline">\(A \perp\!\!\!\perp\pi(L)\)</span>, and combining this with <span class="math inline">\(A \perp\!\!\!\perp L \mid \pi(L)\)</span> from <a href="#/prp-ps-balancing" class="quarto-xref">Proposition&nbsp;3</a> gives <span class="math inline">\(A \perp\!\!\!\perp L\)</span>.</p>
+<div title="Limits of Propensity Score Balance">
+<div class="callout callout-warning callout-titled callout-style-default">
+<div class="callout-body">
+<div class="callout-title">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<p><strong>Limits of Propensity Score Balance</strong></p>
+</div>
+<div class="callout-content">
 <p>Two caveats from the book <span class="citation" data-cites="hernan2020causal">(<a href="#/references" role="doc-biblioref" onclick="">Hernán and Robins 2020, 201–2</a>)</span>:</p>
 <ul>
 <li>The propensity score balances only the <strong>measured</strong> covariates <span class="math inline">\(L\)</span>; unlike randomization, it does nothing about unmeasured confounders.</li>
 <li>In a finite study population the <strong>true</strong> propensity score balances <span class="math inline">\(L\)</span> only approximately, because of sampling variability. An estimated propensity score from a correct model generally gives better balance; in a randomized experiment, adjusting for the estimated <span class="math inline">\(\pi(L)\)</span> corrects both systematic and chance imbalances, whereas the true <span class="math inline">\(\pi(L)\)</span> ignores the chance imbalances.</li>
 </ul>
+</div>
+</div>
+</div>
+</div>
 <style type="text/css">
         span.MJX_Assistive_MathML {
           position:absolute!important;
@@ -387,18 +485,8 @@ A \perp\!\!\!\perp L \mid \pi(L).
           overflow: hidden!important;
           display:block!important;
       }</style></aside>
-</section>
-<section class="slide level2">
-
-<div id="def-balancing-score" class="theorem definition">
-<p><span class="theorem-title"><strong>Definition 2 (Balancing Score and Prognostic Score (Technical Point 15.1))</strong></span> &nbsp;</p>
-<ul>
-<li>A <strong>balancing score</strong> <span class="math inline">\(b(L)\)</span> is any function of <span class="math inline">\(L\)</span> such that <span class="math inline">\(A \perp\!\!\!\perp L \mid b(L)\)</span>. The propensity score is the simplest example.</li>
-<li>A <strong>prognostic score</strong> <span class="math inline">\(s(L)\)</span> is a function of <span class="math inline">\(L\)</span> such that <span class="math inline">\(Y^{a=0} \perp\!\!\!\perp L \mid s(L)\)</span>.</li>
-</ul>
-</div>
 <aside class="notes">
-<p>Rosenbaum and Rubin (1983) proved that exchangeability and positivity given <span class="math inline">\(L\)</span> imply exchangeability and positivity given any balancing score <span class="citation" data-cites="hernan2020causal">(<a href="#/references" role="doc-biblioref" onclick="">Hernán and Robins 2020, 202</a>)</span>. Graphically, <span class="math inline">\(\pi(L)\)</span> sits between <span class="math inline">\(L\)</span> and <span class="math inline">\(A\)</span>, with a deterministic arrow <span class="math inline">\(L \to \pi(L)\)</span> (book Figure 15.2); since <span class="math inline">\(\pi(L)\)</span> blocks every backdoor path between <span class="math inline">\(A\)</span> and <span class="math inline">\(L\)</span>, adjusting for it suffices.</p>
+<p>Rosenbaum and Rubin proved that exchangeability and positivity given <span class="math inline">\(L\)</span> imply exchangeability and positivity given any balancing score <span class="citation" data-cites="rosenbaum1983central hernan2020causal">(<a href="#/references" role="doc-biblioref" onclick="">Rosenbaum and Rubin 1983</a>, Theorem 3; <a href="#/references" role="doc-biblioref" onclick="">Hernán and Robins 2020, 202</a>)</span>. Graphically, <span class="math inline">\(\pi(L)\)</span> sits between <span class="math inline">\(L\)</span> and <span class="math inline">\(A\)</span>, with a deterministic arrow <span class="math inline">\(L \to \pi(L)\)</span> (book Figure 15.2); conditioning on <span class="math inline">\(\pi(L)\)</span> blocks the backdoor paths from <span class="math inline">\(A\)</span> to <span class="math inline">\(Y\)</span> through <span class="math inline">\(L\)</span> (<span class="math inline">\(A \leftarrow \pi(L) \leftarrow L \to Y\)</span>), so adjusting for it suffices.</p>
 <p>Methods based on prognostic scores need stronger assumptions and do not extend readily to time-varying treatments; see Hansen (2008) and Abadie et al.&nbsp;(2013), as cited in <span class="citation" data-cites="hernan2020causal">Hernán and Robins (<a href="#/references" role="doc-biblioref" onclick="">2020, 202</a>)</span>.</p>
 <style type="text/css">
         span.MJX_Assistive_MathML {
@@ -415,14 +503,29 @@ A \perp\!\!\!\perp L \mid \pi(L).
 <section class="slide level2 scrollable">
 
 <div id="thm-ps-exchangeability" class="theorem">
-<p><span class="theorem-title"><strong>Theorem 1 (Exchangeability and Positivity Given the Propensity Score)</strong></span> &nbsp;</p>
+<p><span class="theorem-title"><strong>Theorem 1 (Exchangeability and Positivity Given the Propensity Score)</strong></span> Let <span class="math inline">\(A\)</span> be dichotomous and <span class="math inline">\(\pi(L)\)</span> its propensity score (<a href="#/def-propensity-score" class="quarto-xref">Definition&nbsp;3</a>).</p>
 <ol type="1">
-<li>If <span class="math inline">\(Y^a \perp\!\!\!\perp A \mid L\)</span>, then <span class="math inline">\(Y^a \perp\!\!\!\perp A \mid \pi(L)\)</span>.</li>
-<li>Positivity holds within levels of <span class="math inline">\(\pi(L)\)</span> (no individual has <span class="math inline">\(\pi(L)\)</span> equal to 0 or 1) <strong>if and only if</strong> positivity holds within levels of <span class="math inline">\(L\)</span>.</li>
+<li>Fix <span class="math inline">\(a \in \{0, 1\}\)</span>. If <span class="math inline">\(Y^a \perp\!\!\!\perp A \mid L\)</span>, then <span class="math inline">\(Y^a \perp\!\!\!\perp A \mid \pi(L)\)</span>.</li>
+<li>Suppose <span class="math inline">\(L\)</span> is discrete. Then positivity holds within levels of <span class="math inline">\(\pi(L)\)</span>, that is, <span class="math inline">\(\Pr[A = a \mid \pi(L) = s] &gt; 0\)</span> for both <span class="math inline">\(a \in \{0, 1\}\)</span> and every <span class="math inline">\(s\)</span> with <span class="math inline">\(\Pr[\pi(L) = s] &gt; 0\)</span>, <strong>if and only if</strong> positivity holds within levels of <span class="math inline">\(L\)</span>, that is, <span class="math inline">\(\Pr[A = a \mid L = l] &gt; 0\)</span> for both <span class="math inline">\(a \in \{0, 1\}\)</span> and every <span class="math inline">\(l\)</span> with <span class="math inline">\(\Pr[L = l] &gt; 0\)</span>.</li>
 </ol>
 </div>
+<div class="proof">
+<p><span class="proof-title"><em>Proof</em> (Proof of part 1). </span><span class="math display">\[
+\begin{aligned}
+\Pr[A = 1 \mid Y^a, \pi(L)]
+&amp;= \operatorname{E}\mathopen{}\left[\Pr[A = 1 \mid Y^a, L] \mid Y^a, \pi(L)\right]\mathclose{} &amp;&amp; \text{(iterated expectations; } \pi(L) \text{ is a function of } L\text{)} \\
+&amp;= \operatorname{E}\mathopen{}\left[\Pr[A = 1 \mid L] \mid Y^a, \pi(L)\right]\mathclose{} &amp;&amp; (Y^a \perp\!\!\!\perp A \mid L) \\
+&amp;= \operatorname{E}\mathopen{}\left[\pi(L) \mid Y^a, \pi(L)\right]\mathclose{} &amp;&amp; \text{(definition of } \pi(L)\text{)} \\
+&amp;= \pi(L),
+\end{aligned}
+\]</span></p>
+<p>which does not depend on <span class="math inline">\(Y^a\)</span>; hence <span class="math inline">\(Y^a \perp\!\!\!\perp A \mid \pi(L)\)</span>.</p>
+</div>
+<div class="proof">
+<p><span class="proof-title"><em>Proof</em> (Proof of part 2). </span>The proof of <a href="#/prp-ps-balancing" class="quarto-xref">Proposition&nbsp;3</a> showed <span class="math inline">\(\Pr[A = 1 \mid \pi(L)] = \pi(L)\)</span>, so <span class="math inline">\(\Pr[A = 1 \mid \pi(L) = s] = s\)</span> and <span class="math inline">\(\Pr[A = 0 \mid \pi(L) = s] = 1 - s\)</span> for every <span class="math inline">\(s\)</span> with <span class="math inline">\(\Pr[\pi(L) = s] &gt; 0\)</span>. Because <span class="math inline">\(L\)</span> is discrete, <span class="math inline">\(\Pr[\pi(L) = s] = \sum_{l : \pi(l) = s} \Pr[L = l]\)</span>, so the values <span class="math inline">\(s\)</span> with <span class="math inline">\(\Pr[\pi(L) = s] &gt; 0\)</span> are exactly the values <span class="math inline">\(\pi(l)\)</span> with <span class="math inline">\(\Pr[L = l] &gt; 0\)</span>. Positivity within levels of <span class="math inline">\(\pi(L)\)</span> therefore holds if and only if <span class="math inline">\(0 &lt; \pi(l) &lt; 1\)</span> for every <span class="math inline">\(l\)</span> with <span class="math inline">\(\Pr[L = l] &gt; 0\)</span>. Positivity within levels of <span class="math inline">\(L\)</span> requires <span class="math inline">\(\Pr[A = 1 \mid L = l] = \pi(l)\)</span> and <span class="math inline">\(\Pr[A = 0 \mid L = l] = 1 - \pi(l)\)</span> to be positive for every <span class="math inline">\(l\)</span> with <span class="math inline">\(\Pr[L = l] &gt; 0\)</span>, which is the same condition.</p>
+</div>
 <aside class="notes">
-<p>Hence, if <span class="math inline">\(L\)</span> is sufficient to adjust for confounding and selection bias, so is <span class="math inline">\(\pi(L)\)</span> <span class="citation" data-cites="hernan2020causal">(<a href="#/references" role="doc-biblioref" onclick="">Hernán and Robins 2020, 202</a>)</span>. Positivity given the propensity score means <span class="math inline">\(\Pr[A = a \mid \pi(L) = s] &gt; 0\)</span> for every <span class="math inline">\(s\)</span> with <span class="math inline">\(\Pr[\pi(L) = s]\)</span> nonzero <span class="citation" data-cites="hernan2020causal">(<a href="#/references" role="doc-biblioref" onclick="">Hernán and Robins 2020, 204</a>)</span>.</p>
+<p>Hence, if <span class="math inline">\(L\)</span> is sufficient to adjust for confounding, so is <span class="math inline">\(\pi(L)\)</span> <span class="citation" data-cites="hernan2020causal">(<a href="#/references" role="doc-biblioref" onclick="">Hernán and Robins 2020, 202</a>)</span>; part 2 of <a href="#/thm-ps-exchangeability" class="quarto-xref">Theorem&nbsp;1</a> states the positivity condition given <span class="math inline">\(\pi(L)\)</span>.</p>
 <style type="text/css">
         span.MJX_Assistive_MathML {
           position:absolute!important;
@@ -435,47 +538,16 @@ A \perp\!\!\!\perp L \mid \pi(L).
           display:block!important;
       }</style></aside>
 </section>
-<section id="supplement-an-algebraic-proof-of-the-balancing-results" class="slide level2">
-<h2>Supplement: An Algebraic Proof of the Balancing Results</h2>
-<p>The book argues graphically (Technical Point 15.1); the same results follow from iterated expectations.</p>
-<div class="proof">
-<p><span class="proof-title"><em>Proof</em> (Proof that <span class="math inline">\(A \perp\!\!\!\perp L \mid \pi(L)\)</span>). </span>Since <span class="math inline">\(\pi(L)\)</span> is a function of <span class="math inline">\(L\)</span>, conditioning on <span class="math inline">\((L, \pi(L))\)</span> is the same as conditioning on <span class="math inline">\(L\)</span>:</p>
-<p><span class="math display">\[
-\Pr[A = 1 \mid L, \pi(L)] = \Pr[A = 1 \mid L] = \pi(L).
-\]</span></p>
-<p>Conditioning on <span class="math inline">\(\pi(L)\)</span> alone, by the law of iterated expectations:</p>
-<p><span class="math display">\[
-\begin{aligned}
-\Pr[A = 1 \mid \pi(L)]
-&amp;= \operatorname{E}\mathopen{}\left[\Pr[A = 1 \mid L] \mid \pi(L)\right]\mathclose{} \\
-&amp;= \operatorname{E}\mathopen{}\left[\pi(L) \mid \pi(L)\right]\mathclose{} \\
-&amp;= \pi(L).
-\end{aligned}
-\]</span></p>
-<p>The two probabilities are equal, so <span class="math inline">\(A\)</span> does not depend on <span class="math inline">\(L\)</span> once <span class="math inline">\(\pi(L)\)</span> is fixed: <span class="math inline">\(A \perp\!\!\!\perp L \mid \pi(L)\)</span>.</p>
-</div>
-<div class="proof">
-<p><span class="proof-title"><em>Proof</em> (Proof of part 1 of <a href="#/thm-ps-exchangeability" class="quarto-xref">Theorem&nbsp;1</a>). </span><span class="math display">\[
-\begin{aligned}
-\Pr[A = 1 \mid Y^a, \pi(L)]
-&amp;= \operatorname{E}\mathopen{}\left[\Pr[A = 1 \mid Y^a, L] \mid Y^a, \pi(L)\right]\mathclose{} &amp;&amp; \text{(iterated expectations; } \pi(L) \text{ is a function of } L\text{)} \\
-&amp;= \operatorname{E}\mathopen{}\left[\Pr[A = 1 \mid L] \mid Y^a, \pi(L)\right]\mathclose{} &amp;&amp; (Y^a \perp\!\!\!\perp A \mid L) \\
-&amp;= \operatorname{E}\mathopen{}\left[\pi(L) \mid Y^a, \pi(L)\right]\mathclose{} &amp;&amp; \text{(definition of } \pi(L)\text{)} \\
-&amp;= \pi(L),
-\end{aligned}
-\]</span></p>
-<p>which does not depend on <span class="math inline">\(Y^a\)</span>; hence <span class="math inline">\(Y^a \perp\!\!\!\perp A \mid \pi(L)\)</span>.</p>
-</div>
-</section>
-<section id="using-the-propensity-score" class="slide level2">
+<section id="using-the-propensity-score" class="slide level2 scrollable">
 <h2>Using the Propensity Score</h2>
-<p>Under exchangeability and positivity given <span class="math inline">\(\pi(L)\)</span>, we can estimate causal effects by</p>
-<ul>
-<li>stratification (including outcome regression) on <span class="math inline">\(\pi(L)\)</span>,</li>
-<li>standardization over <span class="math inline">\(\pi(L)\)</span>,</li>
-<li>matching on <span class="math inline">\(\pi(L)\)</span>.</li>
-</ul>
-<p>First estimate <span class="math inline">\(\pi(L)\)</span> from the data, then use the estimate in place of <span class="math inline">\(L\)</span>.</p>
+<div id="alg-propensity-score-adjustment" class="theorem algorithm">
+<p><span class="theorem-title"><strong>Algorithm 1 (Adjusting for the Propensity Score)</strong></span> Suppose exchangeability and positivity hold given <span class="math inline">\(\pi(L)\)</span>, consistency holds, and the model for <span class="math inline">\(\Pr[A = 1 \mid L]\)</span> is correctly specified; for outcome regression on, or standardization over, <span class="math inline">\(\hat\pi(L)\)</span>, suppose also that the model for the relation between <span class="math inline">\(\pi(L)\)</span> and <span class="math inline">\(Y\)</span> is correctly specified. Then causal effects can be estimated as follows.</p>
+<ol type="1">
+<li>Fit a model for <span class="math inline">\(\Pr[A = 1 \mid L]\)</span>.</li>
+<li>Compute the estimated propensity score <span class="math inline">\(\hat\pi(L_i)\)</span> for each individual <span class="math inline">\(i\)</span>.</li>
+<li>Use <span class="math inline">\(\hat\pi(L)\)</span> in place of <span class="math inline">\(L\)</span>: stratify on <span class="math inline">\(\hat\pi(L)\)</span> (including outcome regression on it), standardize over <span class="math inline">\(\hat\pi(L)\)</span>, or match on <span class="math inline">\(\hat\pi(L)\)</span>.</li>
+</ol>
+</div>
 </section></section>
 <section>
 <section id="propensity-stratification-and-standardization-pp.-202-204" class="title-slide slide level1 center" data-number="3">
@@ -484,17 +556,45 @@ A \perp\!\!\!\perp L \mid \pi(L).
 </section>
 <section class="slide level2">
 
-<p>Under the identifying conditions, for each value <span class="math inline">\(s\)</span> of the propensity score,</p>
+<div id="prp-ps-stratum-effect" class="theorem proposition">
+<p><span class="theorem-title"><strong>Proposition 4 (Effects Within Levels of the Propensity Score)</strong></span> Let <span class="math inline">\(A\)</span> be dichotomous and <span class="math inline">\(\pi(L)\)</span> its propensity score. Suppose that <span class="math inline">\(L\)</span> is discrete (so <span class="math inline">\(\pi(L)\)</span> is discrete too), and that, for each <span class="math inline">\(a \in \{0, 1\}\)</span>, <span class="math inline">\(\operatorname{E}\mathopen{}\left[\mathopen{}\left|Y^{a,c=0}\right|\mathclose{}\right]\mathclose{} &lt; \infty\)</span>. Suppose also conditional exchangeability given the propensity score, <span class="math inline">\(Y^{a,c=0} \perp\!\!\!\perp(A, C) \mid \pi(L)\)</span> for <span class="math inline">\(a \in \{0, 1\}\)</span>; positivity, <span class="math inline">\(\Pr[A = a, C = 0 \mid \pi(L) = s] &gt; 0\)</span> for <span class="math inline">\(a \in \{0, 1\}\)</span> and every <span class="math inline">\(s\)</span> with <span class="math inline">\(\Pr[\pi(L) = s] &gt; 0\)</span>; and consistency, <span class="math inline">\(Y = Y^{a,c=0}\)</span> whenever <span class="math inline">\(A = a\)</span> and <span class="math inline">\(C = 0\)</span>. Then, for each value <span class="math inline">\(s\)</span> of the propensity score with <span class="math inline">\(\Pr[\pi(L) = s] &gt; 0\)</span>,</p>
 <p><span class="math display">\[
 \operatorname{E}\mathopen{}\left[Y^{a=1,c=0} \mid \pi(L) = s\right]\mathclose{} - \operatorname{E}\mathopen{}\left[Y^{a=0,c=0} \mid \pi(L) = s\right]\mathclose{}
 = \operatorname{E}\mathopen{}\left[Y \mid A = 1, C = 0, \pi(L) = s\right]\mathclose{} - \operatorname{E}\mathopen{}\left[Y \mid A = 0, C = 0, \pi(L) = s\right]\mathclose{}.
 \]</span></p>
-<p>But <span class="math inline">\(\pi(L)\)</span> is generally continuous, so almost no two individuals share a value <span class="math inline">\(s\)</span> (e.g., only one NHEFS individual had an estimated <span class="math inline">\(\pi(L)\)</span> of 0.6563).</p>
+</div>
+<div class="proof">
+<p><span class="proof-title"><em>Proof</em>. </span>For each <span class="math inline">\(a \in \{0, 1\}\)</span>,</p>
+<p><span class="math display">\[
+\begin{aligned}
+\operatorname{E}\mathopen{}\left[Y^{a,c=0} \mid \pi(L) = s\right]\mathclose{}
+&amp;= \operatorname{E}\mathopen{}\left[Y^{a,c=0} \mid A = a, C = 0, \pi(L) = s\right]\mathclose{} &amp;&amp; \text{(exchangeability given } \pi(L)\text{; positivity)} \\
+&amp;= \operatorname{E}\mathopen{}\left[Y \mid A = a, C = 0, \pi(L) = s\right]\mathclose{} &amp;&amp; \text{(consistency)}.
+\end{aligned}
+\]</span></p>
+<p>Subtracting the <span class="math inline">\(a = 0\)</span> line from the <span class="math inline">\(a = 1\)</span> line gives the result.</p>
+</div>
+<p>For treatment alone, without censoring, <a href="#/thm-ps-exchangeability" class="quarto-xref">Theorem&nbsp;1</a> shows that exchangeability and positivity given <span class="math inline">\(L\)</span> carry over to <span class="math inline">\(\pi(L)\)</span>. When no one is censored, the joint <span class="math inline">\((A, C)\)</span> conditions of <a href="#/prp-ps-stratum-effect" class="quarto-xref">Proposition&nbsp;4</a> reduce to these treatment-only conditions, so they hold whenever exchangeability and positivity given <span class="math inline">\(L\)</span> hold (with <span class="math inline">\(L\)</span> discrete, as in <a href="#/prp-ps-stratum-effect" class="quarto-xref">Proposition&nbsp;4</a>). With censoring, <span class="math inline">\(\pi(L)\)</span> alone need not suffice; one would instead condition on a score <span class="math inline">\(b(L)\)</span> with <span class="math inline">\((A, C) \perp\!\!\!\perp L \mid b(L)\)</span>, for example the vector of joint probabilities <span class="math inline">\(\Pr[A = a, C = c \mid L]\)</span> over all <span class="math inline">\((a, c)\)</span>.</p>
+<div title="Few Individuals Share a Propensity Score Value">
+<div class="callout callout-warning callout-titled callout-style-default">
+<div class="callout-body">
+<div class="callout-title">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<p><strong>Few Individuals Share a Propensity Score Value</strong></p>
+</div>
+<div class="callout-content">
+<p>In practice <span class="math inline">\(\pi(L)\)</span> is generally continuous, so almost no two individuals share a value <span class="math inline">\(s\)</span> (e.g., only one NHEFS individual had an estimated <span class="math inline">\(\pi(L)\)</span> of 0.6563).</p>
+</div>
+</div>
+</div>
+</div>
 </section>
 <section id="stratifying-on-deciles" class="slide level2">
 <h2>Stratifying on Deciles</h2>
 <div id="exm-ps-deciles" class="theorem example">
-<p><span class="theorem-title"><strong>Example 3 (Decile Stratification in NHEFS)</strong></span> Classify individuals into 10 strata (deciles) of the estimated <span class="math inline">\(\pi(L)\)</span>, about 162 individuals each, and estimate the effect within each decile <span class="citation" data-cites="hernan2020causal">(<a href="#/references" role="doc-biblioref" onclick="">Hernán and Robins 2020, 203</a>)</span>:</p>
+<p><span class="theorem-title"><strong>Example 4 (Decile Stratification in NHEFS)</strong></span> Classify individuals into 10 strata (deciles) of the estimated <span class="math inline">\(\pi(L)\)</span>, about 162 individuals each, and estimate the effect within each decile <span class="citation" data-cites="hernan2020causal">(<a href="#/references" role="doc-biblioref" onclick="">Hernán and Robins 2020, 203</a>)</span>:</p>
 <ul>
 <li>decile-specific effects of smoking cessation on weight gain ranged from 0.0 to 6.6 kg, with wide 95% CIs;</li>
 <li>the same estimates come from an outcome regression of <span class="math inline">\(Y\)</span> on <span class="math inline">\(A\)</span>, 9 decile indicators, and 9 <span class="math inline">\(A \times\)</span> indicator product terms;</li>
@@ -502,7 +602,7 @@ A \perp\!\!\!\perp L \mid \pi(L).
 </ul>
 </div>
 <aside class="notes">
-<p>See Fine Point 15.2 (Section 15.5) for effect modification by the propensity score.</p>
+<p>With wide confidence intervals, differences between deciles may reflect chance.</p>
 <style type="text/css">
         span.MJX_Assistive_MathML {
           position:absolute!important;
@@ -517,11 +617,56 @@ A \perp\!\!\!\perp L \mid \pi(L).
 </section>
 <section id="a-problem-with-categorized-propensity-scores" class="slide level2">
 <h2>A Problem with Categorized Propensity Scores</h2>
+<div title="Residual Imbalance Within Propensity Strata">
+<div class="callout callout-warning callout-titled callout-style-default">
+<div class="callout-body">
+<div class="callout-title">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<p><strong>Residual Imbalance Within Propensity Strata</strong></p>
+</div>
+<div class="callout-content">
 <p>Within a decile, the distribution of the continuous <span class="math inline">\(\pi(L)\)</span> may still differ between treated and untreated (e.g., higher average <span class="math inline">\(\pi(L)\)</span> in the treated), so the groups may not be exchangeable within that decile.</p>
-<p>Remedy: use the estimated <span class="math inline">\(\pi(L)\)</span> as a <strong>continuous</strong> covariate in the outcome model <span class="math inline">\(\operatorname{E}\mathopen{}\left[Y \mid A, C = 0, \pi(L)\right]\mathclose{}\)</span>. In NHEFS (linear in <span class="math inline">\(\pi(L)\)</span>): 3.6 kg (95% CI: 2.7, 4.5).</p>
+</div>
+</div>
+</div>
+</div>
+<div title="Use the Propensity Score as a Continuous Covariate">
+<div class="callout callout-tip callout-titled callout-style-default">
+<div class="callout-body">
+<div class="callout-title">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<p><strong>Use the Propensity Score as a Continuous Covariate</strong></p>
+</div>
+<div class="callout-content">
+<p>Remedy: use the estimated <span class="math inline">\(\pi(L)\)</span> as a <strong>continuous</strong> covariate in the outcome model <span class="math inline">\(\operatorname{E}\mathopen{}\left[Y \mid A, C = 0, \pi(L)\right]\mathclose{}\)</span>.</p>
+</div>
+</div>
+</div>
+</div>
+<div id="exm-nhefs-continuous-ps" class="theorem example">
+<p><span class="theorem-title"><strong>Example 5 (Continuous Propensity Score in NHEFS)</strong></span> In NHEFS (linear in <span class="math inline">\(\pi(L)\)</span>): 3.6 kg (95% CI: 2.7, 4.5).</p>
+</div>
 <aside class="notes">
 <p>IP weighting and g-estimation never had this problem, because they used the numerical value of the estimated probability rather than a categorized version <span class="citation" data-cites="hernan2020causal">(<a href="#/references" role="doc-biblioref" onclick="">Hernán and Robins 2020, 203</a>)</span>.</p>
-<p><strong>Caution</strong>: for a dichotomous treatment the IP weight denominator is not <span class="math inline">\(\pi(L)\)</span> itself but a function of it: <span class="math inline">\(\pi(L)\)</span> for the treated (<span class="math inline">\(A = 1\)</span>) and <span class="math inline">\(1 - \pi(L)\)</span> for the untreated (<span class="math inline">\(A = 0\)</span>).</p>
+<div title="The IP Weight Denominator Is a Function of the Propensity Score">
+<div class="callout callout-warning callout-titled callout-style-default">
+<div class="callout-body">
+<div class="callout-title">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<p><strong>The IP Weight Denominator Is a Function of the Propensity Score</strong></p>
+</div>
+<div class="callout-content">
+<p>For a dichotomous treatment the IP weight denominator is not <span class="math inline">\(\pi(L)\)</span> itself but a function of it: <span class="math inline">\(\pi(L)\)</span> for the treated (<span class="math inline">\(A = 1\)</span>) and <span class="math inline">\(1 - \pi(L)\)</span> for the untreated (<span class="math inline">\(A = 0\)</span>).</p>
+</div>
+</div>
+</div>
+</div>
 <p>The outcome model now requires a correct specification of the <span class="math inline">\(\pi(L)\)</span>-<span class="math inline">\(Y\)</span> relation. Because <span class="math inline">\(\pi(L)\)</span> is one-dimensional, this is easy to protect with flexible terms such as cubic splines; IP weighting and g-estimation were agnostic about that relation. Note, though, that <span class="math inline">\(\pi(L)\)</span> itself must still be estimated from a model of <span class="math inline">\(A\)</span> on the high-dimensional <span class="math inline">\(L\)</span>, as in IP weighting and g-estimation.</p>
 <style type="text/css">
         span.MJX_Assistive_MathML {
@@ -535,14 +680,23 @@ A \perp\!\!\!\perp L \mid \pi(L).
           display:block!important;
       }</style></aside>
 </section>
-<section id="standardizing-over-the-propensity-score" class="slide level2">
+<section id="standardizing-over-the-propensity-score" class="slide level2 scrollable">
 <h2>Standardizing over the Propensity Score</h2>
-<p>The outcome model on <span class="math inline">\(\pi(L)\)</span> estimates effects <strong>within</strong> levels <span class="math inline">\(s\)</span> of <span class="math inline">\(\pi(L)\)</span>. For the population average causal effect <span class="math inline">\(\operatorname{E}\mathopen{}\left[Y^{a=1,c=0}\right]\mathclose{} - \operatorname{E}\mathopen{}\left[Y^{a=0,c=0}\right]\mathclose{}\)</span>, standardize the fitted conditional means over the distribution of the estimated <span class="math inline">\(\pi(L)\)</span>: the Chapter 13 procedure with <span class="math inline">\(\pi(L)\)</span> in place of <span class="math inline">\(L\)</span>.</p>
+<p>The outcome model on <span class="math inline">\(\pi(L)\)</span> estimates effects <strong>within</strong> levels <span class="math inline">\(s\)</span> of <span class="math inline">\(\pi(L)\)</span>.</p>
+<div id="alg-ps-standardization" class="theorem algorithm">
+<p><span class="theorem-title"><strong>Algorithm 2 (Standardization over the Propensity Score)</strong></span> For the population average causal effect <span class="math inline">\(\operatorname{E}\mathopen{}\left[Y^{a=1,c=0}\right]\mathclose{} - \operatorname{E}\mathopen{}\left[Y^{a=0,c=0}\right]\mathclose{}\)</span>, standardize the fitted conditional means over the distribution of an estimated adjustment score <span class="math inline">\(b(L)\)</span>: the Chapter 13 procedure with <span class="math inline">\(b(L)\)</span> in place of <span class="math inline">\(L\)</span>. When no one is censored, <span class="math inline">\(b(L) = \pi(L)\)</span>, which suffices for adjustment when exchangeability and positivity hold given <span class="math inline">\(L\)</span> (<a href="#/thm-ps-exchangeability" class="quarto-xref">Theorem&nbsp;1</a>). With censoring, <span class="math inline">\(b(L)\)</span> is a joint score with <span class="math inline">\((A, C) \perp\!\!\!\perp L \mid b(L)\)</span>, as discussed after <a href="#/prp-ps-stratum-effect" class="quarto-xref">Proposition&nbsp;4</a>, such as the vector of joint probabilities <span class="math inline">\(\Pr[A = a, C = c \mid L]\)</span> over all <span class="math inline">\((a, c)\)</span>. This joint score suffices when, for each <span class="math inline">\(a \in \{0, 1\}\)</span>, <span class="math inline">\(Y^{a,c=0} \perp\!\!\!\perp(A, C) \mid L\)</span> and <span class="math inline">\(\Pr[A = a, C = 0 \mid L] &gt; 0\)</span>: because <span class="math inline">\((A, C) \perp\!\!\!\perp L \mid b(L)\)</span>, these conditions carry over from <span class="math inline">\(L\)</span> to <span class="math inline">\(b(L)\)</span>, by the argument <a href="#/thm-ps-exchangeability" class="quarto-xref">Theorem&nbsp;1</a> gives for <span class="math inline">\(A\)</span> alone. In either case, consistency must hold, and the treatment, censoring (if any), and outcome models must be correctly specified.</p>
+<ol type="1">
+<li><p>Estimate the score <span class="math inline">\(\hat b(L_i)\)</span> for each individual <span class="math inline">\(i = 1, \ldots, n\)</span>, censored or not. Without censoring, <span class="math inline">\(\hat b(L_i) = \hat\pi(L_i)\)</span>. With censoring, combine a treatment model and a censoring model, <span class="math inline">\(\hat{\Pr}[A = a, C = c \mid L] = \hat{\Pr}[A = a \mid L] \, \hat{\Pr}[C = c \mid L, A = a]\)</span> for each <span class="math inline">\((a, c)\)</span>.</p></li>
+<li><p>Fit an outcome model for <span class="math inline">\(\operatorname{E}\mathopen{}\left[Y \mid A, C = 0, b(L)\right]\mathclose{}\)</span> once, among the uncensored, with <span class="math inline">\(\hat b(L)\)</span> as the covariate(s); write <span class="math inline">\(\hat m(a, s)\)</span> for its fitted value at <span class="math inline">\(A = a\)</span> and score value <span class="math inline">\(s\)</span>.</p></li>
+<li><p>For each <span class="math inline">\(a \in \{0, 1\}\)</span>, predict each individual’s outcome at <span class="math inline">\(A = a\)</span> and their own <span class="math inline">\(\hat b(L_i)\)</span>, and average the predictions over all <span class="math inline">\(n\)</span> individuals:</p>
 <p><span class="math display">\[
-\mathop{\hat{\operatorname{E}}}\nolimits\mathopen{}\left[Y^{a,c=0}\right]\mathclose{} = \frac{1}{n} \sum_{i=1}^n\mathop{\hat{\operatorname{E}}}\nolimits\mathopen{}\left[Y \mid A = a, C = 0, \pi(L) = \hat\pi(L_i)\right]\mathclose{}
-\]</span></p>
+\mathop{\hat{\operatorname{E}}}\nolimits\mathopen{}\left[Y^{a,c=0}\right]\mathclose{} = \frac{1}{n} \sum_{i=1}^n\hat m(a, \hat b(L_i)).
+\]</span></p></li>
+<li><p>Estimate the average causal effect by the difference <span class="math inline">\(\mathop{\hat{\operatorname{E}}}\nolimits\mathopen{}\left[Y^{a=1,c=0}\right]\mathclose{} - \mathop{\hat{\operatorname{E}}}\nolimits\mathopen{}\left[Y^{a=0,c=0}\right]\mathclose{}\)</span>.</p></li>
+</ol>
+</div>
 <div id="exm-ps-standardization" class="theorem example">
-<p><span class="theorem-title"><strong>Example 4 (Standardized Estimate in NHEFS)</strong></span> Standardizing over the estimated propensity score (the outcome model may include an <span class="math inline">\(A \times \pi(L)\)</span> product term) gives 3.6 kg (95% CI: 2.7, 4.6) <span class="citation" data-cites="hernan2020causal">(<a href="#/references" role="doc-biblioref" onclick="">Hernán and Robins 2020, 203</a>)</span>.</p>
+<p><span class="theorem-title"><strong>Example 6 (Standardized Estimate in NHEFS)</strong></span> Standardizing over the estimated propensity score (the outcome model may include an <span class="math inline">\(A \times \pi(L)\)</span> product term) gives 3.6 kg (95% CI: 2.7, 4.6) <span class="citation" data-cites="hernan2020causal">(<a href="#/references" role="doc-biblioref" onclick="">Hernán and Robins 2020, 203</a>)</span>.</p>
 </div>
 </section></section>
 <section>
@@ -552,127 +706,20 @@ A \perp\!\!\!\perp L \mid \pi(L).
 </section>
 <section class="slide level2">
 
-<p>Matching on <span class="math inline">\(\pi(L)\)</span> is analogous to matching on a single continuous variable (Chapter 4). All versions try to build a <strong>matched population</strong> in which treated and untreated have the same distribution of <span class="math inline">\(\pi(L)\)</span>, and hence are exchangeable.</p>
+<p>Matching on <span class="math inline">\(\pi(L)\)</span> is analogous to matching on a single continuous variable (Chapter 4).</p>
+<div id="def-ps-matched-population" class="theorem definition">
+<p><span class="theorem-title"><strong>Definition 5 (Propensity-Matched Population)</strong></span> A <strong>propensity-matched population</strong> is a subset of the study population, possibly reweighted, in which the distribution of <span class="math inline">\(\pi(L)\)</span> is the same among the treated and the untreated, or approximately the same when matches need only fall within a caliper.</p>
+</div>
 <ul>
 <li>E.g., pair each treated individual with one (or more) untreated individuals with the same, or a close, propensity score.</li>
-<li>Under exchangeability and positivity given <span class="math inline">\(\pi(L)\)</span>, association measures in the matched population consistently estimate the effect measures <strong>in the matched population</strong>.</li>
+<li>Under exchangeability and positivity given <span class="math inline">\(\pi(L)\)</span>, exact matching on the true <span class="math inline">\(\pi(L)\)</span> makes the treated and the untreated in the matched population exchangeable, so, under consistency, association measures in the matched population equal the effect measures <strong>in the matched population</strong>.</li>
+<li>In practice we match on an estimate <span class="math inline">\(\hat\pi(L)\)</span>. Equal estimated scores need not mean equal true scores, so even with a correctly specified propensity model this exchangeability holds only approximately, with the approximation improving as the sample grows.</li>
+<li>Caliper matching adds a second approximation: some bias may remain, and it typically shrinks as the caliper narrows.</li>
+<li>With censoring, outcomes are observed only for the uncensored members of the matched population. One way to account for that is to weight the uncensored by the inverse of <span class="math inline">\(\Pr[C = 0 \mid L, A]\)</span> (Chapter 12), which needs a correct censoring model, <span class="math inline">\(Y^{a,c=0} \perp\!\!\!\perp C \mid A, L\)</span>, and <span class="math inline">\(\Pr[C = 0 \mid L, A] &gt; 0\)</span>.</li>
 </ul>
 <aside class="notes">
 <p>The matched population can be given the <span class="math inline">\(\pi(L)\)</span> distribution of the treated, of the untreated, or any other distribution <span class="citation" data-cites="hernan2020causal">(<a href="#/references" role="doc-biblioref" onclick="">Hernán and Robins 2020, 204</a>)</span>.</p>
 <p>Variance estimation for matched estimators used to be an open problem; Abadie and Imbens (2006) solved it <span class="citation" data-cites="hernan2020causal">(<a href="#/references" role="doc-biblioref" onclick="">Hernán and Robins 2020, 204</a>)</span>.</p>
-<style type="text/css">
-        span.MJX_Assistive_MathML {
-          position:absolute!important;
-          clip: rect(1px, 1px, 1px, 1px);
-          padding: 1px 0 0 0!important;
-          border: 0!important;
-          height: 1px!important;
-          width: 1px!important;
-          overflow: hidden!important;
-          display:block!important;
-      }</style></aside>
-</section>
-<section id="defining-closeness" class="slide level2">
-<h2>Defining Closeness</h2>
-<p>Exact matches on a continuous <span class="math inline">\(\pi(L)\)</span> are rare, so we match on a <strong>close</strong> value, e.g., untreated individuals within <span class="math inline">\(\pm 0.05\)</span> of the treated individual’s estimated <span class="math inline">\(\pi(L)\)</span> (e.g., a treated individual with estimated <span class="math inline">\(\pi(L) = 0.6563\)</span> could be matched to an untreated individual with 0.6579).</p>
-<p><strong>Bias-variance trade-off</strong>:</p>
-<ul>
-<li>criteria too loose: the <span class="math inline">\(\pi(L)\)</span> distribution differs between matched treated and untreated, so exchangeability fails;</li>
-<li>criteria too tight: many individuals are excluded; approximate exchangeability, but wider confidence intervals.</li>
-</ul>
-</section>
-<section id="matching-and-positivity" class="slide level2">
-<h2>Matching and Positivity</h2>
-<ul>
-<li>In NHEFS, the estimated <span class="math inline">\(\pi(L)\)</span> distributions overlapped over most of the range; only 2 treated individuals had values above those of every untreated individual.</li>
-<li>Outcome regression on <span class="math inline">\(\pi(L)\)</span> (Section 15.3) kept them, implicitly treating the lack of comparable untreated individuals as <strong>random nonpositivity</strong>.</li>
-<li>Most matched analyses would drop them. Matching does not distinguish random from structural nonpositivity.</li>
-</ul>
-<aside class="notes">
-<p>The book also states this count as a percentage of the study population (0.01%); that percentage is not reproduced here because it is inconsistent with the counts: 2 individuals are about 0.1% of a study population of roughly 1,600.</p>
-<style type="text/css">
-        span.MJX_Assistive_MathML {
-          position:absolute!important;
-          clip: rect(1px, 1px, 1px, 1px);
-          padding: 1px 0 0 0!important;
-          border: 0!important;
-          height: 1px!important;
-          width: 1px!important;
-          overflow: hidden!important;
-          display:block!important;
-      }</style></aside>
-</section>
-<section id="who-is-in-the-matched-population" class="slide level2">
-<h2>Who Is in the Matched Population?</h2>
-<ul>
-<li>In theory, matching targets a well-characterized population: matching every treated individual and dropping unmatched untreated estimates the <strong>effect in the treated</strong> (Fine Point 15.2).</li>
-<li>In practice, treated individuals without a close match are excluded too, so the estimate refers to a subset defined by the values of the estimated <span class="math inline">\(\pi(L)\)</span> that found matches.</li>
-</ul>
-<p>Restricting to, say, estimated <span class="math inline">\(\pi(L) &lt; 0.67\)</span> yields a population that is hard to describe: “individuals do not come with a propensity score tattooed on their forehead” <span class="citation" data-cites="hernan2020causal">(<a href="#/references" role="doc-biblioref" onclick="">Hernán and Robins 2020, 205</a>)</span>, so transportability to other populations is hard to judge.</p>
-</section>
-<section id="restrict-on-real-world-variables-instead" class="slide level2">
-<h2>Restrict on Real-World Variables Instead</h2>
-<p>In NHEFS, the 2 treated individuals with estimated <span class="math inline">\(\pi(L) &gt; 0.67\)</span> were the only participants over age 50 who had smoked for fewer than 10 years. Excluding them gives an estimate for</p>
-<ul>
-<li>smokers under 50, and</li>
-<li>smokers 50 and over who had smoked for at least 10 years,</li>
-</ul>
-<p>which is a far more natural target population than “estimated <span class="math inline">\(\pi(L) &lt; 0.67\)</span>” <span class="citation" data-cites="hernan2020causal">(<a href="#/references" role="doc-biblioref" onclick="">Hernán and Robins 2020, 205</a>)</span>.</p>
-<aside class="notes">
-<p>Using propensity scores to <strong>find</strong> the region of overlap can be useful, but restricting the study population to that region is a “lazy” way to secure positivity: the automatic positivity of matching must be weighed against the difficulty of assessing transportability <span class="citation" data-cites="hernan2020causal">(<a href="#/references" role="doc-biblioref" onclick="">Hernán and Robins 2020, 205</a>)</span>. Even if everyone’s propensity score were visible, the population could remain ill-characterized, because the same propensity score value can mean different things in different settings.</p>
-<style type="text/css">
-        span.MJX_Assistive_MathML {
-          position:absolute!important;
-          clip: rect(1px, 1px, 1px, 1px);
-          padding: 1px 0 0 0!important;
-          border: 0!important;
-          height: 1px!important;
-          width: 1px!important;
-          overflow: hidden!important;
-          display:block!important;
-      }</style></aside>
-</section></section>
-<section>
-<section id="propensity-models-structural-models-predictive-models-pp.-205-208" class="title-slide slide level1 center" data-number="5">
-<h1><span class="header-section-number">5</span> 15.5 Propensity Models, Structural Models, Predictive Models (pp.&nbsp;205-208)</h1>
-
-</section>
-<section class="slide level2">
-
-<p>Part II used two kinds of models for causal inference.</p>
-<div id="def-propensity-structural-models" class="theorem definition">
-<p><span class="theorem-title"><strong>Definition 3 (Propensity Models and Structural Models)</strong></span> &nbsp;</p>
-<ul>
-<li><strong>Propensity models</strong>: models for <span class="math inline">\(\Pr[A \mid L]\)</span>, where <span class="math inline">\(L\)</span> are the variables needed for conditional exchangeability. Their parameters are <strong>nuisance parameters</strong> with no causal interpretation.</li>
-<li><strong>Structural models</strong>: models relating <span class="math inline">\(A\)</span> to some feature (e.g., the mean) of the counterfactual <span class="math inline">\(Y^a\)</span>, marginally or within levels of <span class="math inline">\(L\)</span>. Their treatment parameters <strong>do</strong> have a causal interpretation. For continuous treatments they are often called <strong>dose-response models</strong>.</li>
-</ul>
-</div>
-<aside class="notes">
-<p>Propensity models have been used for matching and stratification (this chapter), IP weighting (Chapter 12), and g-estimation (Chapter 14). Their parameters lack a causal interpretation because <span class="math inline">\(L\)</span> and <span class="math inline">\(A\)</span> can be associated for many reasons: the association reflects the effect of <span class="math inline">\(L\)</span> on <span class="math inline">\(A\)</span> under the book’s Figure 7.1, but not under Figures 7.2 and 7.3 <span class="citation" data-cites="hernan2020causal">(<a href="#/references" role="doc-biblioref" onclick="">Hernán and Robins 2020, 205</a>)</span>.</p>
-<style type="text/css">
-        span.MJX_Assistive_MathML {
-          position:absolute!important;
-          clip: rect(1px, 1px, 1px, 1px);
-          padding: 1px 0 0 0!important;
-          border: 0!important;
-          height: 1px!important;
-          width: 1px!important;
-          overflow: hidden!important;
-          display:block!important;
-      }</style></aside>
-</section>
-<section id="two-classes-of-structural-models" class="slide level2">
-<h2>Two Classes of Structural Models</h2>
-<ul>
-<li><strong>Marginal structural models</strong>: parameters for treatment, for chosen effect modifiers <span class="math inline">\(V\)</span>, and for <span class="math inline">\(A \times V\)</span> product terms. <span class="math inline">\(V\)</span> reflects only the investigator’s interest in effect modification (Section 12.5).
-<ul>
-<li>No <span class="math inline">\(V\)</span>: truly marginal.</li>
-<li><span class="math inline">\(V = L\)</span> (all covariates): a <strong>faux</strong> marginal structural model, which is what outcome regression (Section 15.1) estimates.</li>
-</ul></li>
-<li><strong>Structural nested models</strong>: parameters for treatment and for <span class="math inline">\(A \times L\)</span> product terms for those variables in <span class="math inline">\(L\)</span> that are effect modifiers.</li>
-</ul>
-<aside class="notes">
-<p>See Fine Point 14.1 of the book for the relation between structural nested models and faux semiparametric marginal structural models <span class="citation" data-cites="hernan2020causal">(<a href="#/references" role="doc-biblioref" onclick="">Hernán and Robins 2020, 206</a>)</span>.</p>
 <style type="text/css">
         span.MJX_Assistive_MathML {
           position:absolute!important;
@@ -707,16 +754,204 @@ A \perp\!\!\!\perp L \mid \pi(L).
 </div>
 </div>
 </section>
+<section id="defining-closeness" class="slide level2">
+<h2>Defining Closeness</h2>
+<p>Exact matches on a continuous <span class="math inline">\(\pi(L)\)</span> are rare, so we match on a <strong>close</strong> value, e.g., untreated individuals within <span class="math inline">\(\pm 0.05\)</span> of the treated individual’s estimated <span class="math inline">\(\pi(L)\)</span> (e.g., a treated individual with estimated <span class="math inline">\(\pi(L) = 0.6563\)</span> could be matched to an untreated individual with 0.6579).</p>
+<div title="Choosing How Close a Match Must Be">
+<div class="callout callout-tip callout-titled callout-style-default">
+<div class="callout-body">
+<div class="callout-title">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<p><strong>Choosing How Close a Match Must Be</strong></p>
+</div>
+<div class="callout-content">
+<p><strong>Bias-variance trade-off</strong>:</p>
+<ul>
+<li>criteria too loose: the <span class="math inline">\(\pi(L)\)</span> distribution differs between matched treated and untreated, so exchangeability fails;</li>
+<li>criteria too tight: many individuals are excluded; approximate exchangeability, but wider confidence intervals.</li>
+</ul>
+</div>
+</div>
+</div>
+</div>
+</section>
+<section id="matching-and-positivity" class="slide level2">
+<h2>Matching and Positivity</h2>
+<div id="exm-nhefs-matching-positivity" class="theorem example">
+<p><span class="theorem-title"><strong>Example 7 (Matching and Positivity in NHEFS)</strong></span> &nbsp;</p>
+<ul>
+<li>In NHEFS, the estimated <span class="math inline">\(\pi(L)\)</span> distributions overlapped over most of the range; only 2 treated individuals had values above those of every untreated individual.</li>
+<li>Outcome regression on <span class="math inline">\(\pi(L)\)</span> (Section 15.3) kept them, implicitly treating the lack of comparable untreated individuals as <strong>random nonpositivity</strong>.</li>
+<li>Most matched analyses would drop them.</li>
+</ul>
+</div>
+<div title="Matching Ignores the Type of Nonpositivity">
+<div class="callout callout-warning callout-titled callout-style-default">
+<div class="callout-body">
+<div class="callout-title">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<p><strong>Matching Ignores the Type of Nonpositivity</strong></p>
+</div>
+<div class="callout-content">
+<p>Matching does not distinguish random from structural nonpositivity.</p>
+</div>
+</div>
+</div>
+</div>
+<aside class="notes">
+<p>The book also states this count as a percentage of the study population (0.01%); that percentage is not reproduced here because it is inconsistent with the counts: 2 individuals are about 0.1% of a study population of roughly 1,600.</p>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside>
+</section>
+<section id="who-is-in-the-matched-population" class="slide level2">
+<h2>Who Is in the Matched Population?</h2>
+<div id="rem-matching-target-population" class="proof remark">
+<p><span class="proof-title"><em>Remark 4</em> (Target Population of a Matched Analysis). </span></p>
+<ul>
+<li>In theory, matching targets a well-characterized population: matching every treated individual and dropping unmatched untreated estimates the <strong>effect in the treated</strong> (Fine Point 15.2).</li>
+<li>In practice, treated individuals without a close match are excluded too, so the estimate refers to a subset defined by the values of the estimated <span class="math inline">\(\pi(L)\)</span> that found matches.</li>
+</ul>
+</div>
+<div title="Propensity-Defined Populations Are Hard to Describe">
+<div class="callout callout-warning callout-titled callout-style-default">
+<div class="callout-body">
+<div class="callout-title">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<p><strong>Propensity-Defined Populations Are Hard to Describe</strong></p>
+</div>
+<div class="callout-content">
+<p>Restricting to, say, estimated <span class="math inline">\(\pi(L) &lt; 0.67\)</span> yields a population that is hard to describe: “individuals do not come with a propensity score tattooed on their forehead” <span class="citation" data-cites="hernan2020causal">(<a href="#/references" role="doc-biblioref" onclick="">Hernán and Robins 2020, 205</a>)</span>, so transportability to other populations is hard to judge.</p>
+</div>
+</div>
+</div>
+</div>
+</section>
+<section id="restrict-on-real-world-variables-instead" class="slide level2">
+<h2>Restrict on Real-World Variables Instead</h2>
+<div id="exm-nhefs-restrict-real-variables" class="theorem example">
+<p><span class="theorem-title"><strong>Example 8 (Restricting on Age and Smoking Duration in NHEFS)</strong></span> In NHEFS, the 2 treated individuals with estimated <span class="math inline">\(\pi(L) &gt; 0.67\)</span> were the only participants over age 50 who had smoked for fewer than 10 years. Excluding them gives an estimate for</p>
+<ul>
+<li>smokers under 50, and</li>
+<li>smokers 50 and over who had smoked for at least 10 years,</li>
+</ul>
+<p>which is a far more natural target population than “estimated <span class="math inline">\(\pi(L) &lt; 0.67\)</span>” <span class="citation" data-cites="hernan2020causal">(<a href="#/references" role="doc-biblioref" onclick="">Hernán and Robins 2020, 205</a>)</span>.</p>
+</div>
+<aside class="notes">
+<div title="Restricting to the Overlap Region">
+<div class="callout callout-warning callout-titled callout-style-default">
+<div class="callout-body">
+<div class="callout-title">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<p><strong>Restricting to the Overlap Region</strong></p>
+</div>
+<div class="callout-content">
+<p>Using propensity scores to <strong>find</strong> the region of overlap can be useful, but restricting the study population to that region is a “lazy” way to secure positivity: the automatic positivity of matching must be weighed against the difficulty of assessing transportability <span class="citation" data-cites="hernan2020causal">(<a href="#/references" role="doc-biblioref" onclick="">Hernán and Robins 2020, 205</a>)</span>. Even if everyone’s propensity score were visible, the population could remain ill-characterized, because the same propensity score value can mean different things in different settings.</p>
+</div>
+</div>
+</div>
+</div>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside>
+</section></section>
+<section>
+<section id="propensity-models-structural-models-predictive-models-pp.-205-208" class="title-slide slide level1 center" data-number="5">
+<h1><span class="header-section-number">5</span> 15.5 Propensity Models, Structural Models, Predictive Models (pp.&nbsp;205-208)</h1>
+
+</section>
+<section class="slide level2">
+
+<p>Part II used two kinds of models for causal inference.</p>
+<div id="def-propensity-structural-models" class="theorem definition">
+<p><span class="theorem-title"><strong>Definition 6 (Propensity Models and Structural Models)</strong></span> &nbsp;</p>
+<ul>
+<li><strong>Propensity models</strong>: models for <span class="math inline">\(\Pr[A \mid L]\)</span>, where <span class="math inline">\(L\)</span> are the variables needed for conditional exchangeability.</li>
+<li><strong>Structural models</strong>: models relating <span class="math inline">\(A\)</span> to some feature (e.g., the mean) of the counterfactual <span class="math inline">\(Y^a\)</span>, marginally or within levels of <span class="math inline">\(L\)</span>. For continuous treatments they are often called <strong>dose-response models</strong>.</li>
+</ul>
+</div>
+<div id="rem-propensity-structural-parameters" class="proof remark">
+<p><span class="proof-title"><em>Remark 5</em> (Which Parameters Have a Causal Interpretation). </span>We fit a propensity model only to compute the score, so its coefficients are nuisance parameters (<a href="#/def-nuisance-parameter" class="quarto-xref">Definition&nbsp;2</a>): they describe the association between <span class="math inline">\(L\)</span> and <span class="math inline">\(A\)</span>, not the effect of <span class="math inline">\(A\)</span>. The treatment parameters of a structural model <strong>do</strong> have a causal interpretation.</p>
+</div>
+<aside class="notes">
+<p>Propensity models have been used for matching and stratification (this chapter), IP weighting (Chapter 12), and g-estimation (Chapter 14). Their parameters lack a causal interpretation because <span class="math inline">\(L\)</span> and <span class="math inline">\(A\)</span> can be associated for many reasons: the association reflects the effect of <span class="math inline">\(L\)</span> on <span class="math inline">\(A\)</span> under the book’s Figure 7.1, but not under Figures 7.2 and 7.3 <span class="citation" data-cites="hernan2020causal">(<a href="#/references" role="doc-biblioref" onclick="">Hernán and Robins 2020, 205</a>)</span>.</p>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside>
+</section>
+<section id="two-classes-of-structural-models" class="slide level2">
+<h2>Two Classes of Structural Models</h2>
+<div id="rem-two-classes-structural-models" class="proof remark">
+<p><span class="proof-title"><em>Remark 6</em> (Marginal and Nested Structural Models). </span></p>
+<ul>
+<li><strong>Marginal structural models</strong>: parameters for treatment, for chosen effect modifiers <span class="math inline">\(V\)</span>, and for <span class="math inline">\(A \times V\)</span> product terms. <span class="math inline">\(V\)</span> reflects only the investigator’s interest in effect modification (Section 12.5).
+<ul>
+<li>No <span class="math inline">\(V\)</span>: truly marginal.</li>
+<li><span class="math inline">\(V = L\)</span> (all covariates): a <strong>faux</strong> marginal structural model, which is what outcome regression (Section 15.1) estimates.</li>
+</ul></li>
+<li><strong>Structural nested models</strong>: parameters for treatment and for <span class="math inline">\(A \times L\)</span> product terms for those variables in <span class="math inline">\(L\)</span> that are effect modifiers.</li>
+</ul>
+</div>
+<aside class="notes">
+<p>See Fine Point 14.1 of the book for the relation between structural nested models and faux semiparametric marginal structural models <span class="citation" data-cites="hernan2020causal">(<a href="#/references" role="doc-biblioref" onclick="">Hernán and Robins 2020, 206</a>)</span>.</p>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside>
+</section>
 <section id="causal-versus-predictive-uses-of-outcome-regression" class="slide level2">
 <h2>Causal Versus Predictive Uses of Outcome Regression</h2>
-<p>Outcome regression is also widely used for <strong>prediction</strong>:</p>
+<div id="rem-predictive-outcome-regression" class="proof remark">
+<p><span class="proof-title"><em>Remark 7</em> (Outcome Regression for Prediction). </span>Outcome regression is also widely used for <strong>prediction</strong>:</p>
 <ul>
 <li>online retailers predicting who will buy;</li>
 <li>clinical algorithms identifying patients at high risk.</li>
 </ul>
 <p>There, no variable is “treatment” and the parameters need not have any causal interpretation.</p>
+</div>
 <aside class="notes">
-<p>Example from the book’s margin: Facebook Likes predict sexual orientation, political views, and personality traits (Kosinski et al.&nbsp;2013, as cited in <span class="citation" data-cites="hernan2020causal">Hernán and Robins (<a href="#/references" role="doc-biblioref" onclick="">2020, 206</a>)</span>); that is prediction, not necessarily causation.</p>
+<div id="exm-facebook-likes-prediction" class="theorem example">
+<p><span class="theorem-title"><strong>Example 9 (Prediction Without Causation)</strong></span> Example from the book’s margin: Facebook Likes predict sexual orientation, political views, and personality traits (Kosinski et al.&nbsp;2013, as cited in <span class="citation" data-cites="hernan2020causal">Hernán and Robins (<a href="#/references" role="doc-biblioref" onclick="">2020, 206</a>)</span>); that is prediction, not necessarily causation.</p>
+</div>
 <style type="text/css">
         span.MJX_Assistive_MathML {
           position:absolute!important;
@@ -731,12 +966,40 @@ A \perp\!\!\!\perp L \mid \pi(L).
 </section>
 <section id="variable-selection-prediction-tools-misapplied" class="slide level2">
 <h2>Variable Selection: Prediction Tools Misapplied</h2>
+<div title="Prediction Tools Can Harm Causal Models">
+<div class="callout callout-warning callout-titled callout-style-default">
+<div class="callout-body">
+<div class="callout-title">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<p><strong>Prediction Tools Can Harm Causal Models</strong></p>
+</div>
+<div class="callout-content">
 <p>Forward selection, backward elimination, stepwise selection, and machine learning are built to <strong>improve prediction</strong>. Applied to propensity or structural models, they can add superfluous or harmful covariates, causing</p>
 <ul>
 <li>inflated variances, and</li>
 <li>greater bias.</li>
 </ul>
-<p>The mistaken belief behind this: that a propensity model should predict <span class="math inline">\(A\)</span> as well as possible. It need not; it only needs to include the <span class="math inline">\(L\)</span> that guarantee exchangeability.</p>
+</div>
+</div>
+</div>
+</div>
+<div title="A Propensity Model Need Not Predict Treatment Well">
+<div class="callout callout-tip callout-titled callout-style-default">
+<div class="callout-body">
+<div class="callout-title">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<p><strong>A Propensity Model Need Not Predict Treatment Well</strong></p>
+</div>
+<div class="callout-content">
+<p>It is tempting to judge a propensity model by how accurately it predicts <span class="math inline">\(A\)</span>. It need not; it only needs to include the <span class="math inline">\(L\)</span> that guarantee exchangeability.</p>
+</div>
+</div>
+</div>
+</div>
 <aside class="notes">
 <p>Reporting predictive measures such as Mallows’s <span class="math inline">\(C_p\)</span> for propensity models is common, but their relevance for causal inference is questionable <span class="citation" data-cites="hernan2020causal">(<a href="#/references" role="doc-biblioref" onclick="">Hernán and Robins 2020, 207</a>)</span>. Covariates strongly associated with <span class="math inline">\(A\)</span> but not needed for exchangeability do not reduce bias; including them can yield very large variances or even amplify existing bias.</p>
 <style type="text/css">
@@ -754,7 +1017,7 @@ A \perp\!\!\!\perp L \mid \pi(L).
 <section class="slide level2">
 
 <div id="exm-hospital" class="theorem example">
-<p><span class="theorem-title"><strong>Example 5 (Hospitals Aceso and Panacea)</strong></span> Everyone attends hospital Aceso, where 99% receive <span class="math inline">\(A = 1\)</span>, or hospital Panacea, where 99% receive <span class="math inline">\(A = 0\)</span>. Hospital affects the outcome only through <span class="math inline">\(A\)</span>, so it is not needed for exchangeability <span class="citation" data-cites="hernan2020causal">(<a href="#/references" role="doc-biblioref" onclick="">Hernán and Robins 2020, 207</a>)</span>.</p>
+<p><span class="theorem-title"><strong>Example 10 (Hospitals Aceso and Panacea)</strong></span> Everyone attends hospital Aceso, where 99% receive <span class="math inline">\(A = 1\)</span>, or hospital Panacea, where 99% receive <span class="math inline">\(A = 0\)</span>. Hospital affects the outcome only through <span class="math inline">\(A\)</span>, so it is not needed for exchangeability <span class="citation" data-cites="hernan2020causal">(<a href="#/references" role="doc-biblioref" onclick="">Hernán and Robins 2020, 207</a>)</span>.</p>
 <ul>
 <li>Adding Hospital to the propensity model gives <span class="math inline">\(\pi(L) \approx 0.99\)</span> in Aceso and <span class="math inline">\(\approx 0.01\)</span> in Panacea in the target population.</li>
 <li>By chance, some <span class="math inline">\(L\)</span>-strata of the study population may then contain only treated (Aceso) or only untreated (Panacea) individuals.</li>
@@ -777,12 +1040,28 @@ A \perp\!\!\!\perp L \mid \pi(L).
 </section>
 <section id="self-inflicted-bias-and-model-specification" class="slide level2">
 <h2>Self-Inflicted Bias and Model Specification</h2>
+<div title="Good Predictors Can Be Bad Adjustment Variables">
+<div class="callout callout-warning callout-titled callout-style-default">
+<div class="callout-body">
+<div class="callout-title">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<p><strong>Good Predictors Can Be Bad Adjustment Variables</strong></p>
+</div>
+<div class="callout-content">
 <ul>
 <li>Including <strong>colliders</strong> can cause systematic bias, even though colliders may be good predictors.</li>
 <li>Including <strong>instruments</strong> (Chapter 16) can amplify bias from unmeasured confounders.</li>
 <li>Chapter 18 returns to these issues.</li>
 </ul>
-<p>Both propensity and structural models require a correctly specified functional form for the covariates (flexible terms such as cubic splines help), plus exchangeability, positivity, and well-defined interventions. Chapter 16 presents a method that does not require exchangeability of treatment.</p>
+</div>
+</div>
+</div>
+</div>
+<div id="rem-model-specification-requirements" class="proof remark">
+<p><span class="proof-title"><em>Remark 8</em> (Requirements Shared by Propensity and Structural Models). </span>Both propensity and structural models require a correctly specified functional form for the covariates (flexible terms such as cubic splines help), plus exchangeability, positivity, and well-defined interventions. Chapter 16 presents a method that does not require exchangeability of treatment.</p>
+</div>
 </section></section>
 <section>
 <section id="summary" class="title-slide slide level1 center" data-number="6">
@@ -791,6 +1070,12 @@ A \perp\!\!\!\perp L \mid \pi(L).
 </section>
 <section class="slide level2 smaller scrollable" id="references">
 
+<div id="tbl-ch15-methods-summary" class="quarto-float quarto-figure quarto-figure-center">
+<figure class="quarto-float quarto-float-tbl">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-ch15-methods-summary-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Table&nbsp;1: Methods of this chapter and Chapter 14, the models they fit, and what each requires beyond the identifying conditions. All of these methods also need exchangeability, positivity, and consistency. Outcome regression handles censoring by fitting its model among the uncensored; the other methods need a model for censoring as well, except that g-estimation can skip the censoring weights under the conditions noted in Chapter 14.
+</figcaption>
+<div aria-describedby="tbl-ch15-methods-summary-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 <table class="caption-top">
 <colgroup>
 <col style="width: 26%">
@@ -801,24 +1086,24 @@ A \perp\!\!\!\perp L \mid \pi(L).
 <tr class="header">
 <th>Method</th>
 <th>Model used</th>
-<th>Requires</th>
+<th>Additional modeling requirement</th>
 </tr>
 </thead>
 <tbody>
 <tr class="odd">
 <td><strong>Outcome regression</strong> (faux MSM)</td>
 <td><span class="math inline">\(\operatorname{E}\mathopen{}\left[Y \mid A, C = 0, L\right]\mathclose{}\)</span></td>
-<td>Correct outcome model (nuisance <span class="math inline">\(\beta_0, \beta_3\)</span>)</td>
+<td>Correct outcome model (nuisance parameters <span class="math inline">\(\beta_0, \beta_3\)</span>; <a href="#/def-nuisance-parameter" class="quarto-xref">Definition&nbsp;2</a>)</td>
 </tr>
 <tr class="even">
 <td><strong>G-estimation</strong> (SNM)</td>
-<td><span class="math inline">\(\Pr[A = 1 \mid L]\)</span></td>
-<td>Correct treatment model</td>
+<td><span class="math inline">\(\Pr[A = 1 \mid L]\)</span>; with censoring, also <span class="math inline">\(\Pr[C = 0 \mid L, A]\)</span> for the censoring weights</td>
+<td>Correct treatment model and correct structural nested model; with censoring, also a correct censoring model</td>
 </tr>
 <tr class="odd">
 <td><strong>Propensity stratification / outcome regression on <span class="math inline">\(\pi(L)\)</span></strong></td>
-<td><span class="math inline">\(\pi(L)\)</span> and <span class="math inline">\(\operatorname{E}\mathopen{}\left[Y \mid A, C = 0, \pi(L)\right]\mathclose{}\)</span></td>
-<td>Correct propensity model and correct <span class="math inline">\(\pi(L)\)</span>-<span class="math inline">\(Y\)</span> relation</td>
+<td><span class="math inline">\(\pi(L)\)</span> and <span class="math inline">\(\operatorname{E}\mathopen{}\left[Y \mid A, C = 0, \pi(L)\right]\mathclose{}\)</span>; with censoring, the joint score <span class="math inline">\(b(L)\)</span> in place of <span class="math inline">\(\pi(L)\)</span></td>
+<td>Correct propensity model and correct score-<span class="math inline">\(Y\)</span> relation; with censoring, also a correct censoring model</td>
 </tr>
 <tr class="even">
 <td><strong>Propensity standardization</strong></td>
@@ -827,22 +1112,27 @@ A \perp\!\!\!\perp L \mid \pi(L).
 </tr>
 <tr class="odd">
 <td><strong>Propensity matching</strong></td>
-<td><span class="math inline">\(\pi(L)\)</span></td>
-<td>Correct propensity model; estimate refers to the matched population</td>
+<td><span class="math inline">\(\pi(L)\)</span>; with censoring, also <span class="math inline">\(\Pr[C = 0 \mid L, A]\)</span></td>
+<td>Correct propensity model; with censoring, also a correct censoring model; estimate refers to the matched population</td>
 </tr>
 </tbody>
 </table>
-<p>NHEFS estimates of the effect of smoking cessation on weight gain (kg):</p>
+</div>
+</figure>
+</div>
+<div id="exm-nhefs-ch15-estimates" class="theorem example">
+<p><span class="theorem-title"><strong>Example 11 (NHEFS Estimates Compared)</strong></span> NHEFS estimates of the effect of smoking cessation on weight gain (kg):</p>
 <ul>
 <li>outcome regression, no product terms: 3.5 (2.6, 4.3);</li>
 <li>propensity deciles, no product terms: 3.5 (2.6, 4.4);</li>
 <li>continuous propensity score: 3.6 (2.7, 4.5);</li>
 <li>standardized over the propensity score: 3.6 (2.7, 4.6).</li>
 </ul>
+</div>
 <aside class="notes">
 <p><strong>Takeaways</strong> <span class="citation" data-cites="hernan2020causal">(<a href="#/references" role="doc-biblioref" onclick="">Hernán and Robins 2020, 199–208</a>)</span>:</p>
 <ul>
-<li>Outcome regression and propensity score methods need the same identifying conditions as the g-methods, plus correct nuisance models.</li>
+<li>Outcome regression and propensity score methods need the same identifying conditions as the g-methods, plus correct models for their nuisance parameters (<a href="#/def-nuisance-parameter" class="quarto-xref">Definition&nbsp;2</a>).</li>
 <li>The propensity score balances measured covariates only.</li>
 <li>Matching guarantees positivity automatically but can produce a target population that is hard to characterize; restricting on real-world variables is preferable.</li>
 <li>Propensity models should include the variables needed for exchangeability, not the best predictors of treatment.</li>
@@ -1246,6 +1536,9 @@ window.addEventListener("load", alignEquationAnchorsWithDefault);
 <div id="refs" class="references csl-bib-body hanging-indent" role="list">
 <div id="ref-hernan2020causal" class="csl-entry" role="listitem">
 Hernán, Miguel A, and James M Robins. 2020. <em>Causal Inference: What If</em>. Chapman &amp; Hall/CRC. <a href="https://miguelhernan.org/whatifbook">https://miguelhernan.org/whatifbook</a>.
+</div>
+<div id="ref-rosenbaum1983central" class="csl-entry" role="listitem">
+Rosenbaum, Paul R, and Donald B Rubin. 1983. <span>“The Central Role of the Propensity Score in Observational Studies for Causal Effects.”</span> <em>Biometrika</em> 70 (1): 41–55. <a href="https://doi.org/10.1093/biomet/70.1.41">https://doi.org/10.1093/biomet/70.1.41</a>.
 </div>
 </div>
 </section></section>
