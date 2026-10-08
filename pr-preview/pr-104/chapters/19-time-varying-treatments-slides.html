@@ -6,9 +6,9 @@
 <script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
 <link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
 <link href="../site_libs/quarto-html/light-border.css" rel="stylesheet">
-<link href="../site_libs/quarto-html/quarto-syntax-highlighting-64a204ab8560d761af7679ceaba22944.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-bf27225e3a48a9273f3daa8f8e829971.css" rel="stylesheet" id="quarto-text-highlighting-styles">
 <link href="../site_libs/quarto-contrib/code-language-labels-1.0.2/code-language-labels.css" rel="stylesheet"><meta charset="utf-8">
-  <meta name="generator" content="quarto-1.10.18">
+  <meta name="generator" content="quarto-1.10.19">
 
   <title>What If? - Lecture Notes – Chapter 19: Time-Varying Treatments</title>
   <meta name="apple-mobile-web-app-capable" content="yes">
@@ -190,12 +190,17 @@
 <section class="slide level2">
 
 <p>For a time-fixed treatment <span class="math inline">\(A\)</span> (1: treated, 0: untreated) given at time zero and an outcome <span class="math inline">\(Y\)</span> measured 60 months later, the average causal effect is the contrast <span class="math inline">\(\text{E}{\left[Y^{a=1}\right]} - \text{E}{\left[Y^{a=0}\right]}\)</span>. It need not mention <em>when</em> treatment occurs, because everybody’s treatment is determined at the same time.</p>
-<p>A time-varying treatment needs time to be made explicit. Let <span class="math inline">\(A_k\)</span> be a dichotomous treatment that may change at each month <span class="math inline">\(k = 0, 1, \ldots, K\)</span>, with <span class="math inline">\(K = 59\)</span>.</p>
+<p>A time-varying treatment needs time to be made explicit.</p>
+<div id="def-time-varying-treatment-index" class="theorem definition">
+<p><span class="theorem-title"><strong>Definition 1 (Time-indexed treatment)</strong></span> Let <span class="math inline">\(K\)</span> be the last time at which treatment can be given. For each time <span class="math inline">\(k = 0, 1, \ldots, K\)</span>, <span class="math inline">\(A_k\)</span> denotes the value of a dichotomous treatment at time <span class="math inline">\(k\)</span>.</p>
+</div>
 <div id="exm-hiv-tv" class="theorem example">
-<p><span class="theorem-title"><strong>Example 1 (HIV and antiretroviral therapy)</strong></span> In a 5-year follow-up study of individuals infected with HIV, <span class="math inline">\(A_k = 1\)</span> if the individual receives antiretroviral therapy in month <span class="math inline">\(k\)</span> and <span class="math inline">\(A_k = 0\)</span> otherwise. Nobody was treated before the study started: <span class="math inline">\(A_{-1} = 0\)</span> for all individuals. The outcome <span class="math inline">\(Y\)</span> measures health status (higher is better) at the end of follow-up, time <span class="math inline">\(K + 1 = 60\)</span>.</p>
+<p><span class="theorem-title"><strong>Example 1 (HIV and antiretroviral therapy)</strong></span> In a 5-year follow-up study of individuals infected with HIV, time <span class="math inline">\(k\)</span> is counted in months, so <span class="math inline">\(K = 59\)</span>. <span class="math inline">\(A_k = 1\)</span> if the individual receives antiretroviral therapy in month <span class="math inline">\(k\)</span> and <span class="math inline">\(A_k = 0\)</span> otherwise. Nobody was treated before the study started: <span class="math inline">\(A_{-1} = 0\)</span> for all individuals. The outcome <span class="math inline">\(Y\)</span> measures health status (higher is better) at the end of follow-up, time <span class="math inline">\(K + 1 = 60\)</span>.</p>
 </div>
 <aside class="notes">
-<p>For simplicity the book provisionally assumes no losses to follow-up, no deaths, and perfectly measured variables. Time is indexed from zero (the first time of possible treatment is <span class="math inline">\(k = 0\)</span>) for compatibility with much of the published literature. Although the example has an outcome measured at a fixed time, the concepts carry over to time-varying and failure-time outcomes (see Technical Point 21.8 of the book).</p>
+<div id="rem-ch19-simplifying-assumptions" class="proof remark">
+<p><span class="proof-title"><em>Remark 1</em> (Simplifying assumptions). </span>For simplicity the book provisionally assumes no losses to follow-up, no deaths, and perfectly measured variables. Time is indexed from zero (the first time of possible treatment is <span class="math inline">\(k = 0\)</span>) for compatibility with much of the published literature. Although the example has an outcome measured at a fixed time, the concepts carry over to time-varying and failure-time outcomes (see Technical Point 21.8 of the book).</p>
+</div>
 <style type="text/css">
         span.MJX_Assistive_MathML {
           position:absolute!important;
@@ -211,19 +216,24 @@
 <section class="slide level2">
 
 <div id="def-treatment-history" class="theorem definition">
-<p><span class="theorem-title"><strong>Definition 1 (Treatment history)</strong></span> An overbar denotes history: <span class="math inline">\(\bar{A}_k = (A_0, A_1, \ldots, A_k)\)</span> is the treatment history from time 0 through time <span class="math inline">\(k\)</span>. The whole history through <span class="math inline">\(K\)</span>, <span class="math inline">\(\bar{A}_K\)</span>, is often written <span class="math inline">\(\bar{A}\)</span> without a subscript. Lower-case letters denote realizations: <span class="math inline">\(a_k\)</span> is a value of <span class="math inline">\(A_k\)</span>.</p>
+<p><span class="theorem-title"><strong>Definition 2 (Treatment history)</strong></span> An overbar denotes history: <span class="math inline">\(\bar{A}_k = (A_0, A_1, \ldots, A_k)\)</span> is the treatment history from time 0 through time <span class="math inline">\(k\)</span>. The whole history through <span class="math inline">\(K\)</span>, <span class="math inline">\(\bar{A}_K\)</span>, is often written <span class="math inline">\(\bar{A}\)</span> without a subscript. Lower-case letters denote realizations: <span class="math inline">\(a_k\)</span> is a value of <span class="math inline">\(A_k\)</span>.</p>
 </div>
+<div id="exm-treatment-histories" class="theorem example">
+<p><span class="theorem-title"><strong>Example 2 (Treatment histories)</strong></span> &nbsp;</p>
 <ul>
 <li>An individual treated in every month has <span class="math inline">\(\bar{A} = (1, 1, \ldots, 1) = \bar{1}\)</span>.</li>
 <li>An individual never treated has <span class="math inline">\(\bar{A} = (0, 0, \ldots, 0) = \bar{0}\)</span>.</li>
 <li>Most individuals are treated during only part of follow-up, so their histories mix 1s and 0s and have no compact symbol.</li>
 </ul>
+</div>
 </section>
 <section class="slide level2">
 
-<p>A contrast at a single time,</p>
+<div id="rem-effect-not-unique" class="proof remark">
+<p><span class="proof-title"><em>Remark 2</em> (The effect of a time-varying treatment is not unique). </span>A contrast at a single time,</p>
 <p><span class="math display">\[\text{E}{\left[Y^{a_k = 1}\right]} - \text{E}{\left[Y^{a_k = 0}\right]},\]</span></p>
-<p>quantifies the effect of treatment at time <span class="math inline">\(k\)</span> only, not the effect of treatment at all times between 0 and 59. The average causal effect of a time-varying treatment must instead contrast mean counterfactual outcomes under two <strong>treatment strategies</strong> that specify treatment at every time from <span class="math inline">\(k = 0\)</span> to <span class="math inline">\(k = K\)</span>. Because there are many such strategies, the average causal effect of a time-varying treatment is <strong>not uniquely defined</strong>.</p>
+<p>quantifies the effect of treatment at time <span class="math inline">\(k\)</span> only, not the effect of treatment at all times between 0 and <span class="math inline">\(K\)</span>. The average causal effect of a time-varying treatment must instead contrast mean counterfactual outcomes under two rules, each of which specifies treatment at every time from <span class="math inline">\(k = 0\)</span> to <span class="math inline">\(k = K\)</span>. Because there are many such rules, the average causal effect of a time-varying treatment is <strong>not uniquely defined</strong>.</p>
+</div>
 </section></section>
 <section>
 <section id="treatment-strategies-pp.-256-257" class="title-slide slide level1 center" data-number="2">
@@ -233,10 +243,13 @@
 <section class="slide level2">
 
 <div id="def-treatment-strategy" class="theorem definition">
-<p><span class="theorem-title"><strong>Definition 2 (Treatment strategy)</strong></span> A <strong>treatment strategy</strong> (also called a plan, policy, protocol, or regime) is a rule to assign treatment at each time <span class="math inline">\(k\)</span> of follow-up.</p>
+<p><span class="theorem-title"><strong>Definition 3 (Treatment strategy)</strong></span> A <strong>treatment strategy</strong> (also called a plan, policy, protocol, or regime) is a rule to assign treatment at each time <span class="math inline">\(k\)</span> of follow-up.</p>
 </div>
-<p>The strategies “always treat”, <span class="math inline">\(\bar{a} = \bar{1}\)</span>, and “never treat”, <span class="math inline">\(\bar{a} = \bar{0}\)</span>, define one average causal effect of <span class="math inline">\(\bar{A}\)</span> on <span class="math inline">\(Y\)</span>:</p>
+<p>The rules contrasted in <a href="#/rem-effect-not-unique" class="quarto-xref">Remark&nbsp;2</a> are treatment strategies.</p>
+<div id="exm-always-vs-never-treat" class="theorem example">
+<p><span class="theorem-title"><strong>Example 3 (Always treat versus never treat)</strong></span> The strategies “always treat”, <span class="math inline">\(\bar{a} = \bar{1}\)</span>, and “never treat”, <span class="math inline">\(\bar{a} = \bar{0}\)</span>, define one average causal effect of <span class="math inline">\(\bar{A}\)</span> on <span class="math inline">\(Y\)</span>:</p>
 <p><span class="math display">\[\text{E}{\left[Y^{\bar{a} = \bar{1}}\right]} - \text{E}{\left[Y^{\bar{a} = \bar{0}}\right]}.\]</span></p>
+</div>
 <aside class="notes">
 <p>A general counterfactual theory for comparing treatment strategies was first articulated by Robins (1986, 1987, 1997a).</p>
 <style type="text/css">
@@ -253,14 +266,23 @@
 </section>
 <section class="slide level2">
 
-<p>Many other contrasts are possible. For example, <span class="math inline">\(\text{E}{\left[Y^{\bar{a}}\right]} - \text{E}{\left[Y^{\bar{a}'}\right]}\)</span> could compare</p>
+<p>Many other contrasts are possible.</p>
+<div id="exm-other-static-contrasts" class="theorem example">
+<p><span class="theorem-title"><strong>Example 4 (Other contrasts of fixed treatment sequences)</strong></span> For example, <span class="math inline">\(\text{E}{\left[Y^{\bar{a}}\right]} - \text{E}{\left[Y^{\bar{a}'}\right]}\)</span> could compare</p>
 <ul>
 <li>“treat every other month”, <span class="math inline">\(\bar{a} = (1, 0, 1, 0, \ldots)\)</span>, with</li>
 <li>“treat in all months except the first”, <span class="math inline">\(\bar{a}' = (0, 1, 1, 1, \ldots)\)</span>.</li>
 </ul>
-<p>There are <span class="math inline">\(2^{K+1}\)</span> such static strategies, one for each combination of values <span class="math inline">\((a_0, a_1, \ldots, a_K)\)</span> of a dichotomous <span class="math inline">\(a_k\)</span>. These do not exhaust all strategies.</p>
+</div>
+<div id="prp-number-static-strategies" class="theorem proposition">
+<p><span class="theorem-title"><strong>Proposition 1 (Number of fixed treatment sequences)</strong></span> With a dichotomous treatment <span class="math inline">\(a_k \in \{0, 1\}\)</span> at each time <span class="math inline">\(k = 0, 1, \ldots, K\)</span>, there are <span class="math inline">\(2^{K+1}\)</span> fixed treatment sequences <span class="math inline">\(\bar{a} = (a_0, a_1, \ldots, a_K) \in \{0, 1\}^{K+1}\)</span>.</p>
+</div>
+<div class="proof">
+<p><span class="proof-title"><em>Proof</em>. </span>The vector <span class="math inline">\((a_0, \ldots, a_K)\)</span> has <span class="math inline">\(K + 1\)</span> components, each taking one of two values, so there are <span class="math inline">\(2^{K+1}\)</span> such vectors.</p>
+</div>
+<p>Fixed treatment sequences do not exhaust all strategies.</p>
 <aside class="notes">
-<p>The vector <span class="math inline">\((a_0, \ldots, a_K)\)</span> has <span class="math inline">\(K + 1\)</span> components, so there are <span class="math inline">\(2^{K+1}\)</span> such vectors. The book writes “at least <span class="math inline">\(2^K\)</span>”, a lower bound, and uses <span class="math inline">\(2^K\)</span> again when counting static strategies in Technical Point 19.3; these notes write <span class="math inline">\(2^{K+1}\)</span> throughout. The point is only that the number grows exponentially with the length of follow-up.</p>
+<p>The book writes “at least <span class="math inline">\(2^K\)</span>”, a lower bound, and uses <span class="math inline">\(2^K\)</span> again when counting fixed sequences in Technical Point 19.3; these notes write <span class="math inline">\(2^{K+1}\)</span> throughout. The point is only that the number grows exponentially with the length of follow-up.</p>
 <style type="text/css">
         span.MJX_Assistive_MathML {
           position:absolute!important;
@@ -275,13 +297,15 @@
 </section>
 <section id="dynamic-strategies" class="slide level2">
 <h2>Dynamic Strategies</h2>
-<p>Let <span class="math inline">\(L_k\)</span> be the CD4 cell count (cells per microliter) measured at month <span class="math inline">\(k\)</span>, coded <span class="math inline">\(L_k = 1\)</span> when low (bad prognosis) and <span class="math inline">\(L_k = 0\)</span> otherwise; everybody starts with a high count, <span class="math inline">\(L_0 = 0\)</span>. Consider the strategy</p>
+<div id="exm-cd4-dynamic-strategy" class="theorem example">
+<p><span class="theorem-title"><strong>Example 5 (Starting treatment when the CD4 count drops)</strong></span> Let <span class="math inline">\(L_k\)</span> be the CD4 cell count (cells per microliter) measured at month <span class="math inline">\(k\)</span>, coded <span class="math inline">\(L_k = 1\)</span> when low (bad prognosis) and <span class="math inline">\(L_k = 0\)</span> otherwise; everybody starts with a high count, <span class="math inline">\(L_0 = 0\)</span>. Consider the strategy</p>
 <blockquote>
 <p>do not treat while <span class="math inline">\(L_k = 0\)</span>; start treatment when <span class="math inline">\(L_k = 1\)</span> and treat continuously after that.</p>
 </blockquote>
 <p>This strategy cannot be written as a fixed vector <span class="math inline">\(\bar{a} = (a_0, a_1, \ldots, a_K)\)</span> that gives every individual the same <span class="math inline">\(a_k\)</span> at time <span class="math inline">\(k\)</span>: at each time, who is treated depends on each individual’s evolving <span class="math inline">\(L_k\)</span>.</p>
+</div>
 <div id="def-dynamic-static" class="theorem definition">
-<p><span class="theorem-title"><strong>Definition 3 (Dynamic and static strategies)</strong></span> A <strong>dynamic treatment strategy</strong> is a rule in which the treatment <span class="math inline">\(a_k\)</span> at time <span class="math inline">\(k\)</span> depends on the evolution of an individual’s time-varying covariates <span class="math inline">\(\bar{L}_k\)</span>. Strategies <span class="math inline">\(\bar{a}\)</span> in which treatment does not depend on covariates are <strong>non-dynamic</strong> or <strong>static</strong> treatment strategies.</p>
+<p><span class="theorem-title"><strong>Definition 4 (Dynamic and static strategies)</strong></span> A <strong>dynamic treatment strategy</strong> is a rule in which the treatment <span class="math inline">\(a_k\)</span> at time <span class="math inline">\(k\)</span> depends on the evolution of an individual’s time-varying covariates <span class="math inline">\(\bar{L}_k\)</span>. Strategies <span class="math inline">\(\bar{a}\)</span> in which treatment does not depend on covariates are <strong>non-dynamic</strong> or <strong>static</strong> treatment strategies.</p>
 </div>
 </section>
 <section class="slide level2">
@@ -322,12 +346,14 @@
 </section>
 <section id="causal-effects-require-specified-strategies" class="slide level2">
 <h2>Causal Effects Require Specified Strategies</h2>
-<p>The average causal effect of a time-varying treatment is well defined only once the strategies being compared are specified, e.g.</p>
+<div id="rem-effects-need-strategies" class="proof remark">
+<p><span class="proof-title"><em>Remark 3</em> (Causal effects are contrasts of specified strategies). </span>The average causal effect of a time-varying treatment is well defined only once the strategies being compared are specified, e.g.</p>
 <ul>
 <li><span class="math inline">\(\text{E}{\left[Y^{\bar{a}}\right]} - \text{E}{\left[Y^{\bar{a}'}\right]}\)</span>: “always treat” versus “never treat”;</li>
 <li><span class="math inline">\(\text{E}{\left[Y^{\bar{a}}\right]} - \text{E}{\left[Y^{g}\right]}\)</span>: “always treat” versus “treat only after the CD4 count is low”.</li>
 </ul>
 <p><span class="math inline">\(g\)</span> denotes any strategy, static or dynamic; for a static strategy we sometimes write <span class="math inline">\(Y^{g = \bar{a}}\)</span> rather than <span class="math inline">\(Y^g\)</span> or <span class="math inline">\(Y^{\bar{a}}\)</span>. Even with only two options (treat or not) at each time, there are as many causal effects as there are pairs of strategies.</p>
+</div>
 <div title="Technical Point 19.1: On the Definition of Dynamic Strategies">
 <div class="callout callout-note callout-titled callout-style-default">
 <div class="callout-body">
@@ -365,15 +391,23 @@
 <section class="slide level2">
 
 <p>The book uses three causal diagrams with the first two times, <span class="math inline">\(k = 0\)</span> and <span class="math inline">\(k = 1\)</span>. In each, <span class="math inline">\(A_k\)</span> is treatment, <span class="math inline">\(L_k\)</span> the measured variables, <span class="math inline">\(U_k\)</span> unmeasured common causes of at least two variables, and <span class="math inline">\(Y\)</span> the outcome. In the HIV example, CD4 count <span class="math inline">\(L_k\)</span> is a consequence of unmeasured immune damage <span class="math inline">\(U_k\)</span>, which also lowers health status <span class="math inline">\(Y\)</span>.</p>
+<div id="tbl-ch19-diagrams-arrows" class="quarto-float quarto-figure quarto-figure-center">
+<figure class="quarto-float quarto-float-tbl">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-ch19-diagrams-arrows-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Table&nbsp;1: Which variables have arrows into treatment <span class="math inline">\(A_k\)</span> in the book’s Figures 19.1-19.3.
+</figcaption>
+<div aria-describedby="tbl-ch19-diagrams-arrows-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 <table class="caption-top">
 <colgroup>
-<col style="width: 50%">
-<col style="width: 25%">
-<col style="width: 25%">
+<col style="width: 40%">
+<col style="width: 20%">
+<col style="width: 20%">
+<col style="width: 20%">
 </colgroup>
 <thead>
 <tr class="header">
 <th>Figure</th>
+<th style="text-align: center;">Arrows from <span class="math inline">\(\bar{A}_{k-1}\)</span> into <span class="math inline">\(A_k\)</span></th>
 <th style="text-align: center;">Arrows from <span class="math inline">\(\bar{L}_k\)</span> into <span class="math inline">\(A_k\)</span></th>
 <th style="text-align: center;">Arrows from <span class="math inline">\(\bar{U}_k\)</span> into <span class="math inline">\(A_k\)</span></th>
 </tr>
@@ -381,21 +415,27 @@
 <tbody>
 <tr class="odd">
 <td>19.1</td>
+<td style="text-align: center;">yes (for <span class="math inline">\(k \geq 1\)</span>)</td>
 <td style="text-align: center;">no</td>
 <td style="text-align: center;">no</td>
 </tr>
 <tr class="even">
 <td>19.2</td>
+<td style="text-align: center;">yes (for <span class="math inline">\(k \geq 1\)</span>)</td>
 <td style="text-align: center;">yes</td>
 <td style="text-align: center;">no</td>
 </tr>
 <tr class="odd">
 <td>19.3</td>
+<td style="text-align: center;">yes (for <span class="math inline">\(k \geq 1\)</span>)</td>
 <td style="text-align: center;">yes</td>
 <td style="text-align: center;">yes</td>
 </tr>
 </tbody>
 </table>
+</div>
+</figure>
+</div>
 <aside class="notes">
 <p>All participants are assumed to adhere to the assigned treatment. A causal graph must include all common causes of any two variables on it, which is why the <span class="math inline">\(U_k\)</span> appear even though they are not measured.</p>
 <style type="text/css">
@@ -412,13 +452,29 @@
 </section>
 <section id="figure-19.1-treatment-depends-only-on-past-treatment" class="slide level2">
 <h2>Figure 19.1: Treatment Depends Only on Past Treatment</h2>
-<p>Example: each month, treatment is assigned with probability 0.5 to those untreated the previous month (<span class="math inline">\(A_{k-1} = 0\)</span>) and with probability 1 to those treated the previous month (<span class="math inline">\(A_{k-1} = 1\)</span>).</p>
+<div id="exm-fig-19-1-assignment" class="theorem example">
+<p><span class="theorem-title"><strong>Example 6 (Assignment depending only on past treatment)</strong></span> Example: each month, treatment is assigned with probability 0.5 to those untreated the previous month (<span class="math inline">\(A_{k-1} = 0\)</span>) and with probability 1 to those treated the previous month (<span class="math inline">\(A_{k-1} = 1\)</span>).</p>
+</div>
 <ul>
-<li>For static strategies, this is the generalization of <em>no confounding by measured or unmeasured variables</em>.</li>
-<li>Then <span class="math inline">\(\text{E}{\left[Y^{\bar{a}}\right]} = \text{E}{\left[Y \mid \bar{A} = \bar{a}\right]}\)</span>: the counterfactual mean under <span class="math inline">\(\bar{a}\)</span> is the mean among those who followed <span class="math inline">\(\bar{a}\)</span>.</li>
+<li>For static strategies (<a href="#/def-dynamic-static" class="quarto-xref">Definition&nbsp;4</a>), treatment assignment that depends only on past treatment is the time-varying generalization of <em>no confounding by measured or unmeasured variables</em>.</li>
+<li>So under Figure 19.1 (where treatment is randomized at each time), association is causation for static strategies: the counterfactual mean under a static strategy <span class="math inline">\(\bar{a}\)</span> is the mean outcome among those who followed <span class="math inline">\(\bar{a}\)</span> (provided some individuals followed <span class="math inline">\(\bar{a}\)</span>, and under consistency).</li>
 </ul>
 <aside class="notes">
-<p>This equality does <strong>not</strong> in general extend to dynamic strategies. Under a dynamic strategy <span class="math inline">\(g\)</span> that depends on <span class="math inline">\(L\)</span>, <span class="math inline">\(\text{E}{\left[Y^g\right]}\)</span> equals the mean outcome among those who followed <span class="math inline">\(g\)</span> only if the probability of <span class="math inline">\(A_k = 1\)</span> is exactly 0.5 at every time <span class="math inline">\(k\)</span> at which treatment under <span class="math inline">\(g\)</span> depends on <span class="math inline">\(L_k\)</span>. Otherwise, identifying <span class="math inline">\(\text{E}{\left[Y^g\right]}\)</span> requires g-methods applied to data on <span class="math inline">\(L\)</span>, <span class="math inline">\(A\)</span>, and <span class="math inline">\(Y\)</span>, under either Figure 19.1 or Figure 19.2.</p>
+<div title="The Equality Does Not Carry Over to Dynamic Strategies">
+<div class="callout callout-warning callout-titled callout-style-default">
+<div class="callout-body">
+<div class="callout-title">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<p><strong>The Equality Does Not Carry Over to Dynamic Strategies</strong></p>
+</div>
+<div class="callout-content">
+<p>The equality <span class="math inline">\(\text{E}{\left[Y^{\bar{a}}\right]} = \text{E}{\left[Y \mid \bar{A} = \bar{a}\right]}\)</span> does <strong>not</strong> in general extend to dynamic strategies. Under a dynamic strategy <span class="math inline">\(g\)</span> that depends on <span class="math inline">\(L\)</span>, generically, <span class="math inline">\(\text{E}{\left[Y^g\right]}\)</span> equals the mean outcome among those who followed <span class="math inline">\(g\)</span> only if the probability of <span class="math inline">\(A_k = 1\)</span> is exactly 0.5 at every time <span class="math inline">\(k\)</span> at which treatment under <span class="math inline">\(g\)</span> depends on <span class="math inline">\(L_k\)</span>. Otherwise, identifying <span class="math inline">\(\text{E}{\left[Y^g\right]}\)</span> requires g-methods applied to data on <span class="math inline">\(L\)</span>, <span class="math inline">\(A\)</span>, and <span class="math inline">\(Y\)</span>, under either Figure 19.1 or Figure 19.2.</p>
+</div>
+</div>
+</div>
+</div>
 <style type="text/css">
         span.MJX_Assistive_MathML {
           position:absolute!important;
@@ -433,13 +489,15 @@
 </section>
 <section id="figure-19.2-treatment-also-depends-on-measured-covariates" class="slide level2">
 <h2>Figure 19.2: Treatment Also Depends on Measured Covariates</h2>
-<p>Example: each month, treatment is assigned with probability</p>
+<div id="exm-fig-19-2-assignment" class="theorem example">
+<p><span class="theorem-title"><strong>Example 7 (Assignment depending also on CD4 count)</strong></span> Example: each month, treatment is assigned with probability</p>
 <ul>
 <li>0.4 to untreated individuals with high CD4 count,</li>
 <li>0.8 to untreated individuals with low CD4 count,</li>
 <li>0.5 to previously treated individuals (<span class="math inline">\(A_{k-1} = 1\)</span>), whatever their CD4 count.</li>
 </ul>
 <p>There is confounding by measured, but not unmeasured, variables.</p>
+</div>
 <aside class="notes">
 <p>The book labels these strata “high CD4 (<span class="math inline">\(A_{k-1} = 0, L_k = 1\)</span>)” and “low CD4 (<span class="math inline">\(A_{k-1} = 0, L_k = 0\)</span>)”, which reverses the coding of Section 19.2 (<span class="math inline">\(L_k = 1\)</span> means low CD4). We describe the strata by CD4 level only; under the Section 19.2 coding, high CD4 is <span class="math inline">\(L_k = 0\)</span> and low CD4 is <span class="math inline">\(L_k = 1\)</span>.</p>
 <style type="text/css">
@@ -457,23 +515,40 @@
 <section class="slide level2">
 
 <div id="def-seq-randomized" class="theorem definition">
-<p><span class="theorem-title"><strong>Definition 4 (Sequentially randomized experiment)</strong></span> An experiment in which treatment is randomly assigned to each individual at each time <span class="math inline">\(k\)</span> is a <strong>sequentially randomized experiment</strong>.</p>
+<p><span class="theorem-title"><strong>Definition 5 (Sequentially randomized experiment)</strong></span> An experiment in which treatment is randomly assigned to each individual at each time <span class="math inline">\(k\)</span>, with assignment probabilities that depend only on the measured history <span class="math inline">\((\bar{A}_{k-1}, \bar{L}_k)\)</span>, is a <strong>sequentially randomized experiment</strong>.</p>
 </div>
+<div id="rem-which-diagrams-sequentially-randomized" class="proof remark">
+<p><span class="proof-title"><em>Remark 4</em> (Which diagrams can be sequentially randomized). </span></p>
 <ul>
-<li>Figures 19.1 and 19.2 can represent sequentially randomized experiments.</li>
+<li>Figures 19.1 and 19.2 (<a href="#/tbl-ch19-diagrams-arrows" class="quarto-xref">Table&nbsp;1</a>) can represent sequentially randomized experiments.</li>
 <li>Figure 19.3 cannot: there, <span class="math inline">\(A_k\)</span> depends partly on unmeasured <span class="math inline">\(U\)</span>, which investigators cannot use to assign treatment.</li>
 <li>A sequentially randomized experiment has no arrows from unmeasured prognostic factors <span class="math inline">\(U\)</span> into any <span class="math inline">\(A_k\)</span>, however many time points <span class="math inline">\(k = 0, 1, \ldots, K\)</span> there are.</li>
 </ul>
+</div>
 </section>
 <section id="observational-studies" class="slide level2">
 <h2>Observational Studies</h2>
 <p>Treatment decisions usually depend on prognostic factors, so observational studies are typically represented by Figure 19.2 or 19.3, not 19.1.</p>
 <ul>
-<li>If clinicians’ decisions at each month depend on <span class="math inline">\((\bar{A}_{k-1}, \bar{L}_k)\)</span> but on no unmeasured <span class="math inline">\(\bar{U}_k\)</span>, the study is represented by Figure 19.2. It then differs from a sequentially randomized experiment only in that the assignment probabilities are unknown (though estimable from the data).</li>
-<li>The data cannot tell us whether Figure 19.2 or Figure 19.3 is correct. Figure 19.3 has unmeasured confounding.</li>
+<li>If clinicians’ decisions at each month depend on <span class="math inline">\((\bar{A}_{k-1}, \bar{L}_k)\)</span> but on no unmeasured <span class="math inline">\(\bar{U}_k\)</span>, the study is represented by Figure 19.2. It then differs from a sequentially randomized experiment (<a href="#/def-seq-randomized" class="quarto-xref">Definition&nbsp;5</a>) only in that the assignment probabilities are unknown (though estimable from the data).</li>
 </ul>
+<div title="The Data Cannot Rule Out Unmeasured Confounding">
+<div class="callout callout-warning callout-titled callout-style-default">
+<div class="callout-body">
+<div class="callout-title">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<p><strong>The Data Cannot Rule Out Unmeasured Confounding</strong></p>
+</div>
+<div class="callout-content">
+<p>The data cannot tell us whether Figure 19.2 or Figure 19.3 is correct. Figure 19.3 has unmeasured confounding.</p>
+</div>
+</div>
+</div>
+</div>
 <aside class="notes">
-<p>Sequentially randomized experiments are rarely run in practice, but the concept clarifies the conditions needed for valid estimation of the effects of time-varying treatments, which the next section states formally.</p>
+<p>Sequentially randomized experiments (<a href="#/def-seq-randomized" class="quarto-xref">Definition&nbsp;5</a>) are rarely run in practice, but the concept clarifies the conditions needed for valid estimation of the effects of time-varying treatments.</p>
 <style type="text/css">
         span.MJX_Assistive_MathML {
           position:absolute!important;
@@ -494,10 +569,21 @@
 <section class="slide level2">
 
 <p>For a time-fixed treatment, valid inference typically requires conditional exchangeability <span class="math inline">\(Y^a \perp\!\!\!\perp A \mid L\)</span>, which holds in conditionally randomized experiments and in observational studies where treatment depends on measured <span class="math inline">\(L\)</span> and, given <span class="math inline">\(L\)</span>, on no unmeasured common cause of treatment and outcome.</p>
-<p>For a time-varying treatment we need conditional exchangeability <strong>at each time</strong>, given the covariate history <span class="math inline">\(\bar{L}_k\)</span>. With two times, this is</p>
+<p>For a time-varying treatment we need conditional exchangeability <strong>at each time</strong>, given the covariate history <span class="math inline">\(\bar{L}_k\)</span>.</p>
+</section>
+<section class="slide level2">
+
+<div id="def-seq-exchangeability" class="theorem definition">
+<p><span class="theorem-title"><strong>Definition 6 (Sequential exchangeability for <span class="math inline">\(Y^g\)</span>)</strong></span> <span class="math display">\[Y^g \perp\!\!\!\perp A_k \mid \bar{A}_{k-1} = g(\bar{A}_{k-2}, \bar{L}_{k-1}), \bar{L}_k
+\quad \text{for all strategies } g \text{ and } k = 0, 1, \ldots, K.\]</span></p>
+<p>That is, at each time <span class="math inline">\(k\)</span>, the treated and untreated are exchangeable for <span class="math inline">\(Y^g\)</span> given the covariate history <span class="math inline">\(\bar{L}_k\)</span> through time <span class="math inline">\(k\)</span> and any observed treatment history compatible with <span class="math inline">\(g\)</span>.</p>
+</div>
+<div id="exm-seq-exchangeability-two-times" class="theorem example">
+<p><span class="theorem-title"><strong>Example 8 (Sequential exchangeability with two times)</strong></span> With two times (<span class="math inline">\(K = 1\)</span>), sequential exchangeability for <span class="math inline">\(Y^g\)</span> (<a href="#/def-seq-exchangeability" class="quarto-xref">Definition&nbsp;6</a>) says that, for all strategies <span class="math inline">\(g\)</span>,</p>
 <p><span class="math display">\[Y^g \perp\!\!\!\perp A_0 \mid L_0
 \quad\text{and}\quad
 Y^g \perp\!\!\!\perp A_1 \mid A_0 = g(L_0), L_0, L_1.\]</span></p>
+</div>
 <aside class="notes">
 <p>The book drops the word “conditional” and says simply <strong>sequential exchangeability</strong>.</p>
 <p>For individuals whose treatment history <span class="math inline">\([A_0 = g(L_0), A_1 = g(A_0, L_0, L_1)]\)</span> is compatible with strategy <span class="math inline">\(g\)</span> through the end of follow-up, consistency gives <span class="math inline">\(Y^g = Y\)</span>, which also equals the counterfactual outcome under the static strategy <span class="math inline">\((a_0, a_1) = (A_0, A_1)\)</span>.</p>
@@ -515,18 +601,18 @@ Y^g \perp\!\!\!\perp A_1 \mid A_0 = g(L_0), L_0, L_1.\]</span></p>
 </section>
 <section class="slide level2">
 
-<div id="def-seq-exchangeability" class="theorem definition">
-<p><span class="theorem-title"><strong>Definition 5 (Sequential exchangeability for <span class="math inline">\(Y^g\)</span>)</strong></span> <span class="math display">\[Y^g \perp\!\!\!\perp A_k \mid \bar{A}_{k-1} = g(\bar{A}_{k-2}, \bar{L}_{k-1}), \bar{L}_k
-\quad \text{for all strategies } g \text{ and } k = 0, 1, \ldots, K.\]</span></p>
-<p>That is, at each time <span class="math inline">\(k\)</span>, the treated and untreated are exchangeable for <span class="math inline">\(Y^g\)</span> given prior covariate history <span class="math inline">\(\bar{L}_k\)</span> and any observed treatment history compatible with <span class="math inline">\(g\)</span>.</p>
-</div>
+<div id="rem-when-seq-exchangeability-holds" class="proof remark">
+<p><span class="proof-title"><em>Remark 5</em> (When sequential exchangeability holds). </span></p>
 <ul>
-<li>A sequentially randomized experiment, in which <span class="math inline">\(A_k\)</span> is randomized with probability depending only on <span class="math inline">\(\bar{L}_k\)</span> and <span class="math inline">\(\bar{A}_{k-1}\)</span>, implies sequential exchangeability for <span class="math inline">\(Y^g\)</span>.</li>
+<li>A sequentially randomized experiment (<a href="#/def-seq-randomized" class="quarto-xref">Definition&nbsp;5</a>) implies sequential exchangeability for <span class="math inline">\(Y^g\)</span> (<a href="#/def-seq-exchangeability" class="quarto-xref">Definition&nbsp;6</a>).</li>
 <li>More generally, it holds in any causal graph that, like Figure 19.2, has <strong>no arrows from unmeasured <span class="math inline">\(U\)</span> into treatment</strong>.</li>
-<li>So under Figure 19.2, <span class="math inline">\(\text{E}{\left[Y^g\right]}\)</span> is identified for <strong>all</strong> strategies <span class="math inline">\(g\)</span>; under Figure 19.3, for <strong>none</strong>. Under other diagrams, it may be identified for some strategies but not others.</li>
+<li>So under Figure 19.2, <span class="math inline">\(\text{E}{\left[Y^g\right]}\)</span> is identified for <strong>all</strong> strategies <span class="math inline">\(g\)</span>, provided that the treatment level assigned by <span class="math inline">\(g\)</span> has positive probability given each history compatible with <span class="math inline">\(g\)</span> that occurs with positive probability, and under consistency.</li>
+<li>Under Figure 19.3, sequential exchangeability for <span class="math inline">\(Y^g\)</span> does not hold (generically, that is, under <a href="../chapters/06-graphical-representation.html#from-d-separation-to-independence">faithfulness</a>, which rules out exact cancellations of effects). The book states that <span class="math inline">\(\text{E}{\left[Y^g\right]}\)</span> is then identified for <strong>none</strong> of the strategies <span class="citation" data-cites="hernan2020causal">(<a href="#/references" role="doc-biblioref" onclick="">Hernán and Robins 2020, sec. 19.4</a>)</span>.</li>
+<li>Under other diagrams, <span class="math inline">\(\text{E}{\left[Y^g\right]}\)</span> may be identified for some strategies but not others.</li>
 </ul>
+</div>
 <aside class="notes">
-<p>“This form of sequential exchangeability” signals that there are others, some weaker (Section 19.5) and some stronger (Technical Point 19.3).</p>
+<p>“This form of sequential exchangeability” signals that there are others, some weaker and some stronger.</p>
 <p>Whenever the book talks about identification, the identifying formula is the g-formula (Chapter 21). In rare cases, not relevant here, effects can be identified by formulas related to but different from the g-formula (e.g., the front door formula of Technical Point 7.3).</p>
 <style type="text/css">
         span.MJX_Assistive_MathML {
@@ -542,34 +628,54 @@ Y^g \perp\!\!\!\perp A_1 \mid A_0 = g(L_0), L_0, L_1.\]</span></p>
 </section>
 <section id="unconditional-sequential-exchangeability" class="slide level2">
 <h2>Unconditional Sequential Exchangeability</h2>
-<p>Under Figure 19.1, <strong>sequential unconditional exchangeability</strong> holds for every static strategy <span class="math inline">\(\bar{a}\)</span>:</p>
+<div id="def-unconditional-seq-exchangeability" class="theorem definition">
+<p><span class="theorem-title"><strong>Definition 7 (Unconditional sequential exchangeability)</strong></span> <strong>Unconditional sequential exchangeability</strong> holds for a static strategy <span class="math inline">\(\bar{a}\)</span> if</p>
 <p><span class="math display">\[Y^{\bar{a}} \perp\!\!\!\perp A_k \mid \bar{A}_{k-1} = \bar{a}_{k-1}, \qquad k = 0, 1, \ldots, K.\]</span></p>
-<p>It implies that association is causation: <span class="math inline">\(\text{E}{\left[Y^{\bar{a}}\right]} = \text{E}{\left[Y \mid \bar{A} = \bar{a}\right]}\)</span>.</p>
+</div>
+<p>Under Figure 19.1 (no arrows from <span class="math inline">\(\bar{L}_k\)</span> or <span class="math inline">\(\bar{U}_k\)</span> into <span class="math inline">\(A_k\)</span>; <a href="#/tbl-ch19-diagrams-arrows" class="quarto-xref">Table&nbsp;1</a>), unconditional sequential exchangeability holds for every static strategy <span class="math inline">\(\bar{a}\)</span>.</p>
+<div id="prp-association-is-causation-sequential" class="theorem proposition">
+<p><span class="theorem-title"><strong>Proposition 2 (Association is causation under unconditional sequential exchangeability)</strong></span> Let <span class="math inline">\(\bar{a}\)</span> be a static strategy. Suppose unconditional sequential exchangeability (<a href="#/def-unconditional-seq-exchangeability" class="quarto-xref">Definition&nbsp;7</a>) holds for <span class="math inline">\(\bar{a}\)</span>, positivity holds along <span class="math inline">\(\bar{a}\)</span> (<span class="math inline">\(\Pr[A_k = a_k \mid \bar{A}_{k-1} = \bar{a}_{k-1}] &gt; 0\)</span> for <span class="math inline">\(k = 0, 1, \ldots, K\)</span>), and consistency holds (<span class="math inline">\(Y^{\bar{a}} = Y\)</span> whenever <span class="math inline">\(\bar{A} = \bar{a}\)</span>). Suppose also that <span class="math inline">\(\text{E}{\left[\left|Y^{\bar{a}}\right|\right]} &lt; \infty\)</span>. Then association is causation: <span class="math inline">\(\text{E}{\left[Y^{\bar{a}}\right]} = \text{E}{\left[Y \mid \bar{A} = \bar{a}\right]}\)</span>.</p>
+</div>
 <div class="proof">
-<p><span class="proof-title"><em>Proof</em> (Derivation for <span class="math inline">\(K = 1\)</span>). </span><span class="math display">\[\begin{align}
-\text{E}{\left[Y^{a_0, a_1}\right]}
-&amp;= \text{E}{\left[Y^{a_0, a_1} \mid A_0 = a_0\right]}
-  &amp;&amp; \text{(exchangeability at } k = 0\text{; positivity: } \Pr[A_0 = a_0] &gt; 0\text{)} \\
-&amp;= \text{E}{\left[Y^{a_0, a_1} \mid A_0 = a_0, A_1 = a_1\right]}
-  &amp;&amp; \text{(exchangeability at } k = 1 \text{, given } A_0 = a_0\text{; positivity: } \Pr[A_1 = a_1 \mid A_0 = a_0] &gt; 0\text{)} \\
-&amp;= \text{E}{\left[Y \mid A_0 = a_0, A_1 = a_1\right]}
-  &amp;&amp; \text{(consistency: } Y^{a_0, a_1} = Y \text{ when } (A_0, A_1) = (a_0, a_1)\text{)}
+<p><span class="proof-title"><em>Proof</em>. </span>The positivity conditions give <span class="math inline">\(\Pr[\bar{A}_k = \bar{a}_k] = \prod_{j=0}^{k} \Pr[A_j = a_j \mid \bar{A}_{j-1} = \bar{a}_{j-1}] &gt; 0\)</span> for every <span class="math inline">\(k\)</span>, so each conditional expectation below is well defined (for <span class="math inline">\(k = 0\)</span>, conditioning on the empty history <span class="math inline">\(\bar{A}_{-1} = \bar{a}_{-1}\)</span> is no conditioning).</p>
+<p>One-step identity: for each <span class="math inline">\(k = 0, 1, \ldots, K\)</span>,</p>
+<p><span class="math display">\[\begin{align}
+\text{E}{\left[Y^{\bar{a}} \mid \bar{A}_{k-1} = \bar{a}_{k-1}\right]}
+&amp;= \text{E}{\left[Y^{\bar{a}} \mid \bar{A}_{k-1} = \bar{a}_{k-1}, A_k = a_k\right]}
+  &amp;&amp; \text{(exchangeability at } k\text{; positivity at } k\text{)} \\
+&amp;= \text{E}{\left[Y^{\bar{a}} \mid \bar{A}_k = \bar{a}_k\right]}
+  &amp;&amp; \text{(since } \bar{A}_k = (\bar{A}_{k-1}, A_k)\text{)}
 \end{align}\]</span></p>
-<p>The positivity conditions make each conditional expectation well defined: without them, no one in the data has the history <span class="math inline">\((a_0, a_1)\)</span> to condition on. With more time points, repeat the middle step once for each <span class="math inline">\(k\)</span>, each time requiring <span class="math inline">\(\Pr[A_k = a_k \mid \bar{A}_{k-1} = \bar{a}_{k-1}] &gt; 0\)</span>.</p>
+<p>Applying the one-step identity for <span class="math inline">\(k = 0\)</span>, then <span class="math inline">\(k = 1\)</span>, and so on through <span class="math inline">\(k = K\)</span>:</p>
+<p><span class="math display">\[\begin{align}
+\text{E}{\left[Y^{\bar{a}}\right]}
+&amp;= \text{E}{\left[Y^{\bar{a}} \mid \bar{A}_0 = \bar{a}_0\right]}
+  &amp;&amp; \text{(one-step identity, } k = 0\text{)} \\
+&amp;= \text{E}{\left[Y^{\bar{a}} \mid \bar{A}_1 = \bar{a}_1\right]}
+  &amp;&amp; \text{(one-step identity, } k = 1\text{)} \\
+&amp;\;\;\vdots \\
+&amp;= \text{E}{\left[Y^{\bar{a}} \mid \bar{A}_K = \bar{a}_K\right]}
+  &amp;&amp; \text{(one-step identity, } k = K\text{)} \\
+&amp;= \text{E}{\left[Y \mid \bar{A} = \bar{a}\right]}
+  &amp;&amp; \text{(consistency: } Y^{\bar{a}} = Y \text{ when } \bar{A} = \bar{a}\text{)}
+\end{align}\]</span></p>
 </div>
 </section>
 <section id="a-diagram-with-partial-identification" class="slide level2">
 <h2>A Diagram With Partial Identification</h2>
-<p>Figure 19.4 includes an unmeasured <span class="math inline">\(W_0\)</span> that causes both <span class="math inline">\(A_0\)</span> and the measured CD4 count <span class="math inline">\(L_1\)</span>, e.g.&nbsp;an unrecorded scheduled clinic visit at time 0; <span class="math inline">\(U_1\)</span> is the true (unknown) CD4 count, which <span class="math inline">\(L_1\)</span> measures with error.</p>
+<div id="exm-fig-19-4-partial-identification" class="theorem example">
+<p><span class="theorem-title"><strong>Example 9 (An unrecorded clinic visit)</strong></span> Figure 19.4 includes an unmeasured <span class="math inline">\(W_0\)</span> that causes both <span class="math inline">\(A_0\)</span> and the measured CD4 count <span class="math inline">\(L_1\)</span>, e.g.&nbsp;an unrecorded scheduled clinic visit at time 0; <span class="math inline">\(U_1\)</span> is the true (unknown) CD4 count, which <span class="math inline">\(L_1\)</span> measures with error.</p>
 <ul>
-<li><span class="math inline">\(\text{E}{\left[Y^{\bar{a}}\right]}\)</span> is still identified for every <strong>static</strong> strategy <span class="math inline">\(\bar{a}\)</span>.</li>
-<li><span class="math inline">\(\text{E}{\left[Y^g\right]}\)</span> is <strong>not</strong> identified for any <strong>dynamic</strong> strategy <span class="math inline">\(g\)</span> whose assignment depends on <span class="math inline">\(L_1\)</span>.</li>
+<li><span class="math inline">\(\text{E}{\left[Y^{\bar{a}}\right]}\)</span> is still identified for every <strong>static</strong> strategy <span class="math inline">\(\bar{a}\)</span> (<a href="#/def-dynamic-static" class="quarto-xref">Definition&nbsp;4</a>), provided that each treatment level in <span class="math inline">\(\bar{a}\)</span> has positive probability given each history compatible with <span class="math inline">\(\bar{a}\)</span> that occurs with positive probability, and under consistency.</li>
+<li>The book states that <span class="math inline">\(\text{E}{\left[Y^g\right]}\)</span> is <strong>not</strong> identified for any <strong>dynamic</strong> strategy <span class="math inline">\(g\)</span> (<a href="#/def-dynamic-static" class="quarto-xref">Definition&nbsp;4</a>) whose assignment depends on <span class="math inline">\(L_1\)</span> <span class="citation" data-cites="hernan2020causal">(<a href="#/references" role="doc-biblioref" onclick="">Hernán and Robins 2020, sec. 19.4</a>)</span>.</li>
 </ul>
-<p>Section 19.5 uses SWIGs to show why.</p>
+</div>
 </section>
 <section id="positivity-and-consistency" class="slide level2">
 <h2>Positivity and Consistency</h2>
-<p>Identification also needs sequential versions of positivity and consistency. Both are expected to hold in a sequentially randomized experiment. Under all three conditions, <span class="math inline">\(\text{E}{\left[Y^g\right]}\)</span> is identified by methods that adjust appropriately for <span class="math inline">\((\bar{A}_{k-1}, \bar{L}_k)\)</span>: the g-formula (standardization), IP weighting, and g-estimation.</p>
+<div id="rem-three-identifiability-conditions" class="proof remark">
+<p><span class="proof-title"><em>Remark 6</em> (Three identifiability conditions). </span>Identification also needs sequential versions of positivity and consistency. Both are expected to hold in a sequentially randomized experiment. Under all three conditions, <span class="math inline">\(\text{E}{\left[Y^g\right]}\)</span> is identified by methods that adjust appropriately for <span class="math inline">\((\bar{A}_{k-1}, \bar{L}_k)\)</span>: the g-formula (standardization), IP weighting, and g-estimation.</p>
+</div>
 <div title="Technical Point 19.2: Positivity and Consistency for Time-Varying Treatments">
 <div class="callout callout-note callout-titled callout-style-default">
 <div class="callout-body">
@@ -584,7 +690,7 @@ Y^g \perp\!\!\!\perp A_1 \mid A_0 = g(L_0), L_0, L_1.\]</span></p>
 <p><span class="math display">\[\text{if } f_{\bar{A}_{k-1}, \bar{L}_k}(\bar{a}_{k-1}, \bar{l}_k) \neq 0,
 \text{ then } f_{A_k \mid \bar{A}_{k-1}, \bar{L}_k}(a_k \mid \bar{a}_{k-1}, \bar{l}_k) &gt; 0
 \text{ for all } \bar{a}_k, \bar{l}_k.\]</span></p>
-<p>It holds in a sequentially randomized experiment if the randomization probabilities are never 0 or 1, whatever the past history. For a particular strategy <span class="math inline">\(g\)</span>, it need hold only for treatment histories compatible with <span class="math inline">\(g\)</span>, i.e., <span class="math inline">\(a_k = g(\bar{a}_{k-1}, \bar{l}_k)\)</span> for each <span class="math inline">\(k\)</span>.</p>
+<p>It holds in a sequentially randomized experiment (<a href="#/def-seq-randomized" class="quarto-xref">Definition&nbsp;5</a>) if the randomization probabilities are never 0 or 1, whatever the past history. For a particular strategy <span class="math inline">\(g\)</span>, it need hold only for treatment histories compatible with <span class="math inline">\(g\)</span>, i.e., <span class="math inline">\(a_k = g(\bar{a}_{k-1}, \bar{l}_k)\)</span> for each <span class="math inline">\(k\)</span>.</p>
 <p><strong>Sequential consistency:</strong></p>
 <p><span class="math display">\[Y^{\bar{a}} = Y^{\bar{a}^*} \text{ if } \bar{a}^* = \bar{a};
 \quad Y^{\bar{a}} = Y \text{ if } \bar{A} = \bar{a};
@@ -603,7 +709,9 @@ Y^g \perp\!\!\!\perp A_1 \mid A_0 = g(L_0), L_0, L_1.\]</span></p>
 </section>
 <section class="slide level2">
 
-<p>The backdoor criterion of Chapter 7 generalizes to time-varying treatments. For static strategies, a sufficient condition for identification is that, <strong>at each time <span class="math inline">\(k\)</span>, all backdoor paths into <span class="math inline">\(A_k\)</span> that do not go through any future treatment are blocked</strong>.</p>
+<div id="rem-generalized-backdoor" class="proof remark">
+<p><span class="proof-title"><em>Remark 7</em> (A generalized backdoor criterion). </span>The backdoor criterion of Chapter 7 generalizes to time-varying treatments. For static strategies, a sufficient condition for identification (given sequential positivity and consistency) is that, <strong>for every <span class="math inline">\(k\)</span>, conditioning on <span class="math inline">\((\bar{A}_{k-1}, \bar{L}_k)\)</span> blocks every backdoor path between <span class="math inline">\(A_k\)</span> and <span class="math inline">\(Y\)</span> that does not pass through a later treatment</strong>.</p>
+</div>
 <p>But this generalized criterion works on causal DAGs, which contain no counterfactual outcomes, so it does not show the connection to sequential exchangeability directly. SWIGs (Chapter 7) do, and are especially useful here.</p>
 <aside class="notes">
 <p>Pearl and Robins (1995) proposed a generalized backdoor criterion for static strategies; Robins (1997a) extended it to dynamic strategies.</p>
@@ -621,15 +729,16 @@ Y^g \perp\!\!\!\perp A_1 \mid A_0 = g(L_0), L_0, L_1.\]</span></p>
 </section>
 <section id="two-simplified-diagrams" class="slide level2">
 <h2>Two Simplified Diagrams</h2>
-<p>Figures 19.5 and 19.6 simplify Figures 19.2 and 19.4: they drop <span class="math inline">\(U_0\)</span>, <span class="math inline">\(L_0\)</span>, the arrow <span class="math inline">\(A_0 \to U_1\)</span>, and the arrow <span class="math inline">\(L_1 \to Y\)</span>. Both include, among others, the arrows</p>
-<p><span class="math display">\[A_0 \to L_1, \quad A_0 \to A_1, \quad L_1 \to A_1, \quad U_1 \to L_1, \quad U_1 \to Y, \quad A_1 \to Y.\]</span></p>
-<p>They differ in one respect:</p>
+<div id="exm-figures-19-5-19-6" class="theorem example">
+<p><span class="theorem-title"><strong>Example 10 (The diagrams of Figures 19.5 and 19.6)</strong></span> Figures 19.5 and 19.6 simplify Figures 19.2 and 19.4: they drop <span class="math inline">\(U_0\)</span>, <span class="math inline">\(L_0\)</span>, the arrow <span class="math inline">\(A_0 \to U_1\)</span>, and the arrow <span class="math inline">\(L_1 \to Y\)</span>. Write <span class="math inline">\(\text{pa}(V)\)</span> for the set of parents of a node <span class="math inline">\(V\)</span>. The treatment nodes have these complete parent sets:</p>
 <ul>
-<li><strong>Figure 19.5</strong>: no shared cause of <span class="math inline">\(A_0\)</span> and <span class="math inline">\(L_1\)</span>.</li>
-<li><strong>Figure 19.6</strong>: an unmeasured <span class="math inline">\(W_0\)</span> with <span class="math inline">\(W_0 \to A_0\)</span> and <span class="math inline">\(W_0 \to L_1\)</span>.</li>
+<li><strong>Figure 19.5</strong>: <span class="math inline">\(\text{pa}(A_0) = \emptyset\)</span> and <span class="math inline">\(\text{pa}(A_1) = \{A_0, L_1\}\)</span>.</li>
+<li><strong>Figure 19.6</strong>: <span class="math inline">\(\text{pa}(A_0) = \{W_0\}\)</span> and <span class="math inline">\(\text{pa}(A_1) = \{A_0, L_1\}\)</span>, where <span class="math inline">\(W_0\)</span> is unmeasured.</li>
 </ul>
+<p>In both diagrams, no arrow points from any <span class="math inline">\(U\)</span> or <span class="math inline">\(W\)</span> into <span class="math inline">\(A_1\)</span>. The covariate <span class="math inline">\(L_1\)</span> has parents including <span class="math inline">\(A_0\)</span> and <span class="math inline">\(U_1\)</span> (and also <span class="math inline">\(W_0\)</span> in Figure 19.6, so <span class="math inline">\(W_0\)</span> is a shared cause of <span class="math inline">\(A_0\)</span> and <span class="math inline">\(L_1\)</span>). The outcome <span class="math inline">\(Y\)</span> has parents including <span class="math inline">\(U_1\)</span> and <span class="math inline">\(A_1\)</span>, but not <span class="math inline">\(L_1\)</span>.</p>
+</div>
 <aside class="notes">
-<p>The arrows listed are those the book’s text relies on (the backdoor paths <span class="math inline">\(A_1 \leftarrow L_1 \leftarrow U_1 \to Y\)</span> and <span class="math inline">\(A_1 \leftarrow A_0 \to L_1 \leftarrow U_1 \to Y\)</span> of Section 19.6, and the SWIG paths of this section); consult the book’s figures for the complete diagrams.</p>
+<p>For <span class="math inline">\(L_1\)</span> and <span class="math inline">\(Y\)</span> we list only some parents; the book’s figures give the complete diagrams.</p>
 <style type="text/css">
         span.MJX_Assistive_MathML {
           position:absolute!important;
@@ -644,21 +753,37 @@ Y^g \perp\!\!\!\perp A_1 \mid A_0 = g(L_0), L_0, L_1.\]</span></p>
 </section>
 <section id="building-the-swig-for-a-static-strategy" class="slide level2 scrollable">
 <h2>Building the SWIG for a Static Strategy</h2>
-<p>Figure 19.7 is the SWIG for Figure 19.5 under the static strategy <span class="math inline">\((a_0, a_1)\)</span>, e.g.&nbsp;“always treat” <span class="math inline">\((1, 1)\)</span> or “never treat” <span class="math inline">\((0, 0)\)</span>:</p>
+<div id="alg-swig-static-strategy" class="theorem algorithm">
+<p><span class="theorem-title"><strong>Algorithm 1 (Building a SWIG for a static strategy)</strong></span> Given a causal DAG and a static strategy <span class="math inline">\(\bar{a} = (a_0, \ldots, a_K)\)</span>:</p>
 <ol type="1">
-<li>Split each treatment node. The right half is the value set by the intervention (<span class="math inline">\(a_0\)</span>, <span class="math inline">\(a_1\)</span>); the left half is the value that would be observed after intervening on all <em>earlier</em> treatments: <span class="math inline">\(A_0\)</span> itself, and <span class="math inline">\(A_1^{a_0}\)</span> for time 1.</li>
-<li>Arrows into a treatment point into its left half; arrows out of a treatment leave from its right half.</li>
-<li>Replace the outcome and covariates by counterfactuals: <span class="math inline">\(Y^{a_0, a_1}\)</span> and <span class="math inline">\(L_1^{a_0}\)</span>.</li>
+<li>Split each treatment node <span class="math inline">\(A_k\)</span> into two halves. The right half is the value <span class="math inline">\(a_k\)</span> set by the intervention; the left half is the treatment that would be observed after intervening on all <em>earlier</em> treatments, <span class="math inline">\(A_k^{\bar{a}_{k-1}}\)</span> (for <span class="math inline">\(k = 0\)</span>, simply <span class="math inline">\(A_0\)</span>).</li>
+<li>Rewire the arrows: arrows into a treatment point into its left half; arrows out of a treatment leave from its right half.</li>
+<li>Relabel every descendant of a treatment node by its counterfactual, with a superscript listing the interventions on the treatments that precede it: a covariate <span class="math inline">\(L_k\)</span> becomes <span class="math inline">\(L_k^{\bar{a}_{k-1}}\)</span>, and the outcome <span class="math inline">\(Y\)</span> becomes <span class="math inline">\(Y^{\bar{a}}\)</span>.</li>
 </ol>
+</div>
+<div id="exm-fig-19-7-swig" class="theorem example">
+<p><span class="theorem-title"><strong>Example 11 (Figure 19.7: the SWIG for Figure 19.5)</strong></span> Applying <a href="#/alg-swig-static-strategy" class="quarto-xref">alg.&nbsp;1</a> to Figure 19.5 (<a href="#/exm-figures-19-5-19-6" class="quarto-xref">Example&nbsp;10</a>) under the static strategy <span class="math inline">\((a_0, a_1)\)</span>, e.g.&nbsp;“always treat” <span class="math inline">\((1, 1)\)</span> or “never treat” <span class="math inline">\((0, 0)\)</span>, gives Figure 19.7:</p>
+<ul>
+<li><span class="math inline">\(A_0\)</span> splits into <span class="math inline">\(A_0\)</span> (left half) and <span class="math inline">\(a_0\)</span> (right half);</li>
+<li><span class="math inline">\(A_1\)</span> splits into <span class="math inline">\(A_1^{a_0}\)</span> (left half) and <span class="math inline">\(a_1\)</span> (right half);</li>
+<li>the covariate becomes <span class="math inline">\(L_1^{a_0}\)</span> and the outcome becomes <span class="math inline">\(Y^{a_0, a_1}\)</span>;</li>
+<li><span class="math inline">\(U_1\)</span>, which no treatment affects, keeps its label.</li>
+</ul>
+</div>
 <p><span class="math inline">\(L_1\)</span> is written <span class="math inline">\(L_1^{a_0}\)</span>, not <span class="math inline">\(L_1^{a_0, a_1}\)</span>, because a later intervention on <span class="math inline">\(A_1\)</span> cannot affect the earlier <span class="math inline">\(L_1\)</span>. Unlike the DAG, the SWIG contains the counterfactual outcome, so exchangeability can be checked by d-separation.</p>
 </section>
 <section id="static-sequential-exchangeability" class="slide level2 scrollable">
 <h2>Static Sequential Exchangeability</h2>
-<p>In Figure 19.7, d-separation gives, for every <span class="math inline">\((a_0, a_1)\)</span>,</p>
+<div id="exm-fig-19-7-d-separation" class="theorem example">
+<p><span class="theorem-title"><strong>Example 12 (Reading exchangeability off the SWIG of Figure 19.7)</strong></span> In Figure 19.7, d-separation gives, for every <span class="math inline">\((a_0, a_1)\)</span>,</p>
 <p><span class="math display">\[Y^{a_0, a_1} \perp\!\!\!\perp A_0
 \quad\text{and}\quad
 Y^{a_0, a_1} \perp\!\!\!\perp A_1^{a_0} \mid A_0, L_1^{a_0}.\]</span></p>
-<p>The path <span class="math inline">\(A_1^{a_0} \leftarrow a_0 \to L_1^{a_0} \leftarrow U_1 \to Y^{a_0, a_1}\)</span> looks open, but it is blocked: <span class="math inline">\(a_0\)</span> is a constant in the counterfactual world, and constants are always implicitly conditioned on (Fine Point 19.2).</p>
+<p>The path <span class="math inline">\(A_1^{a_0} \leftarrow a_0 \to L_1^{a_0} \leftarrow U_1 \to Y^{a_0, a_1}\)</span> looks open, but it is blocked: <span class="math inline">\(a_0\)</span> is a constant in the counterfactual world, and a path through a constant intervention node is always blocked, because a constant is implicitly conditioned on.</p>
+</div>
+<div id="prp-swig-to-observed-exchangeability" class="theorem proposition">
+<p><span class="theorem-title"><strong>Proposition 3 (From a SWIG independence to an observed-data independence)</strong></span> Fix a static strategy <span class="math inline">\((a_0, a_1)\)</span> with <span class="math inline">\(\Pr[A_0 = a_0] &gt; 0\)</span>. If <span class="math inline">\(Y^{a_0, a_1} \perp\!\!\!\perp A_1^{a_0} \mid A_0, L_1^{a_0}\)</span> and consistency holds (<span class="math inline">\(L_1^{a_0} = L_1\)</span> and <span class="math inline">\(A_1^{a_0} = A_1\)</span> whenever <span class="math inline">\(A_0 = a_0\)</span>), then <span class="math inline">\(Y^{a_0, a_1} \perp\!\!\!\perp A_1 \mid A_0 = a_0, L_1\)</span>.</p>
+</div>
 <div class="proof">
 <p><span class="proof-title"><em>Proof</em> (From the SWIG statement to an observed-data statement). </span></p>
 <ol type="1">
@@ -671,20 +796,26 @@ Y^{a_0, a_1} \perp\!\!\!\perp A_1^{a_0} \mid A_0, L_1^{a_0}.\]</span></p>
 <section class="slide level2">
 
 <div id="def-static-seq-exchangeability" class="theorem definition">
-<p><span class="theorem-title"><strong>Definition 6 (Static sequential exchangeability)</strong></span> <span class="math display">\[Y^{\bar{a}} \perp\!\!\!\perp A_k \mid \bar{A}_{k-1} = \bar{a}_{k-1}, \bar{L}_k
+<p><span class="theorem-title"><strong>Definition 8 (Static sequential exchangeability)</strong></span> <strong>Static sequential exchangeability</strong> holds for a given static strategy <span class="math inline">\(\bar{a}\)</span> if</p>
+<p><span class="math display">\[Y^{\bar{a}} \perp\!\!\!\perp A_k \mid \bar{A}_{k-1} = \bar{a}_{k-1}, \bar{L}_k
 \quad \text{for } k = 0, 1, \ldots, K.\]</span></p>
 </div>
+<div id="rem-static-seq-exchangeability-weaker" class="proof remark">
+<p><span class="proof-title"><em>Remark 8</em> (Static sequential exchangeability is weaker). </span></p>
 <ul>
-<li>It is <strong>weaker</strong> than sequential exchangeability for <span class="math inline">\(Y^g\)</span> (<a href="#/def-seq-exchangeability" class="quarto-xref">Definition&nbsp;5</a>): it concerns only counterfactual outcomes indexed by static strategies <span class="math inline">\(g = \bar{a}\)</span>.</li>
-<li>It suffices to identify <span class="math inline">\(\text{E}{\left[Y^{\bar{a}}\right]}\)</span> for every static strategy.</li>
-<li>It holds in Figure 19.6 too (check d-separation on its SWIG, Figure 19.8), so under Figure 19.6 every static strategy is identified.</li>
+<li>Static sequential exchangeability (<a href="#/def-static-seq-exchangeability" class="quarto-xref">Definition&nbsp;8</a>) is <strong>weaker</strong> than sequential exchangeability for <span class="math inline">\(Y^g\)</span> (<a href="#/def-seq-exchangeability" class="quarto-xref">Definition&nbsp;6</a>): it concerns only counterfactual outcomes indexed by static strategies <span class="math inline">\(g = \bar{a}\)</span>.</li>
+<li>When it holds for every static <span class="math inline">\(\bar{a}\)</span>, it suffices, given sequential positivity and consistency, to identify <span class="math inline">\(\text{E}{\left[Y^{\bar{a}}\right]}\)</span> for every static strategy.</li>
+<li>It holds in Figure 19.6 (<a href="#/exm-figures-19-5-19-6" class="quarto-xref">Example&nbsp;10</a>) too (check d-separation on its SWIG, Figure 19.8), so under Figure 19.6 (and given sequential positivity and consistency) every static strategy is identified.</li>
 </ul>
+</div>
 <aside class="notes">
-<p>Two variations on Figure 19.5:</p>
+<div id="exm-fig-19-5-variations" class="theorem example">
+<p><span class="theorem-title"><strong>Example 13 (Two variations on Figure 19.5)</strong></span> &nbsp;</p>
 <ul>
-<li>Without the arrow <span class="math inline">\(L_1 \to A_1\)</span>, the SWIG would lack <span class="math inline">\(L_1^{a_0} \to A_1^{a_0}\)</span>, so sequential <em>unconditional</em> exchangeability would hold and every static strategy could be identified without data on <span class="math inline">\(L_1\)</span>.</li>
-<li>With an added arrow <span class="math inline">\(U_1 \to A_1\)</span>, the SWIG would have <span class="math inline">\(U_1 \to A_1^{a_0}\)</span>, no form of sequential exchangeability would hold, and no strategy would be identified.</li>
+<li>Without the arrow <span class="math inline">\(L_1 \to A_1\)</span>, the SWIG would lack <span class="math inline">\(L_1^{a_0} \to A_1^{a_0}\)</span>, so <em>unconditional</em> sequential exchangeability (<a href="#/def-unconditional-seq-exchangeability" class="quarto-xref">Definition&nbsp;7</a>) would hold and every static strategy could be identified without data on <span class="math inline">\(L_1\)</span> (given positivity and consistency).</li>
+<li>With an added arrow <span class="math inline">\(U_1 \to A_1\)</span>, the SWIG would have <span class="math inline">\(U_1 \to A_1^{a_0}\)</span>, no form of sequential exchangeability would hold (generically, that is, under faithfulness), and the book states that no strategy would be identified <span class="citation" data-cites="hernan2020causal">(<a href="#/references" role="doc-biblioref" onclick="">Hernán and Robins 2020, sec. 19.5</a>)</span>.</li>
 </ul>
+</div>
 <style type="text/css">
         span.MJX_Assistive_MathML {
           position:absolute!important;
@@ -714,13 +845,14 @@ Y^{a_0, a_1} \perp\!\!\!\perp A_1^{a_0} \mid A_0, L_1^{a_0}.\]</span></p>
 \mid \bar{A}_{k-1}^{\bar{a}_{k-2}}, \bar{L}_k^{\bar{a}_{k-1}},\]</span></p>
 <p>where <span class="math inline">\(\underline{L}_{k+1}^{\bar{a}}\)</span> is the counterfactual covariate history from <span class="math inline">\(k + 1\)</span> to the end of follow-up. Restricting to <span class="math inline">\(\bar{A}_{k-1}^{\bar{a}_{k-2}} = \bar{a}_{k-1}\)</span> and applying consistency gives</p>
 <p><span class="math display">\[{\left(Y^{\bar{a}}, \underline{L}_{k+1}^{\bar{a}}\right)} \perp\!\!\!\perp A_k \mid \bar{A}_{k-1} = \bar{a}_{k-1}, \bar{L}_k.\]</span></p>
-<p>When this holds for all <span class="math inline">\(\bar{a}\)</span>, it is called <strong>sequential exchangeability</strong>. Although it mentions only static strategies, it is equivalent to</p>
+<p>When this holds for all <span class="math inline">\(\bar{a}\)</span>, the book calls it sequential exchangeability; these notes call it <strong>joint sequential exchangeability</strong>, to keep it distinct from <a href="#/def-seq-exchangeability" class="quarto-xref">Definition&nbsp;6</a>, which it implies. Although it mentions only static strategies, it is equivalent to</p>
 <p><span class="math display">\[{\left(Y^{g}, \underline{L}_{k+1}^{g}\right)} \perp\!\!\!\perp A_k \mid \bar{A}_{k-1} = g(\bar{A}_{k-2}, \bar{L}_{k-1}), \bar{L}_k
 \quad \text{for all } g,\]</span></p>
-<p>and so, with positivity, it identifies the outcome and covariate distributions under every static and dynamic strategy (Robins 1986). This rests on the <em>joint</em> independence of <span class="math inline">\((Y^{\bar{a}}, \underline{L}_{k+1}^{\bar{a}})\)</span> and <span class="math inline">\(A_k\)</span>; for dynamic strategies, the two <em>separate</em> independences of <span class="math inline">\(Y^{\bar{a}}\)</span> and of <span class="math inline">\(\underline{L}_{k+1}^{\bar{a}}\)</span> from <span class="math inline">\(A_k\)</span> do not suffice.</p>
+<p>and so, with positivity and consistency, it identifies the outcome and covariate distributions under every static and dynamic strategy (Robins 1986). This rests on the <em>joint</em> independence of <span class="math inline">\((Y^{\bar{a}}, \underline{L}_{k+1}^{\bar{a}})\)</span> and <span class="math inline">\(A_k\)</span>; for dynamic strategies, the two <em>separate</em> independences of <span class="math inline">\(Y^{\bar{a}}\)</span> and of <span class="math inline">\(\underline{L}_{k+1}^{\bar{a}}\)</span> from <span class="math inline">\(A_k\)</span> do not suffice.</p>
 <p>A sequentially randomized trial implies still stronger conditions, which cannot be read from SWIGs and are not needed for identification, e.g.</p>
 <ul>
-<li><span class="math inline">\({\left\{{\left(Y^{\bar{a}}, \underline{L}_{k+1}^{\bar{a}}\right)}; \text{all } \bar{a}\right\}} \perp\!\!\!\perp A_k \mid \bar{A}_{k-1}, \bar{L}_k\)</span>;</li>
+<li><span class="math inline">\({\left\{{\left(Y^{\bar{a}}, \underline{L}_{k+1}^{\bar{a}}\right)}; \text{all } \bar{a}\right\}}
+\perp\!\!\!\perp A_k \mid \bar{A}_{k-1}, \bar{L}_k\)</span>;</li>
 <li><strong>full sequential exchangeability</strong>: <span class="math inline">\({\left(Y^{\bar{\mathcal{A}}}, \bar{L}^{\bar{\mathcal{A}}}\right)} \perp\!\!\!\perp A_k \mid \bar{A}_{k-1}, \bar{L}_k\)</span>, where <span class="math inline">\(\bar{\mathcal{A}}\)</span> is the set of all <span class="math inline">\(2^{K+1}\)</span> static strategies, and <span class="math inline">\(Y^{\bar{\mathcal{A}}}\)</span>, <span class="math inline">\(\bar{L}^{\bar{\mathcal{A}}}\)</span> the corresponding sets of counterfactuals (by analogy with Technical Point 2.1).</li>
 </ul>
 </div>
@@ -728,7 +860,7 @@ Y^{a_0, a_1} \perp\!\!\!\perp A_1^{a_0} \mid A_0, L_1^{a_0}.\]</span></p>
 </div>
 </div>
 <aside class="notes">
-<p>We write <span class="math inline">\(\underline{L}_{k+1}\)</span> (an underbar for “from <span class="math inline">\(k + 1\)</span> onward”) and <span class="math inline">\(\bar{\mathcal{A}}\)</span> for the set of static strategies; the book’s typography for these symbols differs slightly. In the dynamic version we write the conditioning history as <span class="math inline">\(g(\bar{A}_{k-2}, \bar{L}_{k-1})\)</span>, matching <a href="#/def-seq-exchangeability" class="quarto-xref">Definition&nbsp;5</a>.</p>
+<p>We write <span class="math inline">\(\underline{L}_{k+1}\)</span> (an underbar for “from <span class="math inline">\(k + 1\)</span> onward”) and <span class="math inline">\(\bar{\mathcal{A}}\)</span> for the set of static strategies; the book’s typography for these symbols differs slightly. In the dynamic version we write the conditioning history as <span class="math inline">\(g(\bar{A}_{k-2}, \bar{L}_{k-1})\)</span>, matching <a href="#/def-seq-exchangeability" class="quarto-xref">Definition&nbsp;6</a>.</p>
 <style type="text/css">
         span.MJX_Assistive_MathML {
           position:absolute!important;
@@ -745,22 +877,27 @@ Y^{a_0, a_1} \perp\!\!\!\perp A_1^{a_0} \mid A_0, L_1^{a_0}.\]</span></p>
 <h2>SWIGs for Dynamic Strategies</h2>
 <p>Figure 19.9 represents Figure 19.5 under a dynamic strategy <span class="math inline">\(g = [g_0, g_1(L_1)]\)</span>: <span class="math inline">\(A_0\)</span> is set to a fixed <span class="math inline">\(g_0\)</span>, and <span class="math inline">\(A_1\)</span> to <span class="math inline">\(g_1(L_1^g)\)</span>, which depends on the <span class="math inline">\(L_1^g\)</span> observed after setting <span class="math inline">\(A_0 = g_0\)</span>.</p>
 <div id="exm-dynamic-swig" class="theorem example">
-<p><span class="theorem-title"><strong>Example 2 (“Treat at time 1 only if CD4 is low”)</strong></span> Strategy: do not treat at time 0; at time 1 treat only if the CD4 count is low (<span class="math inline">\(L_1^g = 1\)</span>). So <span class="math inline">\(g_0 = 0\)</span> for everybody, <span class="math inline">\(g_1(L_1^g) = 1\)</span> when <span class="math inline">\(L_1^g = 1\)</span>, and <span class="math inline">\(g_1(L_1^g) = 0\)</span> when <span class="math inline">\(L_1^g = 0\)</span>.</p>
+<p><span class="theorem-title"><strong>Example 14 (“Treat at time 1 only if CD4 is low”)</strong></span> Strategy: do not treat at time 0; at time 1 treat only if the CD4 count is low (<span class="math inline">\(L_1^g = 1\)</span>). So <span class="math inline">\(g_0 = 0\)</span> for everybody, <span class="math inline">\(g_1(L_1^g) = 1\)</span> when <span class="math inline">\(L_1^g = 1\)</span>, and <span class="math inline">\(g_1(L_1^g) = 0\)</span> when <span class="math inline">\(L_1^g = 0\)</span>.</p>
 </div>
+<div id="rem-dynamic-swig-arrow" class="proof remark">
+<p><span class="proof-title"><em>Remark 9</em> (The SWIG of a dynamic strategy). </span></p>
 <ul>
 <li>The SWIG gains an arrow <span class="math inline">\(L_1^g \to g_1(L_1^g)\)</span> that is not in the original DAG; it exists only in the counterfactual world of this strategy. It is drawn differently but treated like any other arrow for d-separation.</li>
 <li>The outcome node is <span class="math inline">\(Y^g\)</span>.</li>
 </ul>
+</div>
 </section>
 <section id="figure-19.9-versus-figure-19.10" class="slide level2">
 <h2>Figure 19.9 Versus Figure 19.10</h2>
+<div id="exm-fig-19-9-vs-19-10" class="theorem example">
+<p><span class="theorem-title"><strong>Example 15 (Dynamic strategies under Figures 19.5 and 19.6)</strong></span> &nbsp;</p>
 <ul>
-<li><strong>Figure 19.9</strong> (from Figure 19.5): d-separation gives <span class="math inline">\(Y^g \perp\!\!\!\perp A_0\)</span> and <span class="math inline">\(Y^g \perp\!\!\!\perp A_1^g \mid A_0 = g_0, L_1^g\)</span> for every <span class="math inline">\(g\)</span>. Sequential exchangeability for <span class="math inline">\(Y^g\)</span> holds: <strong>all strategies, static and dynamic, are identified</strong>.</li>
-<li><strong>Figure 19.10</strong> (from Figure 19.6): <span class="math inline">\(Y^g \perp\!\!\!\perp A_0\)</span> fails, because of the open path <span class="math display">\[A_0 \leftarrow W_0 \to L_1^g \to g_1(L_1^g) \to Y^g.\]</span> Sequential exchangeability for <span class="math inline">\(Y^g\)</span> fails, and <span class="math inline">\(\text{E}{\left[Y^g\right]}\)</span> is not identified for the dynamic strategy.</li>
+<li><strong>Figure 19.9</strong> (from Figure 19.5, <a href="#/exm-figures-19-5-19-6" class="quarto-xref">Example&nbsp;10</a>): d-separation gives <span class="math inline">\(Y^g \perp\!\!\!\perp A_0\)</span> and <span class="math inline">\(Y^g \perp\!\!\!\perp A_1^g \mid A_0, L_1^g\)</span> for every <span class="math inline">\(g\)</span>. Restricting the second to those with <span class="math inline">\(A_0 = g_0\)</span> and applying consistency (<span class="math inline">\(L_1^g = L_1\)</span> and <span class="math inline">\(A_1^g = A_1\)</span> whenever <span class="math inline">\(A_0 = g_0\)</span>) gives <span class="math inline">\(Y^g \perp\!\!\!\perp A_1 \mid A_0 = g_0, L_1\)</span>. Sequential exchangeability for <span class="math inline">\(Y^g\)</span> holds, so (given sequential positivity and consistency) <strong>all strategies, static and dynamic, are identified</strong>.</li>
+<li><strong>Figure 19.10</strong> (from Figure 19.6): because of the open path <span class="math display">\[A_0 \leftarrow W_0 \to L_1^g \to g_1(L_1^g) \to Y^g,\]</span> neither <span class="math inline">\(Y^g \perp\!\!\!\perp A_0\)</span> nor sequential exchangeability for <span class="math inline">\(Y^g\)</span> holds (generically, that is, under faithfulness). The book states that <span class="math inline">\(\text{E}{\left[Y^g\right]}\)</span> is then not identified for the dynamic strategy <span class="citation" data-cites="hernan2020causal">(<a href="#/references" role="doc-biblioref" onclick="">Hernán and Robins 2020, sec. 19.5</a>)</span>.</li>
 </ul>
+</div>
 <aside class="notes">
-<p>From the SWIG we read <span class="math inline">\(Y^g \perp\!\!\!\perp A_1^g \mid A_0, L_1^g\)</span>, which by consistency implies <span class="math inline">\(Y^g \perp\!\!\!\perp A_1 \mid A_0 = g_0, L_1\)</span>.</p>
-<p>Another way to see the Figure 19.10 problem: the distribution of <span class="math inline">\(Y^g\)</span> depends on that of <span class="math inline">\(g_1(L_1^g)\)</span>, hence on that of <span class="math inline">\(L_1^g\)</span>, and the distribution of <span class="math inline">\(L_1^g\)</span> is not identified because of the path <span class="math inline">\(A_0 \leftarrow W_0 \to L_1^g\)</span>. Under a static strategy, no arrow from <span class="math inline">\(L_1^{a_0}\)</span> into the treatment node feeds <span class="math inline">\(Y\)</span>, which is why static strategies remain identified under Figure 19.6.</p>
+<p>Another way to see the Figure 19.10 problem: the distribution of <span class="math inline">\(Y^g\)</span> depends on that of <span class="math inline">\(g_1(L_1^g)\)</span>, hence on that of <span class="math inline">\(L_1^g\)</span>, and the open path <span class="math inline">\(A_0 \leftarrow W_0 \to L_1^g\)</span> means that <span class="math inline">\(L_1^g \perp\!\!\!\perp A_0\)</span> generically (under faithfulness) fails, so the distribution of <span class="math inline">\(L_1^g\)</span> cannot be read off the data among those with <span class="math inline">\(A_0 = a_0\)</span>; the book concludes that it is not identified <span class="citation" data-cites="hernan2020causal">(<a href="#/references" role="doc-biblioref" onclick="">Hernán and Robins 2020, sec. 19.5</a>)</span>. Under a static strategy, no arrow from <span class="math inline">\(L_1^{a_0}\)</span> into the treatment node feeds <span class="math inline">\(Y\)</span>, which is why static strategies remain identified under Figure 19.6.</p>
 <style type="text/css">
         span.MJX_Assistive_MathML {
           position:absolute!important;
@@ -792,7 +929,7 @@ Y^{a_0, a_1} \perp\!\!\!\perp A_1^{a_0} \mid A_0, L_1^{a_0}.\]</span></p>
 </ul>
 <p>So when applying d-separation to a SWIG, <strong>every path through an intervention node is blocked</strong>, even though the node is not written in the conditioning event.</p>
 <p>The same holds for deterministic strategies that depend on a baseline confounder <span class="math inline">\(L_0\)</span> (replace <span class="math inline">\(g_0\)</span> by <span class="math inline">\(g_0(L_0)\)</span> in Figure 19.9): given <span class="math inline">\(L_0\)</span>, <span class="math inline">\(g_0(L_0)\)</span> is a constant, so paths through it are blocked, and <span class="math inline">\(Y^g \perp\!\!\!\perp A_1^g \mid A_0, L_0, L_1^g\)</span> becomes, after setting <span class="math inline">\(A_0 = g(L_0)\)</span> and using consistency, <span class="math inline">\(Y^g \perp\!\!\!\perp A_1 \mid A_0 = g(L_0), L_0, L_1\)</span>.</p>
-<p>For a <strong>random</strong> strategy that draws <span class="math inline">\(A_0^{+,g}\)</span> from a distribution that may depend on <span class="math inline">\(L_0\)</span>, <span class="math inline">\(A_0^{+,g}\)</span> appears on the SWIG and must be conditioned on explicitly. Richardson and Robins (2013) showed that <span class="math inline">\(Y^g \perp\!\!\!\perp A_1^g \mid A_0, A_0^{+,g}, L_0, L_1^g\)</span> is necessary for identification by the g-formula for such a strategy. They also treated strategies that depend on the <em>natural value of treatment</em> <span class="math inline">\(A_t^g\)</span> (Robins et al.&nbsp;2004), recently called “modified treatment policies” (Diaz et al.&nbsp;2021).</p>
+<p>For a <strong>random</strong> strategy that draws <span class="math inline">\(A_0^{+,g}\)</span> from a distribution that may depend on <span class="math inline">\(L_0\)</span>, <span class="math inline">\(A_0^{+,g}\)</span> appears on the SWIG and must be conditioned on explicitly. The book reports that Richardson and Robins (2013) showed that <span class="math inline">\(Y^g \perp\!\!\!\perp A_1^g \mid A_0, A_0^{+,g}, L_0, L_1^g\)</span> is a necessary condition for identification by the g-formula for such a strategy <span class="citation" data-cites="hernan2020causal">(<a href="#/references" role="doc-biblioref" onclick="">Hernán and Robins 2020</a>, Fine Point 19.2)</span>. They also treated strategies that depend on the <em>natural value of treatment</em> <span class="math inline">\(A_t^g\)</span> (Robins et al.&nbsp;2004), recently called “modified treatment policies” (Diaz et al.&nbsp;2021).</p>
 </div>
 </div>
 </div>
@@ -800,13 +937,21 @@ Y^{a_0, a_1} \perp\!\!\!\perp A_1^{a_0} \mid A_0, L_1^{a_0}.\]</span></p>
 </section>
 <section id="one-last-example" class="slide level2">
 <h2>One Last Example</h2>
-<p>Figure 19.11 is Figure 19.6 plus an arrow <span class="math inline">\(L_1 \to Y\)</span> (Figure 19.12 is its SWIG under a static strategy). Here neither sequential exchangeability for <span class="math inline">\(Y^g\)</span> nor static sequential exchangeability for <span class="math inline">\(Y^{\bar{a}}\)</span> holds, so <strong>no</strong> strategy’s effect can be validly estimated.</p>
+<div id="exm-fig-19-11-no-identification" class="theorem example">
+<p><span class="theorem-title"><strong>Example 16 (Adding an arrow from <span class="math inline">\(L_1\)</span> to <span class="math inline">\(Y\)</span>)</strong></span> Figure 19.11 is Figure 19.6 (<a href="#/exm-figures-19-5-19-6" class="quarto-xref">Example&nbsp;10</a>) plus an arrow <span class="math inline">\(L_1 \to Y\)</span> (Figure 19.12 is its SWIG under a static strategy). Here neither sequential exchangeability for <span class="math inline">\(Y^g\)</span> (<a href="#/def-seq-exchangeability" class="quarto-xref">Definition&nbsp;6</a>) nor static sequential exchangeability for <span class="math inline">\(Y^{\bar{a}}\)</span> (<a href="#/def-static-seq-exchangeability" class="quarto-xref">Definition&nbsp;8</a>) holds (generically, that is, under faithfulness). The book states that then <strong>no</strong> strategy’s effect is identified <span class="citation" data-cites="hernan2020causal">(<a href="#/references" role="doc-biblioref" onclick="">Hernán and Robins 2020, sec. 19.5</a>)</span>.</p>
+</div>
+<div id="tbl-ch19-identification-summary" class="quarto-float quarto-figure quarto-figure-center">
+<figure class="quarto-float quarto-float-tbl">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-ch19-identification-summary-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Table&nbsp;2: Identification of static strategies and of dynamic strategies whose assignment depends on <span class="math inline">\(L_1\)</span>, under Figures 19.5, 19.6, and 19.11. “Not identified” is the book’s conclusion <span class="citation" data-cites="hernan2020causal">(<a href="#/references" role="doc-biblioref" onclick="">Hernán and Robins 2020, sec. 19.5</a>)</span>; the exchangeability conditions behind it fail generically, that is, under faithfulness.
+</figcaption>
+<div aria-describedby="tbl-ch19-identification-summary-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 <table class="caption-top">
 <thead>
 <tr class="header">
 <th>Diagram</th>
 <th style="text-align: center;">Static strategies</th>
-<th style="text-align: center;">Dynamic strategies</th>
+<th style="text-align: center;">Dynamic strategies depending on <span class="math inline">\(L_1\)</span></th>
 </tr>
 </thead>
 <tbody>
@@ -827,8 +972,11 @@ Y^{a_0, a_1} \perp\!\!\!\perp A_1^{a_0} \mid A_0, L_1^{a_0}.\]</span></p>
 </tr>
 </tbody>
 </table>
+</div>
+</figure>
+</div>
 <aside class="notes">
-<p>Why Figure 19.11 fails even for static strategies: in its SWIG, <span class="math inline">\(L_1^{a_0}\)</span> is now a cause of <span class="math inline">\(Y^{a_0, a_1}\)</span>, so the path <span class="math inline">\(A_0 \leftarrow W_0 \to L_1^{a_0} \to Y^{a_0, a_1}\)</span> is open and <span class="math inline">\(Y^{a_0, a_1} \perp\!\!\!\perp A_0\)</span> fails; conditioning on <span class="math inline">\(L_1\)</span> to block it is not allowed at time 0, because <span class="math inline">\(L_1\)</span> comes after <span class="math inline">\(A_0\)</span>. This explanation is ours; the book states only the conclusion.</p>
+<p>Why Figure 19.11 fails even for static strategies: in its SWIG, <span class="math inline">\(L_1^{a_0}\)</span> is now a cause of <span class="math inline">\(Y^{a_0, a_1}\)</span>, so the path <span class="math inline">\(A_0 \leftarrow W_0 \to L_1^{a_0} \to Y^{a_0, a_1}\)</span> is open, and <span class="math inline">\(Y^{a_0, a_1} \perp\!\!\!\perp A_0\)</span> generically (under faithfulness) fails; conditioning on <span class="math inline">\(L_1\)</span> to block it is not allowed at time 0, because <span class="math inline">\(L_1\)</span> comes after <span class="math inline">\(A_0\)</span>. This explanation is ours; the book states only the conclusion.</p>
 <style type="text/css">
         span.MJX_Assistive_MathML {
           position:absolute!important;
@@ -848,18 +996,49 @@ Y^{a_0, a_1} \perp\!\!\!\perp A_1^{a_0} \mid A_0, L_1^{a_0}.\]</span></p>
 </section>
 <section class="slide level2">
 
-<p>No form of sequential exchangeability is guaranteed in an observational study. Approximating it requires expert knowledge to decide which time-varying variables <span class="math inline">\(\bar{L}_k\)</span> to measure (in HIV: CD4 count, viral load, symptoms). Whether the measured covariates suffice can never be known with certainty, but causal diagrams such as Figures 19.1-19.4 organize our beliefs. These diagrams were drawn without selection (e.g., censoring) so as to focus on confounding.</p>
+<div title="Sequential Exchangeability Is Never Guaranteed">
+<div class="callout callout-warning callout-titled callout-style-default">
+<div class="callout-body">
+<div class="callout-title">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<p><strong>Sequential Exchangeability Is Never Guaranteed</strong></p>
+</div>
+<div class="callout-content">
+<p>No form of sequential exchangeability is guaranteed in an observational study. Approximating it requires expert knowledge to decide which time-varying variables <span class="math inline">\(\bar{L}_k\)</span> to measure (in HIV: CD4 count, viral load, symptoms). Whether the measured covariates suffice can never be known with certainty, but causal diagrams such as Figures 19.1-19.4 organize our beliefs.</p>
+</div>
+</div>
+</div>
+</div>
+<p>These diagrams were drawn without selection (e.g., censoring) so as to focus on confounding.</p>
 </section>
 <section id="l_1-as-a-confounder-for-a_1" class="slide level2">
 <h2><span class="math inline">\(L_1\)</span> as a Confounder for <span class="math inline">\(A_1\)</span></h2>
-<p>In Figure 19.5, consider the effect of <span class="math inline">\(A_1\)</span> alone on <span class="math inline">\(Y\)</span>.</p>
+<div id="exm-l1-confounder-for-a1" class="theorem example">
+<p><span class="theorem-title"><strong>Example 17 (<span class="math inline">\(L_1\)</span> as a confounder for the effect of <span class="math inline">\(A_1\)</span>)</strong></span> In Figure 19.5 (<a href="#/exm-figures-19-5-19-6" class="quarto-xref">Example&nbsp;10</a>), consider the effect of <span class="math inline">\(A_1\)</span> alone on <span class="math inline">\(Y\)</span>.</p>
 <ul>
-<li><span class="math inline">\(A_1\)</span> and <span class="math inline">\(Y\)</span> share the cause <span class="math inline">\(U\)</span>: the backdoor path <span class="math inline">\(A_1 \leftarrow L_1 \leftarrow U \to Y\)</span> is open, so there is confounding.</li>
-<li><span class="math inline">\(U\)</span> is unmeasured, but conditioning on the measured <span class="math inline">\(L_1\)</span> blocks the path.</li>
-<li>So if <span class="math inline">\(L_1\)</span> is measured, there is no unmeasured confounding for the effect of <span class="math inline">\(A_1\)</span>, and we call <span class="math inline">\(L_1\)</span> a <strong>confounder</strong> for that effect, even though the actual common cause is <span class="math inline">\(U\)</span> (see Section 7.3) and even though there is no arrow <span class="math inline">\(L_1 \to Y\)</span>.</li>
+<li><span class="math inline">\(A_1\)</span> and <span class="math inline">\(Y\)</span> share the cause <span class="math inline">\(U_1\)</span>: the backdoor path <span class="math inline">\(A_1 \leftarrow L_1 \leftarrow U_1 \to Y\)</span> is open, so there is confounding.</li>
+<li><span class="math inline">\(U_1\)</span> is unmeasured, but conditioning on the measured <span class="math inline">\(L_1\)</span> blocks the path.</li>
+<li>So if <span class="math inline">\(L_1\)</span> is measured, there is no unmeasured confounding for the effect of <span class="math inline">\(A_1\)</span>, and we call <span class="math inline">\(L_1\)</span> a <strong>confounder</strong> for that effect, even though the actual common cause is <span class="math inline">\(U_1\)</span> (see Section 7.3) and even though there is no arrow <span class="math inline">\(L_1 \to Y\)</span>.</li>
 </ul>
+</div>
 <aside class="notes">
-<p>Conditioning on <span class="math inline">\(L_1\)</span>, a collider, opens a second backdoor path, <span class="math inline">\(A_1 \leftarrow A_0 \to L_1 \leftarrow U \to Y\)</span>. That path can be blocked by also conditioning on prior treatment <span class="math inline">\(A_0\)</span>, if it is available.</p>
+<div title="Conditioning on a Collider Opens Another Path">
+<div class="callout callout-warning callout-titled callout-style-default">
+<div class="callout-body">
+<div class="callout-title">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<p><strong>Conditioning on a Collider Opens Another Path</strong></p>
+</div>
+<div class="callout-content">
+<p>Conditioning on <span class="math inline">\(L_1\)</span>, a collider, opens a second backdoor path, <span class="math inline">\(A_1 \leftarrow A_0 \to L_1 \leftarrow U_1 \to Y\)</span>. That path can be blocked by also conditioning on prior treatment <span class="math inline">\(A_0\)</span>, if it is available.</p>
+</div>
+</div>
+</div>
+</div>
 <style type="text/css">
         span.MJX_Assistive_MathML {
           position:absolute!important;
@@ -874,15 +1053,32 @@ Y^{a_0, a_1} \perp\!\!\!\perp A_1^{a_0} \mid A_0, L_1^{a_0}.\]</span></p>
 </section>
 <section class="slide level2">
 
+<p>Now consider the long diagram over all times <span class="math inline">\(k = 0, 1, 2, \ldots\)</span>, in which each <span class="math inline">\(L_k\)</span> affects later treatments <span class="math inline">\(A_k, A_{k+1}, \ldots\)</span> and shares unmeasured causes <span class="math inline">\(U_k\)</span> with <span class="math inline">\(Y\)</span>. To estimate the effects of strategies defined by interventions on <span class="math inline">\(A_0, A_1, A_2, \ldots\)</span>, we must condition at each <span class="math inline">\(k\)</span> on the covariate history <span class="math inline">\(\bar{L}_k\)</span>, together with <span class="math inline">\(\bar{A}_{k-1}\)</span>, to block the backdoor paths between <span class="math inline">\(A_k\)</span> and <span class="math inline">\(Y\)</span>.</p>
 <div id="def-tv-confounders" class="theorem definition">
-<p><span class="theorem-title"><strong>Definition 7 (Time-varying confounders)</strong></span> Consider the long diagram over all times <span class="math inline">\(k = 0, 1, 2, \ldots\)</span>, in which each <span class="math inline">\(L_k\)</span> affects later treatments <span class="math inline">\(A_k, A_{k+1}, \ldots\)</span> and shares unmeasured causes <span class="math inline">\(U_k\)</span> with <span class="math inline">\(Y\)</span>. To estimate the effects of strategies defined by interventions on <span class="math inline">\(A_0, A_1, A_2, \ldots\)</span>, the covariate history <span class="math inline">\(\bar{L}_k\)</span>, together with <span class="math inline">\(\bar{A}_{k-1}\)</span>, is needed at each <span class="math inline">\(k\)</span> to block the backdoor paths between <span class="math inline">\(A_k\)</span> and <span class="math inline">\(Y\)</span>. The covariates in <span class="math inline">\(\bar{L}_k\)</span> are then called <strong>time-varying confounders</strong> for the effect of <span class="math inline">\(\bar{A}\)</span> on <span class="math inline">\(Y\)</span>.</p>
+<p><span class="theorem-title"><strong>Definition 9 (Time-varying confounders)</strong></span> Covariates <span class="math inline">\(\bar{L}_k\)</span> that, together with <span class="math inline">\(\bar{A}_{k-1}\)</span>, are needed at each time <span class="math inline">\(k\)</span> to block the backdoor paths between <span class="math inline">\(A_k\)</span> and <span class="math inline">\(Y\)</span> are <strong>time-varying confounders</strong> for the effect of <span class="math inline">\(\bar{A}\)</span> on <span class="math inline">\(Y\)</span>.</p>
 </div>
 <ul>
 <li>No unmeasured confounding for <span class="math inline">\(\bar{A}\)</span> requires that <span class="math inline">\(\bar{L}_k\)</span> be measured for everyone.</li>
 <li>Time-varying confounders are sometimes called <strong>time-dependent confounders</strong>.</li>
-<li>We cannot empirically tell Figure 19.2 (no unmeasured confounding) from Figure 19.3 (unmeasured confounding).</li>
+</ul>
+<div title="Measuring the Confounders Is Not Enough">
+<div class="callout callout-warning callout-titled callout-style-default">
+<div class="callout-body">
+<div class="callout-title">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<p><strong>Measuring the Confounders Is Not Enough</strong></p>
+</div>
+<div class="callout-content">
+<ul>
+<li>Whether all confounders are measured cannot be checked from the data: as Section 19.3 noted, the data cannot distinguish Figure 19.2 from Figure 19.3.</li>
 <li>Even with all confounders measured and modeled correctly, most adjustment methods can give biased comparisons of strategies; Chapter 20 explains why g-methods are needed.</li>
 </ul>
+</div>
+</div>
+</div>
+</div>
 </section>
 <section class="slide level2">
 
@@ -901,15 +1097,17 @@ Y^{a_0, a_1} \perp\!\!\!\perp A_1^{a_0} \mid A_0, L_1^{a_0}.\]</span></p>
 <li>There is <strong>confounding</strong> for effects involving <span class="math inline">\(\text{E}{\left[Y^{\bar{a}}\right]}\)</span> if <span class="math inline">\(\text{E}{\left[Y^{\bar{a}}\right]} \neq \text{E}{\left[Y \mid \bar{A} = \bar{a}\right]}\)</span>.</li>
 <li>The confounding is <strong>solely time-fixed</strong> (wholly due to baseline covariates) if <span class="math inline">\(\text{E}{\left[Y^{\bar{a}} \mid L_0\right]} = \text{E}{\left[Y \mid \bar{A} = \bar{a}, L_0\right]}\)</span>, as when the only arrows into <span class="math inline">\(A_1\)</span> in Figure 19.2 come from <span class="math inline">\(A_0\)</span> and <span class="math inline">\(L_0\)</span>.</li>
 <li>If the identifiability conditions hold but <span class="math inline">\(\text{E}{\left[Y^{\bar{a}} \mid L_0\right]} \neq \text{E}{\left[Y \mid \bar{A} = \bar{a}, L_0\right]}\)</span>, there is <strong>time-varying confounding</strong>.</li>
-<li>If the identifiability conditions fail, as in Figure 19.3, there is <strong>unmeasured confounding</strong>.</li>
+<li>If the identifiability conditions fail, as they generically do in Figure 19.3 (under faithfulness), there is <strong>unmeasured confounding</strong>.</li>
 </ul>
-<p>A sufficient condition for no time-varying confounding is unconditional sequential exchangeability, <span class="math inline">\(Y^{\bar{a}} \perp\!\!\!\perp A_k \mid \bar{A}_{k-1} = \bar{a}_{k-1}\)</span>, as in Figure 19.1. That diagram can in fact be pruned to <span class="math inline">\(A_0\)</span>, <span class="math inline">\(A_1\)</span>, and <span class="math inline">\(Y\)</span>: <span class="math inline">\(L_1\)</span> is not a common cause of two nodes, so drop it; then <span class="math inline">\(L_0\)</span> and <span class="math inline">\(U_1\)</span> are no longer common causes, so drop them; then <span class="math inline">\(U_0\)</span> is not either.</p>
+<p>A sufficient condition for no time-varying confounding is unconditional sequential exchangeability (<a href="#/def-unconditional-seq-exchangeability" class="quarto-xref">Definition&nbsp;7</a>), <span class="math inline">\(Y^{\bar{a}} \perp\!\!\!\perp A_k \mid \bar{A}_{k-1} = \bar{a}_{k-1}\)</span>, as in Figure 19.1. That diagram can in fact be pruned to <span class="math inline">\(A_0\)</span>, <span class="math inline">\(A_1\)</span>, and <span class="math inline">\(Y\)</span>: <span class="math inline">\(L_1\)</span> is not a common cause of two nodes, so drop it; then <span class="math inline">\(L_0\)</span> and <span class="math inline">\(U_1\)</span> are no longer common causes, so drop them; then <span class="math inline">\(U_0\)</span> is not either.</p>
 </div>
 </div>
 </div>
 </div>
 <aside class="notes">
-<p>Note what the chapter does <strong>not</strong> yet require: a time-varying confounder here is simply a covariate needed to block backdoor paths at some time <span class="math inline">\(k\)</span>. Whether that covariate is also <em>affected by earlier treatment</em> (treatment-confounder feedback) is the subject of Chapter 20, and it is that feedback that makes conventional adjustment fail.</p>
+<div id="rem-tv-confounders-no-feedback-yet" class="proof remark">
+<p><span class="proof-title"><em>Remark 10</em> (Treatment-confounder feedback is not yet required). </span>Note what the chapter does <strong>not</strong> yet require: a time-varying confounder here is simply a covariate needed to block backdoor paths at some time <span class="math inline">\(k\)</span>. Whether that covariate is also <em>affected by earlier treatment</em> (treatment-confounder feedback) is the subject of Chapter 20, and it is that feedback that makes conventional adjustment fail.</p>
+</div>
 <style type="text/css">
         span.MJX_Assistive_MathML {
           position:absolute!important;
@@ -931,11 +1129,11 @@ Y^{a_0, a_1} \perp\!\!\!\perp A_1^{a_0} \mid A_0, L_1^{a_0}.\]</span></p>
 
 <ul>
 <li>The average causal effect of a time-varying treatment is a contrast of <span class="math inline">\(\text{E}{\left[Y^g\right]}\)</span> under two <strong>treatment strategies</strong>; it is not uniquely defined until the strategies are specified.</li>
-<li>Strategies are <strong>static</strong> (<span class="math inline">\(\bar{a}\)</span>, not depending on covariates) or <strong>dynamic</strong> (<span class="math inline">\(g\)</span>, depending on the evolving <span class="math inline">\(\bar{L}_k\)</span>), and deterministic or random.</li>
-<li>In a <strong>sequentially randomized experiment</strong>, treatment at each <span class="math inline">\(k\)</span> is randomized given <span class="math inline">\((\bar{A}_{k-1}, \bar{L}_k)\)</span>; this implies <strong>sequential exchangeability</strong>.</li>
-<li>Identification needs sequential exchangeability, sequential positivity, and consistency.</li>
-<li><strong>Static sequential exchangeability</strong> is weaker and identifies only static strategies; SWIGs show when a diagram (e.g., Figure 19.6) supports static but not dynamic strategies.</li>
-<li><strong>Time-varying confounders</strong> are covariates <span class="math inline">\(\bar{L}_k\)</span> needed at each time to block backdoor paths; Chapter 20 explains why conventional methods fail to adjust for them.</li>
+<li>Strategies are <strong>static</strong> (<span class="math inline">\(\bar{a}\)</span>, not depending on covariates) or <strong>dynamic</strong> (<span class="math inline">\(g\)</span>, depending on the evolving <span class="math inline">\(\bar{L}_k\)</span>) (<a href="#/def-dynamic-static" class="quarto-xref">Definition&nbsp;4</a>), and deterministic or random.</li>
+<li>In a <strong>sequentially randomized experiment</strong> (<a href="#/def-seq-randomized" class="quarto-xref">Definition&nbsp;5</a>), treatment at each <span class="math inline">\(k\)</span> is randomized given <span class="math inline">\((\bar{A}_{k-1}, \bar{L}_k)\)</span>; such randomization implies <strong>sequential exchangeability</strong> (<a href="#/def-seq-exchangeability" class="quarto-xref">Definition&nbsp;6</a>).</li>
+<li>Identification of all strategies is guaranteed by sequential exchangeability, sequential positivity, and consistency.</li>
+<li><strong>Static sequential exchangeability</strong> (<a href="#/def-static-seq-exchangeability" class="quarto-xref">Definition&nbsp;8</a>) is weaker and identifies only static strategies; SWIGs show when a diagram (e.g., Figure 19.6) supports static but not dynamic strategies.</li>
+<li><strong>Time-varying confounders</strong> are covariates <span class="math inline">\(\bar{L}_k\)</span> needed at each time to block backdoor paths; Chapter 20 explains why conventional methods may fail to adjust for them when there is treatment-confounder feedback.</li>
 </ul>
 </section></section>
 <section>
