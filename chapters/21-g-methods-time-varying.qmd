@@ -47,6 +47,8 @@ with treatments $A_0, A_1$, a confounder $L_1$ measured between them,
 and an outcome $Y$.
 There is no $L_0$ in this study.
 
+::: {#tbl-seq-rand}
+
 | $N$ | $A_0$ | $L_1$ | $A_1$ | Mean $Y$ |
 |------:|:---:|:---:|:---:|---:|
 | 2400 | 0 | 0 | 0 | 84 |
@@ -58,8 +60,9 @@ There is no $L_0$ in this study.
 | 1600 | 1 | 1 | 0 | 44 |
 | 6400 | 1 | 1 | 1 | 44 |
 
-: The sequentially randomized experiment of Table 21.1 [@hernan2020causal, p. 277];
-32,000 individuals in total. {#tbl-seq-rand}
+The sequentially randomized experiment of Table 21.1 [@hernan2020causal, p. 277];
+32,000 individuals in total.
+:::
 
 ---
 
@@ -93,10 +96,12 @@ Every factor is conditional on prior treatment and covariate history;
 this conditioning is unnecessary in the time-fixed case,
 where treatment and confounders are measured at a single time.
 
+::: {.callout-warning title="Positivity Is Needed to Compute the G-Formula"}
 **Positivity**: the g-formula is computable only if,
 for every $l_1$ with $f(l_1 \mid a_0) \neq 0$,
 some individuals have $(A_0 = a_0, A_1 = a_1, L_1 = l_1)$
 (the definition of positivity in Technical Point 19.2).
+:::
 :::
 
 ::: {.callout-note title="Fine Point 21.1: Treatment and Covariate History"}
@@ -146,6 +151,9 @@ The g-formula estimate of $\E{Y^{1,1}} - \E{Y^{0,0}}$ is $60 - 60 = 0$, the corr
 
 ### The G-Formula as a Simulation
 
+::: {#rem-g-formula-simulation}
+## The g-formula simulates the counterfactual joint distribution
+
 Under sequential exchangeability for $Y$ and $\bar{L}$ jointly,
 the g-formula simulates the joint distribution of the counterfactuals $(Y^{\bar{a}}, \bar{L}^{\bar{a}})$
 that would have been observed had everybody followed strategy $\bar{a}$.
@@ -153,8 +161,11 @@ On the tree graph (Figures 21.1-21.2), this means building a new tree in which
 everyone receives $a_0$ and $a_1$ with probability 1,
 while $\Pr[L_1 = l_1 \mid A_0 = a_0]$ and $\E{Y \mid A_0 = a_0, A_1 = a_1, L_1 = l_1}$
 keep their observed values.
+:::
 
 ::: {.notes}
+
+::: {.callout-warning title="Two Cautions About the G-Formula"}
 Two cautions [@hernan2020causal, p. 279]:
 
 1. **The value of the g-formula depends on what is in $L$.**
@@ -171,9 +182,14 @@ Two cautions [@hernan2020causal, p. 279]:
    $\Pr[L_1 = l_1 \mid A_0 = a_0] = \Pr[L_1^{a_0} = l_1]$ and
    $\E{Y \mid A_0 = a_0, A_1 = a_1, L_1 = l_1} = \E{Y^{a_0, a_1} \mid L_1^{a_0} = l_1}$,
    so the g-formula is $\sum_{l_1} \E{Y^{a_0, a_1} \mid L_1^{a_0} = l_1} \Pr[L_1^{a_0} = l_1] = \E{Y^{a_0, a_1}}$.
+
+:::
 :::
 
 ### Estimation: the Plug-In (Parametric) G-Formula
+
+::: {#def-plug-in-g-formula}
+## Plug-in and parametric g-formula
 
 With many confounders or time points, the components must be estimated, for example
 
@@ -183,8 +199,13 @@ With many confounders or time points, the components must be estimated, for exam
 
 Plugging the estimates into the formula gives the **plug-in g-formula**;
 when the estimates come from parametric models, the **parametric g-formula**.
+:::
 
 ::: {.notes}
+
+::: {#def-g-formula-random-strategy}
+## The g-formula for a random strategy
+
 **Random strategies**: under sequential exchangeability the g-formula also handles a random strategy $f^{int}$,
 such as "at each $k$, independently treat with probability 0.3"
 (so $f^{int}(1 \mid \bar{a}_{k-1}, \bar{l}_k) = 0.3$).
@@ -198,6 +219,7 @@ Replacing $f^{int}$ by the observed $f(a_k \mid \bar{a}_{k-1}, \bar{l}_k)$ gives
 For a deterministic strategy, $f^{int}$ is 1 for the mandated treatment values and 0 otherwise,
 so the $f^{int}$ factors and the sum over $\bar{a}$ can be dropped.
 :::
+:::
 
 ::: {.callout-note title="Technical Point 21.1: The g-formula Density"}
 For a static strategy $\bar{a}$,
@@ -209,8 +231,11 @@ by the value $a_k^g$ that $g$ assigns given the simulated history.
 :::
 
 ::: {.notes}
+
+::: {.callout-tip title="Software for the Parametric G-Formula"}
 **Software**: the `gfoRmula` R package (Lin et al. 2019) is on CRAN,
 and a GFORMULA SAS macro is available on GitHub [@hernan2020causal, p. 281].
+:::
 :::
 
 ## 21.2 IP Weighting for Time-Varying Treatments (pp. 282-285)
@@ -237,8 +262,14 @@ $$SW^{\bar{A}} = \prod_{k=0}^{K} \frac{f\paren{A_k \mid \bar{A}_{k-1}}}{f\paren{
 For $K = 1$: $W^{\bar{A}} = \dfrac{1}{f(A_0 \mid L_0)} \times \dfrac{1}{f(A_1 \mid A_0, L_0, L_1)}$.
 :::
 
-Under the identifiability conditions, $\E{Y^{a_0, a_1}}$ equals the mean
-$\Expfc{ps}{Y \mid A_0 = a_0, A_1 = a_1}$ in the pseudo-population created by either set of weights.
+::: {#prp-ipw-tv-identification}
+## IP weighting identifies the counterfactual mean
+
+Under the identifiability conditions (sequential exchangeability, positivity, and consistency),
+$\E{Y^{a_0, a_1}}$ equals the mean
+$\Expfc{ps}{Y \mid A_0 = a_0, A_1 = a_1}$
+in the pseudo-population created by either set of weights in @def-ipw-tv.
+:::
 
 ::: {.notes}
 As in Technical Point 12.2, the pseudo-population mean equals
@@ -257,8 +288,11 @@ so nonstabilized-weight estimates are unbiased;
 in observational studies they must be estimated,
 for example by a pooled logistic model for $\Pr[A_k = 1 \mid \bar{A}_{k-1}, \bar{L}_k]$
 that includes functions of time $k$.
+
+::: {.callout-warning title="The Denominator Model Must Be Correct"}
 A misspecified denominator model biases the estimate;
 a misspecified numerator model for $f(A_k \mid \bar{A}_{k-1})$ does not.
+:::
 :::
 
 ---
@@ -293,13 +327,19 @@ the 32,000 study individuals times the 4 static strategies
 :::
 
 ::: {.notes}
+
+::: {#rem-g-formula-ipw-equal}
+## Equal nonparametric estimates are not evidence of causality
+
 The nonparametric g-formula and IP weighted estimates are exactly equal.
 That equality has nothing to do with causality:
 it holds even when the identifiability conditions fail
 and neither estimate has a causal interpretation.
 Stabilized weights give the same estimate of 0 here (check for yourself)
 [@hernan2020causal, p. 283].
+:::
 
+::: {.callout-tip title="Estimate the Counterfactual Mean Both Ways"}
 **Comparing the two parametric estimators**: if the parametric g-formula and the parametric IP weighted estimates
 differ by more than sampling variability (quantified by bootstrapping the difference),
 then at least one set of models is misspecified,
@@ -310,8 +350,12 @@ The book recommends estimating $\E{Y^{\bar{a}}}$ both ways and,
 if they differ substantially by a prespecified criterion, revisiting the models
 [@hernan2020causal, p. 284].
 :::
+:::
 
 ### Marginal Structural Models
+
+::: {#def-msm-tv}
+## Marginal structural mean model for a time-varying treatment
 
 There are far more strategies $\bar{a}$ than can be estimated one at a time,
 so we pool information with a **marginal structural mean model**, for example
@@ -320,20 +364,33 @@ $$\E{Y^{\bar{a}}} = \beta_0 + \beta_1 \, \mathrm{cum}(\bar{a}), \qquad \mathrm{c
 
 This model is unsaturated: one unknown per strategy on the left, two parameters on the right.
 The average causal effect is $\E{Y^{\bar{a}}} - \E{Y^{\bar{a} = \bar{0}}} = \beta_1 \times \mathrm{cum}(\bar{a})$.
+:::
 
 ---
 
-Estimate $\beta$ by fitting $\E{Y \mid \bar{A}} = \theta_0 + \theta_1 \, \mathrm{cum}(\bar{A})$
-by weighted least squares with weights $SW^{\bar{A}}$ or $W^{\bar{A}}$.
-Under the identifiability conditions, $\hth_1$ is consistent for the causal $\beta_1$,
-not for the associational $\theta_1$.
+::: {#prp-msm-tv-wls}
+## IP weighted least squares is consistent for the marginal structural model
+
+Suppose the marginal structural model of @def-msm-tv is correctly specified,
+and the identifiability conditions (sequential exchangeability, positivity, and consistency) hold.
+Let $\hb_1$ be the coefficient of $\mathrm{cum}(\bar{A})$ in the fit of the model
+$\E{Y \mid \bar{A}} = \theta_0 + \theta_1 \, \mathrm{cum}(\bar{A})$
+by weighted least squares with weights $SW^{\bar{A}}$ or $W^{\bar{A}}$ of @def-ipw-tv
+(known, or estimated from a correctly specified treatment model).
+Then $\hb_1$ is consistent for the causal $\beta_1$,
+which in general differs from the associational $\theta_1$ of the unweighted data.
+:::
 
 ::: {.notes}
+
+::: {.callout-tip title="Variance Estimation and Choice of Weights"}
 **Variance**: use the nonparametric bootstrap, the analytic variance,
 or a conservative 95% interval from the robust variance estimator.
 For a non-saturated model, intervals are typically narrower with $SW^{\bar{A}}$ than with $W^{\bar{A}}$,
 so $SW^{\bar{A}}$ is preferred [@hernan2020causal, p. 285].
+:::
 
+::: {.callout-tip title="Checking the Marginal Structural Model"}
 **Checking the MSM**: fitting
 
 $$\E{Y \mid \bar{A}} = \theta_0 + \theta_1 \mathrm{cum}(\bar{A}) + \theta_2 \mathrm{cum}_{-5}(\bar{A}) + \theta_3 \mathrm{cum}(\bar{A})^2$$
@@ -342,18 +399,45 @@ with the same weights, where $\mathrm{cum}_{-5}$ is cumulative treatment in the 
 gives a 2-degree-of-freedom Wald test of $\theta_2 = \theta_3 = 0$,
 a test that the original MSM is correctly specified.
 In practice one may use other summaries of treatment history and flexible functions such as cubic splines.
+:::
+:::
+
+::: {#def-msm-effect-modification-tv}
+## Marginal structural model with a baseline effect modifier
 
 **Effect modification**: for a dichotomous *baseline* variable $V$ in $L_0$,
-the model $\E{Y^{\bar{a}} \mid V} = \beta_0 + \beta_1 \mathrm{cum}(\bar{a}) + \beta_2 V + \beta_3 \mathrm{cum}(\bar{a}) V$
-is estimated by fitting the associational model
+a marginal structural model with effect modification by $V$ is
+$\E{Y^{\bar{a}} \mid V} = \beta_0 + \beta_1 \mathrm{cum}(\bar{a}) + \beta_2 V + \beta_3 \mathrm{cum}(\bar{a}) V$.
+Its parameters are estimated by fitting the associational model
 $\E{Y \mid \bar{A}, V} = \theta_0 + \theta_1 \mathrm{cum}(\bar{A}) + \theta_2 V + \theta_3 \mathrm{cum}(\bar{A}) V$
 by weighted least squares with $W^{\bar{A}}$ or, better,
-$SW^{\bar{A}}(V) = \prod_{k=0}^{K} f(A_k \mid \bar{A}_{k-1}, V) / f(A_k \mid \bar{A}_{k-1}, \bar{L}_k)$,
-so that $\theta_1$ and $\theta_3$ estimate the causal $\beta_1$ and $\beta_3$.
+$SW^{\bar{A}}(V) = \prod_{k=0}^{K} f(A_k \mid \bar{A}_{k-1}, V) / f(A_k \mid \bar{A}_{k-1}, \bar{L}_k)$.
+:::
+
+---
+
+::: {#prp-msm-effect-modification-tv-wls}
+## IP weighted least squares is consistent for the effect-modification model
+
+Suppose the marginal structural model of @def-msm-effect-modification-tv is correctly specified,
+the identifiability conditions (sequential exchangeability, positivity, and consistency) hold,
+and $V$ is a baseline variable in $L_0$.
+Let $\hb_1$ and $\hb_3$ be the coefficients of $\mathrm{cum}(\bar{A})$ and $\mathrm{cum}(\bar{A}) V$
+in the fit of the associational model of @def-msm-effect-modification-tv
+by weighted least squares with weights $SW^{\bar{A}}(V)$ of @def-msm-effect-modification-tv
+or $W^{\bar{A}}$ of @def-ipw-tv
+(known, or estimated from a correctly specified model for treatment in the denominator).
+Then $\hb_1$ and $\hb_3$ are consistent for the causal $\beta_1$ and $\beta_3$.
+:::
+
+::: {.notes}
+
+::: {.callout-warning title="Only Baseline Variables as Effect Modifiers"}
 With treatment-confounder feedback, $V$ may include only baseline variables;
 if $V$ included any $L_k$ with $k > 0$,
-the weighted estimates of $\theta_1$ and $\theta_3$ could be non-null even though $\beta_1 = \beta_3 = 0$ under the null
+the weighted-fit coefficients of $\mathrm{cum}(\bar{A})$ and $\mathrm{cum}(\bar{A}) V$ could be non-null even though $\beta_1 = \beta_3 = 0$ under the null
 [@hernan2020causal, p. 285].
+:::
 :::
 
 ::: {.callout-note title="Technical Point 21.2: IP Weighting for Dynamic Treatment Strategies"}
@@ -380,13 +464,20 @@ both are correctly specified under the null whatever functional form we choose
 
 ---
 
+::: {#def-doubly-robust-tv}
+## Doubly robust estimator
+
 IP weighting needs a correct model for treatment given confounders;
 the g-formula needs a correct model for the outcome given treatment and confounders.
 A **doubly robust** estimator is consistent if *either* model is correct,
 without our knowing which,
 giving "two chances to get it right" [@hernan2020causal, p. 286].
+:::
 
 ### Review: a Doubly Robust Plug-In Estimator for a Time-Fixed Treatment
+
+::: {#alg-dr-time-fixed}
+## Doubly robust plug-in estimator for a time-fixed treatment
 
 For a binary $A$, binary $Y$, and many confounders $L$, estimate $\E{Y^a}$ in three steps:
 
@@ -398,8 +489,12 @@ For a binary $A$, binary $Y$, and many confounders $L$, estimate $\E{Y^a}$ in th
 
 The difference of the step-3 averages for $a = 1$ and $a = 0$
 is a doubly robust estimator of $\E{Y^{a=1}} - \E{Y^{a=0}}$.
+:::
 
 ### Extension to Time-Varying Treatments
+
+::: {#alg-dr-time-varying}
+## Doubly robust plug-in estimator for a time-varying treatment
 
 To estimate $\E{Y^{\bar{a} = \bar{1}}}$ ("always treated"):
 
@@ -418,12 +513,16 @@ To estimate $\E{Y^{\bar{a} = \bar{1}}}$ ("always treated"):
 
 Repeat with $\bar{a} = \bar{0}$ for "never treated";
 the difference estimates the average causal effect.
+:::
 
 ::: {.notes}
+
+::: {.callout-tip title="Choosing the Sequential Outcome Models"}
 For a binary $Y$, the time-$m$ model can be logistic,
 $\expit(\gamma_m X_m + \varsigma_m \hat{W}^{\bar{1}_m})$ with $X_m$ a function of $\bar{L}_m$:
 although $\hat{B}_{m+1}$ is not 0 or 1, it lies in $[0, 1]$.
 For a continuous $Y$, use a linear model [@hernan2020causal, p. 288].
+:::
 
 This estimator is due to Bang and Robins (2005), building on Robins (2000).
 It is a targeted minimum loss-based estimator (TMLE) in the terminology of van der Laan and coauthors
@@ -432,8 +531,18 @@ It is a targeted minimum loss-based estimator (TMLE) in the terminology of van d
 
 ---
 
-**Robustness.**
-The estimator is consistent if
+::: {#prp-dr-k-plus-2-robust}
+## The time-varying doubly robust estimator is $K + 2$ robust
+
+Suppose each sequential outcome model $b_m$ of @alg-dr-time-varying
+is fit by solving the score equations of a generalized linear model with a canonical link
+(logistic for a binary $Y$, linear for a continuous $Y$).
+For a binary $Y$ and $m < K$, the response $\hat{B}_{m+1}$ lies in $[0, 1]$ rather than $\{0, 1\}$,
+so the logistic fit is a quasi-likelihood fit.
+Suppose also that each $b_m$ includes the weight $\hat{W}^{\bar{1}_m}$ as a covariate.
+Suppose further that positivity holds for the strategy $\bar{a} = \bar{1}$.
+Then the estimator of @alg-dr-time-varying is consistent for the g-formula functional of @def-g-formula-tv
+at $\bar{a} = \bar{1}$ if
 (i) the outcome models $b_m$ are correct for all $m$, or
 (ii) the treatment models $\pi_k$ are correct for all $k$.
 In fact it is **$K + 2$ robust**: it is also consistent if,
@@ -441,6 +550,10 @@ for some $m \in \{0, \ldots, K - 1\}$,
 the treatment model is correct for times $0$ to $m$
 and the outcome model is correct for times $m + 1$ to $K$
 [@hernan2020causal, p. 288].
+If, in addition, sequential exchangeability and consistency hold,
+that functional equals $\E{Y^{\bar{a} = \bar{1}}}$,
+so the estimator is consistent for the counterfactual mean.
+:::
 
 ::: {.callout-note title="Technical Point 21.4: A K+2 Robust Augmented IP Weighted Estimator"}
 For $K = 1$, let $\hat{b}_1(L_0, L_1) = \hE{Y \mid L_0, A_0 = 1, L_1, A_1 = 1}$
@@ -466,6 +579,8 @@ the estimator in the main text is an instance of this construction.
 :::
 
 ::: {.notes}
+
+::: {.callout-warning title="Fact-Check: A Term in the Book's First Display of the Estimator"}
 *Fact-check note*: the book's first display of $\hat{U}_{TR}$ [@hernan2020causal, p. 288] writes the $\hat{b}_1$ term as
 $-\{A_0 A_1/(\hat{\pi}_0 \hat{\pi}_1) - 1\}\hat{b}_1$,
 which disagrees with the rearranged form the same Technical Point gives (the one shown here).
@@ -481,6 +596,7 @@ The two versions differ by $(1 - A_0/\hat{\pi}_0)\,\hat{b}_1$,
 which does not average to 0 in general,
 so only the corrected form supports the three robustness arguments.
 The book's third rearrangement (used for the Molina et al. argument) agrees with the corrected form.
+:::
 :::
 
 ::: {.callout-note title="Fine Point 21.2: Representations of the g-formula"}
@@ -504,7 +620,37 @@ to become more common as software matures, especially for failure-time outcomes.
 
 ---
 
-A structural nested mean model (SNMM) for a time-varying treatment has **one equation per time point**.
+::: {#def-snmm-tv}
+## Structural Nested Mean Model
+
+A **structural nested mean model** (SNMM) for a time-varying treatment
+specifies, for each $k = 0, \ldots, K$,
+
+$$\E{Y^{\bar{a}_{k-1}, a_k, \underline{0}_{k+1}} - Y^{\bar{a}_{k-1}, \underline{0}_k}
+\mid \bar{L}_k^{\bar{a}_{k-1}} = \bar{l}_k, \bar{A}_{k-1} = \bar{a}_{k-1}, A_k = a_k}
+= a_k \, \gamma_k\paren{\bar{a}_{k-1}, \bar{l}_k, \beta},$$
+
+where $(\bar{a}_{k-1}, a_k, \underline{0}_{k+1})$ follows $\bar{a}_{k-1}$ through $k - 1$, gives $a_k$ at $k$,
+and gives no treatment from $k + 1$ to $K$;
+$\gamma_k(\bar{a}_{k-1}, \bar{l}_k, \psi^\dagger)$ is a known function of past treatment, covariate history, and a parameter value $\psi^\dagger$,
+with $\gamma_k(\bar{a}_{k-1}, \bar{l}_k, 0) = 0$;
+and $\beta$ is the unknown true value of that parameter.
+:::
+
+::: {#rem-snmm-last-blip}
+## What an SNMM models
+
+An SNMM models the effect on the mean of $Y$ of a **last blip** of treatment $a_k$ at time $k$,
+as a function of past treatment and covariate history.
+Because $\gamma_k(\cdot, 0) = 0$, the null hypothesis of no effect corresponds to $\beta = 0$.
+:::
+
+---
+
+::: {#exm-snmm-saturated-two-times}
+## A saturated SNMM for two time points
+
+An SNMM (@def-snmm-tv) has **one equation per time point**.
 For @tbl-seq-rand ($K = 1$), a saturated additive SNMM is
 
 $$
@@ -518,6 +664,7 @@ $$
 The first equation is the effect of treating at time 0 and never again;
 the second, of treating at time 1 and never again.
 Under sequential exchangeability, $A_0 = a_0$ and $A_1^{a_0} = a_1$ can be dropped from the conditioning events.
+:::
 
 ::: {.notes}
 Both equations are saturated:
@@ -536,6 +683,9 @@ The two equations nested within each other are why the model is called *nested*
 
 ---
 
+::: {#def-rank-preserving-snmm-tv}
+## Additive rank-preserving model for two time points
+
 As in Chapter 14, g-estimation starts from the additive **rank-preserving** model for each individual $i$:
 
 $$
@@ -547,9 +697,17 @@ $$
 
 The second equation is only *locally* rank-preserving:
 ranks are preserved among individuals with the same $a_0$ and $l_1$.
+:::
+
+::: {.callout-warning title="Rank Preservation Is Implausible but Not Required"}
 Rank preservation is biologically implausible,
-but under sequential exchangeability for $Y$ the g-estimators of $\psi$ below
-are consistent for the SNMM parameters $\beta$ even if the rank-preserving model is wrong.
+but it is not needed.
+G-estimation (the Chapter 14 method, extended here to time-varying treatment) is consistent for the SNMM parameters $\beta$ of @def-snmm-tv
+even if the rank-preserving model is wrong,
+provided the SNMM is correctly specified,
+sequential exchangeability for $Y$ and consistency hold,
+and the model for treatment given past treatment and covariates is correctly specified.
+:::
 
 ::: {.notes}
 The proof is in Robins (1994).
@@ -558,6 +716,9 @@ To fit an unsaturated SNMM by g-estimation, positivity is not required
 :::
 
 ---
+
+::: {#def-candidate-counterfactuals-tv}
+## Candidate counterfactuals for two time points
 
 By consistency ($Y^{A_0, A_1} = Y$ and $L_1^{A_0} = L_1$),
 the model can be written in terms of observed data.
@@ -569,10 +730,15 @@ H_1(\psi^\dagger) &= Y - \paren{\psi_{11}^\dagger A_1 + \psi_{12}^\dagger A_1 L_
 H_0(\psi^\dagger) &= H_1(\psi^\dagger) - \psi_0^\dagger A_0.
 \end{aligned}
 $$
+:::
+
+::: {#rem-candidate-counterfactuals-true-psi}
+## Candidate counterfactuals at the true parameter
 
 When $\psi^\dagger = \psi$, $H_k(\psi^\dagger)$ equals the counterfactual $Y^{\bar{A}_{k-1}, \bar{0}_k}$:
 observed treatment through $k - 1$ and no treatment afterwards.
 Sequential exchangeability then says $H_k(\psi)$ is independent of $A_k$ given the past.
+:::
 
 ---
 
@@ -616,41 +782,37 @@ in agreement with the g-formula and IP weighting
 
 ### General Structural Nested Mean Models
 
-::: {#def-snmm-tv}
-## Structural Nested Mean Model
+::: {#def-candidate-counterfactuals-snmm}
+## Candidate counterfactuals for a general SNMM
 
-For each $k = 0, \ldots, K$,
-
-$$\E{Y^{\bar{a}_{k-1}, a_k, \underline{0}_{k+1}} - Y^{\bar{a}_{k-1}, \underline{0}_k}
-\mid \bar{L}_k^{\bar{a}_{k-1}} = \bar{l}_k, \bar{A}_{k-1} = \bar{a}_{k-1}, A_k = a_k}
-= a_k \, \gamma_k\paren{\bar{a}_{k-1}, \bar{l}_k, \beta},$$
-
-where $(\bar{a}_{k-1}, a_k, \underline{0}_{k+1})$ follows $\bar{a}_{k-1}$ through $k - 1$, gives $a_k$ at $k$,
-and gives no treatment from $k + 1$ to $K$;
-$\gamma_k(\bar{a}_{k-1}, \bar{l}_k, \psi^\dagger)$ is a known function with
-$\gamma_k(\bar{a}_{k-1}, \bar{l}_k, 0) = 0$; and $\beta$ is the true value of $\psi^\dagger$.
-:::
-
-An SNMM models the effect on the mean of $Y$ of a **last blip** of treatment $a_k$ at time $k$,
-as a function of past treatment and covariate history.
-Because $\gamma_k(\cdot, 0) = 0$, the null hypothesis of no effect corresponds to $\beta = 0$.
 The candidate counterfactuals generalize to
 
 $$H_k(\psi^\dagger) = Y - \sum_{j=k}^{K} A_j \, \gamma_j\paren{\bar{A}_{j-1}, \bar{L}_j, \psi^\dagger}.$$
+:::
 
 ::: {.notes}
+
+::: {#prp-snmm-h-mean}
+## Mean of the candidate counterfactuals at the true parameter
+
+Suppose the SNMM of @def-snmm-tv is correctly specified and consistency holds.
 Even when local rank preservation is false (as it essentially always is when treatment has an effect),
-a correct SNMM still gives
 $\E{H_k(\beta) \mid \bar{A}_k, \bar{L}_k} = \E{Y^{\bar{A}_{k-1}, \underline{0}_k} \mid \bar{A}_k, \bar{L}_k}$
-and $\E{H_0(\beta)} = \E{Y^{\bar{0}}}$,
-so $\E{Y^{\bar{0}}}$ is consistently estimated by the sample average of $H_0(\hb)$
+and $\E{H_0(\beta)} = \E{Y^{\bar{0}}}$.
+Hence, if $\hb$ is consistent for $\beta$,
+$\E{Y^{\bar{0}}}$ is consistently estimated by the sample average of $H_0(\hb)$
 [@hernan2020causal, p. 294].
+:::
+
+::: {#exm-blip-functions}
+## Unsaturated blip functions
 
 Unsaturated examples of the blip function:
 $\beta_1$ (same effect for all histories and times),
 $\beta_1 + \beta_2 k$ (effect varies linearly with time),
 and $\beta_1 + \beta_2 k + \beta_3 a_{k-1} + \beta_4 l_k + \beta_5 l_k a_{k-1}$
 (modification by the most recent treatment and covariate).
+:::
 :::
 
 ::: {.callout-note title="Technical Point 21.7: Marginal Structural Models and Structural Nested Models"}
@@ -665,7 +827,10 @@ a variance-bias trade-off.
 
 ### G-Estimation Algorithm (One Parameter)
 
-Take $\gamma_k(\bar{a}_{k-1}, \bar{l}_k, \beta) = \beta_1$, so $H_k(\psi^\dagger) = Y - \sum_{j=k}^{K} A_j \psi^\dagger$.
+::: {#alg-g-estimation-one-parameter}
+## G-estimation of a one-parameter SNMM
+
+Take $\gamma_k(\bar{a}_{k-1}, \bar{l}_k, \psi^\dagger) = \psi^\dagger$ (true value $\beta_1$), so $H_k(\psi^\dagger) = Y - \sum_{j=k}^{K} A_j \psi^\dagger$.
 
 1. For each $\psi^\dagger$ on a grid from $\psi_{low}$ to $\psi_{up}$ (e.g., steps of 0.1),
    compute $H_k(\psi^\dagger)$ for every person and time.
@@ -675,7 +840,12 @@ Take $\gamma_k(\bar{a}_{k-1}, \bar{l}_k, \beta) = \beta_1$, so $H_k(\psi^\dagger
 3. The g-estimate $\hb$ is the $\psi^\dagger$ with $\hat{\alpha}_1$ closest to 0;
    the 95% confidence interval is the set of $\psi^\dagger$ with $P > 0.05$ for $\alpha_1 = 0$.
 
+:::
+
 ---
+
+::: {#rem-g-estimating-equation}
+## G-estimation as solving an estimating equation
 
 Equivalently, $\hb$ is the $\psi^\dagger$ at which the score test of $\alpha_1 = 0$ has $P = 1$,
 that is, the solution of
@@ -683,13 +853,27 @@ that is, the solution of
 $$\sum_{i=1}^{N} \sum_{k=0}^{K} \cb{A_{i,k} - \expit\paren{\hat{\alpha}_0 + \hat{\alpha}_2 W_{i,k}}} H_{i,k}(\psi^\dagger) = 0,$$
 
 with $\hat{\alpha}_0, \hat{\alpha}_2$ from the model fit with $\alpha_1 = 0$.
-$\hb$ is consistent if
-(i) the SNMM is correct,
+:::
+
+::: {#prp-g-estimator-consistent}
+## Consistency of the g-estimator
+
+Let $\hb$ be the solution of the estimating equation of @rem-g-estimating-equation
+(equivalently, the limit of the grid-search estimate of @alg-g-estimation-one-parameter as the grid step goes to 0).
+Then $\hb$ is consistent for the true $\beta_1$ if
+(i) the one-parameter SNMM of @alg-g-estimation-one-parameter,
+$\gamma_k(\bar{a}_{k-1}, \bar{l}_k, \beta) = \beta_1$, is correct,
 (ii) sequential exchangeability for $Y$ holds,
-(iii) the treatment model $\logit \Pr[A_k = 1 \mid \bar{L}_k, \bar{A}_{k-1}] = \alpha_0 + \alpha_2 W_k$ is correct, and
-(iv) $H_k(\psi^\dagger)$ enters the treatment model linearly (Technical Point 14.2).
+(iii) consistency holds, $Y^{\bar{A}} = Y$,
+(iv) the treatment model $\logit \Pr[A_k = 1 \mid \bar{L}_k, \bar{A}_{k-1}] = \alpha_0 + \alpha_2 W_k$ is correct, and
+(v) $H_k(\psi^\dagger)$ enters the treatment model linearly (Technical Point 14.2).
+:::
 
 ::: {.notes}
+
+::: {#rem-g-estimation-vector-beta}
+## G-estimation of a vector parameter
+
 **Vector $\beta$**: for the five-parameter blip
 $\beta_0 + \beta_1 k + \beta_2 a_{k-1} + \beta_3 l_k + \beta_4 l_k a_{k-1}$,
 the treatment model needs five terms involving $H_k(\psi^\dagger)$, e.g.
@@ -702,8 +886,14 @@ but for an SNMM linear in $\beta$ the estimating equation has a closed-form solu
 (Technical Point 21.8, which also gives a $2^{K+1}$ multiply robust version)
 [@hernan2020causal, pp. 295-296].
 :::
+:::
 
 ### From $\hb$ to Counterfactual Means
+
+::: {#rem-counterfactual-means-after-g-estimation}
+## Counterfactual means after g-estimation
+
+Given $\hb$, how to estimate a counterfactual mean depends on the strategy and the blip function:
 
 - $\E{Y^{\bar{0}}}$: the sample average of $H_0(\hb)$.
 - If there is no effect modification by past covariates,
@@ -711,6 +901,8 @@ but for an SNMM linear in $\beta$ the estimating equation has a closed-form solu
   $$\hE{Y^{\bar{a}}} = \hE{Y^{\bar{0}}} + \sum_{k=0}^{K} a_k \gamma_k(\bar{a}_{k-1}, \hb).$$
 - If $\gamma_k$ depends on $\bar{l}_k$, or $g$ is dynamic,
   simulate $L_k$ from a model for $f(l_k \mid \bar{a}_{k-1}, \bar{l}_{k-1})$ (Technical Point 21.9).
+
+:::
 
 ::: {.callout-note title="Technical Point 21.9: Estimating a Counterfactual Mean After g-estimation of a Structural Nested Mean Model"}
 Estimate $\E{Y^{\bar{0}}}$ by the average of $H_0(\hb)$;
@@ -739,6 +931,10 @@ instead of sequential exchangeability [@hernan2020causal, p. 303].
 ---
 
 Part II treated censoring $C$ as time-fixed.
+
+::: {#def-time-varying-censoring-tv}
+## Time-varying censoring
+
 More realistically, censoring is time-varying: $C_1, C_2, \ldots, C_{K+1}$,
 where $C_m = 0$ if the individual is still uncensored at $m$ and 1 otherwise.
 
@@ -747,26 +943,43 @@ where $C_m = 0$ if the individual is still uncensored at $m$ and 1 otherwise.
 - After censoring, treatments, confounders, and outcomes are unobserved,
   so analyses are restricted to uncensored person-times.
 
+:::
+
 ---
 
-The g-formula of Section 21.1 becomes
+::: {#def-g-formula-censoring}
+## The g-formula with time-varying censoring
+
+With time-varying censoring, the g-formula of @def-g-formula-tv for strategy $\bar{a}$ becomes
 
 $$\sum_{\bar{l}} \E{Y \mid \bar{C} = \bar{0}, \bar{A} = \bar{a}, \bar{L} = \bar{l}}
-\prod_{k=0}^{K} f\paren{l_k \mid c_k = 0, \bar{a}_{k-1}, \bar{l}_{k-1}}.$$
+\prod_{k=0}^{K} f\paren{l_k \mid \bar{c}_k = \bar{0}, \bar{a}_{k-1}, \bar{l}_{k-1}}.$$
+:::
 
-If the identifiability conditions hold with $A_m$ replaced by $(A_m, C_{m+1})$ at all $m$,
-this is the g-formula for $\E{Y^{\bar{a}, \bar{c} = \bar{0}}}$:
+::: {#prp-g-formula-censoring-identifies}
+## The censored g-formula identifies the uncensored counterfactual mean
+
+If sequential exchangeability, positivity, and consistency hold
+with $A_m$ replaced by the joint treatment $(A_m, C_{m+1})$ at every $m$,
+then the g-formula of @def-g-formula-censoring equals $\E{Y^{\bar{a}, \bar{c} = \bar{0}}}$:
 the mean outcome had everyone followed $\bar{a}$ and nobody been lost to follow-up.
+:::
 
 ::: {.notes}
 The superscript $\bar{c} = \bar{0}$ makes explicit the contrast
 many investigators have in mind when they speak of "the effect of treatment"
 [@hernan2020causal, p. 298].
+
+::: {.callout-warning title="Conditioning on Being Uncensored Can Create Selection Bias"}
 Conditioning on being uncensored induces selection bias under the null
 when $C$ is a collider on a path between $A$ and $Y$, or a descendant of one (Chapter 8).
 :::
+:::
 
 ### IP Weighting with Censoring
+
+::: {#alg-ipw-censoring-tv}
+## IP weighting with time-varying censoring
 
 Fit, for example, $\E{Y \mid \bar{A}, \bar{C} = \bar{0}} = \theta_0 + \theta_1 \mathrm{cum}(\bar{A})$
 in the pseudo-population created by $W^{\bar{A}} \times W^{\bar{C}}$ or $SW^{\bar{A}} \times SW^{\bar{C}}$, where
@@ -776,8 +989,12 @@ $$W^{\bar{C}} = \prod_{k=1}^{K+1} \frac{1}{\Pr\sb{C_k = 0 \mid C_{k-1} = 0, \bar
 SW^{\bar{C}} = \prod_{k=1}^{K+1} \frac{\Pr\sb{C_k = 0 \mid C_{k-1} = 0, \bar{A}_{k-1}}}{\Pr\sb{C_k = 0 \mid C_{k-1} = 0, \bar{A}_{k-1}, \bar{L}_{k-1}}}.$$
 
 Numerator and denominator are estimated with separate logistic models.
+:::
 
 ---
+
+::: {#rem-censoring-pseudo-population}
+## The pseudo-population created by censoring weights
 
 - **Nonstabilized** weights replace censored individuals by copies of uncensored ones
   with the same treatment and covariate history:
@@ -796,18 +1013,37 @@ Numerator and denominator are estimated with separate logistic models.
   so IP weighting can estimate the joint effect of $(\bar{A}, \bar{C})$
   even when $\bar{L}$ is affected by prior treatment.
 
+:::
+
+::: {#rem-g-estimation-censoring}
+## G-estimation with censoring
+
 **G-estimation with censoring**: first create, with nonstabilized weights $W^{\bar{C}}$,
 a pseudo-population in which nobody is censored, then g-estimate in it.
+:::
 
 ::: {.notes}
-The estimated $SW^{\bar{C}}$ have mean 1 when the censoring model is correctly specified
-[@hernan2020causal, p. 298].
 
+::: {.callout-tip title="Check the Mean of the Stabilized Weights"}
+After fitting the censoring models, compute the sample mean of the estimated $SW^{\bar{C}}$.
+Correctly specified models give a mean close to 1
+[@hernan2020causal, p. 298],
+so for $SW^{\bar{C}}$ a mean well away from 1 suggests that the numerator or the denominator model is misspecified.
+The same check applies to $SW^{\bar{A}}$ with a narrower reading:
+given a correct denominator $f_k$, taking iterated expectations over $a_k$ at each time $k$
+gives $\E{\prod_k n_k / f_k} = 1$ for any proper conditional numerator $n_k$,
+so for $SW^{\bar{A}}$ a mean away from 1 points to the denominator (treatment) model,
+or to extreme weights from near-violations of positivity,
+not to the numerator.
+:::
+
+::: {.callout-warning title="Fact-Check: Stabilized Weights Keep Arrows from Past Treatment"}
 *Fact-check note*: the book states that "regardless of the type of IP weights used",
 the pseudo-population has no arrows from $L_k$ and $A_k$ into future $C_m$ [@hernan2020causal, p. 299].
 For stabilized weights this holds for $L_k$ only:
 their numerator $\Pr[C_k = 0 \mid C_{k-1} = 0, \bar{A}_{k-1}]$ keeps the dependence of censoring on past treatment,
 which is harmless because the analysis conditions on $\bar{A}$.
+:::
 :::
 
 ::: {.callout-note title="Technical Point 21.10: Survival Analysis with Time-Varying Treatments"}
@@ -843,16 +1079,25 @@ If positivity held, it would identify $\E{Y^g}$ under any strategy $g$
 [@hernan2020causal, p. 300].
 :::
 
-The big g-formula is a function of the distribution of the **factuals** $(A, L, Y, U)$ alone,
-but it includes unmeasured $U$, so it cannot be computed directly.
+::: {#def-factuals}
+## Factuals
 
-::: {.notes}
 *Factuals* are variables of the actual world, in contrast to counterfactuals;
 some factuals, like $U$, are unavailable for analysis because they were not measured
 [@hernan2020causal, p. 300].
 :::
 
+::: {#rem-big-g-formula-not-computable}
+## The big g-formula cannot be computed directly
+
+The big g-formula is a function of the distribution of the factuals $(A, L, Y, U)$ (@def-factuals) alone,
+but it includes unmeasured $U$, so it cannot be computed directly.
+:::
+
 ### Reducing the Big G-Formula to Observed Data
+
+::: {#rem-reducing-big-g-formula}
+## When the big g-formula reduces to an observed-data formula
 
 The key question: can the big g-formula be rewritten as a functional
 of the distribution of the observed $(A, L, Y)$ only?
@@ -864,9 +1109,13 @@ If so, the new formula reproduces the big g-formula and can be used in data anal
   using only the d-separations implied by the DAG,
   was settled by Tian and Pearl (2002), Shpitser and Pearl (2006), and Huang and Valtorta (2006).
 
+:::
+
+::: {.callout-warning title="A Reduction Is Causal Only If the DAG Is"}
 These are purely mathematical questions about distributions obeying d-separation;
 they acquire a causal meaning only if the DAG is truly causal,
 which we can never know for certain in an observational study.
+:::
 
 ---
 
@@ -899,11 +1148,16 @@ This proof does not require that counterfactuals $Y^m$ exist
 :::
 
 ::: {.notes}
+
+::: {#rem-front-door-other-proofs}
+## Other proofs of the front door formula
+
 Technical Point 21.11 also gives a coupling argument,
 and Technical Point 21.12 a proof based on a SWIG property (Shpitser et al. 2022):
 if a fixed treatment node $a_m$ is d-separated from $B^a$ given $C^a$ on the SWIG,
 then $\Pr[B^a = b \mid C^a = c]$ does not depend on $a_m$
 [@hernan2020causal, pp. 301-302].
+:::
 :::
 
 ## Summary
