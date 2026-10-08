@@ -504,11 +504,24 @@ The stabilized weights $SW^A$ create their own pseudo-population (@def-pseudo-po
 Applied to the data of Figure 2.1, where $\Pr[A = 1] = 13/20 = 0.65$ and $\Pr[A = 0] = 7/20 = 0.35$, the weights $f(A)/f(A \mid L)$ produce a pseudo-population (Figure 12.1 of the book) resembling a randomized experiment in which 65% of individuals are assigned to $A = 1$ and 35% to $A = 0$.
 Preserving the 65/35 ratio requires non-integer numbers of individuals in some branches, which is no problem mathematically [@hernan2020causal, Chapter 12, p. 167].
 
-Under positivity,
-$\E{SW^A} = \sum_a \sum_l \frac{f(a)}{f(a \mid l)} f(a \mid l) \Pr[L = l] = \sum_a f(a) \sum_l \Pr[L = l] = 1$,
-so the pseudo-population created by $SW^A$ (@def-pseudo-population with $W = SW^A$) has expected size $\E{SW^A} \cdot n = n$, the same as the study population,
-and the mean of the stabilized weights is **expected** to be 1.
-In data analyses one should check this: a mean far from 1 suggests model misspecification or (near) violations of positivity [@hernan2020causal, Chapter 12, p. 168].
+With $A$ and $L$ discrete and positivity holding, as in @prp-pseudo-population,
+and with every sum over $l$ running over the values with $\Pr[L = l] > 0$,
+the stabilized weights have mean 1:
+$$
+\begin{aligned}
+\E{SW^A}
+&= \sum_a \sum_l \E{SW^A \indicp{A = a} \indicp{L = l}} && \text{(law of total expectation over } (A, L)\text{)}\\
+&= \sum_a \sum_l f(a) \E{W^A \indicp{A = a} \indicp{L = l}} && \text{(} SW^A = f(a) W^A \text{ whenever } A = a\text{)}\\
+&= \sum_a \sum_l f(a) \Pr[L = l] && \text{(Step 0 of the proof of the pseudo-population proposition)}\\
+&= \sum_a f(a) && \text{(} \textstyle\sum_l \Pr[L = l] = 1\text{)}\\
+&= 1 && \text{(} \textstyle\sum_a f(a) = 1\text{)}.
+\end{aligned}
+$$
+So, for individuals sampled as described after @def-pseudo-population,
+the pseudo-population created by $SW^A$ has expected size $\E{SW^A} \cdot n = n$, the same as the study population,
+and the sample mean $\frac{1}{n} \sum_{i=1}^n SW^A_i$ has expectation 1.
+The mean of the estimated stabilized weights should therefore be close to 1,
+and in data analyses one should check it: a mean far from 1 suggests model misspecification or (near) violations of positivity [@hernan2020causal, Chapter 12, p. 168].
 
 To estimate the average causal effect in the treated rather than in the whole population, use $\Pr[A = 1 \mid L]$ as the numerator instead (Technical Point 4.1).
 :::
