@@ -9,17 +9,6 @@ on:
       - closed
       - labeled
       - unlabeled
-    paths:
-      - 'chapters/**'
-      - '_quarto.yml'
-      - '_quarto-*.yml'
-      - '.github/workflows/preview.yml'
-      - '.github/workflows/quarto-publish.yml'
-      - '*.qmd'
-      - '*.css'
-      - 'references.bib'
-      - '_extensions/**'
-      - 'latex-macros'
 
 concurrency: preview-${{ github.ref }}
 
@@ -36,7 +25,27 @@ jobs:
           fetch-depth: 0  # Fetch full history for git diff
           submodules: recursive
 
+      # The workflow has no `paths:` filter, so this required check always reports.
+      # A workflow-level filter would leave `build-deploy` pending on PRs that touch only
+      # other files (the required check never starts).
+      # Instead, decide here whether the PR touches anything that affects the site,
+      # and skip the expensive steps when it does not.
+      - name: Detect site-relevant changes
+        id: filter
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+        run: |
+          # Keep in sync with what the site is built from.
+          pattern='^(chapters/|_extensions/|_quarto(-[^/]*)?\.yml$|\.github/workflows/(preview|quarto-publish)\.yml$|[^/]+\.(qmd|css)$|references\.bib$|latex-macros$)'
+          if git diff --name-only "$BASE_SHA" HEAD | grep -Eq "$pattern"; then
+            echo "relevant=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "relevant=false" >> "$GITHUB_OUTPUT"
+            echo "::notice::No site-relevant files changed; skipping the preview build."
+          fi
+
       - name: Set up Quarto
+        if: steps.filter.outputs.relevant == 'true' && github.event.action != 'closed'
         uses: quarto-dev/quarto-actions/setup@v2
         env:
           # Authenticate the TinyTeX release lookup; unauthenticated calls hit
@@ -46,6 +55,7 @@ jobs:
           tinytex: true
 
       - name: Install system dependencies
+        if: steps.filter.outputs.relevant == 'true' && github.event.action != 'closed'
         run: |
           sudo apt-get update -qq
           sudo apt-get install -y \
@@ -55,22 +65,24 @@ jobs:
             libpng-dev libtiff5-dev libjpeg-dev
 
       - uses: r-lib/actions/setup-r@v2
+        if: steps.filter.outputs.relevant == 'true' && github.event.action != 'closed'
         with:
           r-version: 'renv'
           use-public-rspm: true
 
       - uses: r-lib/actions/setup-renv@v2
+        if: steps.filter.outputs.relevant == 'true' && github.event.action != 'closed'
         with:
           cache-version: 1
 
       - name: Render
-        if: github.event.action != 'closed' # skip the build if the PR has been closed
+        if: steps.filter.outputs.relevant == 'true' && github.event.action != 'closed' # skip the build if the PR has been closed or touches no site files
         uses: quarto-dev/quarto-actions/render@v2
 
       # Detect which chapters have changed and optionally disable highlighting
       # based on the 'no-preview-highlights' PR label
       - name: Detect changed chapters (based on rendered files)
-        if: github.event.action != 'closed'
+        if: steps.filter.outputs.relevant == 'true' && github.event.action != 'closed'
         run: python3 .github/scripts/detect-changed-chapters.py
         env:
           HTML_DIR: ./_site
@@ -78,19 +90,19 @@ jobs:
           DISABLE_PREVIEW_HIGHLIGHTS: ${{ contains(github.event.pull_request.labels.*.name, 'no-preview-highlights') }}
 
       - name: Inject preview metadata
-        if: github.event.action != 'closed' && env.PREVIEW_SHOW_HIGHLIGHTS == 'true'
+        if: steps.filter.outputs.relevant == 'true' && github.event.action != 'closed' && env.PREVIEW_SHOW_HIGHLIGHTS == 'true'
         run: python3 .github/scripts/inject-preview-metadata.py
 
       - name: Re-render with metadata
-        if: github.event.action != 'closed' && env.PREVIEW_SHOW_HIGHLIGHTS == 'true'
+        if: steps.filter.outputs.relevant == 'true' && github.event.action != 'closed' && env.PREVIEW_SHOW_HIGHLIGHTS == 'true'
         uses: quarto-dev/quarto-actions/render@v2
 
       - name: Install python-docx for DOCX comparison
-        if: github.event.action != 'closed' && env.PREVIEW_SHOW_HIGHLIGHTS == 'true'
+        if: steps.filter.outputs.relevant == 'true' && github.event.action != 'closed' && env.PREVIEW_SHOW_HIGHLIGHTS == 'true'
         run: pip install python-docx
 
       - name: Highlight HTML content changes
-        if: github.event.action != 'closed' && env.PREVIEW_SHOW_HIGHLIGHTS == 'true'
+        if: steps.filter.outputs.relevant == 'true' && github.event.action != 'closed' && env.PREVIEW_SHOW_HIGHLIGHTS == 'true'
         run: |
           echo "Changed chapters:"
           echo "${{ env.PREVIEW_CHANGED_CHAPTERS }}"
@@ -100,20 +112,20 @@ jobs:
           PREVIEW_CHANGED_CHAPTERS: ${{ env.PREVIEW_CHANGED_CHAPTERS }}
 
       - name: Create DOCX with tracked changes
-        if: github.event.action != 'closed'
+        if: steps.filter.outputs.relevant == 'true' && github.event.action != 'closed'
         run: python3 .github/scripts/create-docx-tracked-changes.py
         env:
           DOCX_DIR: ./_site
 
       - name: Add home page banner
-        if: github.event.action != 'closed'
+        if: steps.filter.outputs.relevant == 'true' && github.event.action != 'closed'
         run: python3 .github/scripts/add-home-banner.py
         env:
           HTML_DIR: ./_site
           PREVIEW_CHANGED_CHAPTERS: ${{ env.PREVIEW_CHANGED_CHAPTERS }}
 
       - name: list files
-        if: github.event.action != 'closed'
+        if: steps.filter.outputs.relevant == 'true' && github.event.action != 'closed'
         shell: bash
         run: |
           echo "contents of _site:"
@@ -123,7 +135,8 @@ jobs:
 
       - name: Deploy PR Preview
         id: preview-step
-        if: github.event_name == 'pull_request'
+        # Always run on close so the preview is removed; otherwise only when the build ran.
+        if: github.event_name == 'pull_request' && (github.event.action == 'closed' || steps.filter.outputs.relevant == 'true')
         uses: rossjrw/pr-preview-action@v1
         with:
           source-dir: ./_site/
