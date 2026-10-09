@@ -1,0 +1,2196 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+<script src="../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../site_libs/quarto-html/tabby.min.js"></script>
+<script src="../site_libs/quarto-html/popper.min.js"></script>
+<script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
+<link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../site_libs/quarto-html/light-border.css" rel="stylesheet">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-bf27225e3a48a9273f3daa8f8e829971.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<link href="../site_libs/quarto-contrib/code-language-labels-1.0.2/code-language-labels.css" rel="stylesheet"><meta charset="utf-8">
+  <meta name="generator" content="quarto-1.10.19">
+
+  <title>What If? - Lecture Notes – Chapter 12: IP Weighting and Marginal Structural Models</title>
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, minimal-ui">
+  <link rel="stylesheet" href="../site_libs/revealjs/dist/reset.css">
+  <link rel="stylesheet" href="../site_libs/revealjs/dist/reveal.css">
+  <style>
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: 1.5em;}
+    div.column{flex: auto;}
+    @media screen {
+    div.columns{gap: min(4vw, 1.5em);}
+    div.column{overflow-x: auto;}
+    }
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    ul.task-list{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+      vertical-align: middle;
+    }
+    /* CSS for syntax highlighting */
+    html { -webkit-text-size-adjust: 100%; }
+    pre > code.sourceCode { white-space: pre; position: relative; }
+    pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+    pre > code.sourceCode > span:empty { height: 1.2em; }
+    .sourceCode { overflow: visible; }
+    code.sourceCode > span { color: inherit; text-decoration: inherit; }
+    div.sourceCode { margin: 1em 0; }
+    pre.sourceCode { margin: 0; }
+    @media screen {
+    div.sourceCode { overflow: auto; }
+    }
+    @media print {
+    pre > code.sourceCode { white-space: pre-wrap; }
+    pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+    }
+    pre.numberSource code
+      { counter-reset: source-line 0; }
+    pre.numberSource code > span
+      { position: relative; left: -4em; counter-increment: source-line; }
+    pre.numberSource code > span > a:first-child::before
+      { content: counter(source-line);
+        position: relative; left: -1em; text-align: right; vertical-align: baseline;
+        border: none; display: inline-block;
+        -webkit-touch-callout: none; -webkit-user-select: none;
+        -khtml-user-select: none; -moz-user-select: none;
+        -ms-user-select: none; user-select: none;
+        padding: 0 4px; width: 4em;
+        color: #aaaaaa;
+      }
+    pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+    div.sourceCode
+      { color: #003b4f; background-color: #f1f3f5; }
+    @media screen {
+    pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+    }
+    code span { color: #003b4f; } /* Normal */
+    code span.al { color: #ad0000; } /* Alert */
+    code span.an { color: #5e5e5e; } /* Annotation */
+    code span.at { color: #657422; } /* Attribute */
+    code span.bn { color: #ad0000; } /* BaseN */
+    code span.bu { } /* BuiltIn */
+    code span.cf { color: #003b4f; font-weight: bold; } /* ControlFlow */
+    code span.ch { color: #20794d; } /* Char */
+    code span.cn { color: #8f5902; } /* Constant */
+    code span.co { color: #5e5e5e; } /* Comment */
+    code span.cv { color: #5e5e5e; font-style: italic; } /* CommentVar */
+    code span.do { color: #5e5e5e; font-style: italic; } /* Documentation */
+    code span.dt { color: #ad0000; } /* DataType */
+    code span.dv { color: #ad0000; } /* DecVal */
+    code span.er { color: #ad0000; } /* Error */
+    code span.ex { } /* Extension */
+    code span.fl { color: #ad0000; } /* Float */
+    code span.fu { color: #4758ab; } /* Function */
+    code span.im { color: #00769e; } /* Import */
+    code span.in { color: #5e5e5e; } /* Information */
+    code span.kw { color: #003b4f; font-weight: bold; } /* Keyword */
+    code span.op { color: #5e5e5e; } /* Operator */
+    code span.ot { color: #003b4f; } /* Other */
+    code span.pp { color: #ad0000; } /* Preprocessor */
+    code span.sc { color: #5e5e5e; } /* SpecialChar */
+    code span.ss { color: #20794d; } /* SpecialString */
+    code span.st { color: #20794d; } /* String */
+    code span.va { color: #111111; } /* Variable */
+    code span.vs { color: #20794d; } /* VerbatimString */
+    code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
+    /* CSS for citations */
+    div.csl-bib-body { }
+    div.csl-entry {
+      clear: both;
+    }
+    .hanging-indent div.csl-entry {
+      margin-left:2em;
+      text-indent:-2em;
+    }
+    div.csl-left-margin {
+      min-width:2em;
+      float:left;
+    }
+    div.csl-right-inline {
+      margin-left:2em;
+      padding-left:1em;
+    }
+    div.csl-indent {
+      margin-left: 2em;
+    }  </style>
+  <link rel="stylesheet" href="../site_libs/revealjs/dist/theme/quarto-0427d8d92a431aa6a6430e53ec02a470.css">
+  <link href="../site_libs/revealjs/plugin/quarto-line-highlight/line-highlight.css" rel="stylesheet">
+  <link href="../site_libs/revealjs/plugin/reveal-menu/menu.css" rel="stylesheet">
+  <link href="../site_libs/revealjs/plugin/reveal-menu/quarto-menu.css" rel="stylesheet">
+  <link href="../site_libs/revealjs/plugin/reveal-chalkboard/font-awesome/css/all.css" rel="stylesheet">
+  <link href="../site_libs/revealjs/plugin/reveal-chalkboard/style.css" rel="stylesheet">
+  <link href="../site_libs/revealjs/plugin/quarto-support/footer.css" rel="stylesheet">
+  <style type="text/css">
+    .reveal div.sourceCode {
+      margin: 0;
+      overflow: auto;
+    }
+    .reveal div.hanging-indent {
+      margin-left: 1em;
+      text-indent: -1em;
+    }
+    .reveal .slide:not(.center) {
+      height: 100%;
+      overflow-y: auto;
+    }
+    .reveal .slide.scrollable {
+      overflow-y: auto;
+    }
+    .reveal .footnotes {
+      height: 100%;
+      overflow-y: auto;
+    }
+    .reveal .slide .absolute {
+      position: absolute;
+      display: block;
+    }
+    .reveal .footnotes ol {
+      counter-reset: ol;
+      list-style-type: none; 
+      margin-left: 0;
+    }
+    .reveal .footnotes ol li:before {
+      counter-increment: ol;
+      content: counter(ol) ". "; 
+    }
+    .reveal .footnotes ol li > p:first-child {
+      display: inline-block;
+    }
+    .reveal .slide ul,
+    .reveal .slide ol {
+      margin-bottom: 0.5em;
+    }
+    .reveal .slide ul li,
+    .reveal .slide ol li {
+      margin-top: 0.4em;
+      margin-bottom: 0.2em;
+    }
+    .reveal .slide ul[role="tablist"] li {
+      margin-bottom: 0;
+    }
+    .reveal .slide ul li > *:first-child,
+    .reveal .slide ol li > *:first-child {
+      margin-block-start: 0;
+    }
+    .reveal .slide ul li > *:last-child,
+    .reveal .slide ol li > *:last-child {
+      margin-block-end: 0;
+    }
+    .reveal .slide .columns:nth-child(3) {
+      margin-block-start: 0.8em;
+    }
+    .reveal blockquote {
+      box-shadow: none;
+    }
+    .reveal .tippy-content>* {
+      margin-top: 0.2em;
+      margin-bottom: 0.7em;
+    }
+    .reveal .tippy-content>*:last-child {
+      margin-bottom: 0.2em;
+    }
+    .reveal .slide > img.stretch.quarto-figure-center,
+    .reveal .slide > img.r-stretch.quarto-figure-center {
+      display: block;
+      margin-left: auto;
+      margin-right: auto; 
+    }
+    .reveal .slide > img.stretch.quarto-figure-left,
+    .reveal .slide > img.r-stretch.quarto-figure-left  {
+      display: block;
+      margin-left: 0;
+      margin-right: auto; 
+    }
+    .reveal .slide > img.stretch.quarto-figure-right,
+    .reveal .slide > img.r-stretch.quarto-figure-right  {
+      display: block;
+      margin-left: auto;
+      margin-right: 0; 
+    }
+  </style>
+</head>
+<body class="quarto-light">
+  <div class="reveal">
+    <div class="slides">
+
+<section id="title-slide" class="quarto-title-block center">
+  <h1 class="title">Chapter 12: IP Weighting and Marginal Structural Models</h1>
+
+<div class="quarto-title-authors">
+</div>
+
+</section>
+<section class="slide level2">
+
+<p>This chapter uses <strong>inverse probability (IP) weighting</strong> to estimate the average causal effect of smoking cessation on weight gain from the observational NHEFS data. Chapter 2 introduced IP weighting as a nonparametric method; here IP weights are estimated with <strong>models</strong>, which lets us handle many covariates and nondichotomous treatments, and the weighted analysis is interpreted as fitting a <strong>marginal structural model</strong>.</p>
+<aside class="notes">
+<p>This chapter is based on <span class="citation" data-cites="hernan2020causal">Hernán and Robins (<a href="#/references" role="doc-biblioref" onclick="">2020, chap. 12</a>, pp.&nbsp;163-174)</span>.</p>
+<p>R and Stata code for this chapter’s programs (Programs 12.x) is in Tom Palmer’s <a href="https://remlapmot.github.io/cibookex-r/">cibookex-r</a> companion (GPL-3.0), which descends from the authors’ own code.</p>
+<p><strong>Key concepts</strong>: IP weighting creates a pseudo-population in which the measured confounders <span class="math inline">\(L\)</span> no longer predict treatment <span class="math inline">\(A\)</span>. Under conditional exchangeability, positivity, and consistency, association is causation in that pseudo-population, so a simple weighted regression of <span class="math inline">\(Y\)</span> on <span class="math inline">\(A\)</span> estimates the parameters of a marginal structural model.</p>
+<p>NHEFS stands for the National Health and Nutrition Examination Survey Data I Epidemiologic Follow-up Study. The book’s website provides the subset of the NHEFS data used in Part II <span class="citation" data-cites="hernan2020causal">(<a href="#/references" role="doc-biblioref" onclick="">Hernán and Robins 2020, chap. 12</a>, p.&nbsp;163)</span>.</p>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside>
+</section>
+<section>
+<section id="the-causal-question-pp.-163-164" class="title-slide slide level1 center" data-number="1">
+<h1><span class="header-section-number">1</span> 12.1 The Causal Question (pp.&nbsp;163-164)</h1>
+
+</section>
+<section class="slide level2">
+
+<p>Part II is organized around one question: on average, how much does quitting smoking change body weight?</p>
+</section>
+<section id="research-question" class="slide level2">
+<h2>Research Question</h2>
+<div id="exm-nhefs-question" class="theorem example">
+<p><span class="theorem-title"><strong>Example 1 (NHEFS: Does Quitting Smoking Cause Weight Gain?)</strong></span> <strong>Population</strong>: 1566 cigarette smokers aged 25-74 years who had an NHEFS baseline visit (1971-75) and a follow-up visit about 10 years later (1982).</p>
+<p><strong>Treatment</strong>: <span class="math inline">\(A = 1\)</span> if the individual reported quitting smoking before the follow-up visit, <span class="math inline">\(A = 0\)</span> otherwise.</p>
+<p><strong>Outcome</strong>: <span class="math inline">\(Y\)</span> = body weight at follow-up minus body weight at baseline (kg).</p>
+<p><strong>Causal estimand</strong> (average causal effect on the additive scale): <span class="math display">\[\operatorname{E}\mathopen{}\left[Y^{a=1}\right]\mathclose{} - \operatorname{E}\mathopen{}\left[Y^{a=0}\right]\mathclose{}\]</span></p>
+</div>
+</section>
+<section id="unadjusted-comparison" class="slide level2">
+<h2>Unadjusted Comparison</h2>
+<div id="exm-nhefs-unadjusted" class="theorem example">
+<p><span class="theorem-title"><strong>Example 2 (NHEFS: Unadjusted Comparison)</strong></span> Most people gained weight, but quitters gained more on average:</p>
+<ul>
+<li><span class="math inline">\(\mathop{\hat{\operatorname{E}}}\nolimits\mathopen{}\left[Y \mid A = 1\right]\mathclose{} = 4.5\)</span> kg among quitters</li>
+<li><span class="math inline">\(\mathop{\hat{\operatorname{E}}}\nolimits\mathopen{}\left[Y \mid A = 0\right]\mathclose{} = 2.0\)</span> kg among non-quitters</li>
+<li>Associational difference: <span class="math inline">\(4.5 - 2.0 = 2.5\)</span> kg (95% CI: 1.7, 3.4)</li>
+</ul>
+</div>
+<p>The associational difference <span class="math inline">\(\operatorname{E}\mathopen{}\left[Y \mid A = 1\right]\mathclose{} - \operatorname{E}\mathopen{}\left[Y \mid A = 0\right]\mathclose{}\)</span> need not equal the causal difference if quitters and non-quitters differ in characteristics that affect weight gain.</p>
+<aside class="notes">
+<p><strong>Age as an example</strong>: quitters were on average 4 years older than non-quitters, and older people gained less weight than younger people whether or not they quit. Age is therefore a (surrogate) confounder, and the unadjusted estimate of 2.5 kg might underestimate the causal effect <span class="citation" data-cites="hernan2020causal">(<a href="#/references" role="doc-biblioref" onclick="">Hernán and Robins 2020, chap. 12</a>, pp.&nbsp;163-164)</span>.</p>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside>
+</section>
+<section id="baseline-characteristics-table-12.1" class="slide level2">
+<h2>Baseline Characteristics (Table 12.1)</h2>
+<div id="tbl-nhefs-baseline" class="quarto-float quarto-figure quarto-figure-center">
+<figure class="quarto-float quarto-float-tbl">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-nhefs-baseline-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Table&nbsp;1: Mean baseline characteristics of quitters and non-quitters in the NHEFS. Source: <span class="citation" data-cites="hernan2020causal">Hernán and Robins (<a href="#/references" role="doc-biblioref" onclick="">2020</a>, Table 12.1, p.&nbsp;163)</span>.
+</figcaption>
+<div aria-describedby="tbl-nhefs-baseline-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<table class="caption-top">
+<colgroup>
+<col style="width: 33%">
+<col style="width: 33%">
+<col style="width: 33%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Mean baseline characteristic</th>
+<th>Quitters (<span class="math inline">\(A=1\)</span>)</th>
+<th>Non-quitters (<span class="math inline">\(A=0\)</span>)</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Age, years</td>
+<td>46.2</td>
+<td>42.8</td>
+</tr>
+<tr class="even">
+<td>Men, %</td>
+<td>54.6</td>
+<td>46.6</td>
+</tr>
+<tr class="odd">
+<td>White, %</td>
+<td>91.1</td>
+<td>85.4</td>
+</tr>
+<tr class="even">
+<td>University, %</td>
+<td>15.4</td>
+<td>9.9</td>
+</tr>
+<tr class="odd">
+<td>Weight, kg</td>
+<td>72.4</td>
+<td>70.3</td>
+</tr>
+<tr class="even">
+<td>Cigarettes/day</td>
+<td>18.6</td>
+<td>21.2</td>
+</tr>
+<tr class="odd">
+<td>Years smoking</td>
+<td>26.0</td>
+<td>24.1</td>
+</tr>
+<tr class="even">
+<td>Little exercise, %</td>
+<td>40.7</td>
+<td>37.9</td>
+</tr>
+<tr class="odd">
+<td>Inactive life, %</td>
+<td>11.2</td>
+<td>8.9</td>
+</tr>
+</tbody>
+</table>
+</div>
+</figure>
+</div>
+</section>
+<section id="measured-confounders" class="slide level2">
+<h2>Measured Confounders</h2>
+<div id="exm-nhefs-confounders" class="theorem example">
+<p><span class="theorem-title"><strong>Example 3 (NHEFS: Measured Confounders)</strong></span> We assume that these 9 baseline variables, collected in the vector <span class="math inline">\(L\)</span>, suffice to adjust for confounding:</p>
+<ul>
+<li>Sex (0: male, 1: female)</li>
+<li>Age (years)</li>
+<li>Race (0: white, 1: other)</li>
+<li>Education (5 categories)</li>
+<li>Intensity of smoking (cigarettes per day)</li>
+<li>Duration of smoking (years)</li>
+<li>Physical activity in daily life (3 categories)</li>
+<li>Recreational exercise (3 categories)</li>
+<li>Weight (kg)</li>
+</ul>
+<p><strong>Assumption</strong>: conditional exchangeability given <span class="math inline">\(L\)</span>: <span class="math display">\[Y^a \perp\!\!\!\perp A \mid L\]</span></p>
+</div>
+<aside class="notes">
+<p>Chapter 18 discusses how to select confounders; here the 9-variable adjustment set is taken as given <span class="citation" data-cites="hernan2020causal">(<a href="#/references" role="doc-biblioref" onclick="">Hernán and Robins 2020, chap. 12</a>, p.&nbsp;164)</span>.</p>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside>
+<aside class="notes">
+<div title="Fine Point 12.1: Setting a Bad Example">
+<div class="callout callout-note callout-titled callout-style-default">
+<div class="callout-body">
+<div class="callout-title">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<p><strong>Fine Point 12.1: Setting a Bad Example</strong></p>
+</div>
+<div class="callout-content">
+<p>The smoking cessation example is convenient (no deep subject-matter knowledge required, public data) but carries a potential <strong>selection bias</strong> <span class="citation" data-cites="hernan2020causal">(<a href="#/references" role="doc-biblioref" onclick="">Hernán and Robins 2020</a>, Fine Point 12.1, p.&nbsp;164)</span>:</p>
+<ul>
+<li>Treated individuals are those who were smokers at baseline <strong>and</strong> reported having quit in the 1982 survey.</li>
+<li>Answering the 1982 survey requires surviving and remaining under follow-up until 1982, so inclusion in the study is conditional on an event that occurs <strong>after</strong> treatment (smoking cessation) has started.</li>
+<li>If treatment affects selection into the study, the analysis can suffer from the selection bias described in Chapter 8.</li>
+<li>Smoking cessation is really a time-varying treatment (people quit at different times); Part II ignores this, and Part III handles time-varying treatments.</li>
+</ul>
+<p>A randomized trial would not have this problem, because treatment would be assigned at baseline and known even for people who did not reach the 1982 visit. Unlike the censoring of the outcome handled in Section 12.6, here the missing information concerns the treatment itself; it can be addressed through sensitivity analysis. The book uses the example deliberately to illustrate a common problem in observational analyses that emulate a target trial: misalignment of eligibility, treatment assignment, and the start of follow-up.</p>
+</div>
+</div>
+</div>
+</div>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside>
+</section></section>
+<section>
+<section id="estimating-ip-weights-via-modeling-pp.-164-167" class="title-slide slide level1 center" data-number="2">
+<h1><span class="header-section-number">2</span> 12.2 Estimating IP Weights via Modeling (pp.&nbsp;164-167)</h1>
+
+</section>
+<section id="ip-weights-definition" class="slide level2">
+<h2>IP Weights Definition</h2>
+<div id="def-ip-weights" class="theorem definition">
+<p><span class="theorem-title"><strong>Definition 1 (Inverse Probability Weights)</strong></span> The individual-specific <strong>IP weights</strong> for treatment <span class="math inline">\(A\)</span> are</p>
+<p><span class="math display">\[W^A \stackrel{\text{def}}{=}\frac{1}{f(A \mid L)}\]</span></p>
+<p>i.e., the inverse of the conditional probability of receiving the treatment level the individual actually received.</p>
+<p>For a dichotomous treatment:</p>
+<ul>
+<li>If <span class="math inline">\(A = 1\)</span>: <span class="math inline">\(W^A = \dfrac{1}{\Pr[A = 1 \mid L]}\)</span></li>
+<li>If <span class="math inline">\(A = 0\)</span>: <span class="math inline">\(W^A = \dfrac{1}{\Pr[A = 0 \mid L]} = \dfrac{1}{1 - \Pr[A = 1 \mid L]}\)</span></li>
+</ul>
+<p>So only <span class="math inline">\(\Pr[A = 1 \mid L]\)</span> needs to be estimated.</p>
+</div>
+<aside class="notes">
+<p>The conditional probability of treatment <span class="math inline">\(\Pr[A = 1 \mid L]\)</span> is the <strong>propensity score</strong>; Chapter 15 discusses propensity scores in detail <span class="citation" data-cites="hernan2020causal">(<a href="#/references" role="doc-biblioref" onclick="">Hernán and Robins 2020, chap. 12</a>, p.&nbsp;165)</span>. Note that the propensity score is <span class="math inline">\(\Pr[A = 1 \mid L]\)</span>, not <span class="math inline">\(f(A \mid L)\)</span>: for an untreated individual, the denominator of <span class="math inline">\(W^A\)</span> is one minus the propensity score.</p>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside>
+</section>
+<section class="slide level2 scrollable">
+
+<p>IP weighting reweights individuals so that <span class="math inline">\(L\)</span> no longer predicts <span class="math inline">\(A\)</span>. Chapter 2 did this by hand (<a href="../chapters/02-randomized-experiments.html#def-ip-weights">IP weights in Chapter 2</a>); the next definition makes the reweighted population precise for a general weight.</p>
+<div id="def-pseudo-population" class="theorem definition">
+<p><span class="theorem-title"><strong>Definition 2 (Pseudo-Population)</strong></span> Let each of the <span class="math inline">\(n\)</span> individuals of a study population carry a weight <span class="math inline">\(W \geq 0\)</span> that is a function of the observed variables, with <span class="math inline">\(0 &lt; \operatorname{E}\mathopen{}\left[W\right]\mathclose{} &lt; \infty\)</span>. The <strong>pseudo-population</strong> created by <span class="math inline">\(W\)</span> is the population in which each individual is replicated <span class="math inline">\(W\)</span> times (a non-integer number of copies is allowed). Its size is <span class="math inline">\(\sum_{i=1}^n W_i\)</span>. Its distribution is defined by its expectations: for any random variable <span class="math inline">\(h\)</span> that is a function of the observed variables and the counterfactual outcomes, with <span class="math inline">\(\operatorname{E}\mathopen{}\left[W \mathopen{}\left|h\right|\mathclose{}\right]\mathclose{} &lt; \infty\)</span>, <span class="math display">\[\operatorname{E}_{ps}\mathopen{}\left[h\right]\mathclose{} \stackrel{\text{def}}{=}\frac{\operatorname{E}\mathopen{}\left[W h\right]\mathclose{}}{\operatorname{E}\mathopen{}\left[W\right]\mathclose{}}.\]</span> Probabilities are expectations of indicators, <span class="math inline">\(\Pr_{ps}[E] \stackrel{\text{def}}{=}\operatorname{E}_{ps}\mathopen{}\left[\mathbb{1}\mathopen{}\left(E\right)\mathclose{}\right]\mathclose{}\)</span> for any event <span class="math inline">\(E\)</span>, and conditional means are <span class="math inline">\(\operatorname{E}_{ps}\mathopen{}\left[h \mid A = a\right]\mathclose{} \stackrel{\text{def}}{=}\operatorname{E}_{ps}\mathopen{}\left[h \mathbb{1}\mathopen{}\left(A = a\right)\mathclose{}\right]\mathclose{} / \Pr_{ps}[A = a]\)</span> whenever <span class="math inline">\(\Pr_{ps}[A = a] &gt; 0\)</span>.</p>
+</div>
+<p>If the <span class="math inline">\(n\)</span> individuals are drawn independently from the population, so that each <span class="math inline">\(W_i\)</span> has the distribution of <span class="math inline">\(W\)</span>, the expected size of the pseudo-population is <span class="math inline">\(\operatorname{E}\mathopen{}\left[\sum_{i=1}^n W_i\right]\mathclose{} = \operatorname{E}\mathopen{}\left[W\right]\mathclose{} \cdot n\)</span>.</p>
+<p>Different weights create different pseudo-populations; <a href="#/prp-pseudo-population" class="quarto-xref">Proposition&nbsp;1</a> is about the IP weights <span class="math inline">\(W = W^A\)</span> of <a href="#/def-ip-weights" class="quarto-xref">Definition&nbsp;1</a>.</p>
+<div id="prp-pseudo-population" class="theorem proposition">
+<p><span class="theorem-title"><strong>Proposition 1 (Properties of the IP Weighted Pseudo-Population)</strong></span> Suppose that</p>
+<ul>
+<li><span class="math inline">\(A\)</span> and <span class="math inline">\(L\)</span> take finitely many values, and the pseudo-population (<a href="#/def-pseudo-population" class="quarto-xref">Definition&nbsp;2</a>) is created by <span class="math inline">\(W = W^A = 1/f(A \mid L)\)</span> (<a href="#/def-ip-weights" class="quarto-xref">Definition&nbsp;1</a>);</li>
+<li><strong>positivity</strong> holds: <span class="math inline">\(f(a \mid l) = \Pr[A = a \mid L = l] &gt; 0\)</span> for every treatment level <span class="math inline">\(a\)</span> and every <span class="math inline">\(l\)</span> with <span class="math inline">\(\Pr[L = l] &gt; 0\)</span>;</li>
+<li>the outcome is integrable: <span class="math inline">\(\operatorname{E}\mathopen{}\left[\mathopen{}\left|Y\right|\mathclose{}\right]\mathclose{} &lt; \infty\)</span>, and <span class="math inline">\(\operatorname{E}\mathopen{}\left[\mathopen{}\left|Y^a\right|\mathclose{}\right]\mathclose{} &lt; \infty\)</span> for every <span class="math inline">\(a\)</span>.</li>
+</ul>
+<p>Then, with <span class="math inline">\(k\)</span> the number of treatment levels:</p>
+<ol start="0" type="1">
+<li><span class="math inline">\(\operatorname{E}\mathopen{}\left[W^A\right]\mathclose{} = k\)</span>;</li>
+<li>in the pseudo-population, <span class="math inline">\(A\)</span> and <span class="math inline">\(L\)</span> are statistically independent; and</li>
+<li>the mean <span class="math inline">\(\operatorname{E}_{ps}\mathopen{}\left[Y \mid A = a\right]\mathclose{}\)</span> in the pseudo-population equals the standardized mean <span class="math inline">\(\sum_l \operatorname{E}\mathopen{}\left[Y \mid A = a, L = l\right]\mathclose{} \Pr[L = l]\)</span> in the actual population.</li>
+</ol>
+<p>Here and in the proof, every sum over <span class="math inline">\(l\)</span> runs over the values <span class="math inline">\(l\)</span> with <span class="math inline">\(\Pr[L = l] &gt; 0\)</span>. These three properties need no exchangeability. If, in addition, <strong>conditional exchangeability</strong> <span class="math inline">\(Y^a \perp\!\!\!\perp A \mid L\)</span> holds in the actual population for every <span class="math inline">\(a\)</span>, and <strong>consistency</strong> holds (<span class="math inline">\(Y = Y^a\)</span> for every individual with <span class="math inline">\(A = a\)</span>), then:</p>
+<ul>
+<li>unconditional exchangeability <span class="math inline">\(Y^a \perp\!\!\!\perp A\)</span> holds in the pseudo-population,</li>
+<li><span class="math inline">\(\operatorname{E}\mathopen{}\left[Y^a\right]\mathclose{} = \operatorname{E}_{ps}\mathopen{}\left[Y \mid A = a\right]\mathclose{}\)</span> for every <span class="math inline">\(a\)</span>, and</li>
+<li>association is causation in the pseudo-population: any contrast of the means <span class="math inline">\(\operatorname{E}_{ps}\mathopen{}\left[Y \mid A = a\right]\mathclose{}\)</span> across levels <span class="math inline">\(a\)</span> equals the same contrast of the counterfactual means <span class="math inline">\(\operatorname{E}\mathopen{}\left[Y^a\right]\mathclose{}\)</span>.</li>
+</ul>
+</div>
+<aside class="notes">
+<div class="proof">
+<p><span class="proof-title"><em>Proof</em>. </span>As in the statement, <span class="math inline">\(k\)</span> is the number of treatment levels.</p>
+<p><strong>Step 0 (property 0: the weights cancel the treatment probability).</strong> For every level <span class="math inline">\(a\)</span> and every <span class="math inline">\(l\)</span> with <span class="math inline">\(\Pr[L = l] &gt; 0\)</span>, <span class="math display">\[
+\begin{aligned}
+\operatorname{E}\mathopen{}\left[W^A \mathbb{1}\mathopen{}\left(A = a\right)\mathclose{} \mathbb{1}\mathopen{}\left(L = l\right)\mathclose{}\right]\mathclose{}
+&amp;= \operatorname{E}\mathopen{}\left[\frac{\mathbb{1}\mathopen{}\left(A = a\right)\mathclose{} \mathbb{1}\mathopen{}\left(L = l\right)\mathclose{}}{f(a \mid l)}\right]\mathclose{} &amp;&amp; \text{(} W^A = 1/f(a \mid l) \text{ whenever } A = a \text{ and } L = l\text{)}\\
+&amp;= \frac{\operatorname{E}\mathopen{}\left[\mathbb{1}\mathopen{}\left(A = a\right)\mathclose{} \mathbb{1}\mathopen{}\left(L = l\right)\mathclose{}\right]\mathclose{}}{f(a \mid l)} &amp;&amp; \text{(the constant } 1/f(a \mid l) &gt; 0 \text{ factors out, by positivity)}\\
+&amp;= \frac{\Pr[A = a, L = l]}{f(a \mid l)} &amp;&amp; \text{(expectation of an indicator)}\\
+&amp;= \frac{f(a \mid l) \Pr[L = l]}{f(a \mid l)} &amp;&amp; \text{(definition of } f(a \mid l)\text{)}\\
+&amp;= \Pr[L = l] &amp;&amp; \text{(cancel } f(a \mid l)\text{)}.
+\end{aligned}
+\]</span> Summing over all <span class="math inline">\(k\)</span> levels <span class="math inline">\(a\)</span> and all <span class="math inline">\(l\)</span> gives <span class="math inline">\(\operatorname{E}\mathopen{}\left[W^A\right]\mathclose{} = k \sum_l \Pr[L = l] = k\)</span>, which is property 0.</p>
+<p><strong>Property 1.</strong> <span class="math display">\[
+\begin{aligned}
+\Pr_{ps}[A = a, L = l]
+&amp;= \frac{\operatorname{E}\mathopen{}\left[W^A \mathbb{1}\mathopen{}\left(A = a\right)\mathclose{} \mathbb{1}\mathopen{}\left(L = l\right)\mathclose{}\right]\mathclose{}}{\operatorname{E}\mathopen{}\left[W^A\right]\mathclose{}} &amp;&amp; \text{(definition of the pseudo-population)}\\
+&amp;= \frac{\Pr[L = l]}{k} &amp;&amp; \text{(Step 0, twice)}.
+\end{aligned}
+\]</span> Summing over <span class="math inline">\(l\)</span> gives <span class="math inline">\(\Pr_{ps}[A = a] = 1/k\)</span>; summing over <span class="math inline">\(a\)</span> gives <span class="math inline">\(\Pr_{ps}[L = l] = \Pr[L = l]\)</span>. So <span class="math inline">\(\Pr_{ps}[A = a, L = l] = \Pr_{ps}[A = a] \Pr_{ps}[L = l]\)</span> for all <span class="math inline">\(a\)</span> and <span class="math inline">\(l\)</span>, which is independence.</p>
+<p><strong>Property 2.</strong> <span class="math display">\[
+\begin{aligned}
+\operatorname{E}_{ps}\mathopen{}\left[Y \mid A = a\right]\mathclose{}
+&amp;= \frac{\operatorname{E}_{ps}\mathopen{}\left[Y \mathbb{1}\mathopen{}\left(A = a\right)\mathclose{}\right]\mathclose{}}{\Pr_{ps}[A = a]} &amp;&amp; \text{(definition of the pseudo-population)}\\
+&amp;= \frac{\operatorname{E}\mathopen{}\left[W^A Y \mathbb{1}\mathopen{}\left(A = a\right)\mathclose{}\right]\mathclose{} / \operatorname{E}\mathopen{}\left[W^A\right]\mathclose{}}{1/k} &amp;&amp; \text{(definition of the pseudo-population; Property 1)}\\
+&amp;= \frac{\operatorname{E}\mathopen{}\left[W^A Y \mathbb{1}\mathopen{}\left(A = a\right)\mathclose{}\right]\mathclose{} / k}{1/k} &amp;&amp; \text{(} \operatorname{E}\mathopen{}\left[W^A\right]\mathclose{} = k \text{, Step 0)}\\
+&amp;= \operatorname{E}\mathopen{}\left[W^A Y \mathbb{1}\mathopen{}\left(A = a\right)\mathclose{}\right]\mathclose{} &amp;&amp; \text{(cancel } k\text{)}\\
+&amp;= \sum_l \operatorname{E}\mathopen{}\left[W^A Y \mathbb{1}\mathopen{}\left(A = a\right)\mathclose{} \mid L = l\right]\mathclose{} \Pr[L = l] &amp;&amp; \text{(law of total expectation over } L\text{)}\\
+&amp;= \sum_l \frac{\operatorname{E}\mathopen{}\left[Y \mathbb{1}\mathopen{}\left(A = a\right)\mathclose{} \mid L = l\right]\mathclose{}}{f(a \mid l)} \Pr[L = l] &amp;&amp; \text{(} W^A = 1/f(a \mid l) \text{ when } A = a \text{ and } L = l\text{; pull the constant out)}\\
+&amp;= \sum_l \frac{\operatorname{E}\mathopen{}\left[Y \mid A = a, L = l\right]\mathclose{} f(a \mid l)}{f(a \mid l)} \Pr[L = l] &amp;&amp; \text{(} \operatorname{E}\mathopen{}\left[Y \mathbb{1}\mathopen{}\left(A = a\right)\mathclose{} \mid L = l\right]\mathclose{} = \operatorname{E}\mathopen{}\left[Y \mid A = a, L = l\right]\mathclose{} \Pr[A = a \mid L = l]\text{)}\\
+&amp;= \sum_l \operatorname{E}\mathopen{}\left[Y \mid A = a, L = l\right]\mathclose{} \Pr[L = l] &amp;&amp; \text{(cancel } f(a \mid l)\text{)}.
+\end{aligned}
+\]</span></p>
+<p><strong>Exchangeability in the pseudo-population.</strong> Fix a level <span class="math inline">\(a\)</span>, a set <span class="math inline">\(B\)</span> of outcome values, and a level <span class="math inline">\(a'\)</span>. <span class="math display">\[
+\begin{aligned}
+\Pr_{ps}[Y^a \in B, A = a']
+&amp;= \frac{\operatorname{E}\mathopen{}\left[W^A \mathbb{1}\mathopen{}\left(Y^a \in B\right)\mathclose{} \mathbb{1}\mathopen{}\left(A = a'\right)\mathclose{}\right]\mathclose{}}{\operatorname{E}\mathopen{}\left[W^A\right]\mathclose{}} &amp;&amp; \text{(definition of the pseudo-population)}\\
+&amp;= \frac{1}{k} \operatorname{E}\mathopen{}\left[W^A \mathbb{1}\mathopen{}\left(Y^a \in B\right)\mathclose{} \mathbb{1}\mathopen{}\left(A = a'\right)\mathclose{}\right]\mathclose{} &amp;&amp; \text{(} \operatorname{E}\mathopen{}\left[W^A\right]\mathclose{} = k \text{, Step 0)}\\
+&amp;= \frac{1}{k} \sum_l \operatorname{E}\mathopen{}\left[W^A \mathbb{1}\mathopen{}\left(Y^a \in B\right)\mathclose{} \mathbb{1}\mathopen{}\left(A = a'\right)\mathclose{} \mid L = l\right]\mathclose{} \Pr[L = l] &amp;&amp; \text{(law of total expectation over } L\text{)}\\
+&amp;= \frac{1}{k} \sum_l \frac{\operatorname{E}\mathopen{}\left[\mathbb{1}\mathopen{}\left(Y^a \in B\right)\mathclose{} \mathbb{1}\mathopen{}\left(A = a'\right)\mathclose{} \mid L = l\right]\mathclose{}}{f(a' \mid l)} \Pr[L = l] &amp;&amp; \text{(} W^A = 1/f(a' \mid l) \text{ when } A = a' \text{ and } L = l\text{; pull the constant out)}\\
+&amp;= \frac{1}{k} \sum_l \frac{\Pr[Y^a \in B, A = a' \mid L = l]}{f(a' \mid l)} \Pr[L = l] &amp;&amp; \text{(expectation of an indicator)}\\
+&amp;= \frac{1}{k} \sum_l \frac{\Pr[Y^a \in B \mid L = l] f(a' \mid l)}{f(a' \mid l)} \Pr[L = l] &amp;&amp; \text{(conditional exchangeability } Y^a \perp\!\!\!\perp A \mid L\text{)}\\
+&amp;= \frac{1}{k} \sum_l \Pr[Y^a \in B \mid L = l] \Pr[L = l] &amp;&amp; \text{(cancel } f(a' \mid l)\text{)}\\
+&amp;= \frac{1}{k} \Pr[Y^a \in B] &amp;&amp; \text{(law of total probability)}.
+\end{aligned}
+\]</span> Summing over the <span class="math inline">\(k\)</span> levels <span class="math inline">\(a'\)</span> gives <span class="math inline">\(\Pr_{ps}[Y^a \in B] = \Pr[Y^a \in B]\)</span>. Hence <span class="math inline">\(\Pr_{ps}[Y^a \in B, A = a'] = \Pr_{ps}[Y^a \in B] \Pr_{ps}[A = a']\)</span> (using <span class="math inline">\(\Pr_{ps}[A = a'] = 1/k\)</span> from Property 1), which is <span class="math inline">\(Y^a \perp\!\!\!\perp A\)</span> in the pseudo-population.</p>
+<p><strong>Causal mean.</strong> Under conditional exchangeability, positivity, and consistency, the standardization theorem of Chapter 7 (<a href="../chapters/07-confounding.html#thm-standardization-ch7">standardization under conditional exchangeability</a>) gives <span class="math inline">\(\operatorname{E}\mathopen{}\left[Y^a\right]\mathclose{} = \sum_l \operatorname{E}\mathopen{}\left[Y \mid L = l, A = a\right]\mathclose{} \Pr[L = l]\)</span>, which equals <span class="math inline">\(\operatorname{E}_{ps}\mathopen{}\left[Y \mid A = a\right]\mathclose{}\)</span> by Property 2. This holds for every <span class="math inline">\(a\)</span>, so every contrast of the pseudo-population means equals the matching causal contrast.</p>
+</div>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside>
+<p>By <a href="#/prp-pseudo-population" class="quarto-xref">Proposition&nbsp;1</a>, <span class="math inline">\(\operatorname{E}\mathopen{}\left[W^A\right]\mathclose{} = k\)</span>, so for a dichotomous treatment the expected size of this pseudo-population is <span class="math inline">\(2n\)</span>, twice the study population.</p>
+</section>
+<section id="why-modeling-is-needed" class="slide level2">
+<h2>Why Modeling Is Needed</h2>
+<div id="rem-why-model-weights" class="proof remark">
+<p><span class="proof-title"><em>Remark 1</em> (Nonparametric Weights Are Infeasible Here). </span>In Section 2.4, <span class="math inline">\(\Pr[A = 1 \mid L]\)</span> was estimated nonparametrically, by the proportion treated within each stratum of <span class="math inline">\(L\)</span>. That is impossible here:</p>
+<ul>
+<li>Even recoding all 9 confounders except age to at most 6 categories each gives a tree with over 2 million branches.</li>
+<li>With the actual ranges of smoking intensity, duration, and weight, there are many millions of strata.</li>
+<li>1566 individuals cannot yield meaningful stratum-specific estimates across millions of strata.</li>
+</ul>
+<p>This is the curse of dimensionality introduced in Chapter 10, so we resort to a model.</p>
+</div>
+</section>
+<section id="the-treatment-model" class="slide level2 scrollable">
+<h2>The Treatment Model</h2>
+<div id="alg-estimate-ip-weights" class="theorem algorithm">
+<p><span class="theorem-title"><strong>Algorithm 1 (Estimating IP Weights with a Treatment Model)</strong></span> &nbsp;</p>
+<ol type="1">
+<li><p>Fit a logistic regression model for <span class="math inline">\(\Pr[A = 1 \mid L]\)</span> including all 9 confounders:</p>
+<ul>
+<li>linear and quadratic terms for the (quasi-)continuous covariates age, weight, intensity of smoking, and duration of smoking;</li>
+<li>no product terms between covariates.</li>
+</ul></li>
+<li><p>For each individual, compute</p>
+<ul>
+<li><span class="math inline">\(\hat{f}(1 \mid L) = \mathop{\widehat{\Pr}}\nolimits\mathopen{}\left[A = 1 \mid L\right]\mathclose{}\)</span> if <span class="math inline">\(A = 1\)</span>,</li>
+<li><span class="math inline">\(\hat{f}(0 \mid L) = 1 - \mathop{\widehat{\Pr}}\nolimits\mathopen{}\left[A = 1 \mid L\right]\mathclose{}\)</span> if <span class="math inline">\(A = 0\)</span>.</li>
+</ul></li>
+<li><p>Set <span class="math inline">\(\hat{W}^A = 1 / \hat{f}(A \mid L)\)</span>.</p></li>
+</ol>
+</div>
+<aside class="notes">
+<p><strong>What the model assumes</strong>: on the logit scale, the relation between each continuous covariate and the probability of quitting is a parabola, and each covariate contributes to the logit independently of the others. Under these parametric restrictions, we get an estimate <span class="math inline">\(\mathop{\widehat{\Pr}}\nolimits\mathopen{}\left[A = 1 \mid L\right]\mathclose{}\)</span> for every combination of <span class="math inline">\(L\)</span> values, and hence for each of the 1566 individuals <span class="citation" data-cites="hernan2020causal">(<a href="#/references" role="doc-biblioref" onclick="">Hernán and Robins 2020, chap. 12</a>, p.&nbsp;165)</span>.</p>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside>
+</section>
+<section id="estimating-the-effect-in-the-pseudo-population" class="slide level2">
+<h2>Estimating the Effect in the Pseudo-Population</h2>
+<p>Fit the (saturated) linear mean model <span class="math display">\[\operatorname{E}\mathopen{}\left[Y \mid A\right]\mathclose{} = \theta_0 + \theta_1 A\]</span> by weighted least squares with weights <span class="math inline">\(\hat{W}^A\)</span>.</p>
+<div id="def-weighted-least-squares" class="theorem definition">
+<p><span class="theorem-title"><strong>Definition 3 (Weighted Least Squares)</strong></span> Given weights <span class="math inline">\(\hat{W}_i\)</span>, the <strong>weighted least squares</strong> estimates <span class="math inline">\(\hat\theta_0, \hat\theta_1\)</span> of the model <span class="math inline">\(\operatorname{E}\mathopen{}\left[Y \mid A\right]\mathclose{} = \theta_0 + \theta_1 A\)</span> are the values that minimize <span class="math display">\[\sum_i \hat{W}_i \mathopen{}\left[Y_i - (\theta_0 + \theta_1 A_i)\right]\mathclose{}^2.\]</span></p>
+</div>
+<aside class="notes">
+<p>The model <span class="math inline">\(\operatorname{E}\mathopen{}\left[Y \mid A\right]\mathclose{} = \theta_0 + \theta_1 A\)</span> is saturated: it has two parameters for the two quantities <span class="math inline">\(\operatorname{E}\mathopen{}\left[Y \mid A = 1\right]\mathclose{}\)</span> and <span class="math inline">\(\operatorname{E}\mathopen{}\left[Y \mid A = 0\right]\mathclose{}\)</span>, and <span class="math inline">\(\theta_1 = \operatorname{E}\mathopen{}\left[Y \mid A = 1\right]\mathclose{} - \operatorname{E}\mathopen{}\left[Y \mid A = 0\right]\mathclose{}\)</span>. With <span class="math inline">\(\hat{W}_i = 1\)</span> for everyone, weighted least squares reduces to the ordinary least squares of Chapter 11 <span class="citation" data-cites="hernan2020causal">(<a href="#/references" role="doc-biblioref" onclick="">Hernán and Robins 2020, chap. 12</a>, pp.&nbsp;165-166)</span>.</p>
+<p>If there is no confounding in the pseudo-population (<a href="#/def-pseudo-population" class="quarto-xref">Definition&nbsp;2</a>) and the model for <span class="math inline">\(\Pr[A = 1 \mid L]\)</span> is correct, an unbiased estimator of <span class="math inline">\(\operatorname{E}_{ps}\mathopen{}\left[Y \mid A = 1\right]\mathclose{} - \operatorname{E}_{ps}\mathopen{}\left[Y \mid A = 0\right]\mathclose{}\)</span> is also an unbiased estimator of <span class="math inline">\(\operatorname{E}\mathopen{}\left[Y^{a=1}\right]\mathclose{} - \operatorname{E}\mathopen{}\left[Y^{a=0}\right]\mathclose{}\)</span>.</p>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside>
+</section>
+<section class="slide level2">
+
+<div id="exm-nhefs-ipw" class="theorem example">
+<p><span class="theorem-title"><strong>Example 4 (NHEFS: Nonstabilized IP Weighting)</strong></span> &nbsp;</p>
+<ul>
+<li>Estimated weights <span class="math inline">\(\hat{W}^A\)</span> ranged from 1.05 to 16.7, with mean 2.00.</li>
+<li><span class="math inline">\(\hat\theta_1 = 3.4\)</span> kg: under our assumptions, quitting smoking increases weight by 3.4 kg on average.</li>
+<li>Conservative 95% confidence interval: (2.4, 4.5).</li>
+</ul>
+<p>Compare with the unadjusted difference of 2.5 kg.</p>
+</div>
+<aside class="notes">
+<p>The mean of the nonstabilized weights is about 2 because <span class="math inline">\(\operatorname{E}\mathopen{}\left[W^A\right]\mathclose{} = k = 2\)</span> for a dichotomous treatment (property 0 of <a href="#/prp-pseudo-population" class="quarto-xref">Proposition&nbsp;1</a>).</p>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside>
+</section>
+<section id="confidence-intervals-for-ip-weighted-estimates" class="slide level2 scrollable">
+<h2>Confidence Intervals for IP Weighted Estimates</h2>
+<div id="rem-ipw-confidence-intervals" class="proof remark">
+<p><span class="proof-title"><em>Remark 2</em> (Confidence Intervals Must Account for the Weighting). </span>Three options <span class="citation" data-cites="hernan2020causal">(<a href="#/references" role="doc-biblioref" onclick="">Hernán and Robins 2020, chap. 12</a>, p.&nbsp;166)</span>:</p>
+<ol type="1">
+<li><strong>Derive the variance analytically</strong> from statistical theory; the analyst must program the estimator, which standard software generally does not provide.</li>
+<li><strong>Nonparametric bootstrap</strong>; requires computing resources (or patience) for large data sets.</li>
+<li><strong>Robust (“sandwich”) variance estimator</strong>, as used for GEE models with an independent working correlation; a standard option in most software.</li>
+</ol>
+<p>The robust-variance intervals are valid but <strong>conservative</strong>: their actual coverage of the super-population parameter exceeds the nominal 95%. All confidence intervals for IP weighted estimates in this chapter are of this conservative kind.</p>
+</div>
+<aside class="notes">
+<p>If the model for <span class="math inline">\(\Pr[A = 1 \mid L]\)</span> is misspecified, the estimates of <span class="math inline">\(\theta_0\)</span> and <span class="math inline">\(\theta_1\)</span> will be biased and, as in Chapter 11, the intervals may fall short of their nominal 95% coverage <span class="citation" data-cites="hernan2020causal">(<a href="#/references" role="doc-biblioref" onclick="">Hernán and Robins 2020, chap. 12</a>, p.&nbsp;167)</span>.</p>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside>
+</section>
+<section class="slide level2">
+
+<div title="Technical Point 12.1: Horvitz-Thompson and Hajek Estimators">
+<div class="callout callout-note callout-titled callout-style-default">
+<div class="callout-body">
+<div class="callout-title">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<p><strong>Technical Point 12.1: Horvitz-Thompson and Hajek Estimators</strong></p>
+</div>
+<div class="callout-content">
+<p>Two sample estimators of the IP weighted mean <span class="math inline">\(\operatorname{E}\mathopen{}\left[Y^a\right]\mathclose{}\)</span> differ only in how they normalize the weights.</p>
+</div>
+</div>
+</div>
+</div>
+<div id="def-ht-hajek" class="theorem definition">
+<p><span class="theorem-title"><strong>Definition 4 (Horvitz-Thompson and Hajek Estimators)</strong></span> With <span class="math inline">\(\mathop{\hat{\operatorname{E}}}\nolimits\mathopen{}\left[\cdot\right]\mathclose{}\)</span> the sample average:</p>
+<ul>
+<li><strong>Horvitz-Thompson estimator</strong> (f known): <span class="math display">\[\mathop{\hat{\operatorname{E}}}\nolimits\mathopen{}\left[\frac{\mathbb{1}\mathopen{}\left(A = a\right)\mathclose{} Y}{f(A \mid L)}\right]\mathclose{}\]</span></li>
+<li><strong>Hajek estimator</strong> (modified Horvitz-Thompson): <span class="math display">\[\frac{\mathop{\hat{\operatorname{E}}}\nolimits\mathopen{}\left[\mathbb{1}\mathopen{}\left(A = a\right)\mathclose{} Y / f(A \mid L)\right]\mathclose{}}{\mathop{\hat{\operatorname{E}}}\nolimits\mathopen{}\left[\mathbb{1}\mathopen{}\left(A = a\right)\mathclose{} / f(A \mid L)\right]\mathclose{}}\]</span></li>
+</ul>
+<p>For binary <span class="math inline">\(A\)</span>, the IP weighted least squares estimate <span class="math inline">\(\hat\theta_0 + \hat\theta_1 a\)</span> is the Hajek estimator.</p>
+</div>
+<aside class="notes">
+<p><strong>Why the two agree in the limit under positivity</strong> <span class="citation" data-cites="hernan2020causal">(<a href="#/references" role="doc-biblioref" onclick="">Hernán and Robins 2020</a>, Technical Point 12.1, p.&nbsp;166)</span>. The Hajek estimator is (asymptotically) unbiased for the ratio <span class="math display">\[\frac{\operatorname{E}\mathopen{}\left[\mathbb{1}\mathopen{}\left(A = a\right)\mathclose{} Y / f(A \mid L)\right]\mathclose{}}{\operatorname{E}\mathopen{}\left[\mathbb{1}\mathopen{}\left(A = a\right)\mathclose{} / f(A \mid L)\right]\mathclose{}}.\]</span> Under positivity, the denominator equals 1: <span class="math display">\[
+\begin{aligned}
+\operatorname{E}\mathopen{}\left[\frac{\mathbb{1}\mathopen{}\left(A = a\right)\mathclose{}}{f(A \mid L)}\right]\mathclose{}
+&amp;= \operatorname{E}\mathopen{}\left[\operatorname{E}\mathopen{}\left[\frac{\mathbb{1}\mathopen{}\left(A = a\right)\mathclose{}}{f(a \mid L)} \,\middle|\, L\right]\mathclose{}\right]\mathclose{} &amp;&amp; \text{(iterated expectations; } \mathbb{1}\mathopen{}\left(A=a\right)\mathclose{} \text{ forces } A = a\text{)}\\
+&amp;= \operatorname{E}\mathopen{}\left[\frac{\Pr[A = a \mid L]}{f(a \mid L)}\right]\mathclose{} &amp;&amp; \text{(} \operatorname{E}\mathopen{}\left[\mathbb{1}\mathopen{}\left(A = a\right)\mathclose{} \mid L\right]\mathclose{} = \Pr[A = a \mid L]\text{)}\\
+&amp;= \operatorname{E}\mathopen{}\left[1\right]\mathclose{} = 1 &amp;&amp; \text{(} f(a \mid L) = \Pr[A = a \mid L] &gt; 0 \text{ by positivity)}
+\end{aligned}
+\]</span> so the ratio equals the IP weighted mean <span class="math inline">\(\operatorname{E}\mathopen{}\left[\mathbb{1}\mathopen{}\left(A = a\right)\mathclose{} Y / f(A \mid L)\right]\mathclose{}\)</span>, which equals <span class="math inline">\(\operatorname{E}\mathopen{}\left[Y^a\right]\mathclose{}\)</span> under conditional exchangeability, positivity, and consistency (Technical Point 3.1).</p>
+<p><strong>Why the Hajek estimator is preferred in practice</strong>: even when <span class="math inline">\(f(A \mid L)\)</span> is replaced by predictions from a misspecified model, the Hajek estimator stays within <span class="math inline">\([0, 1]\)</span> for a dichotomous <span class="math inline">\(Y\)</span>; the Horvitz-Thompson estimator need not.</p>
+<p><strong>Without positivity</strong>: let <span class="math inline">\(Q(a) = \{l : \Pr(A = a \mid L = l) &gt; 0\}\)</span>. The Hajek ratio then equals <span class="math inline">\(\sum_l \operatorname{E}\mathopen{}\left[Y \mid A = a, L = l, L \in Q(a)\right]\mathclose{} \Pr[L = l \mid L \in Q(a)]\)</span>, which under conditional exchangeability and consistency is <span class="math inline">\(\operatorname{E}\mathopen{}\left[Y^a \mid L \in Q(a)\right]\mathclose{}\)</span>. Its denominator converges to <span class="math inline">\(\Pr[Q(a)]\)</span> rather than 1, so the ratio of the Horvitz-Thompson limit to the Hajek limit is <span class="math inline">\(\Pr[Q(a)]\)</span>, and the difference of Hajek estimators for <span class="math inline">\(a = 1\)</span> versus <span class="math inline">\(a = 0\)</span> has no causal interpretation.</p>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside>
+</section></section>
+<section>
+<section id="stabilized-ip-weights-pp.-167-169" class="title-slide slide level1 center" data-number="3">
+<h1><span class="header-section-number">3</span> 12.3 Stabilized IP Weights (pp.&nbsp;167-169)</h1>
+
+</section>
+<section class="slide level2">
+
+<p>The goal of IP weighting is a pseudo-population (<a href="#/def-pseudo-population" class="quarto-xref">Definition&nbsp;2</a>) in which <span class="math inline">\(L\)</span> does not predict <span class="math inline">\(A\)</span>. The weights <span class="math inline">\(1/f(A \mid L)\)</span> are only one way to get there.</p>
+<div id="rem-other-weights" class="proof remark">
+<p><span class="proof-title"><em>Remark 3</em> (Other Weights Give the Same Pseudo-Population Contrast). </span></p>
+<ul>
+<li>With weights <span class="math inline">\(1/f(A \mid L)\)</span>, a dichotomous treatment yields a pseudo-population of expected size <span class="math inline">\(\operatorname{E}\mathopen{}\left[W\right]\mathclose{} \cdot n = 2n\)</span>, twice the size of the study population: one treated copy and one untreated copy.</li>
+<li>With weights <span class="math inline">\(0.5/f(A \mid L)\)</span>, everyone has probability 0.5 of each treatment level regardless of <span class="math inline">\(L\)</span>; this pseudo-population has expected size <span class="math inline">\(\operatorname{E}\mathopen{}\left[W\right]\mathclose{} \cdot n = n\)</span>, the same as the study population.</li>
+<li>More generally, any weights <span class="math inline">\(p/f(A \mid L)\)</span> with <span class="math inline">\(0 &lt; p \leq 1\)</span> give the <strong>same effect estimate</strong>.</li>
+</ul>
+</div>
+</section>
+<section id="why-rescaling-does-not-change-the-estimate" class="slide level2">
+<h2>Why Rescaling Does Not Change the Estimate</h2>
+<div id="prp-rescaled-weights" class="theorem proposition">
+<p><span class="theorem-title"><strong>Proposition 2 (Rescaling the Weights Does Not Change the Estimate)</strong></span> For a constant <span class="math inline">\(p &gt; 0\)</span>, the Hajek (weighted least squares) mean for treatment level <span class="math inline">\(a\)</span> computed with weights <span class="math inline">\(p/f(A \mid L)\)</span> equals the one computed with weights <span class="math inline">\(1/f(A \mid L)\)</span>, so the difference between treatment levels is unchanged too.</p>
+</div>
+<div class="proof">
+<p><span class="proof-title"><em>Proof</em>. </span><span class="math display">\[
+\begin{aligned}
+\frac{\mathop{\hat{\operatorname{E}}}\nolimits\mathopen{}\left[p \, \mathbb{1}\mathopen{}\left(A = a\right)\mathclose{} Y / f(A \mid L)\right]\mathclose{}}{\mathop{\hat{\operatorname{E}}}\nolimits\mathopen{}\left[p \, \mathbb{1}\mathopen{}\left(A = a\right)\mathclose{} / f(A \mid L)\right]\mathclose{}}
+&amp;= \frac{p \, \mathop{\hat{\operatorname{E}}}\nolimits\mathopen{}\left[\mathbb{1}\mathopen{}\left(A = a\right)\mathclose{} Y / f(A \mid L)\right]\mathclose{}}{p \, \mathop{\hat{\operatorname{E}}}\nolimits\mathopen{}\left[\mathbb{1}\mathopen{}\left(A = a\right)\mathclose{} / f(A \mid L)\right]\mathclose{}} &amp;&amp; \text{(constants factor out of averages)}\\
+&amp;= \frac{\mathop{\hat{\operatorname{E}}}\nolimits\mathopen{}\left[\mathbb{1}\mathopen{}\left(A = a\right)\mathclose{} Y / f(A \mid L)\right]\mathclose{}}{\mathop{\hat{\operatorname{E}}}\nolimits\mathopen{}\left[\mathbb{1}\mathopen{}\left(A = a\right)\mathclose{} / f(A \mid L)\right]\mathclose{}} &amp;&amp; \text{(cancel } p\text{)}
+\end{aligned}
+\]</span> The same holds for every treatment level <span class="math inline">\(a\)</span>, so the difference between levels is unchanged.</p>
+</div>
+</section>
+<section id="stabilized-weights" class="slide level2">
+<h2>Stabilized Weights</h2>
+<p>The key requirement is only that treatment probability in the pseudo-population <strong>not depend on</strong> <span class="math inline">\(L\)</span>; it may differ between people. A common choice gives the treated probability <span class="math inline">\(\Pr[A = 1]\)</span> and the untreated <span class="math inline">\(\Pr[A = 0]\)</span>, as in the original population.</p>
+<div id="def-stabilized-weights" class="theorem definition">
+<p><span class="theorem-title"><strong>Definition 5 (Stabilized IP Weights)</strong></span> <span class="math display">\[SW^A \stackrel{\text{def}}{=}\frac{f(A)}{f(A \mid L)}\]</span></p>
+<p>For dichotomous <span class="math inline">\(A\)</span>:</p>
+<ul>
+<li>If <span class="math inline">\(A = 1\)</span>: <span class="math inline">\(SW^A = \dfrac{\Pr[A = 1]}{\Pr[A = 1 \mid L]}\)</span></li>
+<li>If <span class="math inline">\(A = 0\)</span>: <span class="math inline">\(SW^A = \dfrac{\Pr[A = 0]}{\Pr[A = 0 \mid L]} = \dfrac{1 - \Pr[A = 1]}{1 - \Pr[A = 1 \mid L]}\)</span></li>
+</ul>
+<p>The weights <span class="math inline">\(W^A = 1/f(A \mid L)\)</span> are called <strong>nonstabilized</strong> weights, and <span class="math inline">\(f(A)\)</span> is the <strong>stabilizing factor</strong>.</p>
+</div>
+<p>The stabilized weights <span class="math inline">\(SW^A\)</span> create their own pseudo-population (<a href="#/def-pseudo-population" class="quarto-xref">Definition&nbsp;2</a>), different from the one created by <span class="math inline">\(W^A\)</span>.</p>
+<aside class="notes">
+<p>Applied to the data of Figure 2.1, where <span class="math inline">\(\Pr[A = 1] = 13/20 = 0.65\)</span> and <span class="math inline">\(\Pr[A = 0] = 7/20 = 0.35\)</span>, the weights <span class="math inline">\(f(A)/f(A \mid L)\)</span> produce a pseudo-population (Figure 12.1 of the book) resembling a randomized experiment in which 65% of individuals are assigned to <span class="math inline">\(A = 1\)</span> and 35% to <span class="math inline">\(A = 0\)</span>. Preserving the 65/35 ratio requires non-integer numbers of individuals in some branches, which is no problem mathematically <span class="citation" data-cites="hernan2020causal">(<a href="#/references" role="doc-biblioref" onclick="">Hernán and Robins 2020, chap. 12</a>, p.&nbsp;167)</span>.</p>
+<p>With <span class="math inline">\(A\)</span> and <span class="math inline">\(L\)</span> each taking finitely many values and positivity holding, as in <a href="#/prp-pseudo-population" class="quarto-xref">Proposition&nbsp;1</a>, and with every sum over <span class="math inline">\(l\)</span> running over the values with <span class="math inline">\(\Pr[L = l] &gt; 0\)</span>, the stabilized weights have mean 1: <span class="math display">\[
+\begin{aligned}
+\operatorname{E}\mathopen{}\left[SW^A\right]\mathclose{}
+&amp;= \sum_a \sum_l \operatorname{E}\mathopen{}\left[SW^A \mathbb{1}\mathopen{}\left(A = a\right)\mathclose{} \mathbb{1}\mathopen{}\left(L = l\right)\mathclose{}\right]\mathclose{} &amp;&amp; \text{(linearity, since } \textstyle\sum_a \sum_l \mathbb{1}\mathopen{}\left(A = a\right)\mathclose{} \mathbb{1}\mathopen{}\left(L = l\right)\mathclose{} = 1 \text{ almost surely)}\\
+&amp;= \sum_a \sum_l f(a) \operatorname{E}\mathopen{}\left[W^A \mathbb{1}\mathopen{}\left(A = a\right)\mathclose{} \mathbb{1}\mathopen{}\left(L = l\right)\mathclose{}\right]\mathclose{} &amp;&amp; \text{(} SW^A = f(a) W^A \text{ whenever } A = a\text{)}\\
+&amp;= \sum_a \sum_l f(a) \Pr[L = l] &amp;&amp; \text{(Step 0 of the proof of the pseudo-population proposition)}\\
+&amp;= \sum_a f(a) \sum_l \Pr[L = l] &amp;&amp; \text{(} f(a) \text{ does not depend on } l\text{)}\\
+&amp;= \sum_a f(a) &amp;&amp; \text{(} \textstyle\sum_l \Pr[L = l] = 1\text{)}\\
+&amp;= 1 &amp;&amp; \text{(} \textstyle\sum_a f(a) = 1\text{)}.
+\end{aligned}
+\]</span> So, for individuals sampled as described after <a href="#/def-pseudo-population" class="quarto-xref">Definition&nbsp;2</a>, the pseudo-population created by <span class="math inline">\(SW^A\)</span> has expected size <span class="math inline">\(\operatorname{E}\mathopen{}\left[SW^A\right]\mathclose{} \cdot n = n\)</span>, the same as the study population, and the sample mean <span class="math inline">\(\frac{1}{n} \sum_{i=1}^n SW^A_i\)</span> has expectation 1. When the models for <span class="math inline">\(f(A \mid L)\)</span> and <span class="math inline">\(f(A)\)</span> are correct and <span class="math inline">\(n\)</span> is large, the mean of the estimated stabilized weights should therefore be close to 1, and in data analyses one should check it: a mean far from 1 suggests model misspecification or (near) violations of positivity <span class="citation" data-cites="hernan2020causal">(<a href="#/references" role="doc-biblioref" onclick="">Hernán and Robins 2020, chap. 12</a>, p.&nbsp;168)</span>.</p>
+<p>To estimate the average causal effect in the treated rather than in the whole population, use <span class="math inline">\(\Pr[A = 1 \mid L]\)</span> as the numerator instead (Technical Point 4.1).</p>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside>
+</section>
+<section id="estimation" class="slide level2">
+<h2>Estimation</h2>
+<div id="alg-estimate-stabilized-weights" class="theorem algorithm">
+<p><span class="theorem-title"><strong>Algorithm 2 (Estimating Stabilized IP Weights)</strong></span> &nbsp;</p>
+<ul>
+<li><strong>Denominator</strong>: same logistic model for <span class="math inline">\(\Pr[A = 1 \mid L]\)</span> as in Section 12.2.</li>
+<li><strong>Numerator</strong>: <span class="math inline">\(\mathop{\widehat{\Pr}}\nolimits\mathopen{}\left[A = 1\right]\mathclose{} = 403/1566\)</span>, equivalently a saturated (intercept-only) logistic model.</li>
+<li>Fit <span class="math inline">\(\operatorname{E}\mathopen{}\left[Y \mid A\right]\mathclose{} = \theta_0 + \theta_1 A\)</span> by weighted least squares with weights <span class="math inline">\(\mathop{\widehat{\Pr}}\nolimits\mathopen{}\left[A = 1\right]\mathclose{}/\mathop{\widehat{\Pr}}\nolimits\mathopen{}\left[A = 1 \mid L\right]\mathclose{}\)</span> for quitters and <span class="math inline">\((1 - \mathop{\widehat{\Pr}}\nolimits\mathopen{}\left[A = 1\right]\mathclose{})/(1 - \mathop{\widehat{\Pr}}\nolimits\mathopen{}\left[A = 1 \mid L\right]\mathclose{})\)</span> for non-quitters.</li>
+</ul>
+</div>
+<div id="exm-nhefs-sw" class="theorem example">
+<p><span class="theorem-title"><strong>Example 5 (NHEFS: Stabilized IP Weighting)</strong></span> &nbsp;</p>
+<ul>
+<li>Estimated <span class="math inline">\(\hat{SW}^A\)</span> ranged from 0.33 to 4.30, with mean 1.00 (versus 1.05 to 16.7, mean 2.00, for <span class="math inline">\(\hat{W}^A\)</span>).</li>
+<li><span class="math inline">\(\hat\theta_1 = 3.4\)</span> kg (95% CI: 2.4, 4.5), the same estimate as with the nonstabilized weights.</li>
+</ul>
+</div>
+</section>
+<section id="why-stabilize" class="slide level2">
+<h2>Why Stabilize?</h2>
+<div id="rem-why-stabilize" class="proof remark">
+<p><span class="proof-title"><em>Remark 4</em> (When Stabilization Helps). </span>If both kinds of weights give the same estimate, why stabilize?</p>
+<ul>
+<li>Stabilized weights typically give <strong>narrower confidence intervals</strong>.</li>
+<li>But this advantage can occur only when the weighted model is <strong>not saturated</strong>.</li>
+<li>Here, <span class="math inline">\(\operatorname{E}\mathopen{}\left[Y \mid A\right]\mathclose{} = \theta_0 + \theta_1 A\)</span> is saturated because <span class="math inline">\(A\)</span> is dichotomous, so the two sets of weights agree.</li>
+<li>With time-varying or continuous treatments the weighted model cannot be saturated, and stabilized weights are used (Section 12.4).</li>
+</ul>
+</div>
+</section>
+<section class="slide level2">
+
+<div title="Fine Point 12.2: Checking Positivity">
+<div class="callout callout-note callout-titled callout-style-default">
+<div class="callout-body">
+<div class="callout-title">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<p><strong>Fine Point 12.2: Checking Positivity</strong></p>
+</div>
+<div class="callout-content">
+<p>In the NHEFS, there are 4 white women aged 66, and none of them quit smoking: positivity is <strong>empirically</strong> violated in that stratum.</p>
+<ul>
+<li><strong>Structural violations</strong>: some values of <span class="math inline">\(L\)</span> make treatment (or non-treatment) impossible. Example: people off work cannot be exposed to an occupational chemical. Zero cells appear whenever we condition on such a confounder.</li>
+<li><strong>Random violations</strong>: in a finite sample, stratifying on many confounders produces zero cells by chance, even though the probability of treatment is not zero in the target population. Example: no treated white women aged 66 or 67, but some treated white women aged 65 and 69.</li>
+</ul>
+<aside class="notes">
+<p>The two kinds of violation have different consequences <span class="citation" data-cites="hernan2020causal">(<a href="#/references" role="doc-biblioref" onclick="">Hernán and Robins 2020</a>, Fine Point 12.2, p.&nbsp;169)</span>:</p>
+<ul>
+<li>Under <strong>structural</strong> violations, neither IP weighting nor standardization supports inference about the entire population; inference has to be limited to the strata where structural positivity holds (see Technical Point 12.1).</li>
+<li>Under <strong>random</strong> violations, the parametric model smooths over the zeros: the logistic model of Section 12.2 estimated the probability of quitting for white women aged 66 by interpolating from everyone else.</li>
+</ul>
+<p>Whenever we use parametric IP weights in the presence of zero cells, as in the estimate <span class="math inline">\(\hat\theta_1 = 3.4\)</span>, we are effectively assuming that the nonpositivity is random.</p>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside>
+</div>
+</div>
+</div>
+</div>
+</section></section>
+<section>
+<section id="marginal-structural-models-pp.-169-171" class="title-slide slide level1 center" data-number="4">
+<h1><span class="header-section-number">4</span> 12.4 Marginal Structural Models (pp.&nbsp;169-171)</h1>
+
+</section>
+<section class="slide level2">
+
+<div id="def-msm" class="theorem definition">
+<p><span class="theorem-title"><strong>Definition 6 (Marginal Structural Model)</strong></span> A <strong>marginal structural mean model</strong> is a model for the marginal mean of a counterfactual outcome, such as</p>
+<p><span class="math display">\[\operatorname{E}\mathopen{}\left[Y^a\right]\mathclose{} = \beta_0 + \beta_1 a\]</span></p>
+<p>Because the outcome <span class="math inline">\(Y^a\)</span> is counterfactual (generally unobserved), the model cannot be fit directly to the data of any real-world study.</p>
+</div>
+<div id="prp-msm-parameter-causal" class="theorem proposition">
+<p><span class="theorem-title"><strong>Proposition 3 (MSM Treatment Parameters Are Average Causal Effects)</strong></span> In the marginal structural model <span class="math inline">\(\operatorname{E}\mathopen{}\left[Y^a\right]\mathclose{} = \beta_0 + \beta_1 a\)</span> of <a href="#/def-msm" class="quarto-xref">Definition&nbsp;6</a>, <span class="math display">\[\beta_1 = \operatorname{E}\mathopen{}\left[Y^{a=1}\right]\mathclose{} - \operatorname{E}\mathopen{}\left[Y^{a=0}\right]\mathclose{}.\]</span></p>
+</div>
+<div class="proof">
+<p><span class="proof-title"><em>Proof</em>. </span><span class="math display">\[
+\begin{aligned}
+\operatorname{E}\mathopen{}\left[Y^{a=1}\right]\mathclose{} - \operatorname{E}\mathopen{}\left[Y^{a=0}\right]\mathclose{}
+&amp;= (\beta_0 + \beta_1 \cdot 1) - (\beta_0 + \beta_1 \cdot 0) &amp;&amp; \text{(evaluate the model at } a = 1, 0\text{)}\\
+&amp;= \beta_1 &amp;&amp; \text{(cancel } \beta_0\text{)}
+\end{aligned}
+\]</span></p>
+</div>
+<p>So Sections 12.2-12.3 were already estimating <span class="math inline">\(\beta_1\)</span> of a marginal structural model.</p>
+</section>
+<section id="fitting-a-marginal-structural-model-by-ip-weighting" class="slide level2 scrollable">
+<h2>Fitting a Marginal Structural Model by IP Weighting</h2>
+<div id="alg-fit-msm-ipw" class="theorem algorithm">
+<p><span class="theorem-title"><strong>Algorithm 3 (Estimating Marginal Structural Model Parameters by IP Weighting)</strong></span> &nbsp;</p>
+<ol type="1">
+<li>Use IP weights to create a pseudo-population (<a href="#/def-pseudo-population" class="quarto-xref">Definition&nbsp;2</a>) in which, under the assumptions of <a href="#/prp-pseudo-population" class="quarto-xref">Proposition&nbsp;1</a>, association is causation.</li>
+<li>Fit the associational model <span class="math inline">\(\operatorname{E}\mathopen{}\left[Y \mid A\right]\mathclose{} = \theta_0 + \theta_1 A\)</span> to the pseudo-population, i.e., by IP weighted least squares.</li>
+<li><span class="math inline">\(\theta_1\)</span> then has the same causal interpretation as <span class="math inline">\(\beta_1\)</span>, so a consistent estimator <span class="math inline">\(\hat\theta_1\)</span> is a consistent estimator of <span class="math inline">\(\beta_1 = \operatorname{E}\mathopen{}\left[Y^{a=1}\right]\mathclose{} - \operatorname{E}\mathopen{}\left[Y^{a=0}\right]\mathclose{}\)</span>.</li>
+</ol>
+</div>
+<div id="lst-msm-wls" class="listing quarto-float quarto-figure quarto-figure-left">
+<figure class="quarto-float quarto-float-lst">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-lst" id="lst-msm-wls-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Listing&nbsp;1: Pseudo-code for fitting a marginal structural model by IP weighted least squares.
+</figcaption>
+<div aria-describedby="lst-msm-wls-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a aria-label="1"></a><span class="co"># weighted least squares; use robust (sandwich) standard errors</span></span>
+<span id="cb1-2"><a aria-label="2"></a>fit <span class="ot">&lt;-</span> <span class="fu">lm</span>(weight_change <span class="sc">~</span> quit_smoking,</span>
+<span id="cb1-3"><a aria-label="3"></a>          <span class="at">weights =</span> stabilized_weights,</span>
+<span id="cb1-4"><a aria-label="4"></a>          <span class="at">data =</span> nhefs)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+</figure>
+</div>
+<aside class="notes">
+<p>The model <span class="math inline">\(\operatorname{E}\mathopen{}\left[Y^a\right]\mathclose{} = \beta_0 + \beta_1 a\)</span> is <strong>saturated</strong> because <span class="math inline">\(A\)</span> is dichotomous: two unknowns on each side (<span class="math inline">\(\operatorname{E}\mathopen{}\left[Y^{a=1}\right]\mathclose{}\)</span> and <span class="math inline">\(\operatorname{E}\mathopen{}\left[Y^{a=0}\right]\mathclose{}\)</span> on the left, <span class="math inline">\(\beta_0\)</span> and <span class="math inline">\(\beta_1\)</span> on the right). That is why sample averages in the pseudo-population sufficed <span class="citation" data-cites="hernan2020causal">(<a href="#/references" role="doc-biblioref" onclick="">Hernán and Robins 2020, chap. 12</a>, p.&nbsp;170)</span>.</p>
+<p><strong>Null preservation</strong> (Chapter 9): if treatment has no average causal effect, any model for the marginal mean <span class="math inline">\(\operatorname{E}\mathopen{}\left[Y^a\right]\mathclose{}\)</span> that has an intercept, with treatment terms whose coefficients can all be 0, is correctly specified. For example, <span class="math inline">\(\operatorname{E}\mathopen{}\left[Y^a\right]\mathclose{} = \beta_0 + \beta_1 a + \beta_2 a^2\)</span> is then correctly specified with <span class="math inline">\(\beta_1 = \beta_2 = 0\)</span> and <span class="math inline">\(\beta_0 = \operatorname{E}\mathopen{}\left[Y^a\right]\mathclose{}\)</span> for every <span class="math inline">\(a\)</span>.</p>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside>
+</section>
+<section id="continuous-treatment-change-in-smoking-intensity" class="slide level2">
+<h2>Continuous Treatment: Change in Smoking Intensity</h2>
+<p>New treatment: <span class="math inline">\(A\)</span> = cigarettes per day in 1982 minus cigarettes per day at baseline (e.g., <span class="math inline">\(-25\)</span> or <span class="math inline">\(+40\)</span>), restricted to the 1162 individuals whose baseline smoking was at most 25 cigarettes per day.</p>
+<p>Goal: <span class="math inline">\(\operatorname{E}\mathopen{}\left[Y^a\right]\mathclose{} - \operatorname{E}\mathopen{}\left[Y^{a'}\right]\mathclose{}\)</span> for any <span class="math inline">\(a, a'\)</span>. A saturated model is impractical with dozens of treatment values, so we posit a <strong>nonsaturated</strong> marginal structural model (a parabolic dose-response curve):</p>
+<div id="def-msm-continuous" class="theorem definition">
+<p><span class="theorem-title"><strong>Definition 7 (Nonsaturated Marginal Structural Model for a Continuous Treatment)</strong></span> <span class="math display">\[\operatorname{E}\mathopen{}\left[Y^a\right]\mathclose{} = \beta_0 + \beta_1 a + \beta_2 a^2\]</span></p>
+<p>where <span class="math inline">\(\beta_0 = \operatorname{E}\mathopen{}\left[Y^{a=0}\right]\mathclose{}\)</span> is the mean weight gain with no change in smoking intensity.</p>
+</div>
+</section>
+<section id="effect-of-increasing-intensity-by-20-cigarettesday" class="slide level2">
+<h2>Effect of Increasing Intensity by 20 Cigarettes/Day</h2>
+<div id="exm-msm-20-cigarettes" class="theorem example">
+<p><span class="theorem-title"><strong>Example 6 (Effect of 20 More Cigarettes per Day)</strong></span> Under the model of <a href="#/def-msm-continuous" class="quarto-xref">Definition&nbsp;7</a>, <span class="math display">\[
+\begin{aligned}
+\operatorname{E}\mathopen{}\left[Y^{a=20}\right]\mathclose{} - \operatorname{E}\mathopen{}\left[Y^{a=0}\right]\mathclose{}
+&amp;= (\beta_0 + 20\beta_1 + 20^2 \beta_2) - \beta_0 &amp;&amp; \text{(evaluate the model at } a = 20, 0\text{)}\\
+&amp;= 20\beta_1 + 400\beta_2 &amp;&amp; \text{(cancel } \beta_0\text{; } 20^2 = 400\text{)}
+\end{aligned}
+\]</span></p>
+</div>
+<p>To estimate <span class="math inline">\(\beta_1, \beta_2\)</span>: estimate <span class="math inline">\(SW^A\)</span>, then fit <span class="math inline">\(\operatorname{E}\mathopen{}\left[Y \mid A\right]\mathclose{} = \theta_0 + \theta_1 A + \theta_2 A^2\)</span> to the pseudo-population.</p>
+</section>
+<section id="weights-for-a-continuous-treatment" class="slide level2">
+<h2>Weights for a Continuous Treatment</h2>
+<p>For continuous <span class="math inline">\(A\)</span>, <span class="math inline">\(f(A \mid L)\)</span> is a probability <strong>density</strong> function, which is generally hard to estimate when <span class="math inline">\(L\)</span> is high-dimensional.</p>
+<div id="exm-nhefs-continuous-weights" class="theorem example">
+<p><span class="theorem-title"><strong>Example 7 (NHEFS: Weights for Change in Smoking Intensity)</strong></span> &nbsp;</p>
+<ul>
+<li><span class="math inline">\(f(A \mid L)\)</span>: normal with mean <span class="math inline">\(\mu_L = \operatorname{E}\mathopen{}\left[A \mid L\right]\mathclose{}\)</span> (estimated by linear regression) and constant variance <span class="math inline">\(\sigma^2\)</span> (the residual variance);</li>
+<li><span class="math inline">\(f(A)\)</span> in the numerator: also normal;</li>
+<li>estimated <span class="math inline">\(\hat{SW}^A\)</span> ranged from 0.19 to 5.10, with mean 1.00.</li>
+</ul>
+</div>
+<aside class="notes">
+<div title="IP Weights for Continuous Treatments Are Fragile">
+<div class="callout callout-warning callout-titled callout-style-default">
+<div class="callout-body">
+<div class="callout-title">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<p><strong>IP Weights for Continuous Treatments Are Fragile</strong></p>
+</div>
+<div class="callout-content">
+<p>IP weighting for continuous treatments is often dangerous: the estimates can change a great deal with the choice of model or algorithm for the conditional density <span class="math inline">\(f(A \mid L)\)</span>. The constant-variance assumption seemed reasonable after inspecting a residuals plot, and other choices (e.g., a truncated normal with heteroscedasticity) gave similar estimates. Finding more stable ways to estimate these weights is ongoing research <span class="citation" data-cites="hernan2020causal">(<a href="#/references" role="doc-biblioref" onclick="">Hernán and Robins 2020, chap. 12</a>, pp.&nbsp;170-171)</span>.</p>
+</div>
+</div>
+</div>
+</div>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside>
+</section>
+<section class="slide level2">
+
+<div id="exm-nhefs-continuous" class="theorem example">
+<p><span class="theorem-title"><strong>Example 8 (NHEFS: Change in Smoking Intensity)</strong></span> IP weighted estimates: <span class="math inline">\(\hat \beta_0 = 2.005\)</span>, <span class="math inline">\(\hat \beta_1 = -0.109\)</span>, <span class="math inline">\(\hat \beta_2 = 0.003\)</span>.</p>
+<table class="caption-top">
+<thead>
+<tr class="header">
+<th>Counterfactual mean</th>
+<th>Estimate (95% CI)</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><span class="math inline">\(\operatorname{E}\mathopen{}\left[Y^{a=0}\right]\mathclose{}\)</span> (no change in intensity)</td>
+<td>2.0 kg (1.4, 2.6)</td>
+</tr>
+<tr class="even">
+<td><span class="math inline">\(\operatorname{E}\mathopen{}\left[Y^{a=20}\right]\mathclose{}\)</span> (+20 cigarettes/day)</td>
+<td>0.9 kg (<span class="math inline">\(-1.7\)</span>, 3.5)</td>
+</tr>
+<tr class="odd">
+<td><span class="math inline">\(\operatorname{E}\mathopen{}\left[Y^{a=20}\right]\mathclose{} - \operatorname{E}\mathopen{}\left[Y^{a=0}\right]\mathclose{}\)</span></td>
+<td><span class="math inline">\(0.9 - 2.0 = -1.1\)</span> kg</td>
+</tr>
+</tbody>
+</table>
+</div>
+<aside class="notes">
+<div title="Rounded Coefficients">
+<div class="callout callout-warning callout-titled callout-style-default">
+<div class="callout-body">
+<div class="callout-title">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<p><strong>Rounded Coefficients</strong></p>
+</div>
+<div class="callout-content">
+<p>The book reports these quantities from the unrounded coefficients. Plugging in the <strong>rounded</strong> coefficients gives a slightly different value: <span class="math display">\[
+\begin{aligned}
+\hat \beta_0 + 20\hat \beta_1 + 400\hat \beta_2
+&amp;= 2.005 + 20(-0.109) + 400(0.003)\\
+&amp;= 2.005 - 2.180 + 1.200\\
+&amp;= 1.025,
+\end{aligned}
+\]</span> because <span class="math inline">\(\hat \beta_2 = 0.003\)</span> is rounded and is multiplied by 400. Use the reported 0.9 kg, not this back-of-the-envelope value.</p>
+</div>
+</div>
+</div>
+</div>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside>
+</section>
+<section id="dichotomous-outcome-marginal-structural-logistic-model" class="slide level2">
+<h2>Dichotomous Outcome: Marginal Structural Logistic Model</h2>
+<div id="def-msm-logistic" class="theorem definition">
+<p><span class="theorem-title"><strong>Definition 8 (Marginal Structural Logistic Model)</strong></span> For a dichotomous outcome <span class="math inline">\(D\)</span> (1: yes, 0: no), a <strong>marginal structural logistic model</strong> is a model for the counterfactual risk on the logit scale, such as <span class="math display">\[\operatorname{logit}\Pr[D^a = 1] = \alpha_0 + \alpha_1 a.\]</span></p>
+</div>
+<p>For a dichotomous treatment, <span class="math inline">\(\operatorname{exp}\mathopen{}\left\{\alpha_1\right\}\mathclose{}\)</span> in <a href="#/def-msm-logistic" class="quarto-xref">Definition&nbsp;8</a> is the causal odds ratio comparing <span class="math inline">\(a = 1\)</span> with <span class="math inline">\(a = 0\)</span>. <span class="math inline">\(\operatorname{exp}\mathopen{}\left\{\alpha_1\right\}\mathclose{}\)</span> is estimated by <span class="math inline">\(\operatorname{exp}\mathopen{}\left\{\hat\theta_1\right\}\mathclose{}\)</span> from fitting <span class="math inline">\(\operatorname{logit}\Pr[D = 1 \mid A] = \theta_0 + \theta_1 A\)</span> to the IP weighted pseudo-population (<a href="#/def-pseudo-population" class="quarto-xref">Definition&nbsp;2</a>).</p>
+<div id="exm-nhefs-death" class="theorem example">
+<p><span class="theorem-title"><strong>Example 9 (NHEFS: Quitting Smoking and Death by 1992)</strong></span> With <span class="math inline">\(A\)</span> = quitting smoking and <span class="math inline">\(D\)</span> = death by 1992, the IP weighted estimate of the causal odds ratio was <span class="math inline">\(\operatorname{exp}\mathopen{}\left\{\hat\theta_1\right\}\mathclose{} = 1.0\)</span> (95% CI: 0.8, 1.4).</p>
+</div>
+<aside class="notes">
+<p>This model is saturated for a dichotomous treatment; for a continuous treatment one would specify a nonsaturated logistic model <span class="citation" data-cites="hernan2020causal">(<a href="#/references" role="doc-biblioref" onclick="">Hernán and Robins 2020, chap. 12</a>, p.&nbsp;171)</span>.</p>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside>
+</section></section>
+<section>
+<section id="effect-modification-and-marginal-structural-models-pp.-171-172" class="title-slide slide level1 center" data-number="5">
+<h1><span class="header-section-number">5</span> 12.5 Effect Modification and Marginal Structural Models (pp.&nbsp;171-172)</h1>
+
+</section>
+<section class="slide level2">
+
+<p>Marginal structural models for the population average causal effect include no covariates. To assess <strong>effect modification</strong> by a covariate <span class="math inline">\(V\)</span> (which need not be a confounder), add it to the model.</p>
+<div id="def-msm-effect-modification" class="theorem definition">
+<p><span class="theorem-title"><strong>Definition 9 (Marginal Structural Model with an Effect Modifier)</strong></span> <span class="math display">\[\operatorname{E}\mathopen{}\left[Y^a \mid V\right]\mathclose{} = \beta_0 + \beta_1 a + \beta_2 V a + \beta_3 V\]</span></p>
+<p>Additive effect modification by <span class="math inline">\(V\)</span> is present if <span class="math inline">\(\beta_2 \neq 0\)</span>. The causal effect within level <span class="math inline">\(V = v\)</span> is <span class="math display">\[
+\begin{aligned}
+\operatorname{E}\mathopen{}\left[Y^{a=1} \mid V = v\right]\mathclose{} - \operatorname{E}\mathopen{}\left[Y^{a=0} \mid V = v\right]\mathclose{}
+&amp;= (\beta_0 + \beta_1 \cdot 1 + \beta_2 v \cdot 1 + \beta_3 v) - (\beta_0 + \beta_1 \cdot 0 + \beta_2 v \cdot 0 + \beta_3 v)
+&amp;&amp; \text{(model evaluated at } a = 1 \text{ and } a = 0 \text{, with } V = v\text{)}\\
+&amp;= (\beta_0 + \beta_1 + \beta_2 v + \beta_3 v) - (\beta_0 + \beta_3 v)
+&amp;&amp; \text{(multiply out the factors 1 and 0)}\\
+&amp;= \beta_1 + \beta_2 v
+&amp;&amp; \text{(cancel } \beta_0 \text{ and } \beta_3 v\text{)}.
+\end{aligned}
+\]</span></p>
+</div>
+<aside class="notes">
+<p>Strictly, this is no longer a marginal model because it conditions on <span class="math inline">\(V\)</span>, but the name “marginal structural model” is still used <span class="citation" data-cites="hernan2020causal">(<a href="#/references" role="doc-biblioref" onclick="">Hernán and Robins 2020, chap. 12</a>, p.&nbsp;171)</span>.</p>
+<p>The parameter <span class="math inline">\(\beta_3\)</span> does not generally have a causal interpretation as the effect of <span class="math inline">\(V\)</span>: exchangeability, positivity, and consistency are assumed for treatment <span class="math inline">\(A\)</span>, not for <span class="math inline">\(V\)</span>.</p>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside>
+</section>
+<section id="fitting-the-model" class="slide level2">
+<h2>Fitting the Model</h2>
+<div id="alg-fit-msm-effect-modifier" class="theorem algorithm">
+<p><span class="theorem-title"><strong>Algorithm 4 (Fitting a Marginal Structural Model with an Effect Modifier)</strong></span> &nbsp;</p>
+<ul>
+<li>Fit <span class="math inline">\(\operatorname{E}\mathopen{}\left[Y \mid A, V\right]\mathclose{} = \theta_0 + \theta_1 A + \theta_2 V A + \theta_3 V\)</span> by weighted least squares with weights <span class="math inline">\(W^A\)</span> or <span class="math inline">\(SW^A\)</span>.</li>
+<li>In most settings <span class="math inline">\(L\)</span> should include <span class="math inline">\(V\)</span>; even when <span class="math inline">\(V\)</span> is not needed for exchangeability, including it generally improves efficiency.</li>
+<li>Because the model is within levels of <span class="math inline">\(V\)</span>, the numerator can be <span class="math inline">\(f[A \mid V]\)</span>.</li>
+</ul>
+</div>
+<div id="def-stabilized-weights-v" class="theorem definition">
+<p><span class="theorem-title"><strong>Definition 10 (Stabilized IP Weights Given <span class="math inline">\(V\)</span>)</strong></span> <span class="math display">\[SW^A(V) \stackrel{\text{def}}{=}\frac{f[A \mid V]}{f[A \mid L]}\]</span></p>
+<p>The stabilized weights <span class="math inline">\(SW^A(V)\)</span> are estimated like <span class="math inline">\(SW^A\)</span>, but with <span class="math inline">\(V\)</span> added to the numerator’s logistic model.</p>
+</div>
+<p>Either <span class="math inline">\(SW^A\)</span> or <span class="math inline">\(SW^A(V)\)</span> (<a href="#/def-stabilized-weights-v" class="quarto-xref">Definition&nbsp;10</a>) can be used to fit the model.</p>
+<aside class="notes">
+<p><span class="math inline">\(SW^A(V)\)</span> generally gives narrower confidence intervals than <span class="math inline">\(SW^A\)</span>; some intuition is that the variance of <span class="math inline">\(SW^A(V)\)</span> is smaller than that of <span class="math inline">\(SW^A\)</span> <span class="citation" data-cites="hernan2020causal">(<a href="#/references" role="doc-biblioref" onclick="">Hernán and Robins 2020, chap. 12</a>, pp.&nbsp;171-172)</span>.</p>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside>
+</section>
+<section id="example-effect-modification-by-sex" class="slide level2">
+<h2>Example: Effect Modification by Sex</h2>
+<div id="exm-nhefs-sex" class="theorem example">
+<p><span class="theorem-title"><strong>Example 10 (NHEFS: Does the Effect of Quitting Vary by Sex?)</strong></span> Let <span class="math inline">\(V\)</span> = sex (0: male, 1: female). The 95% confidence interval for <span class="math inline">\(\hat\theta_2\)</span> (the product-term coefficient) was <span class="math inline">\((-2.2, 1.9)\)</span>: no strong evidence of additive effect modification by sex.</p>
+</div>
+</section>
+<section id="which-covariates-to-put-in-the-model" class="slide level2">
+<h2>Which Covariates to Put in the Model?</h2>
+<div id="rem-which-covariates" class="proof remark">
+<p><span class="proof-title"><em>Remark 5</em> (Choosing the Covariates of a Marginal Structural Model). </span></p>
+<ul>
+<li>The subset <span class="math inline">\(V\)</span> of <span class="math inline">\(L\)</span> included in the marginal structural model should reflect only <strong>substantive interest</strong>: include <span class="math inline">\(V\)</span> if you believe it may modify the effect and you care more about effects within levels of <span class="math inline">\(V\)</span> than in the whole population.</li>
+<li>If all of <span class="math inline">\(L\)</span> is included, IP weighting is unnecessary.</li>
+</ul>
+</div>
+<div id="def-faux-msm" class="theorem definition">
+<p><span class="theorem-title"><strong>Definition 11 (Faux Marginal Structural Model)</strong></span> A <strong>faux marginal structural model</strong> is a marginal structural model that includes all of <span class="math inline">\(L\)</span> as covariates. The book coins the name half-jokingly.</p>
+</div>
+<p>For a faux marginal structural model (<a href="#/def-faux-msm" class="quarto-xref">Definition&nbsp;11</a>), <span class="math inline">\(SW^A(L) = f[A \mid L] / f[A \mid L] = 1\)</span>, so no weighting is done: the model is fit as the unweighted outcome regression that fully adjusts for <span class="math inline">\(L\)</span> (Chapter 15).</p>
+<aside class="notes">
+<div title="Confounding and Effect Modification Use Different Tools">
+<div class="callout callout-tip callout-titled callout-style-default">
+<div class="callout-body">
+<div class="callout-title">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<p><strong>Confounding and Effect Modification Use Different Tools</strong></p>
+</div>
+<div class="callout-content">
+<p><strong>Teaching point</strong>: confounding and effect modification are logically distinct, but students often conflate them because stratification (Chapter 4) and regression (Chapter 15) are used for both. With marginal structural models the two tasks use distinct tools: IP weighting for confounder adjustment, and treatment-covariate product terms in the model for effect modification <span class="citation" data-cites="hernan2020causal">(<a href="#/references" role="doc-biblioref" onclick="">Hernán and Robins 2020, chap. 12</a>, p.&nbsp;172)</span>.</p>
+<p><strong>Interaction versus effect modification</strong>: to study the interaction between two treatments <span class="math inline">\(A\)</span> and <span class="math inline">\(B\)</span> (Chapter 5), include parameters for both in the marginal structural model, use the joint probability of both treatments in the denominator of the IP weights, and assume exchangeability, positivity, and consistency for both <span class="math inline">\(A\)</span> and <span class="math inline">\(B\)</span>.</p>
+</div>
+</div>
+</div>
+</div>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside>
+</section></section>
+<section>
+<section id="censoring-and-missing-data-pp.-172-174" class="title-slide slide level1 center" data-number="6">
+<h1><span class="header-section-number">6</span> 12.6 Censoring and Missing Data (pp.&nbsp;172-174)</h1>
+
+</section>
+<section class="slide level2">
+
+<p>The analysis so far used the 1566 individuals with a 1982 weight measurement. Another 63 eligible individuals were excluded because their 1982 weight was unknown.</p>
+<div id="def-censoring-indicator" class="theorem definition">
+<p><span class="theorem-title"><strong>Definition 12 (Censoring Indicator)</strong></span> The <strong>censoring indicator</strong> <span class="math inline">\(C\)</span> equals 1 if an individual’s outcome is unmeasured (censored) and 0 if it is measured.</p>
+</div>
+<p>The analyses of Sections 12.2-12.4 actually fit <span class="math display">\[\operatorname{E}\mathopen{}\left[Y \mid A, C = 0\right]\mathclose{} = \theta_0 + \theta_1 A\]</span> among individuals with <span class="math inline">\(C = 0\)</span>.</p>
+</section>
+<section id="can-censoring-cause-selection-bias-here" class="slide level2">
+<h2>Can Censoring Cause Selection Bias Here?</h2>
+<div id="exm-nhefs-censoring-structure" class="theorem example">
+<p><span class="theorem-title"><strong>Example 11 (NHEFS: Censoring as a Possible Source of Selection Bias)</strong></span> Restricting to uncensored individuals is expected to induce bias, even under the null, when <span class="math inline">\(C\)</span> is a collider on a pathway between <span class="math inline">\(A\)</span> and <span class="math inline">\(Y\)</span>, or a descendant of one (Figures 8.3-8.6). The NHEFS data are consistent with that structure:</p>
+<ul>
+<li>treatment predicts censoring: 5.8% of quitters versus 3.2% of non-quitters were censored;</li>
+<li>a predictor of <span class="math inline">\(Y\)</span> predicts censoring: mean baseline weight was 76.6 kg in the censored versus 70.8 kg in the uncensored.</li>
+</ul>
+</div>
+</section>
+<section id="the-target-a-joint-effect" class="slide level2">
+<h2>The Target: A Joint Effect</h2>
+<div id="def-effect-without-censoring" class="theorem definition">
+<p><span class="theorem-title"><strong>Definition 13 (Causal Effect in the Absence of Censoring)</strong></span> The average causal effect of <span class="math inline">\(A\)</span> had nobody been censored is <span class="math display">\[\operatorname{E}\mathopen{}\left[Y^{a=1, c=0}\right]\mathclose{} - \operatorname{E}\mathopen{}\left[Y^{a=0, c=0}\right]\mathclose{},\]</span> a joint effect of <span class="math inline">\(A\)</span> and <span class="math inline">\(C\)</span> (Chapter 8).</p>
+</div>
+<p>The superscript <span class="math inline">\(c = 0\)</span> makes explicit what many investigators mean by “the causal effect of <span class="math inline">\(A\)</span>” even when they omit it.</p>
+</section>
+<section id="ip-weights-for-treatment-and-censoring" class="slide level2">
+<h2>IP Weights for Treatment and Censoring</h2>
+<div id="def-censoring-weights" class="theorem definition">
+<p><span class="theorem-title"><strong>Definition 14 (IP Weights for Censoring)</strong></span> <span class="math display">\[
+W^C \stackrel{\text{def}}{=}
+\begin{cases}
+\dfrac{1}{\Pr[C = 0 \mid L, A]} &amp; \text{for uncensored individuals} \\
+0 &amp; \text{for censored individuals}
+\end{cases}
+\]</span></p>
+<p><span class="math display">\[W^{A,C} \stackrel{\text{def}}{=}W^A \times W^C = \frac{1}{f(A, C = 0 \mid L)}\]</span></p>
+<p>using the factorization <span class="math inline">\(f(A, C = 0 \mid L) = f(A \mid L) \times \Pr[C = 0 \mid L, A]\)</span>.</p>
+</div>
+<div id="def-identifiability-a-c" class="theorem definition">
+<p><span class="theorem-title"><strong>Definition 15 (Identifiability Conditions for the Joint Treatment <span class="math inline">\((A, C)\)</span>)</strong></span> For each treatment level <span class="math inline">\(a\)</span> compared in the marginal structural model, the <strong>identifiability conditions</strong> for the joint treatment <span class="math inline">\((A, C)\)</span> are:</p>
+<ul>
+<li>exchangeability: <span class="math inline">\(Y^{a, c=0} \perp\!\!\!\perp(A, C) \mid L\)</span>;</li>
+<li>positivity: <span class="math inline">\(\Pr[A = a, C = 0 \mid L = l] &gt; 0\)</span> for every <span class="math inline">\(l\)</span> with <span class="math inline">\(\Pr[L = l] &gt; 0\)</span>;</li>
+<li>consistency: <span class="math inline">\(Y = Y^{a, c=0}\)</span> for every individual with <span class="math inline">\(A = a\)</span> and <span class="math inline">\(C = 0\)</span>.</li>
+</ul>
+</div>
+<aside class="notes">
+<p>If some components of <span class="math inline">\(L\)</span> are affected by treatment <span class="math inline">\(A\)</span> (as in Figure 8.4), the conditional independence <span class="math inline">\(Y^{a,c=0} \perp\!\!\!\perp(A, C) \mid L\)</span> will not generally hold; Part III presents alternative exchangeability conditions under which IP weighting still works <span class="citation" data-cites="hernan2020causal">(<a href="#/references" role="doc-biblioref" onclick="">Hernán and Robins 2020, chap. 12</a>, p.&nbsp;173)</span>.</p>
+<p>Some variables in <span class="math inline">\(L\)</span> may have zero coefficients in the model for <span class="math inline">\(f(A \mid L)\)</span> but not in the model for <span class="math inline">\(\Pr[C = 0 \mid L, A]\)</span>, or vice versa. Even so, in large samples, efficiency is always gained by including in both models every variable in <span class="math inline">\(L\)</span> that independently predicts the outcome.</p>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside>
+</section>
+<section id="nonstabilized-versus-stabilized-censoring-weights" class="slide level2">
+<h2>Nonstabilized versus Stabilized Censoring Weights</h2>
+<div id="def-stabilized-censoring-weights" class="theorem definition">
+<p><span class="theorem-title"><strong>Definition 16 (Stabilized IP Weights for Censoring)</strong></span> <span class="math display">\[
+SW^C \stackrel{\text{def}}{=}
+\begin{cases}
+\dfrac{\Pr[C = 0 \mid A]}{\Pr[C = 0 \mid L, A]} &amp; \text{for uncensored individuals} \\
+0 &amp; \text{for censored individuals}
+\end{cases}
+\]</span></p>
+<p><span class="math display">\[SW^{A,C} \stackrel{\text{def}}{=}SW^A \times SW^C\]</span></p>
+</div>
+<table class="caption-top">
+<colgroup>
+<col style="width: 33%">
+<col style="width: 33%">
+<col style="width: 33%">
+</colgroup>
+<thead>
+<tr class="header">
+<th></th>
+<th>Nonstabilized <span class="math inline">\(W^C = 1/\Pr[C = 0 \mid L, A]\)</span></th>
+<th>Stabilized <span class="math inline">\(SW^C = \Pr[C = 0 \mid A] / \Pr[C = 0 \mid L, A]\)</span></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Pseudo-population size</td>
+<td>original population <strong>before</strong> censoring (about <span class="math inline">\(1566 + 63 = 1629\)</span>)</td>
+<td>original population <strong>after</strong> censoring (about 1566)</td>
+</tr>
+<tr class="even">
+<td>Arrows removed</td>
+<td>from both <span class="math inline">\(L\)</span> and <span class="math inline">\(A\)</span> into <span class="math inline">\(C\)</span></td>
+<td>from <span class="math inline">\(L\)</span> into <span class="math inline">\(C\)</span></td>
+</tr>
+<tr class="odd">
+<td>Result</td>
+<td>no selection, hence no selection bias</td>
+<td>selection at random with respect to <span class="math inline">\(L\)</span>: selection but no selection bias</td>
+</tr>
+</tbody>
+</table>
+<p>With either, fit the weighted model <span class="math inline">\(\operatorname{E}\mathopen{}\left[Y \mid A, C = 0\right]\mathclose{} = \theta_0 + \theta_1 A\)</span> to estimate the marginal structural model <span class="math inline">\(\operatorname{E}\mathopen{}\left[Y^{a, c=0}\right]\mathclose{} = \beta_0 + \beta_1 a\)</span>; the stabilized version uses <span class="math inline">\(SW^{A,C}\)</span> (<a href="#/def-stabilized-censoring-weights" class="quarto-xref">Definition&nbsp;16</a>).</p>
+<aside class="notes">
+<p>The estimated <span class="math inline">\(SW^C\)</span> have mean 1 when the model for <span class="math inline">\(\Pr[C = 0 \mid A]\)</span> is correctly specified <span class="citation" data-cites="hernan2020causal">(<a href="#/references" role="doc-biblioref" onclick="">Hernán and Robins 2020, chap. 12</a>, p.&nbsp;173)</span>.</p>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside>
+</section>
+<section class="slide level2">
+
+<div id="exm-nhefs-censoring" class="theorem example">
+<p><span class="theorem-title"><strong>Example 12 (NHEFS: Adjusting for Censoring)</strong></span> &nbsp;</p>
+<ul>
+<li>Fit a logistic model for <span class="math inline">\(\Pr[C = 0 \mid L, A]\)</span> to all 1629 individuals, with the same covariates as the treatment model; obtain <span class="math inline">\(\hat{SW}^C\)</span> for the 1566 uncensored individuals.</li>
+<li><span class="math inline">\(\hat{SW}^{A,C} = \hat{SW}^A \times \hat{SW}^C\)</span> ranged from 0.35 to 4.09, with mean 1.00.</li>
+<li><span class="math inline">\(\hat\theta_1 = 3.5\)</span> kg (95% CI: 2.5, 4.5).</li>
+</ul>
+<p>This is almost the same as the estimate with <span class="math inline">\(SW^A\)</span> alone (3.4 kg), so either censoring introduces no selection bias here, or the measured covariates are not enough to remove it.</p>
+</div>
+<aside class="notes">
+<p>Chapter 13 describes the alternative to IP weighting for adjusting for confounding and selection bias: standardization <span class="citation" data-cites="hernan2020causal">(<a href="#/references" role="doc-biblioref" onclick="">Hernán and Robins 2020, chap. 12</a>, p.&nbsp;174)</span>.</p>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside>
+</section>
+<section class="slide level2">
+
+<aside class="notes">
+<div title="Technical Point 12.2: More on Stabilized Weights">
+<div class="callout callout-note callout-titled callout-style-default">
+<div class="callout-body">
+<div class="callout-title">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<p><strong>Technical Point 12.2: More on Stabilized Weights</strong></p>
+</div>
+<div class="callout-content">
+<p>The stabilized weights <span class="math inline">\(f[A]/f[A \mid L]\)</span> belong to a larger class <span class="math inline">\(g[A]/f[A \mid L]\)</span>, where <span class="math inline">\(g[A]\)</span> is any positive function of <span class="math inline">\(A\)</span> that is not a function of <span class="math inline">\(L\)</span>. With unsaturated marginal structural models, such weights are preferable to <span class="math inline">\(1/f[A \mid L]\)</span> because some <span class="math inline">\(g[A]\)</span> (often <span class="math inline">\(f[A]\)</span>) yield more efficient estimators <span class="citation" data-cites="hernan2020causal">(<a href="#/references" role="doc-biblioref" onclick="">Hernán and Robins 2020</a>, Technical Point 12.2, p.&nbsp;174)</span>.</p>
+<p>The IP weighted mean <span class="math inline">\(\operatorname{E}\mathopen{}\left[g(A) \mathbb{1}\mathopen{}\left(A = a\right)\mathclose{} Y / f(A \mid L)\right]\mathclose{}\)</span> no longer equals <span class="math inline">\(\operatorname{E}\mathopen{}\left[Y^a\right]\mathclose{}\)</span>, but the <strong>Hajek</strong> version does. Under conditional exchangeability, positivity, and consistency: <span class="math display">\[
+\begin{aligned}
+\operatorname{E}\mathopen{}\left[\frac{g(A) \mathbb{1}\mathopen{}\left(A = a\right)\mathclose{} Y}{f(A \mid L)}\right]\mathclose{}
+&amp;= g(a) \, \operatorname{E}\mathopen{}\left[\frac{\mathbb{1}\mathopen{}\left(A = a\right)\mathclose{} Y}{f(A \mid L)}\right]\mathclose{} &amp;&amp; \text{(} \mathbb{1}\mathopen{}\left(A = a\right)\mathclose{} \text{ forces } g(A) = g(a)\text{)}\\
+&amp;= g(a) \, \operatorname{E}\mathopen{}\left[Y^a\right]\mathclose{} &amp;&amp; \text{(Technical Point 3.1)}\\
+\operatorname{E}\mathopen{}\left[\frac{g(A) \mathbb{1}\mathopen{}\left(A = a\right)\mathclose{}}{f(A \mid L)}\right]\mathclose{}
+&amp;= g(a) \, \operatorname{E}\mathopen{}\left[\frac{\mathbb{1}\mathopen{}\left(A = a\right)\mathclose{}}{f(A \mid L)}\right]\mathclose{} &amp;&amp; \text{(same reason)}\\
+&amp;= g(a) &amp;&amp; \text{(Technical Point 12.1)}
+\end{aligned}
+\]</span> so the ratio of the two equals <span class="math inline">\(g(a)\operatorname{E}\mathopen{}\left[Y^a\right]\mathclose{}/g(a) = \operatorname{E}\mathopen{}\left[Y^a\right]\mathclose{}\)</span> (since <span class="math inline">\(g(a) &gt; 0\)</span>).</p>
+<p>The Hajek mean is the solution <span class="math inline">\(u\)</span> of <span class="math inline">\(\operatorname{E}\mathopen{}\left[\frac{g[A] \mathbb{1}\mathopen{}\left(A = a\right)\mathclose{}}{f[A \mid L]} (Y - u)\right]\mathclose{} = 0\)</span>, since solving for <span class="math inline">\(u\)</span> gives the ratio of the two expectations. (The book prints this equation without the indicator <span class="math inline">\(\mathbb{1}\mathopen{}\left(A = a\right)\mathclose{}\)</span> <span class="citation" data-cites="hernan2020causal">(<a href="#/references" role="doc-biblioref" onclick="">Hernán and Robins 2020</a>, Technical Point 12.2, p.&nbsp;174)</span>; without it, the solution would average <span class="math inline">\(Y\)</span> over all treatment levels rather than estimate <span class="math inline">\(\operatorname{E}\mathopen{}\left[Y^a\right]\mathclose{}\)</span>.) Similarly, for <span class="math inline">\(\operatorname{E}\mathopen{}\left[Y^a\right]\mathclose{} = \beta_0 + \beta_1 a\)</span>, the weighted least squares estimators with weights <span class="math inline">\(g[A]/f[A \mid L]\)</span> solve <span class="math display">\[\mathop{\hat{\operatorname{E}}}\nolimits\mathopen{}\left[\frac{g[A]}{f[A \mid L]} \mathopen{}\left[Y - (\beta_0 + \beta_1 A)\right]\mathclose{} \begin{pmatrix} 1 \\ A \end{pmatrix}\right]\mathclose{} = 0,\]</span> and <span class="math inline">\(\hat \beta_0\)</span> and <span class="math inline">\(\hat \beta_0 + \hat \beta_1\)</span> are exactly the Hajek estimators of <span class="math inline">\(\operatorname{E}\mathopen{}\left[Y^{a=0}\right]\mathclose{}\)</span> and <span class="math inline">\(\operatorname{E}\mathopen{}\left[Y^{a=1}\right]\mathclose{}\)</span>. For a treatment <span class="math inline">\(A\)</span> with finitely many levels, under conditional exchangeability, positivity, and consistency, in the pseudo-population created by <span class="math inline">\(W = g[A]/f[A \mid L]\)</span> (<a href="#/def-pseudo-population" class="quarto-xref">Definition&nbsp;2</a>), the mean of <span class="math inline">\(Y\)</span> given <span class="math inline">\(A = a\)</span> still equals <span class="math inline">\(\operatorname{E}\mathopen{}\left[Y^a\right]\mathclose{}\)</span>.</p>
+</div>
+</div>
+</div>
+</div>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside>
+</section></section>
+<section>
+<section id="summary" class="title-slide slide level1 center" data-number="7">
+<h1><span class="header-section-number">7</span> Summary</h1>
+
+</section>
+<section class="slide level2 smaller scrollable" id="references">
+
+<p><strong>Key concepts introduced</strong>:</p>
+<ol type="1">
+<li><strong>IP weighting via modeling</strong>: estimate <span class="math inline">\(\Pr[A = 1 \mid L]\)</span> with a parametric model when <span class="math inline">\(L\)</span> is high-dimensional</li>
+<li><strong>Stabilized weights</strong> <span class="math inline">\(f(A)/f(A \mid L)\)</span>: same estimate as nonstabilized weights for a saturated model, generally narrower confidence intervals for nonsaturated models</li>
+<li><strong>Marginal structural models</strong>: models for the mean counterfactual outcome, fit by IP weighted regression</li>
+<li><strong>Effect modification</strong>: add <span class="math inline">\(V\)</span> (and <span class="math inline">\(V \times a\)</span> terms) to the marginal structural model; use <span class="math inline">\(SW^A(V)\)</span></li>
+<li><strong>Censoring weights</strong>: <span class="math inline">\(W^{A,C} = W^A \times W^C\)</span> target the joint effect <span class="math inline">\(\operatorname{E}\mathopen{}\left[Y^{a, c=0}\right]\mathclose{}\)</span></li>
+</ol>
+<p><strong>NHEFS results</strong>: unadjusted 2.5 kg; IP weighted 3.4 kg (95% CI: 2.4, 4.5); also adjusting for censoring 3.5 kg (95% CI: 2.5, 4.5).</p>
+<div title="Cautions">
+<div class="callout callout-warning callout-titled callout-style-default">
+<div class="callout-body">
+<div class="callout-title">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<p><strong>Cautions</strong></p>
+</div>
+<div class="callout-content">
+<ul>
+<li>Requires a correctly specified model for treatment (and censoring)</li>
+<li>Positivity violations; parametric models assume random nonpositivity</li>
+<li>Weights for continuous treatments can be very sensitive to the density model</li>
+<li>Robust-variance confidence intervals are conservative</li>
+</ul>
+</div>
+</div>
+</div>
+</div>
+<aside class="notes">
+<p><strong>Looking ahead</strong>: Chapter 13 estimates the same effect by standardization (the parametric g-formula), and Part III extends IP weighting and marginal structural models to time-varying treatments.</p>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside>
+
+
+<script>
+(function () {
+  "use strict";
+
+  /**
+   * CSS selector matching all Quarto theorem and proof div environments.
+   *
+   * Quarto adds the `.theorem` class to all theorem-type divs
+   * (theorem, lemma, corollary, proposition, conjecture, definition,
+   * example, exercise, algorithm), so `.theorem[id]` covers all of them.
+   * Proof-type environments (.proof, .remark, .solution) are listed
+   * separately because they do not carry the `.theorem` class.
+   */
+  var THEOREM_SELECTOR = [
+    ".theorem[id]",
+    ".proof[id]",
+    ".remark[id]",
+    ".solution[id]",
+  ].join(", ");
+
+  function getQuartoHeadingAnchorIcon() {
+    var afterBodyScript = document.getElementById("quarto-html-after-body");
+    if (!afterBodyScript) {
+      return null;
+    }
+
+    var match = afterBodyScript.textContent.match(/const icon = ["']([^"']+)["']/);
+    return match ? match[1] : null;
+  }
+
+  // Quarto chain-link glyph from Bootstrap Icons.
+  var chainLinkIconFallback = "\ue9cb";
+  var headingAnchorIcon = getQuartoHeadingAnchorIcon();
+  var defaultAnchorIconFallback =
+    headingAnchorIcon && headingAnchorIcon !== "#" ? headingAnchorIcon : chainLinkIconFallback;
+
+  function getDefaultAnchorTemplate() {
+    var defaultAnchor =
+      document.querySelector(".anchored > a.anchorjs-link") ||
+      document.querySelector("a.anchorjs-link[data-anchorjs-icon]");
+    if (!defaultAnchor) {
+      return null;
+    }
+
+    return {
+      icon: defaultAnchor.getAttribute("data-anchorjs-icon") || defaultAnchor.textContent.trim(),
+      hasDataIcon: defaultAnchor.hasAttribute("data-anchorjs-icon"),
+      style: defaultAnchor.getAttribute("style")
+    };
+  }
+
+  function normalizeAnchorIcon(icon) {
+    if (!icon || icon === "#") {
+      return defaultAnchorIconFallback;
+    }
+
+    return icon;
+  }
+
+  function createChainLinkSvgIcon() {
+    var svgNs = "http://www.w3.org/2000/svg";
+    var svg = document.createElementNS(svgNs, "svg");
+    svg.setAttribute("viewBox", "0 0 16 16");
+    svg.setAttribute("fill", "currentColor");
+    svg.setAttribute("aria-hidden", "true");
+    svg.setAttribute("focusable", "false");
+    svg.setAttribute("class", "div-anchor-icon");
+
+    // Bootstrap Icons chain-link icon (bi-link-45deg), paths for the two
+    // chain links and the connecting segment.
+    [
+      "M6.354 5.5H4a3 3 0 0 0 0 6h3a3 3 0 0 0 2.83-2H11a4 4 0 0 1-4 3H4a4 4 0 0 1 0-8h2.354z",
+      "M9.646 10.5H12a3 3 0 1 0 0-6H9a3 3 0 0 0-2.83 2H5a4 4 0 0 1 4-3h3a4 4 0 0 1 0 8H9.646z",
+      "M5.5 8a.5.5 0 0 1 .5-.5h4a.5.5 0 0 1 0 1H6a.5.5 0 0 1-.5-.5"
+    ].forEach(function (pathData) {
+      var path = document.createElementNS(svgNs, "path");
+      path.setAttribute("d", pathData);
+      svg.appendChild(path);
+    });
+
+    return svg;
+  }
+
+  function alignDivAnchorWithDefault(anchor, template) {
+    if (!anchor) {
+      return;
+    }
+
+    anchor.classList.remove("external");
+    anchor.classList.add("no-external");
+
+    var normalizedIcon = normalizeAnchorIcon(template && template.icon);
+    if (normalizedIcon === chainLinkIconFallback) {
+      anchor.removeAttribute("data-anchorjs-icon");
+      anchor.textContent = "";
+      anchor.appendChild(createChainLinkSvgIcon());
+    } else if (template && template.hasDataIcon) {
+      anchor.setAttribute("data-anchorjs-icon", normalizedIcon);
+      anchor.textContent = normalizedIcon;
+    } else {
+      anchor.removeAttribute("data-anchorjs-icon");
+      anchor.textContent = normalizedIcon;
+    }
+
+    if (template && template.style) {
+      anchor.setAttribute("style", template.style);
+    } else {
+      anchor.removeAttribute("style");
+    }
+  }
+
+  function alignDivAnchorsWithDefault() {
+    var template = getDefaultAnchorTemplate();
+    document.querySelectorAll("a.div-anchor").forEach(function (anchor) {
+      alignDivAnchorWithDefault(anchor, template);
+    });
+  }
+
+  function ensureDivAnchorStyles() {
+    if (document.getElementById("div-anchor-styles")) {
+      return;
+    }
+
+    var style = document.createElement("style");
+    style.id = "div-anchor-styles";
+    style.textContent = [
+      ".div-anchor {",
+      "  opacity: 0;",
+      "  font-size: 0.875em;",
+      "  font-weight: 400;",
+      "  margin-left: 0.375em;",
+      "  text-decoration: none;",
+      "  color: inherit;",
+      "  vertical-align: middle;",
+      "  transition: opacity 0.2s ease;",
+      "}",
+      ".div-anchor:hover,",
+      ".div-anchor:focus {",
+      "  opacity: 1;",
+      "  text-decoration: none;",
+      "}",
+      ".div-anchor-icon {",
+      "  width: 0.875em;",
+      "  height: 0.875em;",
+      "  vertical-align: -0.125em;",
+      "}",
+      ":is(.theorem, .proof, .remark, .solution):hover .div-anchor,",
+      ":is(.theorem, .proof, .remark, .solution):focus-within .div-anchor {",
+      "  opacity: 1;",
+      "}"
+    ].join("\n");
+    document.head.appendChild(style);
+  }
+
+  /**
+   * Add anchor links to all theorem/proof divs with ids on the page.
+   */
+  function addDivAnchors() {
+    ensureDivAnchorStyles();
+
+    var divs = document.querySelectorAll(THEOREM_SELECTOR);
+    divs.forEach(function (div) {
+      var id = div.id;
+      if (!id) {
+        return;
+      }
+
+      // Skip if already processed.
+      if (div.querySelector(".div-anchor")) {
+        return;
+      }
+
+      var anchor = document.createElement("a");
+      anchor.className = "div-anchor anchorjs-link";
+      anchor.href = "#" + id;
+      anchor.setAttribute("aria-label", "Permalink to this block");
+      anchor.classList.add("no-external");
+
+      // Find the theorem-title or proof-title span
+      var titleSpan = div.querySelector(".theorem-title, .proof-title");
+
+      if (titleSpan) {
+        // Insert anchor immediately after the title span
+        titleSpan.insertAdjacentElement("afterend", anchor);
+      } else {
+        // Fallback: prepend to the first paragraph
+        var firstPara = div.querySelector("p");
+        if (firstPara) {
+          firstPara.insertAdjacentElement("afterbegin", anchor);
+        }
+      }
+    });
+
+    alignDivAnchorsWithDefault();
+  }
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", addDivAnchors);
+  } else {
+    addDivAnchors();
+  }
+
+  window.addEventListener("load", alignDivAnchorsWithDefault);
+})();
+</script>
+
+<script>
+function getQuartoHeadingAnchorIcon() {
+  const afterBodyScript = document.getElementById("quarto-html-after-body");
+  if (!afterBodyScript) {
+    return null;
+  }
+
+  const match = afterBodyScript.textContent.match(/const icon = ["']([^"']+)["']/);
+  return match ? match[1] : null;
+}
+
+// Quarto chain-link glyph from Bootstrap Icons.
+const chainLinkIconFallback = "\ue9cb";
+const headingAnchorIcon = getQuartoHeadingAnchorIcon();
+const defaultAnchorIconFallback =
+  headingAnchorIcon && headingAnchorIcon !== "#" ? headingAnchorIcon : chainLinkIconFallback;
+
+function getDefaultAnchorTemplate() {
+  // Prefer Quarto heading anchors first so the visible chain-link icon is reused.
+  const defaultAnchor =
+    document.querySelector(".anchored > a.anchorjs-link") ||
+    document.querySelector("a.anchorjs-link[data-anchorjs-icon]");
+  if (!defaultAnchor) {
+    return null;
+  }
+
+  return {
+    // Detect icon value from the template anchor's attribute or text.
+    icon: defaultAnchor.getAttribute("data-anchorjs-icon") || defaultAnchor.textContent.trim(),
+    hasDataIcon: defaultAnchor.hasAttribute("data-anchorjs-icon"),
+    style: defaultAnchor.getAttribute("style")
+  };
+}
+
+function normalizeAnchorIcon(icon) {
+  if (!icon || icon === "#") {
+    return defaultAnchorIconFallback;
+  }
+
+  return icon;
+}
+
+function createChainLinkSvgIcon() {
+  const svgNs = "http://www.w3.org/2000/svg";
+  const svg = document.createElementNS(svgNs, "svg");
+  svg.setAttribute("viewBox", "0 0 16 16");
+  svg.setAttribute("fill", "currentColor");
+  svg.setAttribute("aria-hidden", "true");
+  svg.setAttribute("focusable", "false");
+  svg.setAttribute("class", "equation-anchor-icon");
+
+  [
+    "M6.354 5.5H4a3 3 0 0 0 0 6h3a3 3 0 0 0 2.83-2H11a4 4 0 0 1-4 3H4a4 4 0 0 1 0-8h2.354z",
+    "M9.646 10.5H12a3 3 0 1 0 0-6H9a3 3 0 0 0-2.83 2H5a4 4 0 0 1 4-3h3a4 4 0 0 1 0 8H9.646z",
+    "M5.5 8a.5.5 0 0 1 .5-.5h4a.5.5 0 0 1 0 1H6a.5.5 0 0 1-.5-.5"
+  ].forEach(function (pathData) {
+    const path = document.createElementNS(svgNs, "path");
+    path.setAttribute("d", pathData);
+    svg.appendChild(path);
+  });
+
+  return svg;
+}
+
+function alignEquationAnchorWithDefault(anchor, template) {
+  if (!anchor) {
+    return;
+  }
+
+  anchor.classList.remove("external");
+  anchor.classList.add("no-external");
+
+  const normalizedIcon = normalizeAnchorIcon(template && template.icon);
+  if (normalizedIcon === chainLinkIconFallback) {
+    anchor.removeAttribute("data-anchorjs-icon");
+    anchor.textContent = "";
+    anchor.appendChild(createChainLinkSvgIcon());
+  } else if (template && template.hasDataIcon) {
+    anchor.setAttribute("data-anchorjs-icon", normalizedIcon);
+    anchor.textContent = normalizedIcon;
+  } else {
+    anchor.removeAttribute("data-anchorjs-icon");
+    anchor.textContent = normalizedIcon;
+  }
+
+  if (template && template.style) {
+    anchor.setAttribute("style", template.style);
+  } else {
+    anchor.removeAttribute("style");
+  }
+}
+
+function alignEquationAnchorsWithDefault() {
+  const template = getDefaultAnchorTemplate();
+  document.querySelectorAll("a.equation-anchor").forEach(function (anchor) {
+    alignEquationAnchorWithDefault(anchor, template);
+  });
+}
+
+function ensureEquationAnchorStyles() {
+  if (document.getElementById("equation-anchor-styles")) {
+    return;
+  }
+
+  const style = document.createElement("style");
+  style.id = "equation-anchor-styles";
+  style.textContent = `
+    .equation-anchor-target {
+      --equation-anchor-offset: 1.2rem;
+      position: relative;
+      display: block;
+    }
+    .equation-anchor {
+      position: absolute;
+      left: calc(-1 * var(--equation-anchor-offset));
+      top: 50%;
+      transform: translateY(-50%);
+      text-decoration: none;
+      opacity: 0.7;
+      font-size: 0.9em;
+    }
+    .equation-anchor:hover {
+      opacity: 1;
+    }
+    .equation-anchor-icon {
+      width: 0.9em;
+      height: 0.9em;
+      vertical-align: -0.125em;
+    }
+  `;
+  document.head.appendChild(style);
+}
+
+document.addEventListener("DOMContentLoaded", function () {
+  ensureEquationAnchorStyles();
+
+  let counter = 0;
+
+  document.querySelectorAll(".math.display").forEach(function (mathEl) {
+    // For labeled equations, Quarto wraps the math display span in an eq-* span.
+    // For unlabeled equations, use the parent element (typically a <p>).
+    const labeledContainer = mathEl.closest("[id^='eq-']");
+    const target = labeledContainer || mathEl.parentElement;
+
+    if (!target) {
+      return;
+    }
+
+    // Skip if already processed.
+    if (target.querySelector(".equation-anchor")) {
+      return;
+    }
+
+    // Use the labeled container's id, or assign an auto-generated id.
+    let id = labeledContainer ? labeledContainer.id : target.id;
+    if (!id) {
+      counter++;
+      id = "eq-anchor-" + counter;
+      target.id = id;
+    }
+
+    target.classList.add("equation-anchor-target");
+
+    const anchor = document.createElement("a");
+    anchor.className = "equation-anchor anchorjs-link";
+    anchor.href = "#" + id;
+    anchor.setAttribute("aria-label", "Permalink to this equation");
+    target.appendChild(anchor);
+  });
+
+  alignEquationAnchorsWithDefault();
+});
+
+window.addEventListener("load", alignEquationAnchorsWithDefault);
+</script>
+
+<div id="refs" class="references csl-bib-body hanging-indent" role="list">
+<div id="ref-hernan2020causal" class="csl-entry" role="listitem">
+Hernán, Miguel A, and James M Robins. 2020. <em>Causal Inference: What If</em>. Chapman &amp; Hall/CRC. <a href="https://miguelhernan.org/whatifbook">https://miguelhernan.org/whatifbook</a>.
+</div>
+</div>
+</section></section>
+    </div>
+  <div class="quarto-auto-generated-content" style="display: none;">
+<div class="footer footer-default">
+
+</div>
+</div></div>
+
+  <script>window.backupDefine = window.define; window.define = undefined;</script>
+  <script src="../site_libs/revealjs/dist/reveal.js"></script>
+  <!-- reveal.js plugins -->
+  <script src="../site_libs/revealjs/plugin/quarto-line-highlight/line-highlight.js"></script>
+  <script src="../site_libs/revealjs/plugin/pdf-export/pdfexport.js"></script>
+  <script src="../site_libs/revealjs/plugin/reveal-menu/menu.js"></script>
+  <script src="../site_libs/revealjs/plugin/reveal-menu/quarto-menu.js"></script>
+  <script src="../site_libs/revealjs/plugin/reveal-chalkboard/plugin.js"></script>
+  <script src="../site_libs/revealjs/plugin/quarto-support/support.js"></script>
+  
+
+  <script src="../site_libs/revealjs/plugin/notes/notes.js"></script>
+  <script src="../site_libs/revealjs/plugin/search/search.js"></script>
+  <script src="../site_libs/revealjs/plugin/zoom/zoom.js"></script>
+  <script src="../site_libs/revealjs/plugin/math/math.js"></script>
+  <script>window.define = window.backupDefine; window.backupDefine = undefined;</script>
+
+  <script>
+
+      // Full list of configuration options available at:
+      // https://revealjs.com/config/
+      Reveal.initialize({
+'controlsAuto': false,
+'previewLinksAuto': true,
+'pdfSeparateFragments': false,
+'autoAnimateEasing': "ease",
+'autoAnimateDuration': 1,
+'autoAnimateUnmatched': true,
+'jumpToSlide': true,
+'menu': {"side":"left","useTextContentForMissingTitles":true,"markers":false,"loadIcons":false,"custom":[{"title":"Tools","icon":"<i class=\"fas fa-gear\"></i>","content":"<ul class=\"slide-menu-items\">\n<li class=\"slide-tool-item active\" data-item=\"0\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.fullscreen(event)\"><kbd>f</kbd> Fullscreen</a></li>\n<li class=\"slide-tool-item\" data-item=\"1\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.speakerMode(event)\"><kbd>s</kbd> Speaker View</a></li>\n<li class=\"slide-tool-item\" data-item=\"2\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.overview(event)\"><kbd>o</kbd> Slide Overview</a></li>\n<li class=\"slide-tool-item\" data-item=\"3\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.togglePdfExport(event)\"><kbd>e</kbd> PDF Export Mode</a></li>\n<li class=\"slide-tool-item\" data-item=\"4\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.toggleScrollView(event)\"><kbd>r</kbd> Scroll View Mode</a></li>\n<li class=\"slide-tool-item\" data-item=\"5\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.toggleChalkboard(event)\"><kbd>b</kbd> Toggle Chalkboard</a></li>\n<li class=\"slide-tool-item\" data-item=\"6\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.toggleNotesCanvas(event)\"><kbd>c</kbd> Toggle Notes Canvas</a></li>\n<li class=\"slide-tool-item\" data-item=\"7\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.downloadDrawings(event)\"><kbd>d</kbd> Download Drawings</a></li>\n<li class=\"slide-tool-item\" data-item=\"8\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.keyboardHelp(event)\"><kbd>?</kbd> Keyboard Help</a></li>\n</ul>"}],"openButton":true},
+'chalkboard': {"buttons":true},
+'smaller': true,
+ 
+        // Display controls in the bottom right corner
+        controls: true,
+
+        // Help the user learn the controls by providing hints, for example by
+        // bouncing the down arrow when they first encounter a vertical slide
+        controlsTutorial: false,
+
+        // Determines where controls appear, "edges" or "bottom-right"
+        controlsLayout: 'edges',
+
+        // Visibility rule for backwards navigation arrows; "faded", "hidden"
+        // or "visible"
+        controlsBackArrows: 'faded',
+
+        // Display a presentation progress bar
+        progress: true,
+
+        // Display the page number of the current slide
+        slideNumber: 'c/t',
+
+        // 'all', 'print', or 'speaker'
+        showSlideNumber: 'all',
+
+        // Add the current slide number to the URL hash so that reloading the
+        // page/copying the URL will return you to the same slide
+        hash: true,
+
+        // Start with 1 for the hash rather than 0
+        hashOneBasedIndex: false,
+
+        // Flags if we should monitor the hash and change slides accordingly
+        respondToHashChanges: true,
+
+        // Push each slide change to the browser history
+        history: true,
+
+        // Enable keyboard shortcuts for navigation
+        keyboard: true,
+
+        // Enable the slide overview mode
+        overview: true,
+
+        // Disables the default reveal.js slide layout (scaling and centering)
+        // so that you can use custom CSS layout
+        disableLayout: false,
+
+        // Vertical centering of slides
+        center: false,
+
+        // Enables touch navigation on devices with touch input
+        touch: true,
+
+        // Loop the presentation
+        loop: false,
+
+        // Change the presentation direction to be RTL
+        rtl: false,
+
+        // see https://revealjs.com/vertical-slides/#navigation-mode
+        navigationMode: 'linear',
+
+        // Randomizes the order of slides each time the presentation loads
+        shuffle: false,
+
+        // Turns fragments on and off globally
+        fragments: true,
+
+        // Flags whether to include the current fragment in the URL,
+        // so that reloading brings you to the same fragment position
+        fragmentInURL: false,
+
+        // Flags if the presentation is running in an embedded mode,
+        // i.e. contained within a limited portion of the screen
+        embedded: false,
+
+        // Flags if we should show a help overlay when the questionmark
+        // key is pressed
+        help: true,
+
+        // Flags if it should be possible to pause the presentation (blackout)
+        pause: true,
+
+        // Flags if speaker notes should be visible to all viewers
+        showNotes: false,
+
+        // Global override for autoplaying embedded media (null/true/false)
+        autoPlayMedia: null,
+
+        // Global override for preloading lazy-loaded iframes (null/true/false)
+        preloadIframes: null,
+
+        // Number of milliseconds between automatically proceeding to the
+        // next slide, disabled when set to 0, this value can be overwritten
+        // by using a data-autoslide attribute on your slides
+        autoSlide: 0,
+
+        // Stop auto-sliding after user input
+        autoSlideStoppable: true,
+
+        // Use this method for navigation when auto-sliding
+        autoSlideMethod: null,
+
+        // Specify the average time in seconds that you think you will spend
+        // presenting each slide. This is used to show a pacing timer in the
+        // speaker view
+        defaultTiming: null,
+
+        // Enable slide navigation via mouse wheel
+        mouseWheel: false,
+
+        // The display mode that will be used to show slides
+        display: 'block',
+
+        // Hide cursor if inactive
+        hideInactiveCursor: true,
+
+        // Time before the cursor is hidden (in ms)
+        hideCursorTime: 5000,
+
+        // Opens links in an iframe preview overlay
+        previewLinks: false,
+
+        // Transition style (none/fade/slide/convex/concave/zoom)
+        transition: 'slide',
+
+        // Transition speed (default/fast/slow)
+        transitionSpeed: 'default',
+
+        // Transition style for full page slide backgrounds
+        // (none/fade/slide/convex/concave/zoom)
+        backgroundTransition: 'fade',
+
+        // Number of slides away from the current that are visible
+        viewDistance: 3,
+
+        // Number of slides away from the current that are visible on mobile
+        // devices. It is advisable to set this to a lower number than
+        // viewDistance in order to save resources.
+        mobileViewDistance: 2,
+
+        // The "normal" size of the presentation, aspect ratio will be preserved
+        // when the presentation is scaled to fit different resolutions. Can be
+        // specified using percentage units.
+        width: 1050,
+
+        height: 700,
+
+        // Factor of the display size that should remain empty around the content
+        margin: 0,
+
+        math: {
+          mathjax: 'https://cdn.jsdelivr.net/npm/mathjax@4/tex-chtml.js',
+          config: 'TeX-AMS_HTML-full',
+          tex2jax: {
+            inlineMath: [['\\(','\\)']],
+            displayMath: [['\\[','\\]']],
+            balanceBraces: true,
+            processEscapes: false,
+            processRefs: true,
+            processEnvironments: true,
+            preview: 'TeX',
+            skipTags: ['script','noscript','style','textarea','pre','code'],
+            ignoreClass: 'tex2jax_ignore',
+            processClass: 'tex2jax_process'
+          },
+        },
+
+        // reveal.js plugins
+        plugins: [QuartoLineHighlight, PdfExport, RevealMenu, RevealChalkboard, QuartoSupport,
+
+          RevealMath,
+          RevealNotes,
+          RevealSearch,
+          RevealZoom
+        ]
+      });
+    </script>
+    <script id="quarto-html-after-body" type="application/javascript">
+      window.document.addEventListener("DOMContentLoaded", function (event) {
+        const tabsets =  window.document.querySelectorAll(".panel-tabset-tabby")
+        tabsets.forEach(function(tabset) {
+          const tabby = new Tabby('#' + tabset.id);
+        });
+        const isCodeAnnotation = (el) => {
+          for (const clz of el.classList) {
+            if (clz.startsWith('code-annotation-')) {                     
+              return true;
+            }
+          }
+          return false;
+        }
+        const onCopySuccess = function(e) {
+          // button target
+          const button = e.trigger;
+          // don't keep focus
+          button.blur();
+          // flash "checked"
+          button.classList.add('code-copy-button-checked');
+          var currentTitle = button.getAttribute("title");
+          button.setAttribute("title", "Copied!");
+          let tooltip;
+          if (window.bootstrap) {
+            button.setAttribute("data-bs-toggle", "tooltip");
+            button.setAttribute("data-bs-placement", "left");
+            button.setAttribute("data-bs-title", "Copied!");
+            tooltip = new bootstrap.Tooltip(button, 
+              { trigger: "manual", 
+                customClass: "code-copy-button-tooltip",
+                offset: [0, -8]});
+            tooltip.show();    
+          }
+          setTimeout(function() {
+            if (tooltip) {
+              tooltip.hide();
+              button.removeAttribute("data-bs-title");
+              button.removeAttribute("data-bs-toggle");
+              button.removeAttribute("data-bs-placement");
+            }
+            button.setAttribute("title", currentTitle);
+            button.classList.remove('code-copy-button-checked');
+          }, 1000);
+          // clear code selection
+          e.clearSelection();
+        }
+        const getTextToCopy = function(trigger) {
+          const outerScaffold = trigger.parentElement.cloneNode(true);
+          const codeEl = outerScaffold.querySelector('code');
+          for (const childEl of codeEl.children) {
+            if (isCodeAnnotation(childEl)) {
+              childEl.remove();
+            }
+          }
+          return codeEl.innerText;
+        }
+        const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+          text: getTextToCopy
+        });
+        clipboard.on('success', onCopySuccess);
+        if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+          const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+            text: getTextToCopy,
+            container: window.document.getElementById('quarto-embedded-source-code-modal')
+          });
+          clipboardModal.on('success', onCopySuccess);
+        }
+          var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+          var mailtoRegex = new RegExp(/^mailto:/);
+            var filterRegex = new RegExp("https:\/\/ucdavis\.github\.io\/win\/");
+          var isInternal = (href) => {
+              return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+          }
+          // Inspect non-navigation links and adorn them if external
+         var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+          for (var i=0; i<links.length; i++) {
+            const link = links[i];
+            if (!isInternal(link.href)) {
+              // undo the damage that might have been done by quarto-nav.js in the case of
+              // links that we want to consider external
+              if (link.dataset.originalHref !== undefined) {
+                link.href = link.dataset.originalHref;
+              }
+            }
+          }
+        function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+          const config = {
+            allowHTML: true,
+            maxWidth: 500,
+            delay: 100,
+            arrow: false,
+            appendTo: function(el) {
+                return el.closest('section.slide') || el.parentElement;
+            },
+            interactive: true,
+            interactiveBorder: 10,
+            theme: 'light-border',
+            placement: 'bottom-start',
+          };
+          if (contentFn) {
+            config.content = contentFn;
+          }
+          if (onTriggerFn) {
+            config.onTrigger = onTriggerFn;
+          }
+          if (onUntriggerFn) {
+            config.onUntrigger = onUntriggerFn;
+          }
+            config['offset'] = [0,0];
+            config['maxWidth'] = 700;
+          window.tippy(el, config); 
+        }
+        const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+        for (var i=0; i<noterefs.length; i++) {
+          const ref = noterefs[i];
+          tippyHover(ref, function() {
+            // use id or data attribute instead here
+            let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+            try { href = new URL(href).hash; } catch {}
+            const id = href.replace(/^#\/?/, "");
+            const note = window.document.getElementById(id);
+            if (note) {
+              return note.innerHTML;
+            } else {
+              return "";
+            }
+          });
+        }
+        const findCites = (el) => {
+          const parentEl = el.parentElement;
+          if (parentEl) {
+            const cites = parentEl.dataset.cites;
+            if (cites) {
+              return {
+                el,
+                cites: cites.split(' ')
+              };
+            } else {
+              return findCites(el.parentElement)
+            }
+          } else {
+            return undefined;
+          }
+        };
+        var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+        for (var i=0; i<bibliorefs.length; i++) {
+          const ref = bibliorefs[i];
+          const citeInfo = findCites(ref);
+          if (citeInfo) {
+            tippyHover(citeInfo.el, function() {
+              var popup = window.document.createElement('div');
+              citeInfo.cites.forEach(function(cite) {
+                var citeDiv = window.document.createElement('div');
+                citeDiv.classList.add('hanging-indent');
+                citeDiv.classList.add('csl-entry');
+                var biblioDiv = window.document.getElementById('ref-' + cite);
+                if (biblioDiv) {
+                  citeDiv.innerHTML = biblioDiv.innerHTML;
+                }
+                popup.appendChild(citeDiv);
+              });
+              return popup.innerHTML;
+            });
+          }
+        }
+      });
+      </script>
+    
+
+</body></html>
