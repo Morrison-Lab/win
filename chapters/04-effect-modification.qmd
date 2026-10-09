@@ -290,6 +290,7 @@ To compute $\Pr[Y^{a} = 1 \mid V = v]$ in each stratum, stratify first and adjus
 ::: {#alg-stratify-then-standardize}
 ## Stratify by the Modifier, Then Adjust for the Confounders
 
+Let $V$ be a pre-treatment effect modifier of interest and $L$ a set of measured pre-treatment covariates.
 Assume consistency, conditional exchangeability $Y^a \ind A \mid L, V$,
 and positivity $\Pr[A = a \mid L = l, V = v] > 0$ whenever $\Pr[L = l, V = v] > 0$.
 
@@ -379,8 +380,9 @@ and @rem-treatment-group-as-marker explains when the effect in the treated diffe
 ## Average Causal Effect in the Treated and in the Untreated
 
 Let $A$ and $Y$ be dichotomous, with $\Pr[A = 1] > 0$.
-Among the treated, the **causal risk difference in the treated** contrasts $\Pr[Y^{a=1} = 1 \mid A = 1]$ with $\Pr[Y^{a=0} = 1 \mid A = 1]$ by subtraction,
-and the **causal risk ratio in the treated** contrasts them by division:
+Among the treated, the **causal risk difference in the treated** equals
+$\Pr[Y^{a=1} = 1 \mid A = 1] - \Pr[Y^{a=0} = 1 \mid A = 1]$,
+and the **causal risk ratio in the treated** is
 $\Pr[Y^{a=1} = 1 \mid A = 1] / \Pr[Y^{a=0} = 1 \mid A = 1]$.
 The latter, defined when $\Pr[Y^{a=0} = 1 \mid A = 1] > 0$, is also called the **standardized morbidity ratio** (SMR).
 Replacing $A = 1$ by $A = 0$ in the conditioning event (with $\Pr[A = 0] > 0$, and a positive denominator for the ratio) gives the causal risk difference and ratio **in the untreated** (book Figure 4.1).
@@ -431,8 +433,6 @@ There is no such thing as "the average causal effect of $A$ on $Y$ (period)", on
 ## Transporting an Effect Between Populations
 
 **Transportability** is the extrapolation of an average causal effect from the population in which it was computed (the **study population**) to another population (the **target population**).
-In these notes we call the effect **transportable** on a given scale (e.g., the causal risk difference or risk ratio)
-when its value in the study population equals its value in the target population.
 Lack of transportability is sometimes called lack of external validity.
 :::
 
@@ -517,7 +517,8 @@ For the effect in the treated, for example, it does not matter whether the untre
 
 Let $L$ be a set of measured pre-treatment covariates, and let $a, a' \in \{0, 1\}$ with $\Pr[A = a'] > 0$.
 Assume consistency, partial exchangeability $Y^a \ind A \mid L$ for this $a$ (@def-partial-exchangeability),
-and positivity $f(a \mid L = l) \eqdef \Pr[A = a \mid L = l] > 0$ for every $l$ with $\Pr[L = l] > 0$.
+and positivity $f(a \mid l) > 0$ for every $l$ with $\Pr[L = l] > 0$,
+where $f(a' \mid l) \eqdef \Pr[A = a' \mid L = l]$ is the conditional probability mass function of $A$ given $L$.
 Then $\E{Y^a \mid A = a'}$ equals both the standardized mean
 
 $$
@@ -553,7 +554,7 @@ $$
 \begin{aligned}
 \E{\frac{\indicp{A = a}\, Y}{f(A \mid L)} \Pr[A = a' \mid L]}
 &= \E{\frac{\Pr[A = a \mid L]\, \E{Y \mid A = a, L}}{f(a \mid L)} \Pr[A = a' \mid L]} && \text{(iterated expectations given } L\text{)} \\
-&= \E{\E{Y \mid A = a, L} \Pr[A = a' \mid L]} && \text{(} f(a \mid L) = \Pr[A = a \mid L] > 0 \text{)} \\
+&= \E{\E{Y \mid A = a, L} \Pr[A = a' \mid L]} && \text{(definition of } f\text{; positivity)} \\
 &= \sum_l \E{Y \mid A = a, L = l} \Pr[L = l \mid A = a'] \Pr[A = a'] && \text{(Bayes' rule)}.
 \end{aligned}
 $$ {#eq-effect-in-treated-ipw-numerator}
@@ -706,7 +707,8 @@ When positivity fails in some strata, restriction limits the inference to the st
 
 - In one-to-one matching, each individual in a reference group (e.g., the untreated) is paired with an individual of the other treatment group who has the same value of $L$, forming **matched pairs**;
   one-to-many matching forms **matched sets**.
-- **Frequency matching** instead selects individuals in each treatment group so that $L$ has a chosen distribution in both groups.
+- **Frequency matching** instead selects individuals in each treatment group so that $L$ has a chosen distribution in both groups,
+  e.g., selecting treated individuals so that 70% have $L = 1$, then doing the same for the untreated.
 :::
 
 ::: {#exm-matching-table-2-2}
@@ -745,7 +747,6 @@ with fewer treated than untreated in every stratum of $L$, one usually matches e
 :::
 
 - With several variables in $L$, matches come from the same stratum of the combination of all of them.
-- Frequency matching can create any chosen distribution of $L$, e.g., selecting treated individuals so that 70% have $L = 1$, then doing the same for the untreated.
 
 Because the matched population is a subset of the original one, its distribution of effect modifiers generally differs, which is the topic of Section 4.6.
 
@@ -931,7 +932,8 @@ the pooled measure is still a conditional effect measure (@def-conditional-margi
 In stratum $l$, let $a_l$ and $b_l$ be the numbers of cases among the treated and the untreated,
 $n_{1l}$ and $n_{0l}$ the numbers treated and untreated,
 and $N_l$ the stratum size.
-In Table 4.3, the Mantel-Haenszel risk ratio for $Z$ is
+In Table 4.3, the stratum-specific risk ratios for $Z$ are 2.0 ($L = 0$) and 0.5 ($L = 1$),
+and the Mantel-Haenszel risk ratio is
 
 $$
 \begin{aligned}
@@ -1012,7 +1014,7 @@ Under the sharp null the odds ratio is collapsible.
 If, in a follow-up study, fewer than about 10% of individuals in each stratum develop the outcome, the odds ratio is close to collapsible and close to the risk ratio.
 :::
 
-::: {.callout-warning title="A Changed Odds Ratio Is Not Evidence of Confounding"}
+::: {.callout-warning title="A Changed Odds Ratio Does Not Prove Lack of Exchangeability"}
 A difference between the conditional and the unconditional odds ratio does not by itself indicate lack of exchangeability.
 In @exm-odds-ratio-noncollapsible the odds ratio changes by about 10% ($6/5.4 \approx 1.1$) although the treated and untreated are exchangeable.
 Greenland, Robins, and Pearl (1999) review the relation between noncollapsibility and lack of exchangeability.
