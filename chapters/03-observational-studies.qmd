@@ -13,61 +13,110 @@ format:
 {{< include ../latex-macros/macros.qmd >}}
 
 In Chapter 2, randomization gave us exchangeability by design.
-Many scientific questions, however, are answered with **observational studies**, in which the investigators observe and record the relevant data but do not assign treatment.
+Many scientific questions, however, have to be answered without assigning treatment.
+
+::: {#def-observational-study}
+## Observational study
+
+An **observational study** is a study in which the investigators observe and record the treatment, the outcome, and other relevant variables,
+but do not assign the treatment:
+who receives which treatment is decided by the individuals themselves or by someone other than the investigators.
+:::
+
+::: {#exm-pedestrians-observational}
+## Watching pedestrians instead of randomizing
+
+Let the treatment $A$ be whether one pedestrian looks up at the sky,
+and the outcome $Y$ whether a nearby pedestrian then looks up too.
+If we merely record pairs of passers-by, nobody assigns $A$,
+so the study is observational (@def-observational-study).
+Any association between $A$ and $Y$ could then reflect a shared cause, such as a sudden noise overhead,
+a worry that randomizing $A$ would have ruled out.
+:::
+
 Much of what we know (evolution, plate tectonics, the fact that hot coffee can burn) comes from observation rather than experiment.
 
 This chapter asks: under what conditions can an observational study support a valid causal inference?
 
 ::: {.notes}
 This chapter is based on @hernan2020causal [Chapter 3, pp. 27-46].
-
-The book's opening example returns to the pedestrians: instead of randomizing who looks up, you watch pairs of pedestrians and record whether the second one looks up after the first does.
-A critic can always object that both looked up because of a common cause (a thunderclap, the first raindrops), an objection that does not apply to a randomized experiment.
 :::
 
 ## 3.1 Identifiability Conditions (pp. 27-29)
 
 ---
 
-In an ideal randomized experiment, an associational risk ratio of, say, 0.7 is expected to equal the causal risk ratio, because randomization makes the treated and untreated exchangeable.
+::: {#exm-transplant-compromise}
+## A risk ratio that mixes benefit and prognosis
 
-In an observational study of heart transplant where sicker patients were more likely to be transplanted, an associational risk ratio of 1.1 may be a **compromise** between:
+Let $A$ be heart transplant and $Y$ death.
+In an ideal marginally randomized experiment (full adherence, no loss to follow-up), exchangeability holds,
+and an associational risk ratio of, say, 0.7 would be expected to match the causal risk ratio.
 
-- a truly beneficial effect of transplant (pushing the ratio below 1), and
-- the higher baseline mortality of those who were transplanted (pushing it above 1).
+Suppose instead that $A$ was not randomized and that sicker patients were more likely to be transplanted.
+Suppose also that transplant really does lower the risk of death.
+Then an associational risk ratio of 1.1 may be a **compromise** between two opposing forces:
+
+- the benefit of transplant, which pulls the ratio below 1;
+- the worse prognosis of those who were transplanted, which pushes it above 1.
+:::
 
 ::: {.notes}
-The best explanation for an association in an observational study is not necessarily a causal effect.
-The common strategy is to analyze the data *as if* treatment had been randomly assigned conditional on measured covariates $L$, knowing this is at best an approximation.
-Causal inference from observational data then rests on the hope that the study can be viewed as a **conditionally randomized experiment**.
+So an observational association may owe more to who got treated than to what treatment does.
+Observational analyses commonly act *as though* treatment had been randomized within levels of the measured covariates $L$, an approximation at best.
+Their validity then hinges on whether the study really resembles a **conditionally randomized experiment**.
 :::
 
 ---
 
-An observational study can be conceptualized as a conditionally randomized experiment if:
+::: {#def-identifiability-conditions}
+## Identifiability conditions
 
-1. each individual's observed outcome is her counterfactual outcome under the treatment she actually received (**consistency**, Chapter 1);
-2. given only the known, measured covariates $L$, the counterfactual outcomes are independent of the treatment actually received (**exchangeability**, Chapter 2);
-3. the probability of receiving each treatment value conditional on $L$ is greater than zero (**positivity**, Technical Point 2.3).
+Let $A$ be a treatment, $Y$ an outcome with counterfactual outcomes $Y^a$, and $L$ a set of measured covariates.
+The **identifiability conditions** (or identifiability assumptions) are three conditions under which the average causal effect of $A$ on $Y$ can be computed from the distribution of the observed data:
 
-These are the **identifiability conditions** (or identifiability assumptions).
+1. **consistency**: each individual's observed outcome is her counterfactual outcome under the treatment she actually received, $Y = Y^A$;
+2. **conditional exchangeability**: given only the measured covariates $L$, the counterfactual outcomes are independent of the treatment actually received, $Y^a \ind A \mid L$ for all $a$;
+3. **positivity**: $\Pr[A = a \mid L = l] > 0$ for every treatment value $a$ in the causal contrast and every $l$ with $\Pr[L = l] \neq 0$.
+
+When all three hold, the observational study can be analyzed as if it were a conditionally randomized experiment.
+:::
+
+::: {#exm-identifiability-conditions-transplant}
+## The identifiability conditions in a heart transplant study
+
+Let $A$ be heart transplant, $Y$ death, and $L$ critical condition at baseline.
+The three conditions of @def-identifiability-conditions then say:
+
+1. consistency: each patient's recorded death status is the one that goes with the transplant decision she actually had;
+2. conditional exchangeability: among patients equally critical, those who were and were not transplanted would have had the same risk of death under either decision;
+3. positivity: both critical and noncritical patients had some chance of being transplanted and some chance of not being transplanted.
+:::
+
+Consistency comes from Chapter 1, exchangeability from Chapter 2, and positivity from Technical Point 2.3.
+Sections 3.2 to 3.5 take them one at a time and define each formally.
+
+::: {.callout-important title="Data Alone Are Not Enough"}
+An ideal randomized experiment secures the identifiability conditions (@def-identifiability-conditions) through its design.
+An observational study cannot do so,
+and there the conditions are *assumptions* brought to the data from outside.
+A causal conclusion from observational data is only as good as the data **and** those assumptions together.
+:::
 
 ::: {.notes}
-In ideal randomized experiments the identifiability conditions hold by design.
-In observational studies they must be *assumed*, and they are often heroic, which is why causal inferences from observational data are viewed with suspicion.
-Causal inference from observational data requires two elements: data **and** identifiability conditions.
+The identifiability conditions are often heroic, which is why causal inferences from observational data are viewed with suspicion.
 
 For simplicity, this chapter considers only studies in which everyone stays under follow-up and adheres to the assigned treatment;
 Chapters 8 and 9 relax this.
 
-The book notes that Rubin (1974, 1978) extended Neyman's theory to observational studies, and that Rosenbaum and Rubin (1983) called the combination of exchangeability and positivity **weak ignorability**, and the combination of full exchangeability (Technical Point 2.1) and positivity **strong ignorability** [@hernan2020causal, p. 28].
+The book notes that Rubin (1974, 1978) extended Neyman's theory to observational studies [@hernan2020causal, p. 28].
 :::
 
 ### Table 3.1
 
 ---
 
-Table 3.1 contains the same data as Table 2.2: $L$ is critical condition at baseline (1: yes), $A$ is heart transplant, and $Y$ is death.
+::: {#tbl-table-3-1}
 
 | Name | $L$ | $A$ | $Y$ | Name | $L$ | $A$ | $Y$ |
 |------|-----|-----|-----|------|-----|-----|-----|
@@ -82,12 +131,18 @@ Table 3.1 contains the same data as Table 2.2: $L$ is critical condition at base
 | Artemis | 1 | 0 | 1 | Hebe | 1 | 1 | 0 |
 | Apollo | 1 | 0 | 1 | Dionysus | 1 | 1 | 0 |
 
-If these data came from an observational study in which the three identifiability conditions held, we would compute the same causal risk ratio as in Chapter 2: 1.
+The book's Table 3.1: critical condition at baseline $L$ (1: yes), heart transplant $A$, and death $Y$ for 20 individuals [@hernan2020causal, p. 28].
+:::
+
+[Table 3.1](#tbl-table-3-1) contains the same data as Table 2.2.
+If these data came from an observational study in which the three identifiability conditions (@def-identifiability-conditions) held, we would compute the same causal risk ratio as in Chapter 2: 1.
 
 ::: {#exm-table-3-1-standardization}
 ## Standardized risks in Table 3.1
 
-Stratum-specific risks from Table 3.1 (8 individuals with $L = 0$, 12 with $L = 1$):
+Assume that the data in [Table 3.1](#tbl-table-3-1) satisfy the identifiability conditions (@def-identifiability-conditions) with $L$ as the measured covariate,
+so that each counterfactual risk equals the standardized risk.
+Stratum-specific risks (8 individuals with $L = 0$, 12 with $L = 1$):
 
 - $L = 0$: $\Pr[Y = 1 \mid A = 1, L = 0] = 1/4$ and $\Pr[Y = 1 \mid A = 0, L = 0] = 1/4$
 - $L = 1$: $\Pr[Y = 1 \mid A = 1, L = 1] = 6/9 = 2/3$ and $\Pr[Y = 1 \mid A = 0, L = 1] = 2/3$
@@ -99,7 +154,8 @@ $$
 \begin{aligned}
 \Pr[Y^{a=1} = 1] &= \Pr[Y = 1 \mid A = 1, L = 0]\Pr[L = 0] + \Pr[Y = 1 \mid A = 1, L = 1]\Pr[L = 1] \\
 &= (1/4)(0.4) + (2/3)(0.6) \\
-&= 0.1 + 0.4 = 0.5,
+&= 0.1 + 0.4 \\
+&= 0.5,
 \end{aligned}
 $$
 
@@ -107,11 +163,33 @@ $$
 \begin{aligned}
 \Pr[Y^{a=0} = 1] &= \Pr[Y = 1 \mid A = 0, L = 0]\Pr[L = 0] + \Pr[Y = 1 \mid A = 0, L = 1]\Pr[L = 1] \\
 &= (1/4)(0.4) + (2/3)(0.6) \\
-&= 0.1 + 0.4 = 0.5,
+&= 0.1 + 0.4 \\
+&= 0.5,
 \end{aligned}
 $$
 
 so the causal risk ratio is $0.5 / 0.5 = 1$.
+:::
+
+---
+
+::: {#def-ignorability}
+## Weak and strong ignorability
+
+Let $A$ be a treatment with counterfactual outcomes $Y^a$, and $L$ a set of measured covariates.
+Following Rosenbaum and Rubin (1983), treatment assignment is
+
+- **weakly ignorable** given $L$ when conditional exchangeability $Y^a \ind A \mid L$ (for all $a$) and positivity both hold;
+- **strongly ignorable** given $L$ when positivity holds and the counterfactual outcomes $Y^a$ for all values $a$, taken jointly, are independent of $A$ given $L$ (full conditional exchangeability, the conditional version of Technical Point 2.1) [@hernan2020causal, p. 28].
+:::
+
+::: {#exm-table-3-1-ignorability}
+## Ignorability in Table 3.1
+
+Read [Table 3.1](#tbl-table-3-1) as a conditionally randomized experiment in which a coin with $\Pr[A = 1 \mid L = 1] = 0.75$ and $\Pr[A = 1 \mid L = 0] = 0.50$ assigned treatment.
+The coin ignores everything about an individual except $L$, so the pair $\{Y^{a=0}, Y^{a=1}\}$ is independent of $A$ given $L$,
+and neither probability is 0 or 1.
+Treatment assignment is therefore strongly ignorable given $L$, and hence also weakly ignorable (@def-ignorability).
 :::
 
 ### Identifiability
@@ -119,30 +197,44 @@ so the causal risk ratio is $0.5 / 0.5 = 1$.
 ---
 
 ::: {#def-identifiability}
-## Identifiability
+## Identifiability of an average causal effect
 
-An average causal effect is (nonparametrically) **identifiable** under a set of assumptions if those assumptions imply that the distribution of the observed data is compatible with a single value of the effect measure.
-It is **nonidentifiable** if the observed data distribution is compatible with several values of the effect measure [@hernan2020causal, Fine Point 3.1, p. 29].
+Fix a set of assumptions and an effect measure for an average causal effect, such as the causal risk ratio.
+The effect is (nonparametrically) **identifiable** under those assumptions if, once the distribution of the observed data is known, the assumptions leave exactly one possible value of the effect measure.
+It is **nonidentifiable** if more than one value remains possible [@hernan2020causal, Fine Point 3.1, p. 29].
+:::
+
+::: {#exm-table-3-1-identifiability}
+## Identifiability in Table 3.1
+
+If [Table 3.1](#tbl-table-3-1) came from a conditionally randomized experiment, $Y^a \ind A \mid L$ and positivity hold by design, consistency holds for the interventions the protocol carried out,
+and the causal risk ratio of 1 is identified with no further assumptions.
+If it came from an observational study, then even taking consistency as given and with positivity visible in the table,
+we can conclude that the causal risk ratio is 1 only by adding the *identifying assumption* $Y^a \ind A \mid L$, which is external to the data.
+Without it, the same data leave the causal risk ratio undetermined (@def-identifiability):
+
+- it can be below 1, if the treated carry more of the other predictors of death besides $L$;
+- it can be above 1, if the untreated carry more of them;
+- it can be 1, if those other predictors are balanced within levels of $L$, i.e., if $Y^a \ind A \mid L$.
 :::
 
 ::: {.callout-note title="Fine Point 3.1: Identifiability of causal effects"}
-If Table 3.1 came from a conditionally randomized experiment, $Y^a \ind A \mid L$ holds by design and the causal risk ratio of 1 is identified with no further assumptions.
-If it came from an observational study, the risk ratio equals 1 only if we add the *identifying assumption* $Y^a \ind A \mid L$, which is external to the data.
-Without it, the same data are compatible with a causal risk ratio
-
-- below 1, if risk factors other than $L$ are more frequent among the treated;
-- above 1, if risk factors other than $L$ are more frequent among the untreated;
-- equal to 1, if all risk factors other than $L$ are equally distributed, i.e., $Y^a \ind A \mid L$.
+The book defines identifiability (@def-identifiability) in this Fine Point and illustrates it with Table 3.1 (@exm-table-3-1-identifiability).
 :::
 
 ### Other identifiability conditions
 
-When any of the three conditions fails, the analogy with a conditionally randomized experiment breaks down.
+::: {#rem-other-identifiability-conditions}
+## Other routes to identification
+
+When any of the three conditions in @def-identifiability-conditions fails, the analogy with a conditionally randomized experiment breaks down.
 Other approaches rely on different identifiability conditions;
 for example, **instrumental variable** methods (Chapter 16) assume that a predictor of treatment behaves as if randomly assigned conditional on measured covariates.
+:::
 
 ::: {.notes}
-Methods based on the analogy with a conditionally randomized experiment have traditionally been favored in disciplines where that analogy is often reasonable (e.g., epidemiology), and instrumental variable methods in disciplines where it often is not (e.g., economics).
+Fields where observational studies often resemble conditionally randomized experiments (e.g., epidemiology) have tended to rely on that resemblance,
+while fields where they seldom do (e.g., economics) have leaned on instrumental variables.
 Until Chapter 16, the book focuses on the first family.
 :::
 
@@ -150,64 +242,136 @@ Until Chapter 16, the book focuses on the first family.
 
 ---
 
-In a marginally randomized experiment, the treated and untreated are exchangeable ($Y^a \ind A$) because randomization balances the **independent predictors of the outcome** between groups.
+::: {#def-independent-outcome-predictor}
+## Independent predictor of the outcome
 
-An **independent predictor of the outcome** is a covariate associated with $Y$ within levels of treatment;
-for dichotomous outcomes these are often called **risk factors**.
+Let $A$ be a treatment and $Y$ an outcome.
+A covariate is an **independent predictor of the outcome** if it is associated with $Y$ within levels of $A$.
+When $Y$ is dichotomous, such covariates are commonly called **risk factors**.
+:::
 
-In Table 3.1, 69% of the treated ($9/13$) but only 43% of the untreated ($3/7$) were in critical condition ($L = 1$), so marginal exchangeability does not hold.
+::: {#exm-table-3-1-risk-factor}
+## Critical condition is a risk factor in Table 3.1
+
+In [Table 3.1](#tbl-table-3-1), the risk of death among the untreated is $1/4$ when $L = 0$ and $2/3$ when $L = 1$;
+among the treated it is $1/4$ when $L = 0$ and $6/9 = 2/3$ when $L = 1$.
+Critical condition $L$ is associated with death $Y$ within both levels of $A$,
+so it is an independent predictor of the outcome, a risk factor (@def-independent-outcome-predictor).
+:::
+
+---
+
+::: {#rem-marginal-randomization-balance}
+## Why marginal randomization gives exchangeability
+
+Let $A$ be a treatment with counterfactual outcomes $Y^a$.
+Marginal randomization of $A$ (assignment that ignores every characteristic of the individual) makes the treated and untreated groups exchangeable ($Y^a \ind A$) because it spreads the independent predictors of the outcome (@def-independent-outcome-predictor) equally, in expectation, across the two groups.
+:::
+
+::: {#exm-table-3-1-imbalance}
+## Marginal exchangeability fails in Table 3.1
+
+In [Table 3.1](#tbl-table-3-1), 69% of the treated ($9/13$) but only 43% of the untreated ($3/7$) were in critical condition ($L = 1$).
+Since $L$ is a risk factor (@exm-table-3-1-risk-factor), this imbalance suggests the treated had a worse prognosis.
+
+To check, suppose, as in Chapter 2, that the data come from a conditionally randomized experiment,
+so that consistency, $Y^a \ind A \mid L$, and positivity hold
+(positivity holds here because $\Pr[A = 1 \mid L = 1] = 0.75$ and $\Pr[A = 1 \mid L = 0] = 0.50$).
+Then the risk the treated would have had without treatment is
+
+$$
+\begin{aligned}
+\Pr[Y^{a=0} = 1 \mid A = 1]
+&= \sum_l \Pr[Y = 1 \mid A = 0, L = l] \Pr[L = l \mid A = 1] \\
+&= (1/4)(4/13) + (2/3)(9/13) \\
+&= 7/13 \\
+&\approx 0.54,
+\end{aligned}
+$$
+
+while the untreated had $\Pr[Y^{a=0} = 1 \mid A = 0] = \Pr[Y = 1 \mid A = 0] = 3/7 \approx 0.43$.
+The two differ, so marginal exchangeability $Y^a \ind A$ does not hold.
+:::
 
 ---
 
 ::: {#def-exchangeability-conditional}
 ## Conditional exchangeability
 
+Let $A$ be a treatment with counterfactual outcomes $Y^a$, and $L$ a set of measured covariates.
 The treated and untreated are **conditionally exchangeable** given $L$ when
 
 $$Y^a \ind A \mid L \quad \text{for all } a.$$
 
-Equivalently, for a dichotomous outcome, $\Pr[Y^a = 1 \mid A = 1, L = l] = \Pr[Y^a = 1 \mid A = 0, L = l]$ for all $a$ and $l$.
+Equivalently, for a dichotomous treatment and outcome, $\Pr[Y^a = 1 \mid A = 1, L = l] = \Pr[Y^a = 1 \mid A = 0, L = l]$ for all $a$ and for all $l$ at which both conditional probabilities are defined.
 :::
 
-Conditional exchangeability holds in a conditionally randomized experiment because, *within* levels of $L$, all other outcome predictors are equally distributed between the treated and the untreated.
+A conditionally randomized experiment produces conditional exchangeability:
+inside each stratum of $L$, treatment is assigned at random, so the remaining outcome predictors are balanced across treatment groups.
 
-::: {.notes}
-The study in Table 3.1 can be described in two logically equivalent ways:
+::: {#exm-table-3-1-two-descriptions}
+## Two descriptions of the Table 3.1 study
+
+Suppose $L$ is the **only** outcome predictor unequally distributed between treatment groups.
+Then the study in [Table 3.1](#tbl-table-3-1) can be described in two logically equivalent ways:
 
 1. an observational study in which $\Pr[A = 1 \mid L = 1] = 9/12 = 0.75$ and $\Pr[A = 1 \mid L = 0] = 4/8 = 0.50$, e.g., because doctors direct the scarce hearts to those in critical condition;
    or
-2. a (nonblinded) conditionally randomized experiment in which investigators assigned $A = 1$ with probability 0.75 when $L = 1$ and 0.50 when $L = 0$.
+2. a conditionally randomized experiment, not blinded, whose investigators gave $A = 1$ with probability 0.75 when $L = 1$ and 0.50 when $L = 0$.
 
-Under either description, if $L$ is the **only** outcome predictor unequally distributed between treatment groups, $Y^a \ind A \mid L$ holds and standardization or IP weighting identifies the causal effect.
+Under either description, $Y^a \ind A \mid L$ holds (@def-exchangeability-conditional),
+and, together with consistency and positivity (which holds here, since $\Pr[A = 1 \mid L = l]$ is 0.75 or 0.50), standardization or IP weighting identifies the causal effect.
+:::
+
+::: {.notes}
 Chapter 7 calls such outcome predictors *confounders*.
+Nothing in the data can show whether $L$ is the only imbalanced outcome predictor,
+so an observational analysis has to assume it.
 :::
 
 ### Not every imbalanced variable must be in $L$
 
 ---
 
-Heart transplants are allocated by **HLA compatibility**, so HLA genes are unequally distributed between treatment groups.
-But HLA genes do not predict mortality given $L$ and $A$, so treatment is still effectively random within levels of $L$, and HLA need not be included in the analysis.
+::: {#exm-hla-compatibility}
+## HLA compatibility
+
+In the heart transplant study ($A$: transplant, $L$: critical condition, $Y$: death), donor hearts go to recipients with compatible **HLA** (human leukocyte antigen) genes, so HLA genes are unequally distributed between treatment groups.
+Suppose that HLA genes do not predict death once $L$ and $A$ are known.
+Then, within levels of $L$, treatment is still effectively random with respect to the outcome, and HLA need not be included in $L$.
+:::
 
 ### Unmeasured outcome predictors
 
-Suppose, unknown to the investigators, doctors prefer to transplant hearts into nonsmokers.
-Let $U$ denote smoking (an unmeasured variable).
-Within the stratum $L = 1$, smokers ($U = 1$) are less likely to be treated, so smoking is less common among the treated than the untreated, and $Y^a \ind A \mid L$ fails.
+::: {#exm-smoking-unmeasured}
+## Doctors who prefer nonsmokers
+
+In the heart transplant study ($A$: transplant, $L$: critical condition, $Y$: death), let $U$ denote smoking, which the investigators did not measure and which predicts death even within levels of $L$ and $A$.
+Suppose also that doctors, without the investigators knowing it, favor nonsmokers when allocating hearts.
+Within the stratum $L = 1$, smokers ($U = 1$) are then less likely to be treated, so smoking is less common among the treated than the untreated, and $Y^a \ind A \mid L$ fails.
+:::
 
 ::: {#rem-exchangeability-untestable}
 ## Conditional exchangeability cannot be verified
 
-Conditional exchangeability $Y^a \ind A \mid L$ fails whenever there is an unmeasured independent predictor $U$ of the outcome such that the probability of treatment depends on $U$ within strata of $L$.
-Even when it holds, it cannot be checked: verifying it would require comparing $\Pr[Y^a = 1 \mid A = a, L = l]$ with $\Pr[Y^a = 1 \mid A \neq a, L = l]$, but $Y^a$ is unknown for individuals with $A \neq a$.
+Let $A$ be a treatment, $Y$ a dichotomous outcome with counterfactual outcomes $Y^a$, $L$ the measured covariates, and $U$ an unmeasured variable.
+Conditional exchangeability $Y^a \ind A \mid L$ generally fails when some unmeasured variable $U$ both independently predicts the outcome and, within strata of $L$, changes the chance of being treated.
+Even when it holds, it cannot be checked: verifying it would require comparing $\Pr[Y^a = 1 \mid A = a, L = l]$ with $\Pr[Y^a = 1 \mid A \neq a, L = l]$ at each $l$ where both groups exist,
+but $Y^a$ is unknown for individuals with $A \neq a$.
+:::
+
+::: {.callout-tip title="Use Expert Knowledge to Choose the Covariates"}
+Conditional exchangeability cannot be tested,
+so investigators make it more plausible by using expert knowledge to choose and measure many relevant covariates,
+and then assuming exchangeability within their joint strata.
 :::
 
 ::: {.notes}
-Because unmeasured variables cannot be used for standardization or IP weighting, the causal effect is not identified when the measured $L$ is insufficient for conditional exchangeability.
+Variables that were never measured cannot enter standardization or IP weighting,
+so the effect is not identified when the measured $L$ falls short of conditional exchangeability.
 Collecting data on smoking would not remove the possibility that other unknown outcome predictors remain imbalanced.
 
-Investigators can use expert knowledge to make the assumption more plausible, for example by measuring many determinants of treatment that are also independent outcome predictors and assuming exchangeability within the strata they define.
-But no matter how many variables are in $L$, the assumption cannot be tested.
+No matter how many variables are in $L$, the assumption cannot be tested.
 The validity of the inference rests on the investigators' expert knowledge, encoded as conditional exchangeability, which supplements the data.
 :::
 
@@ -224,10 +388,11 @@ Under (i), (ii), and consistency:
 
 $$
 \begin{aligned}
-\text{if } (A_{i0}, A_{i1}) = (0, 1):\quad Y_{i1} - Y_{i0} &= Y_{i1}^{a_1 = 1} - Y_{i0}^{a_0 = 0} && \text{(consistency)} \\
+\text{if } (A_{i0}, A_{i1}) = (0, 1):\quad Y_{i1} - Y_{i0} &= Y_{i1}^{a_1 = 1} - Y_{i0}^{a_0 = 0} && \text{(consistency, (i))} \\
 &= \paren{\alpha_i + Y_{i1}^{a_1 = 0}} - Y_{i0}^{a_0 = 0} && \text{(ii)} \\
 &= \alpha_i + r_i, && \text{(definition of } r_i\text{)} \\
-\text{if } (A_{i0}, A_{i1}) = (1, 0):\quad Y_{i0} - Y_{i1} &= \paren{\alpha_i + Y_{i0}^{a_0 = 0}} - Y_{i1}^{a_1 = 0} = \alpha_i - r_i.
+\text{if } (A_{i0}, A_{i1}) = (1, 0):\quad Y_{i0} - Y_{i1} &= \paren{\alpha_i + Y_{i0}^{a_0 = 0}} - Y_{i1}^{a_1 = 0} && \text{(consistency, (i), (ii))} \\
+&= \alpha_i - r_i. && \text{(definition of } r_i\text{)}
 \end{aligned}
 $$
 
@@ -240,11 +405,12 @@ $$
 &= \E{(\alpha_i + r_i) A_{i1} + (\alpha_i - r_i) A_{i0}} \\
 &= \E{\alpha_i (A_{i1} + A_{i0})} + \E{r_i (A_{i1} - A_{i0})} \\
 &= \E{\alpha_i} + \E{r_i}\,\E{A_{i1} - A_{i0}} && \text{($A_{i1} + A_{i0} = 1$; randomization: } A \ind r_i\text{)} \\
-&= \E{\alpha_i} + \E{r_i}(0.5 - 0.5) = \E{\alpha_i}.
+&= \E{\alpha_i} + \E{r_i}(0.5 - 0.5) \\
+&= \E{\alpha_i}.
 \end{aligned}
 $$
 
-If only (i) holds, the same mean estimates $(\E{\alpha_{i1}} + \E{\alpha_{i0}})/2$, the average of the period-specific average effects.
+If only (i) holds, the same mean estimates $(\E{\alpha_{i1}} + \E{\alpha_{i0}})/2$, where $\alpha_{it} \eqdef Y_{it}^{a_t = 1} - Y_{it}^{a_t = 0}$, i.e., the average of the period-specific average effects.
 The book concludes that, for the treatments and outcomes it studies, the no-carryover assumption is implausible [@hernan2020causal, Fine Point 3.2, p. 31].
 :::
 :::
@@ -259,54 +425,126 @@ Treatment must be assigned so that each treatment level has a **positive probabi
 ::: {#def-positivity}
 ## Positivity
 
+Let $A$ be a treatment and $L$ the covariates used to achieve conditional exchangeability (@def-exchangeability-conditional).
+**Positivity** holds when
+
 $$\Pr[A = a \mid L = l] > 0 \quad \text{for all values } l \text{ with } \Pr[L = l] \neq 0 \text{ in the population of interest,}$$
 
 for every treatment value $a$ involved in the causal contrast.
+Positivity is sometimes called the **experimental treatment assumption** [@hernan2020causal, p. 32].
+:::
+
+::: {#exm-table-3-1-positivity}
+## Positivity in Table 3.1
+
+In [Table 3.1](#tbl-table-3-1), $\Pr[A = 1 \mid L = 1] = 9/12 = 0.75$ and $\Pr[A = 1 \mid L = 0] = 4/8 = 0.50$.
+Neither is 0 or 1, so $\Pr[A = a \mid L = l] > 0$ for both $a \in \{0, 1\}$ and both $l \in \{0, 1\}$,
+and positivity holds (@def-positivity).
 :::
 
 ::: {.notes}
-Positivity is sometimes called the **experimental treatment assumption**.
-It is taken for granted in experiments: in marginally randomized experiments $\Pr[A = 1]$ and $\Pr[A = 0]$ are positive by design, and in both marginally and conditionally randomized experiments $\Pr[A = a \mid L = l]$ is positive by design for every level $l$ of $L$.
-In Table 3.1, $\Pr[A = 1 \mid L = 1] = 0.75$ and $\Pr[A = 1 \mid L = 0] = 0.50$;
-neither is 0 or 1, so positivity holds.
+Randomized experiments guarantee positivity by design, which is why Chapter 2 hardly mentioned it.
 :::
 
 ### Two refinements
 
 ---
 
-- Positivity is needed only for values $l$ **present in the population of interest**: if the study were restricted to $L = 1$, positivity in $L = 0$ would be irrelevant.
-- Positivity is needed only for the variables $L$ **required for exchangeability**.
-  We do not ask whether people with blue eyes had a positive probability of transplant, because eye color is not needed to make the groups exchangeable.
+::: {#rem-positivity-refinements}
+## Where positivity is needed
+
+Take the heart transplant study ($A$: transplant, $L$: critical condition, $Y$: death), with the average causal effect of $A$ on $Y$ as the target.
+Positivity (@def-positivity) is a requirement on two things only:
+
+- Values $l$ **present in the population of interest**: if the study were restricted to $L = 1$, positivity in $L = 0$ would be irrelevant.
+- The variables $L$ **required for exchangeability**.
+  Suppose eye color neither predicts death given $L$ and $A$ nor was used to assign treatment.
+  Then eye color need not be adjusted for, and we do not ask whether people with blue eyes had a positive probability of transplant.
+:::
 
 ### Positivity in observational studies
 
 ::: {#exm-positivity-violation}
 ## A positivity violation
 
-If doctors always transplanted a heart to individuals in critical condition, then $\Pr[A = 0 \mid L = 1] = 0$ (book Figure 3.1).
+In the heart transplant study ($A$: transplant, $L$: critical condition), suppose doctors always transplanted a heart to individuals in critical condition.
+Then $\Pr[A = 0 \mid L = 1] = 0$ and positivity (@def-positivity) fails (book Figure 3.1).
 The data would contain no untreated individuals with $L = 1$ who could stand in for what would have happened to the treated with $L = 1$ had they been untreated.
 :::
 
-Unlike exchangeability, positivity can sometimes be **checked empirically** (Chapter 12).
-In Table 3.1 there are treated and untreated individuals in both levels of $L$.
+::: {#rem-positivity-checkable}
+## Positivity can sometimes be checked
+
+Let $A$ be a treatment and $L$ the covariates required for exchangeability.
+Unlike exchangeability, positivity can sometimes be **checked empirically** (Chapter 12):
+when $L$ has few levels, the data can show that every treatment value occurs at every level of $L$.
+That is how it was checked in [Table 3.1](#tbl-table-3-1), where both levels of $L$ contain treated and untreated individuals (@exm-table-3-1-positivity).
+:::
 
 ::: {.callout-note title="Technical Point 3.1: Positivity for standardization and IP weighting"}
 The standardized mean $\sum_l \E{Y \mid A = a, L = l} \Pr[L = l]$ is defined only if $\E{Y \mid A = a, L = l}$ is defined for every $l$ with $\Pr[L = l] \neq 0$, i.e., only under positivity;
 otherwise it is undefined.
 
-For IP weighting, $\E{\frac{I(A = a) Y}{f[a \mid L]}}$ is undefined without positivity (it involves $0/0$).
-The version $\E{\frac{I(A = a) Y}{f[A \mid L]}}$ is always defined, because $f[A \mid L]$ is never 0, but it no longer equals the counterfactual mean.
-Let $Q(a) \eqdef \{l : \Pr[A = a \mid L = l] > 0\}$.
+For IP weighting, write $f[a \mid L] \eqdef \Pr[A = a \mid L]$, and $f[A \mid L]$ for its value at each individual's own treatment $A$.
+The version $\E{\frac{I(A = a) Y}{f[a \mid L]}}$ is undefined without positivity (it involves $0/0$).
+The version $\E{\frac{I(A = a) Y}{f[A \mid L]}}$ is always defined, because $f[A \mid L]$ is never 0, but without positivity it no longer equals the counterfactual mean.
+:::
+
+::: {#prp-ipw-without-positivity}
+## The IP weighted mean without positivity
+
+Let $A$ be a discrete treatment, $L$ a covariate taking finitely many values, $Y$ an outcome with finite mean, and $f[a \mid l] \eqdef \Pr[A = a \mid L = l]$;
+write $f[A \mid L]$ for this function evaluated at each individual's own values of $A$ and $L$.
+For a treatment value $a$, let $Q(a) \eqdef \{l : \Pr[L = l] > 0 \text{ and } f[a \mid l] > 0\}$ be the set of covariate values at which $A = a$ occurs with positive probability, and suppose $\Pr[L \in Q(a)] > 0$.
 Then
 
 $$
-\E{\frac{I(A = a) Y}{f[A \mid L]}} = \Pr[L \in Q(a)] \sum_l \E{Y \mid A = a, L = l, L \in Q(a)} \Pr[L = l \mid L \in Q(a)],
+\E{\frac{I(A = a) Y}{f[A \mid L]}} = \Pr[L \in Q(a)] \sum_{l \in Q(a)} \E{Y \mid A = a, L = l} \Pr[L = l \mid L \in Q(a)].
+$$ {#eq-ipw-without-positivity}
+
+If, in addition, $Y^a$ has finite mean and consistency ($Y = Y^A$) and conditional exchangeability ($Y^a \ind A \mid L$) hold, the right-hand side of @eq-ipw-without-positivity equals $\E{Y^a \mid L \in Q(a)} \Pr[L \in Q(a)]$.
+:::
+
+::: {.proof}
+Condition on $L$.
+For $l$ with $\Pr[L = l] > 0$ but $l \notin Q(a)$, the indicator $I(A = a)$ is 0 with probability 1 given $L = l$, so that stratum contributes 0.
+For $l \in Q(a)$, $f[A \mid L] = f[a \mid l]$ whenever $I(A = a) = 1$, so
+
+$$
+\begin{aligned}
+\E{\frac{I(A = a) Y}{f[A \mid L]} \mid L = l}
+&= \frac{\E{I(A = a) Y \mid L = l}}{f[a \mid l]} \\
+&= \frac{\E{Y \mid A = a, L = l} f[a \mid l]}{f[a \mid l]} \\
+&= \E{Y \mid A = a, L = l}.
+\end{aligned}
 $$
 
-which under exchangeability equals $\E{Y^a \mid L \in Q(a)} \Pr[L \in Q(a)]$.
-For binary $A$ without positivity, $Q(0) \neq Q(1)$, so the IP weighted contrast compares two different groups and has no causal interpretation even under exchangeability.
-Under positivity $Q(0) = Q(1)$ and the contrast is the average causal effect if exchangeability holds.
+Averaging over $L$,
+
+$$
+\begin{aligned}
+\E{\frac{I(A = a) Y}{f[A \mid L]}}
+&= \sum_{l \in Q(a)} \E{Y \mid A = a, L = l} \Pr[L = l] \\
+&= \Pr[L \in Q(a)] \sum_{l \in Q(a)} \E{Y \mid A = a, L = l} \Pr[L = l \mid L \in Q(a)].
+\end{aligned}
+$$
+
+For the second claim, take $l \in Q(a)$.
+Consistency gives $\E{Y \mid A = a, L = l} = \E{Y^a \mid A = a, L = l}$,
+and conditional exchangeability gives $\E{Y^a \mid A = a, L = l} = \E{Y^a \mid L = l}$.
+Summing $\E{Y^a \mid L = l} \Pr[L = l \mid L \in Q(a)]$ over $l \in Q(a)$ gives $\E{Y^a \mid L \in Q(a)}$.
+:::
+
+::: {#rem-ipw-contrast-without-positivity}
+## An IP weighted contrast without positivity compares different groups
+
+Let $A$ be binary, and let $L$, $Y$, $f$ and $Q(a)$ be as in @prp-ipw-without-positivity ($L$ with finitely many values, $Y$ with finite mean);
+assume also that $Y^{a=0}$ and $Y^{a=1}$ have finite means, $\Pr[L \in Q(0)] > 0$, and $\Pr[L \in Q(1)] > 0$.
+If positivity (@def-positivity) fails, some $l$ with $\Pr[L = l] > 0$ has $f[a \mid l] = 0$ for one value $a$, and then $f[1 - a \mid l] = 1$;
+so that $l$ lies in exactly one of $Q(0)$ and $Q(1)$, and $Q(0) \neq Q(1)$.
+The IP weighted contrast $\E{\frac{I(A = 1) Y}{f[A \mid L]}} - \E{\frac{I(A = 0) Y}{f[A \mid L]}}$ then compares two different groups and has no causal interpretation, even under exchangeability.
+Under positivity, $Q(0) = Q(1)$ contains every $l$ with $\Pr[L = l] > 0$, so $\Pr[L \in Q(a)] = 1$,
+and under consistency and exchangeability the contrast equals the average causal effect $\E{Y^{a=1}} - \E{Y^{a=0}}$.
 :::
 
 ## 3.4 Consistency: First, Define the Counterfactual Outcome (pp. 33-38)
@@ -316,13 +554,30 @@ Under positivity $Q(0) = Q(1)$ and the contrast is the average causal effect if 
 ::: {#def-consistency}
 ## Consistency
 
-The observed outcome of every treated individual equals her outcome had she received treatment, and the observed outcome of every untreated individual equals her outcome had she remained untreated:
+Let $A$ be a treatment, $Y$ the observed outcome, and $Y^a$ the counterfactual outcome under treatment value $a$.
+**Consistency** holds when, for every individual, the outcome we observe is the counterfactual outcome for the treatment value she actually got:
+$Y = Y^{a=1}$ for those with $A = 1$ and $Y = Y^{a=0}$ for those with $A = 0$.
+In one line,
 
 $$Y = Y^A,$$
 
-where $Y^A$ is the counterfactual $Y^a$ evaluated at the individual's actual treatment $A$.
+where $Y^A$ means $Y^a$ with $a$ set to the individual's actual treatment $A$.
 :::
 
+::: {#exm-consistency-aspirin}
+## Aspirin and death
+
+Let $A$ be taking aspirin and $Y$ death.
+For someone with $A = 1$ and $Y = 1$, consistency (@def-consistency) gives $Y^{a=1} = 1$:
+under the aspirin she in fact took, she dies.
+Here the condition looks too obvious to state,
+but the rest of this section and Section 3.5 describe settings in which it can fail.
+:::
+
+::: {#rem-counterfactuals-primitives}
+## Counterfactuals as primitives
+
+Let $A$ be a treatment, $Y$ the observed outcome, and $Y^a$ the counterfactual outcome under treatment value $a$.
 The book takes the counterfactuals $Y^a$ as **primitives**;
 the observed $Y$ is a function of them.
 For binary $A$:
@@ -332,25 +587,39 @@ Y^A = A\,Y^{a=1} + (1 - A)\,Y^{a=0},
 $$
 
 which equals $Y^{a=1}$ when $A = 1$ (the second term vanishes) and $Y^{a=0}$ when $A = 0$ (the first term vanishes).
+:::
 
-::: {.notes}
-Consistency can look trivially true: if you take aspirin and die, your counterfactual outcome had you taken aspirin is death.
-But it cannot always be taken for granted.
-Consistency has two components:
+::: {#rem-consistency-components}
+## The two components of consistency
 
-1. a precise definition of the counterfactual outcomes $Y^a$, through the specification of the superscript $a$ (this section);
-2. the linkage of the counterfactual outcomes to the observed outcomes (Section 3.5).
+Let $A$ be a treatment, $Y$ the observed outcome, and $Y^a$ the counterfactual outcome under treatment value $a$.
+Consistency (@def-consistency) has two components:
+
+1. pinning down what $Y^a$ means, by saying precisely which treatment the superscript $a$ stands for (this section);
+2. connecting those counterfactual outcomes to the outcomes that were actually recorded (Section 3.5).
 :::
 
 ### Well-defined interventions
 
 ---
 
+::: {#rem-well-defined-average-effect}
+## Average effects need well-defined individual effects
+
+Let $A$ be a binary treatment and $Y$ a dichotomous outcome.
 An individual's causal effect $Y^{a=1} - Y^{a=0}$ can be well-defined only if her $Y^a$ is well-defined for both $a = 1$ and $a = 0$.
 In turn, the average causal effect $\Pr[Y^{a=1} = 1] - \Pr[Y^{a=0} = 1]$ in a given population can be well-defined only if every member of that population has a well-defined individual causal effect.
+:::
 
 How do we know the counterfactuals are well-defined?
-A natural sufficient condition: when $a$ is itself a **well-defined intervention**, $Y^a$ is well-defined, as the outcome that would have been seen had that intervention been carried out.
+One answer is to tie each treatment value to an intervention, which suffices for $Y^a$ to be well-defined.
+
+::: {#def-well-defined-intervention}
+## Well-defined intervention
+
+Call a treatment value $a$ a **well-defined intervention** if an experimental protocol could spell out the action it stands for.
+For such an $a$, $Y^a$ needs no further explanation: it is the outcome under that action.
+:::
 
 ::: {#exm-two-transplant-trials}
 ## Two heart transplant trials
@@ -358,17 +627,26 @@ A natural sufficient condition: when $a$ is itself a **well-defined intervention
 Two ideal randomized trials of heart transplant ($a = 1$) versus medical therapy ($a = 0$) in the same population:
 
 - **Trial 1** writes a detailed protocol: $a = 1$ means assignment to transplant ($a_0 = 1$) followed by specified preoperative procedures ($a_1$), anesthesia ($a_2$), and surgical technique ($a_3$).
-- **Trial 2** is a **pragmatic trial**: $a = 1$ means assignment to transplant ($a_0 = 1$) followed by whatever happens in routine care, i.e., $a_1 = A_1$, $a_2 = A_2$, $a_3 = A_3$.
+- **Trial 2** deliberately leaves the later steps open: $a = 1$ means assignment to transplant ($a_0 = 1$) followed by whatever happens in routine care, i.e., $a_1 = A_1$, $a_2 = A_2$, $a_3 = A_3$.
 
-In both trials $a = 1$ is well-defined by the protocol, so $Y^{a=1}$ is well-defined.
+In both trials $a = 1$ is a well-defined intervention (@def-well-defined-intervention), so $Y^{a=1}$ is well-defined.
 But the two counterfactuals, and hence the two causal effects, will likely differ.
+:::
+
+::: {#def-pragmatic-trial-ch3}
+## Pragmatic trial
+
+As used in this chapter, a **pragmatic trial** is a randomized trial whose investigators deliberately leave the components of care after assignment unspecified,
+so that those components take the values they would take in routine practice.
+Trial 2 of @exm-two-transplant-trials is a pragmatic trial;
+Trial 1 is not, because its protocol also fixes $a_1$, $a_2$, and $a_3$.
 :::
 
 ::: {.notes}
 Formally, $Y^{a=1}$ is the joint counterfactual $Y^{a_0 = 1, a_1, a_2, a_3}$ in Trial 1 and $Y^{a_0 = 1, A_1^{a_0=1}, A_2^{a_0=1}, A_3^{a_0=1}}$ in Trial 2;
 for those assigned to transplant in Trial 2, this equals the observed $Y$ (Technical Point 3.2).
 
-The same treatment name is used with different meanings.
+One label, "heart transplant", covers two different interventions here.
 Which effect is preferable is a question for the consumers of the research.
 Trial 1's effect may vary less across populations, because its components are fixed, whereas the natural values $(A_1, A_2, A_3)$ in Trial 2 depend on the setting;
 so Trial 1's result may be easier to **transport** (Chapter 4).
@@ -379,17 +657,27 @@ This is a question of transportability, not of whether each effect is well-defin
 
 ---
 
-Even Trial 1 did not specify the surgeon's training.
+::: {#exm-surgeon-training}
+## The surgeon's training
+
+Even Trial 1 (@exm-two-transplant-trials) did not specify the surgeon's training.
 Because surgical experience affects post-transplant mortality, $\Pr[Y^{a=1} = 1]$ depends on the (unknown) mix of surgeons.
 Had the protocol specified training, some other detail would still have been left unspecified or open to interpretation.
+:::
 
-- The average causal effect can therefore differ across populations that follow the same protocol: a community whose surgeons differ in experience from the trial's will typically see a different effect.
-- The more precisely we define the interventions, the easier it generally is to transport the result.
+::: {#rem-imperfect-specification}
+## What imperfect specification implies
+
+Under Trial 1's protocol, consider the average causal effect $\Pr[Y^{a=1} = 1] - \Pr[Y^{a=0} = 1]$ of heart transplant (versus medical therapy) on death (@exm-two-transplant-trials, @exm-surgeon-training).
+
+- This effect can differ across populations that follow the same protocol: a community whose surgeons differ in experience from the trial's will typically see a different effect.
+- Sharper definitions of the interventions generally make it easier to transport the result, that is, to carry the effect over to another population (Chapter 4).
 - Components with no effect on the outcome (the color of the surgeons' scrubs) cannot affect transportability.
+:::
 
 ::: {.notes}
-The phrase "no causation without manipulation" (Holland 1986) captures the idea that causal inference requires sufficiently well-defined interventions.
-Such interventions need not be feasible at the time: the effect of genetic variants on disease was considered well-defined before gene-editing technology existed.
+Holland's (1986) slogan "no causation without manipulation" expresses the view that causal inference must rest on well-defined interventions.
+Such interventions need not be feasible at the time: experts regarded the effects of gene variants on disease as well-defined long before anyone could edit genes.
 :::
 
 ### Sufficiently well-defined interventions
@@ -397,30 +685,61 @@ Such interventions need not be feasible at the time: the effect of genetic varia
 ---
 
 In experiments, the protocol makes the interventions explicit.
-In observational studies, investigators who talk about "the effect of heart transplant" without defining the intervention may mean different things, so $Y^a$ is ill-defined until the experts agree on one intervention at a time.
+In observational studies, two investigators who both speak of "the effect of heart transplant" without defining it may have different interventions in mind,
+so $Y^a$ stays ill-defined until the experts settle on one intervention at a time.
 
-> An intervention is **sufficiently well-defined** when, for all practical purposes, no meaningful vagueness remains for $Y^a$.
+::: {#def-sufficiently-well-defined}
+## Sufficiently well-defined intervention
 
+An intervention $a$ is **sufficiently well-defined** when, in the judgment of experts given current knowledge, whatever vagueness is left in the counterfactual outcomes $Y^a$ does not matter for any practical purpose.
+:::
+
+::: {#exm-sufficiently-well-defined-transplant}
+## Settling on one version of heart transplant
+
+Suppose the investigators of an observational study agree to mean Trial 1's version of heart transplant (@exm-two-transplant-trials).
+Details remain open even so:
+the color of the surgeons' scrubs, which experts agree would not change outcomes,
+and the surgeons' training, which affects mortality (@exm-surgeon-training).
+Whether this version of $a = 1$ is sufficiently well-defined (@def-sufficiently-well-defined) depends on whether the experts judge the open details to matter for the question at hand;
+leaving scrub color open raises no concern, whereas leaving training open is acceptable only if the experts judge that its effect does not matter for the decision the study is meant to inform.
+:::
+
+::: {.callout-warning title="No Test for Sufficiently Well-Defined"}
 How do we know no meaningful vagueness remains?
 We don't.
 It is a matter of agreement among experts, based on the substantive knowledge available at a particular time, and experts who agree today may judge differently once new knowledge arrives.
+:::
 
 ::: {.callout-note title="Fine Point 3.3: Possible worlds"}
 Philosophers (Stalnaker 1968, Lewis 1973) defined $Y^a$ as the value of $Y$ in the closest possible world in which the individual received $a$.
 Since the closest world to the actual world is itself, $Y^a = Y$ when $A = a$, so consistency always holds under this definition.
 When $A \neq a$, the closest possible world is vague.
-Robins and Greenland (2000) argued that well-defined interventions should replace closest possible worlds, because in observational studies counterfactuals are vague to the degree that the hypothetical interventions are not made precise.
+Robins and Greenland (2000) proposed replacing closest possible worlds with well-defined interventions,
+because in observational studies counterfactuals are vague to the degree that the hypothetical interventions are left imprecise.
 :::
 
 ### Non-intervention variables
 
 ---
 
-Biological states (blood pressure, LDL cholesterol, body weight) and social factors (socioeconomic status) can be changed only by intervening on their causes.
+::: {#def-non-intervention-variable}
+## Variables that are not interventions
 
-- "The effect of becoming obese on myocardial infarction" has no meaningful interpretation: the counterfactual is ill-defined.
+A **non-intervention variable** is a treatment variable $A$ whose values do not correspond to interventions that anyone actually carries out on $A$ itself;
+typically $A$ can be changed only by intervening on its causes.
+Whether a particular variable counts as one is a matter of degree, and experts may disagree about it.
+:::
+
+::: {#exm-obesity-blood-pressure}
+## Obesity and blood pressure
+
+Body weight, blood pressure and cholesterol, and social factors such as socioeconomic status, are non-intervention variables (@def-non-intervention-variable).
+
+- A phrase such as "the effect of obesity on heart attack" has no clear meaning, because the counterfactual it refers to is ill-defined.
   Specifying the timing and the method of weight change (medication, surgery, diet, exercise) would turn it into the effect of *those* interventions, not of obesity.
 - Yet experts agree that "blood pressure causes stroke", by synthesizing physics, in vitro studies, animal experiments, autopsies, and intervention studies.
+:::
 
 ::: {.notes}
 Whether an effect is ill-defined also depends on the outcome.
@@ -430,18 +749,30 @@ A margin note points to Hernán and Taubman (2008), a paper about the difficulti
 
 ---
 
+How, then, can "blood pressure $A$ affects stroke $Y$" mean anything for a given person?
+We can take it to mean that some way of changing her blood pressure exists, known or not,
+that would leave her stroke risk alone apart from the change in blood pressure itself.
+
 ::: {#def-ende}
 ## Effective no-direct-effect (ENDE) intervention
 
-One way to read the claim that blood pressure $A$ affects this particular individual's stroke outcome $Y$ is as a belief that some intervention $X$ exists (possibly not yet discovered) that can change this individual's value of $A$ to $a$ and that affects her outcome $Y$ only through $A$, with no (direct) effect of its own.
-Such an $X$ is an **effective no-direct-effect intervention for $a$**, written **ENDE($a$)**.
-Its existence is logically equivalent to the statement that the counterfactuals $Y^a$ and the joint counterfactuals $Y^{x,a}$ are both well-defined and equal.
+Let $A$ be a non-intervention variable (@def-non-intervention-variable) and $Y$ an outcome.
+For a given individual, an intervention $X$ (possibly not yet discovered) is an **effective no-direct-effect intervention for $a$**, written **ENDE($a$)**,
+if it can change that individual's value of $A$ to $a$ and affects her outcome $Y$ only through $A$, with no (direct) effect of its own.
+Write $Y^{x,a}$ for the joint counterfactual outcome had $X$ been set to $x$ and $A$ to $a$.
+Saying that such an intervention exists amounts to saying that $Y^a$ and $Y^{x,a}$ are both well-defined and equal.
+:::
+
+::: {#exm-ende-blood-pressure}
+## Which blood pressure interventions could be ENDE
+
+Let $A$ be blood pressure and $Y$ stroke.
+Antihypertensive drugs, exercise, and diet all change $A$.
+Some antihypertensive drugs might serve as ENDE interventions $X$ (@def-ende);
+diet and exercise cannot, because they affect stroke risk through pathways other than blood pressure.
 :::
 
 ::: {.notes}
-Antihypertensive drugs, exercise, and diet all change blood pressure.
-Some antihypertensive drugs might serve as ENDE interventions $X$;
-diet and exercise cannot, because they affect stroke risk through pathways other than blood pressure.
 "$X$ has no direct effect on $Y$ except through $A$" means the same as "the effect of $X$ on $Y$ is completely mediated by $A$" (Chapter 23).
 
 Belief in ENDE interventions is easier for variables whose mechanisms are well understood (blood pressure and stroke) than for others (socioeconomic status and myocardial infarction).
@@ -455,35 +786,53 @@ Accounting for this, the claim that $X$ has no direct effect on $Y$ except throu
 
 ---
 
-Because an average causal effect requires a well-defined individual effect for every member of the population, the average effect of a non-intervention $A$, comparing $a$ with $a'$, is well-defined if every individual in the population has both an ENDE($a$) and an ENDE($a'$) intervention.
+::: {#rem-average-effect-non-intervention}
+## When the average effect of a non-intervention is defined
+
+Let $A$ be a non-intervention variable (@def-non-intervention-variable), $Y$ an outcome, and $a$, $a'$ two values of $A$,
+with target the average causal effect $\E{Y^a - Y^{a'}}$ in a given population.
+Because an average causal effect requires a well-defined individual effect for every member of the population (@rem-well-defined-average-effect),
+this effect is well-defined if every individual in the population has both an ENDE($a$) and an ENDE($a'$) intervention (@def-ende).
 
 - If, for some individuals, no ENDE intervention can move $A$ to $a$ and to $a'$, the population effect is not defined.
 - A well-defined population effect therefore requires restricting attention to those individuals who have ENDE interventions available.
+:::
 
+::: {#exm-small-changes-blood-pressure}
+## Small changes in blood pressure
+
+Let $A$ be blood pressure and $Y$ stroke, as in @exm-ende-blood-pressure.
 Considering **small changes** in $A$ makes ENDE interventions more credible.
 For a change in blood pressure of $\Delta$ mm Hg with $\Delta$ near 0:
 
 - it is more plausible that (essentially) every individual has an effective intervention;
 - direct effects may appear only with large changes (an antihypertensive drug without direct effects at low doses may be toxic at high doses).
 
-So $Y^{\Delta}$ and $\E{Y^{\Delta} - Y^{\Delta = 0}}$ are (essentially) well-defined for all individuals, where $Y^{\Delta}$ is $Y^a$ evaluated at $a = A - \Delta$ and $A$ is the individual's blood pressure before the intervention begins.
+Let $Y^{\Delta}$ denote $Y^a$ evaluated at $a = A - \Delta$, where $A$ is each individual's own pre-intervention blood pressure.
+If (essentially) every individual has an ENDE intervention for changes of size $\Delta$ near 0, then $Y^{\Delta}$ is (essentially) well-defined for every individual, and so is the average effect $\E{Y^{\Delta} - Y^{\Delta = 0}}$.
+:::
 
 ::: {.callout-note title="Fine Point 3.4: An interventionist approach to causal inference"}
-The book's framework, sometimes called "interventionist", rests on well-defined counterfactual outcomes, which are in turn defined through well-defined interventions.
-It supplies the formal language for precise discussion of causal inference about interventions and for interpreting the numbers that data analyses produce.
-Many published papers, however, attach causal interpretations to numerical quantities for questions that involve no recognizable intervention.
-The book therefore extends the interventionist approach to non-interventions by spelling out when quantitative causal inference about them is meaningful.
-The authors do not claim that this is the only valid philosophy of causality, but they know of no alternative framework that produces practically interpretable estimates of causal effects [@hernan2020causal, Fine Point 3.4, p. 39].
+The framework of this chapter, sometimes called "interventionist", builds causal effects from counterfactual outcomes and counterfactual outcomes from well-defined interventions.
+Because many published causal claims concern non-interventions,
+the book extends it with conditions, such as the existence of ENDE interventions (@def-ende), under which such claims have a quantitative meaning.
+The authors do not claim it is the only valid view of causality,
+but say they know of no other framework whose causal estimates have a practical interpretation [@hernan2020causal, Fine Point 3.4, p. 39].
 :::
 
 ## 3.5 Consistency: Second, Link Counterfactuals to the Observed Data (pp. 38-40)
 
 ---
 
-The second component of consistency is the "$=$" in $Y^a = Y$ for individuals with $A = a$.
+::: {#rem-consistency-linkage}
+## When the link holds
+
+Let $A$ be a treatment, $Y$ the observed outcome, and $Y^a$ the counterfactual outcome under treatment value $a$.
+The second component of consistency (@rem-consistency-components) is the "$=$" in $Y^a = Y$ for individuals with $A = a$.
 
 - **Experiments**: when the intervention $a$ was implemented per protocol, $Y = Y^A = Y^a$ for those with $A = a$ by definition.
-- **Observational studies with real-world interventions**: if eligible patients were offered either heart transplant ($A = 1$) or medical therapy ($A = 0$) as part of their care at a particular time and place, then $a = 1$ is "whatever procedures followed a transplant offer in that time and place", and $Y^{a=1} = Y$ for those with $A = 1$.
+- **Observational studies with real-world interventions**: if eligible patients were offered either heart transplant ($A = 1$) or medical therapy ($A = 0$) as part of their care at a particular time and place, then $a = 1$ means whichever procedures came after a transplant offer in that setting, and $Y^{a=1} = Y$ for those with $A = 1$.
+:::
 
 ::: {.notes}
 In the observational case, the targeted effect is of questionable relevance elsewhere if investigators cannot roughly characterize what "heart transplant" meant in that setting.
@@ -504,24 +853,38 @@ For an individual with $B = 1$, the well-defined $Y^{a=1}$ need not equal the ob
 
 The book uses a different letter ($B$) for the recorded variable precisely because the same letter is reserved for cases in which $A = a$ corresponds to the well-defined intervention $a$.
 
-::: {.notes}
-Two lessons:
-
-- Being able to describe a well-defined intervention is **not sufficient** for consistency;
+::: {.callout-warning title="A Well-Defined Intervention Is Not Enough"}
+- A well-defined intervention (@def-well-defined-intervention) that we can describe is **not sufficient** for consistency;
   we must also be able to link $Y^a$ to the observed $Y$.
 - Conversely, recording a variable $A$ does not make "the effect of $A$" meaningful, because the corresponding interventions may be ill-defined.
+:::
 
-Having a well-defined intervention $a$ but nobody in the population with $A = a$ can be viewed as an extreme form of non-positivity.
+::: {.notes}
+A well-defined intervention $a$ that nobody in the population received ($A = a$ for no one) amounts to an extreme failure of positivity.
 
 Achieving consistency can be hard in observational studies.
 A good practice is to make the reasoning transparent so others can challenge it;
 the target trial (Section 3.6) is a procedure for doing so.
 :::
 
-::: {.callout-note title="Fine Point 3.5: Attributable fraction"}
-The **excess fraction**, one version of the attributable fraction,
-is the share of observed cases that would not have occurred had everyone been untreated:
-$(\Pr[Y = 1] - \Pr[Y^{a=0} = 1]) / \Pr[Y = 1]$.
+::: {#def-attributable-fraction}
+## Attributable fraction
+
+Let $A$ be a dichotomous treatment and $Y$ a dichotomous outcome.
+An **attributable fraction** is the proportion of the observed cases ($Y = 1$) that can be ascribed to treatment.
+Unlike the causal risk ratio and risk difference, which compare two counterfactual risks, it is anchored on the cases actually observed.
+The next two definitions give two versions of it.
+:::
+
+::: {#def-excess-fraction}
+## Excess fraction
+
+Let $A$ be a dichotomous treatment and $Y$ a dichotomous outcome with $\Pr[Y = 1] > 0$, and let $Y^{a=0}$ be the counterfactual outcome under no treatment.
+The **excess fraction**, one version of the attributable fraction (@def-attributable-fraction), is the net excess of the observed risk over the risk had everyone been untreated, as a share of the observed risk:
+
+$$
+\frac{\Pr[Y = 1] - \Pr[Y^{a=0} = 1]}{\Pr[Y = 1]}.
+$$
 :::
 
 ::: {#exm-attributable-fraction}
@@ -534,20 +897,56 @@ Assuming exchangeability,
 - causal risk ratio $= 0.7 / 0.1 = 7$, causal risk difference $= 0.7 - 0.1 = 0.6$;
 - observed risk $\Pr[Y = 1] = 8/20 = 0.4$, versus $\Pr[Y^{a=0} = 1] = 0.1$ had everyone received $a = 0$.
 
-The excess fraction is
+The excess fraction (@def-excess-fraction) is
 
 $$
-\frac{\Pr[Y = 1] - \Pr[Y^{a=0} = 1]}{\Pr[Y = 1]} = \frac{0.4 - 0.1}{0.4} = \frac{0.3}{0.4} = 0.75.
+\begin{aligned}
+\frac{\Pr[Y = 1] - \Pr[Y^{a=0} = 1]}{\Pr[Y = 1]}
+&= \frac{0.4 - 0.1}{0.4} \\
+&= \frac{0.3}{0.4} \\
+&= 0.75.
+\end{aligned}
 $$
 
-Of the 8 observed cases, only $0.1 \times 20 = 2$ would have occurred had everyone received $a = 0$, so 75% of the cases are attributable to ambrosia.
+Had everyone received $a = 0$, we would expect $0.1 \times 20 = 2$ cases rather than the 8 observed;
+the net excess of 6 cases is 75% of the observed cases, which in this net sense are attributable to ambrosia.
 :::
 
-::: {.notes}
-The excess fraction generally differs from the **etiologic fraction**, the proportion of cases mechanically caused by exposure.
-In the book's example, suppose the untreated would have had 7 cases had they been treated, none of them the 1 case that actually occurred among them (treatment would produce 7 cases and prevent 1), and the treated would have had only 1 case had they been untreated, different from their 7 actual cases.
-Then the excess fraction differs from the etiologic fraction and is a lower bound on it.
-Because the etiologic fraction does not rest on excess cases, it can be computed only in randomized experiments under strong assumptions (Greenland and Robins 1988;
+::: {#def-etiologic-fraction}
+## Etiologic fraction
+
+Let $A$ be a dichotomous treatment and $Y$ a dichotomous outcome.
+The **etiologic fraction** is a second kind of attributable fraction: the proportion of observed cases ($Y = 1$) that treatment mechanically caused [@hernan2020causal, Fine Point 3.5, p. 40].
+It is a statement about the causal mechanism behind each case, not about the gap between two risks.
+:::
+
+::: {#exm-excess-vs-etiologic}
+## Excess and etiologic fractions differ at the ambrosia dinner
+
+Keep the ambrosia data (@exm-attributable-fraction), with exchangeability of ambrosia eaters and nectar drinkers, and fill in each individual's two counterfactual outcomes as follows:
+
+- among the 10 ambrosia eaters, the 7 who fell sick all have $Y^{a=0} = 0$, and exactly one of the other 3 has $Y^{a=0} = 1$;
+- among the 10 nectar drinkers, the 1 who fell sick has $Y^{a=1} = 0$, and 7 of the other 9 have $Y^{a=1} = 1$.
+
+These choices agree with the counterfactual risks used before, $\Pr[Y^{a=1} = 1] = (7 + 7)/20 = 0.7$ and $\Pr[Y^{a=0} = 1] = (1 + 1)/20 = 0.1$,
+and keep exchangeability: $Y^{a=1}$ is 1 for 7 of 10 in each group, and $Y^{a=0}$ is 1 for 1 of 10 in each group.
+
+This individual-level scenario is hypothetical: the data cannot reveal it.
+Here we count an ambrosia eater's case as caused by ambrosia when that person would have stayed well without it ($Y^{a=0} = 0$).
+Each of the 7 cases among ambrosia eaters would not have occurred without ambrosia, so ambrosia caused all 7;
+the single case among nectar drinkers did not involve ambrosia.
+In this scenario, then, the etiologic fraction (@def-etiologic-fraction) is $7/8 = 0.875$.
+The excess fraction stays at 0.75, a net count:
+8 observed cases minus the 2 expected without ambrosia, divided by 8, gives $6/8$.
+Counting case by case gives $7/8$, so here the excess fraction understates the etiologic fraction,
+because the ambrosia eater who stayed well but would have fallen sick without ambrosia (the one with $Y^{a=0} = 1$ among the other 3) offsets one of the seven cases ambrosia caused.
+:::
+
+::: {.callout-note title="Fine Point 3.5: Attributable fraction"}
+The book's Fine Point 3.5 introduces both attributable fractions (@def-attributable-fraction) with the ambrosia dinner (@exm-attributable-fraction, @exm-excess-vs-etiologic).
+Under consistency, the excess fraction needs only the observed risk and one counterfactual risk,
+so observational data can estimate it under the identifiability conditions.
+The etiologic fraction is different: it does not rest on excess cases, so it can be computed only in randomized experiments, and even then only under strong assumptions (Greenland and Robins 1988;
 Robins and Greenland 1989).
 Fine Point 5.4 revisits the excess fraction in the sufficient-component-cause framework.
 :::
@@ -562,13 +961,24 @@ Assuming the three identifiability conditions amounts to viewing an observationa
 ## Target trial
 
 The **target trial** (or target experiment) is the hypothetical randomized experiment that would quantify the causal effect of interest.
-For each causal effect, we may (i) specify the protocol of the target trial that we would like to, but cannot, conduct, and (ii) describe how the observational data would be used to emulate it.
+For a given causal effect, the investigator (i) writes the protocol of the target trial, a trial that would be run if it could be, and (ii) explains how the observational data will stand in for that trial.
+:::
+
+::: {#exm-aspirin-target-trial}
+## A target trial for aspirin prescription
+
+Take an observational database in which $A$ indicates a prescription of aspirin and $Y$ indicates stroke,
+restricted to people for whom aspirin is neither clearly required nor clearly ruled out (no absolute indications or contraindications).
+The target is the average causal effect $\Pr[Y^{a=1} = 1] - \Pr[Y^{a=0} = 1]$.
+Most experts would accept "prescribed" and "not prescribed" as sufficiently well-defined interventions (@def-sufficiently-well-defined),
+so a randomized trial of prescribing aspirin *could* have been run.
+That trial is the target trial (@def-target-trial), and writing down its protocol pins down the causal effect the database is meant to estimate.
 :::
 
 If the emulation were successful, the observational study and the target trial (had it been conducted) would give the same results.
 
 ::: {.notes}
-The target trial, or its logical equivalents, has a long history: the book cites Dorn (1953), Wold (1954), Cochran (1972), Rubin (1974), Feinstein (1971), and Dawid (2000), and Robins (1986) generalized it to time-varying treatments.
+The target trial idea, under this and other names, goes back decades: the book cites Dorn (1953), Wold (1954), Cochran (1972), Rubin (1974), Feinstein (1971), and Dawid (2000), and Robins (1986) generalized it to time-varying treatments.
 The key components were specified by Hernán and Robins (2016) and Hernán et al. (2025).
 Chapter 22 returns to the framework.
 :::
@@ -577,17 +987,26 @@ Chapter 22 returns to the framework.
 
 ---
 
-- eligibility criteria
-- interventions (or, generally, treatment strategies)
-- assignment
-- outcomes
-- start and end of follow-up
-- causal contrasts
+::: {#alg-target-trial-emulation}
+## Specifying and emulating a target trial
+
+1. Specify the protocol of the target trial (@def-target-trial), with its key components:
+
+   - eligibility criteria
+   - interventions (or, generally, treatment strategies)
+   - assignment
+   - outcomes
+   - start and end of follow-up
+   - causal contrasts
+2. For each component, describe how the observational data will emulate it:
+   who in the data is eligible, which intervention each eligible individual followed, and how outcomes are ascertained.
+3. If the analysis uses standardization or IP weighting, identify the adjustment variables $L$ that are expected to make the treatment groups conditionally exchangeable (@def-exchangeability-conditional).
+:::
 
 ::: {.notes}
 Eligibility criteria must be chosen so that every eligible individual could in principle receive every treatment of interest;
 otherwise some individual causal effects, and hence the average effect, would be undefined.
-In Parts I and II, each individual meets the eligibility criteria at one time only, which becomes **time zero** (the start of follow-up).
+In Parts I and II, every individual becomes eligible at a single time, and that time is **time zero** (the start of follow-up).
 The acronym PICO (Population, Intervention, Comparator, Outcome;
 Richardson et al. 1995) summarizes some of these components.
 :::
@@ -596,11 +1015,16 @@ Richardson et al. 1995) summarizes some of these components.
 
 ---
 
+::: {#rem-target-trial-interventions}
+## The target trial for experiments, interventions, and non-interventions
+
+For a treatment variable $A$ and outcome $Y$, the target trial (@def-target-trial) depends on what kind of variable $A$ is:
+
 - **Experiments**: in a fully adherent trial of low-dose aspirin $A$ and stroke $Y$, $A$ is the investigators' action, so $Y^a$ is well-defined;
   the target trial is the trial actually conducted.
-- **Observational studies of interventions**: if $A$ indicates prescription of aspirin, in a population without absolute indications or contraindications, most experts would accept "prescribed" and "not prescribed" as sufficiently well-defined;
-  a target trial *could* have been conducted, and specifying its protocol characterizes the causal effect.
-- **Non-interventions**: the target trial randomizes an ENDE intervention $X$ rather than $A$, if experts believe one exists.
+- **Observational studies of interventions**: when each value of $A$ is a sufficiently well-defined intervention that some agent could have applied, a target trial *could* have been conducted, and specifying its protocol characterizes the causal effect (@exm-aspirin-target-trial).
+- **Non-interventions**: the target trial randomizes an ENDE intervention $X$ (@def-ende) rather than $A$, if experts believe one exists.
+:::
 
 ::: {.notes}
 Whether a variable corresponds to an intervention is often debatable: assignment in a randomized trial uncontroversially is one, socioeconomic status uncontroversially is not, and there is a gradient in between.
@@ -610,12 +1034,18 @@ Whether a variable corresponds to an intervention is often debatable: assignment
 
 ---
 
-1. **Genotype.** $Y^a$ is well-defined if ENDE interventions $X$ could set each target-population member's genotype to $a$ at conception, so that $Y^a$ and $Y^{x,a}$ are equal for each of them.
+::: {#exm-three-non-interventions}
+## Genotype, blood pressure, and socioeconomic status
+
+Let $Y$ be an outcome of interest, and let $A$ be, in turn, genotype, systolic blood pressure, and socioeconomic status.
+
+1. **Genotype.** $Y^a$ is well-defined if ENDE interventions $X$ (@def-ende) could set each target-population member's genotype to $a$ at conception, so that $Y^a$ and $Y^{x,a}$ are equal for each of them.
    The interventions need not be known: decades ago most experts considered the effect of genotype well-defined, and gene editing was eventually developed.
 2. **Systolic blood pressure.** $Y^a$ is well-defined for everyone in the population if ENDE interventions $X$ could bring each individual's blood pressure to $a$.
-   Many experts believe some drugs act as ENDE interventions in some populations, perhaps only over a limited range, so the effect of *modest* changes can be defined through a target trial that randomizes $X$ (the small-change argument of Section 3.4).
+   Many experts believe some drugs act as ENDE interventions in some populations, perhaps only over a limited range, so the effect of *modest* changes can be defined through a target trial that randomizes $X$ (the small-change argument of @exm-small-changes-blood-pressure).
 3. **Socioeconomic status.**
    Most experts doubt that interventions could place people at a given status without affecting $Y$ through other means (they may even disagree on what the term means), so no target trial can be specified and the effect is not well-defined.
+:::
 
 ::: {#rem-target-trial-non-intervention}
 ## Summary of the target trial for interventions and non-interventions
@@ -628,7 +1058,7 @@ Without that belief, $Y^a$ and the effect of $A$ are not well-defined.
 ::: {.callout-note title="Fine Point 3.6: When causal inference for non-interventions goes unquestioned"}
 In a trial with assignment $Z$ and received treatment $A$, the intention-to-treat effect of $Z$ is well-defined because $Z$ is an intervention [@hernan2020causal, Fine Point 3.6, p. 43].
 With perfect adherence and no direct effect of $Z$, $Z = A$ and $Z$ is an ENDE intervention for $A$.
-Without perfect adherence, $Z$ is not an ENDE intervention for everyone, because it does not succeed in setting $A$ to 1 or 0 for every individual (even if $Z$ has no direct effect on $Y$).
+Without perfect adherence, $Z$ is not an ENDE intervention for everyone: even with no direct effect of $Z$ on $Y$, assignment fails to move some individuals' $A$ to the assigned value.
 The effect of $A$ in the whole population is then well-defined only if some ENDE intervention $X$ on $A$ exists (e.g., adding aspirin to food without the participants' knowledge).
 Most experts find this so self-evident that "the effect of received treatment" is discussed without mentioning $X$.
 
@@ -648,11 +1078,17 @@ Glymour and Spiegelman 2016) [@hernan2020causal, p. 42].
 
 ---
 
-- enough information to map the protocol to the data: identify eligible individuals, classify them by intervention, and ascertain outcomes;
-- when using IP weighting or standardization, enough adjustment variables $L$ for conditional exchangeability.
+::: {#rem-valid-emulation}
+## Requirements for a valid emulation
+
+Once the protocol of a target trial (@def-target-trial) for the effect of a treatment $A$ on an outcome $Y$ is specified, emulating it with observational data requires
+
+- enough information to map the protocol to the data: identify eligible individuals, classify them by intervention, and ascertain outcomes (step 2 of @alg-target-trial-emulation);
+- when using IP weighting or standardization, enough adjustment variables $L$ for conditional exchangeability (step 3).
   For "the effect of blood pressure on stroke", investigators who believe in an ENDE intervention would adjust for variables, such as diet and exercise, that they believe affect both blood pressure and stroke.
 
 Chapter 16 considers alternative identifying conditions for emulating a target trial.
+:::
 
 ### Anchoring analyses to realistic interventions
 
@@ -665,13 +1101,16 @@ Comparing the risk of death between people with body mass index (BMI) 25 versus 
 A modified analysis could emulate a more reasonable target trial, e.g., one assigning some individuals to a 5% reduction in BMI every year, starting at age 40, for as long as their BMI stays over 25 (a sustained strategy of the kind studied in Part III).
 :::
 
+::: {.callout-tip title="Let the Target Trial Expose Unrealistic Interventions"}
+A written target trial makes the intervention behind an analysis explicit.
+Decision makers can then see when an analysis, like the BMI comparison in @exm-bmi-target-trial, quietly asks about an intervention nobody could carry out.
+:::
+
 ::: {.notes}
 Experts may still disagree that ENDE interventions exist for gradual weight change, but such interventions are more plausible than instantaneous weight loss.
 One course of action is to proceed as if they existed, adjusting for prognostic factors $L$, while accepting that the results lack a causal interpretation and may be inadequate for decisions.
 Such an analysis may still tell us something about what ENDE interventions would do were they to exist, or inspire technologies to create them.
 Danaei et al. (2016) considered unknown interventions producing progressive weight loss over several years in a study of weight loss and heart disease.
-
-At the very least, specifying a target trial aligns causal questions with interventions that are feasible or not totally unrealistic, and helps decision makers recognize analyses that imply extreme or impossible interventions.
 :::
 
 ::: {.notes}
@@ -686,8 +1125,8 @@ or
 Interpretation (ii), an average of $n$ interventions, is the one relevant to a physician and patient deciding on transplant, and the one the book uses implicitly.
 Interpretation (i) is not well-defined: it does not say how the health system would be redesigned to supply the hearts and the capacity.
 If that redesign were specified, current observational data would be inadequate, because they were generated under the old system (e.g., a system that transplants everyone might accept lower-quality organs).
-This issue is related to interference (Fine Point 1.1), although the interference literature usually assumes interpretation (i) is well-defined.
-Observational data may be insufficient to characterize the effect of scaling up an intervention.
+The question is close to interference (Fine Point 1.1), but work on interference usually takes interpretation (i) to be well-defined.
+So observational data may not be enough to describe what would happen if an intervention were scaled up to a whole system.
 :::
 :::
 
@@ -702,14 +1141,14 @@ The argument applies equally to observational and randomized studies.
 
 ---
 
-The identifiability conditions under which an observational study can be analyzed like a conditionally randomized experiment:
+The identifiability conditions (@def-identifiability-conditions) under which an observational study can be analyzed like a conditionally randomized experiment:
 
-1. **Exchangeability**: $Y^a \ind A \mid L$ (untestable; requires expert knowledge)
-2. **Positivity**: $\Pr[A = a \mid L = l] > 0$ for all $a$ in the contrast and all $l$ with $\Pr[L = l] \neq 0$ (sometimes checkable)
-3. **Consistency**: $Y = Y^A$, which requires (i) sufficiently well-defined interventions and (ii) a link between those interventions and the observed data
+1. **Exchangeability** (@def-exchangeability-conditional): $Y^a \ind A \mid L$ (untestable, so it rests on expert knowledge)
+2. **Positivity** (@def-positivity): $\Pr[A = a \mid L = l] > 0$ for all $a$ in the contrast and all $l$ with $\Pr[L = l] \neq 0$ (sometimes checkable)
+3. **Consistency** (@def-consistency): $Y = Y^A$, which requires (i) sufficiently well-defined interventions and (ii) a link between those interventions and the observed data
 
-Specifying the **target trial** makes the causal question, and what the data must supply to emulate it, explicit.
-For non-intervention variables, the target trial randomizes an ENDE intervention $X$.
+Specifying the **target trial** (@def-target-trial) makes the causal question, and what the data must supply to emulate it, explicit.
+For non-intervention variables, the target trial randomizes an ENDE intervention $X$ (@def-ende).
 
 ::: {.notes}
 **Looking ahead**:
