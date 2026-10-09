@@ -17,13 +17,16 @@ format:
 
 Suppose a randomized experiment asks whether one's looking up makes other pedestrians look up,
 and it finds only a weak association.
-Randomization rules out confounding, and every pedestrian's response was recorded, so there is no selection bias.
+Randomization rules out confounding,
+and every pedestrian's response was recorded,
+so there is no selection bias.
 But the collaborator in charge of the records caught only half of the pedestrians who did look up,
 writing the rest down as "did not look up",
 so even a strong effect would appear diluted.
 :::
 
-In @exm-looking-up-misrecorded, the recording process, not the treatment, weakened the observed association.
+In @exm-looking-up-misrecorded, the recording process, not the treatment, weakened the observed association
+(on the additive scale, as a worked example later in the chapter shows).
 Distortions of this kind, produced by the way the data are measured, are the subject of this chapter.
 Because measurement errors occur in any study design, randomized or observational, they always need to be considered.
 This chapter describes the structure of measurement error and then asks what the arrows of a causal diagram mean
@@ -97,7 +100,9 @@ Figure 9.2 adds the measured outcome $Y^*$, with $Y \rightarrow Y^*$ and $U_Y \r
 ::: {#prp-true-association-causal}
 ## With Perfect Data, Association Is Causation in Figure 9.2
 
-Let $A$ and $Y$ be binary, and suppose Figure 9.2 is the causal DAG, so that $A$ has no parents and no backdoor path to $Y$.
+Let $A$ and $Y$ be binary,
+and suppose Figure 9.2 is the causal DAG,
+so that $A$ has no parents and no backdoor path to $Y$.
 Assume consistency and $0 < \Pr[A = 1] < 1$.
 Then the associational risk ratio of the **true** variables equals the causal risk ratio:
 
@@ -111,7 +116,8 @@ whenever $\Pr[Y^{a=0} = 1] > 0$.
 ::: {.proof}
 The empty set satisfies the backdoor criterion
 ([Section 7.2](07-confounding.qmd#def-backdoor-criterion-ch7)),
-because there is no backdoor path between $A$ and $Y$;
+because there is no backdoor path between $A$ and $Y$.
+The backdoor criterion implies exchangeability even without faithfulness (Technical Point 7.1 in Chapter 7),
 so $Y^a \ind A$ for $a = 0, 1$.
 For each $a$, $\Pr[Y = 1 \mid A = a] = \Pr[Y^a = 1 \mid A = a]$ by consistency,
 which equals $\Pr[Y^a = 1]$ by exchangeability.
@@ -134,7 +140,8 @@ but uses measured versions (@def-measurement-error) of some of its variables:
 the treatment, the outcome, or covariates such as confounders.
 There is **measurement bias**, or **information bias**, when the resulting measure of association
 differs from the causal effect of $A$ on $Y$ because of measurement error,
-for example when @eq-measured-rr differs from the causal risk ratio.
+for example when the measured risk ratio $\Pr[Y^* = 1 \mid A^* = 1] / \Pr[Y^* = 1 \mid A^* = 0]$
+differs from the causal risk ratio $\Pr[Y^{a=1} = 1] / \Pr[Y^{a=0} = 1]$.
 :::
 
 ::: {#exm-measurement-bias-figure-9-2}
@@ -374,7 +381,8 @@ VanderWeele and Hernán (2009) give a more general framework based on signed cau
 ## Outcome Misclassification With Perfect Specificity
 
 This proposition is ours, not the book's.
-Let $A$ and $Y$ be binary, and let $A$ be measured without error.
+Let $A$ and $Y$ be binary, and let $A$ be measured without error, so $A^* = A$.
+Assume $\Pr[Y = y, A = a] > 0$ for all $y, a \in \{0, 1\}$, so that the conditional probabilities below are defined.
 The **sensitivity** of the outcome measurement in treatment group $a$ is $\Pr[Y^* = 1 \mid Y = 1, A = a]$
 and its **specificity** is $\Pr[Y^* = 0 \mid Y = 0, A = a]$.
 Suppose the sensitivity is $s \in (0, 1]$ and the specificity is 1 in both treatment groups:
@@ -432,8 +440,8 @@ Mismeasured confounders can cause bias even when treatment and outcome are perfe
 In Figure 9.8, $A$ is drug use, $Y$ liver disease, and $L$ history of hepatitis:
 people with prior hepatitis are less likely to be prescribed the drug and more likely to develop liver disease,
 so there is confounding through $A \leftarrow L \rightarrow Y$.
-With $L$ perfectly measured, $L$ blocks that path,
-so under consistency and positivity, standardization or IP weighting by $L$ recovers the causal risk ratio.
+With $L$ perfectly measured, $L$ blocks that path and gives conditional exchangeability,
+so, with consistency and positivity, standardization or IP weighting by $L$ recovers the causal risk ratio.
 
 If hepatitis history is instead ascertained by questionnaire, some participants misreport it,
 and investigators have only the mismeasured $L^*$.
@@ -502,7 +510,7 @@ The book gives only that example [@hernan2020causal, p. 129].
 
 A collider can be mismeasured too.
 In Figure 9.10 (equivalent to Figure 8.2) the arrows are $A \rightarrow Y$, $A \rightarrow C \leftarrow Y$, and $C \rightarrow C^*$.
-Conditioning on the mismeasured $C^*$ generally introduces selection bias,
+For the effect of $A$ on $Y$, conditioning on the mismeasured $C^*$ generally introduces selection bias,
 since $C^*$ descends from the collider $C$,
 which makes it a common effect of $A$ and $Y$ as well.
 :::
@@ -530,7 +538,8 @@ so either one satisfies the backdoor criterion
 ::: {#exm-figure-9-12}
 ## Only the Measured Value Suffices
 
-As we read Figure 9.12, its arrows are $L \rightarrow L^* \rightarrow A \rightarrow Y$, $U_1 \rightarrow L$, $U_1 \rightarrow Y$, $U_2 \rightarrow L$, and $U_2 \rightarrow L^*$, with $U_1$ and $U_2$ unmeasured.
+As we read Figure 9.12, its arrows are $L \rightarrow L^* \rightarrow A \rightarrow Y$, $U_1 \rightarrow L$, $U_1 \rightarrow Y$, $U_2 \rightarrow L$, and $U_2 \rightarrow L^*$,
+with $U_1$ and $U_2$ unmeasured.
 Conditioning on $L^*$ blocks every backdoor path, because each one enters $A$ through the non-collider $L^*$.
 Conditioning on the true $L$ instead leaves $A \leftarrow L^* \leftarrow U_2 \rightarrow L \leftarrow U_1 \rightarrow Y$ open,
 because $L$ is a collider on it.
@@ -560,7 +569,7 @@ This is unrealistic.
 As this chapter showed, measurement error can
 
 - create a noncausal association between $A^*$ and $Y^*$ even when $A$ has no effect on $Y$ and there is no confounding or selection bias,
-  provided the errors are dependent or differential (compare @prp-null-preserved), and
+  for example when the errors are dependent or differential (compare @prp-null-preserved), and
 - prevent a measured confounder $L^*$ from blocking a backdoor path that the true $L$ would block (@exm-hepatitis).
 :::
 
@@ -609,11 +618,12 @@ Earlier diagrams also assumed that every arrow corresponds to a well-defined int
 ::: {#def-causal-dag-strict}
 ## Causal DAG (Strict Sense)
 
-A **causal DAG**, in the strict sense used by the book, is a DAG in which every arrow has a causal interpretation,
-that is, every arrow $X \rightarrow W$ comes with well-defined interventions on $X$ for its effect on $W$,
-and which also meets the Chapter 6 requirements for a causal DAG
-(every common cause of two variables on the graph is on the graph, and the [causal Markov assumption](06-graphical-representation.qmd#def-causal-markov) holds).
-A DAG with at least one arrow lacking such an interpretation is a **"noncausal" diagram** [@hernan2020causal, p. 132].
+Consider a DAG that meets the Chapter 6 requirements for a causal diagram,
+which we restate here: every common cause of two variables on the graph is on the graph,
+and the [causal Markov assumption](06-graphical-representation.qmd#def-causal-markov) holds.
+The book calls it a **causal DAG** in the strict sense if, in addition, every arrow has a causal interpretation,
+that is, every arrow $X \rightarrow W$ comes with well-defined interventions on $X$ for its effect on $W$.
+If at least one arrow lacks such an interpretation, the book calls the DAG a **"noncausal" diagram** [@hernan2020causal, p. 132].
 :::
 
 ::: {.notes}
@@ -653,9 +663,12 @@ With perfect perception there is a deterministic arrow $L \rightarrow L^*$, and 
 body weight affects treatment only once the doctor learns $L^*$.
 Intervening on the perceived $L^*$ while leaving body weight unchanged would change the doctor's behavior just as intervening on $L$ would.
 In this sense the counterfactuals $A^l$ are well defined, while $Y^l$ are not [@hernan2020causal, p. 132].
+Our gloss on why: changing the doctor's perception $L^*$ leaves the patient's actual body weight $L$ untouched,
+so it cannot stand in for an intervention on $L$ when the outcome is death,
+which body weight may affect by routes that do not pass through the doctor.
 :::
 
-### Making the Diagram Causal: Hidden Factors $H$
+### Making the Diagram Causal: Hidden Factors Behind Obesity
 
 ---
 
@@ -704,6 +717,8 @@ in which interventions are well defined for $A$ alone, whose counterfactuals are
 and the joint distribution factors according to the DAG.
 Its arrows need not be causal;
 they only encode, via d-separation, conditional independencies on the DAG and the associated SWIG.
+The same reading applies to Figure 9.13 of @exm-obesity-covid, where $L$ is obesity, $A$ antiviral treatment, and $Y$ death,
+and only $A$ has well-defined interventions.
 Under this reading, the arrow $L \rightarrow Y$ in Figure 9.13 need not be removed
 merely because $L$ lacks well-defined interventions.
 :::
@@ -723,7 +738,7 @@ and if it fails, the claim that $M$-counterfactuals exist is falsified together 
 :::
 
 ::: {.callout-note title="Fine Point 9.5: A Connection to the Front Door Formula"}
-Replacing $A \rightarrow M$ in the front door diagram of Figure 7.14 by $L \rightarrow A$ gives Figure 9.14,
+Relabeling $A$, $M$, and $U$ in the front door diagram of Figure 7.14 as $L$, $A$, and $H$ turns it into Figure 9.14,
 so the front door formula identifies the effect of obesity on death through treatment.
 The proposition below states this, and the remark after it shows what changes when a direct arrow is added [@hernan2020causal, p. 134].
 :::
@@ -786,7 +801,7 @@ $$ {#eq-adjust-l-both-dags}
 In Figure 9.14 the only backdoor path from $A$ to $Y$ is $A \leftarrow L \leftarrow H \rightarrow Y$.
 $L$ is a non-collider on it, so conditioning on $L$ blocks it, and $L$ is not a descendant of $A$.
 So $\{L\}$ satisfies the backdoor criterion ([Section 7.2](07-confounding.qmd#def-backdoor-criterion-ch7)),
-which implies $Y^a \ind A \mid L$.
+which implies $Y^a \ind A \mid L$ even without faithfulness (Technical Point 7.1 in Chapter 7).
 The standardization theorem ([Chapter 7](07-confounding.qmd#thm-standardization-ch7)) then gives @eq-adjust-l-both-dags.
 :::
 
@@ -833,8 +848,8 @@ can make an adjustment set look sufficient when it is not, as in @exm-surrogate-
 
 ::: {.callout-tip title="Interrogate Every Arrow"}
 When proposing a causal DAG, ask of each arrow $X \rightarrow W$ whether there is a well-defined intervention on $X$ for its effect on $W$.
-An engineer drawing an electrical circuit can skip this question, because every component can be set at will;
-a health or social scientist cannot [@hernan2020causal, p. 135].
+The question is idle for an electrical circuit, where every intervention is well defined,
+but not in the health and social sciences [@hernan2020causal, p. 135].
 :::
 
 ::: {#rem-well-defined-degree}
@@ -850,7 +865,7 @@ while acknowledging that such beliefs, and the diagrams, may later prove wrong [
 ::: {.callout-note title="Fine Point 9.6: From Noncausal Diagrams to Causal Diagrams"}
 Replacing a noncausal arrow with a hidden variable can change what is identifiable,
 and the way the hidden variable is added matters.
-The two examples below follow one set of investigators through both steps [@hernan2020causal, p. 136].
+The examples below follow one set of investigators through that step, and then a variant of it [@hernan2020causal, p. 136].
 :::
 
 ::: {#exm-figure-9-17-to-9-18}
@@ -864,7 +879,7 @@ If Figure 9.17 were the true causal diagram, the effect would not be identifiabl
 because $L$ is a descendant of $A$ ([Fine Point 7.4](07-confounding.qmd)).
 
 There is no well-defined intervention on $L$ for $Y$,
-so they add a hidden $H \rightarrow Y$ with $L$ as a surrogate of $H$,
+so they replace $L \rightarrow Y$ by $H \rightarrow Y$ for a hidden $H$, with $L$ as a surrogate of $H$,
 and redirect the arrows from $U$ and $A$ into $L$ toward $H$ (Figure 9.18).
 Now no measured variable can block the backdoor path $A \leftarrow U \rightarrow H \rightarrow Y$,
 so the effect is not identifiable.
