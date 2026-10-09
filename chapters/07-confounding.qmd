@@ -408,7 +408,7 @@ interpreted as an FFRCISTG model ([Chapter 6](06-graphical-representation.qmd#gr
 2. If, in addition, the joint distribution is faithful to $\mathcal{G}$,
    then $Y^a \ind A \mid L$ for every $a$ only if $L$ satisfies the backdoor criterion.
 
-Hence, under faithfulness, $Y^a \ind A \mid L$ holds **if and only if** $L$ satisfies the backdoor criterion [@hernan2020causal, pp. 93-94].
+Together, under faithfulness, the backdoor criterion for $L$ and conditional exchangeability given $L$ are **equivalent** [@hernan2020causal, pp. 93-94].
 :::
 
 The proof is deferred: Section 7.5 sketches a graphical argument for @thm-backdoor-exchangeability-ch7 once SWIGs are defined.
@@ -447,7 +447,7 @@ The set $\{L\}$ fails the backdoor criterion, because $L$ is a descendant of $A$
 1. **No common causes of treatment and outcome** (e.g., Figure 6.2):
    there are no backdoor paths, the empty set satisfies the criterion, and there is **no confounding**.
    This is a marginally randomized experiment;
-   under faithfulness, marginal exchangeability is equivalent to no common causes of treatment and outcome.
+   under faithfulness, $Y^a \ind A$ holds exactly when $A$ and $Y$ have no common cause.
 2. **Common causes, but a set $L$ of measured non-descendants of $A$ blocks all backdoor paths** (e.g., Figure 7.1):
    there is confounding, but adjusting for $L$ removes the bias it causes.
    This is a conditionally randomized experiment, with an arrow $L \rightarrow A$ by design.
@@ -456,15 +456,15 @@ The set $\{L\}$ fails the backdoor criterion, because $L$ is a descendant of $A$
 ::: {#def-sufficient-set}
 ## Sufficient Set for Confounding Adjustment
 
-A set $L$ of measured non-descendants of $A$ is a **sufficient set for confounding adjustment** when conditioning on $L$ blocks all backdoor paths,
-that is, when the treated and the untreated are exchangeable within levels of $L$.
+Call a set $L$ of measured variables, none of them a descendant of $A$, a **sufficient set for confounding adjustment** if every backdoor path from $A$ to $Y$ is blocked once we condition on $L$.
+By part 1 of @thm-backdoor-exchangeability-ch7, the treated and the untreated are then exchangeable within levels of $L$: $Y^a \ind A \mid L$.
 :::
 
 ::: {#exm-heart-transplant-sufficient-set}
 ## The Heart Transplant Study
 
 The heart transplant study of Chapter 2 was conditionally randomized given a prognostic factor $L$
-(called critical condition in Chapter 2 and severe heart disease in the book),
+(called critical condition in Chapter 2 and severe heart disease in the book's Chapter 7),
 which affects both transplant $A$ and death $Y$.
 Critical condition was more common among the treated,
 so had they gone without a transplant they would still have died more often than the untreated did:
@@ -583,7 +583,8 @@ The book classifies it as a form of **selection bias**, the subject of Chapter 8
 In @exm-pap-smear, comparing physical activity and cervical cancer only among women with the same Pap smear result conditions on $L$,
 a common effect of the pre-cancer lesion $U_1$ and of health-conscious personality $U_2$.
 Within a stratum of $L$, physical activity and cervical cancer generally become associated through $U_2$ and $U_1$,
-so the stratum-specific association mixes the causal effect with bias, even though the unadjusted association is causal.
+so the stratum-specific association mixes the causal effect with bias,
+even though the unadjusted comparison is unconfounded and equals the causal contrast.
 :::
 
 ::: {#rem-unconditional-without-conditional}
@@ -619,7 +620,7 @@ Figure 7.5 adds the arrow $L \rightarrow A$, which creates the open backdoor pat
 
 So neither the empty set nor $\{L\}$ satisfies the backdoor criterion,
 and, by @thm-backdoor-exchangeability-ch7 under faithfulness,
-there is neither unconditional exchangeability nor conditional exchangeability given $L$.
+exchangeability fails both marginally and within levels of $L$.
 :::
 
 ::: {.callout-note title="Being a Collider Is Path-Specific"}
@@ -629,9 +630,10 @@ A variable is a collider only relative to a given path.
 :::
 
 ::: {#rem-escaping-figure-7-5}
-## Measuring One More Variable
+## Intermediate Variables That Restore Exchangeability
 
-The bias in Figure 7.5 disappears if one more variable is measured:
+Measuring more variables in Figure 7.5 as drawn does not help.
+But if the arrows $U_1 \rightarrow Y$ and $U_2 \rightarrow A$ in fact pass through measurable intermediate variables, measuring those can remove the bias.
 
 **Figure 7.6** (not drawn here) is Figure 7.5 with the arrow $U_1 \rightarrow Y$ replaced by $U_1 \rightarrow L_1 \rightarrow Y$
 and the arrow $U_2 \rightarrow A$ replaced by $U_2 \rightarrow L_2 \rightarrow A$.
@@ -740,7 +742,7 @@ The causal diagrams of this section show two structural sources of lack of excha
 ::: {#def-confounding-backdoor}
 ## Confounding as Any Open-Backdoor-Path Bias
 
-An alternative structural definition calls **confounding** any bias due to an open backdoor path between $A$ and $Y$,
+An alternative structural definition calls **confounding** any bias that an open backdoor path between $A$ and $Y$ produces,
 whether the path is open because of a common cause or because of conditioning on a collider.
 Equivalently, confounding is any systematic bias that randomized assignment of $A$ would eliminate.
 :::
@@ -789,7 +791,9 @@ The next example works this out for Figure 7.6 (@rem-escaping-figure-7-5) [@hern
 - Measuring $L_1$ and $L$: additionally, effects within joint strata of $L_1$ and $L$, and within strata of $L$.
 - Measuring $L$, $L_1$, and $L_2$: additionally, effects within joint strata of all three.
 
-Each formula identifies a counterfactual mean $\E{Y^a \mid \cdot}$ under positivity and consistency.
+Each formula identifies a counterfactual mean $\E{Y^a \mid \cdot}$ under positivity, consistency,
+and conditional exchangeability given the measured set
+(which holds for $\{L_1\}$, $\{L_1, L\}$, $\{L_2, L\}$, and $\{L, L_1, L_2\}$ by the backdoor criterion in Figure 7.6).
 :::
 
 ## 7.4 Confounding and Confounders (pp. 98-101)
@@ -936,8 +940,8 @@ with conditional exchangeability $Y^a \ind A \mid L, U$.
 $U$ is a **non-confounder given data on $L$** if $U$ can be split into disjoint subsets $U_1$ and $U_2$
 ($U = U_1 \cup U_2$, $U_1 \cap U_2 = \emptyset$) such that
 
-1. $U_1$ and $A$ are not associated within strata of $L$: $U_1 \ind A \mid L$, and
-2. $U_2$ and $Y$ are not associated within joint strata of $A$, $L$, and $U_1$: $U_2 \ind Y \mid A, L, U_1$.
+1. given $L$, $U_1$ is independent of treatment: $U_1 \ind A \mid L$, and
+2. given $A$, $L$, and $U_1$, $U_2$ is independent of the outcome: $U_2 \ind Y \mid A, L, U_1$.
 
 $U_1$ and $U_2$ may be associated with each other.
 :::
@@ -948,7 +952,7 @@ $U_1$ and $U_2$ may be associated with each other.
 In Figure 7.4 take $L = \emptyset$ (adjust for nothing) and $U = \{U_1, U_2\}$.
 The set $\{U_1, U_2\}$ blocks the only backdoor path at $U_2$ and contains no descendant of $A$,
 so @thm-backdoor-exchangeability-ch7 gives $Y^a \ind A \mid U_1, U_2$, the premise of @def-nonconfounder-given-data.
-Assume consistency and $\Pr[A = a \mid U_1, U_2] > 0$.
+Assume $U_1$ and $U_2$ are discrete, and assume consistency and $\Pr[A = a \mid U_1, U_2] > 0$.
 The two conditions of @def-nonconfounder-given-data hold, with the subsets named as in the figure:
 
 1. $U_1 \ind A$:
@@ -1045,7 +1049,7 @@ It is obtained from a causal DAG as follows:
 ::: {.proof}
 ## Sketch of a proof of @thm-backdoor-exchangeability-ch7
 
-On the SWIG, $Y^a$ is d-separated from $A$ given $L$ if and only if $L$ is a non-descendant of $A$ that blocks all backdoor paths from $A$ to $Y$ [@hernan2020causal, p. 102]:
+On the SWIG, $Y^a$ and $A$ are d-separated given $L$ exactly when $L$ contains no descendant of $A$ and blocks every backdoor path between $A$ and $Y$ [@hernan2020causal, p. 102]:
 the natural value $A$ keeps only the arrows into treatment,
 so every path between $A$ and $Y^a$ starts with an arrow into $A$, as a backdoor path does,
 and a descendant of $A$ appears on the SWIG only as a counterfactual, so the factual variable cannot be in the conditioning set.
@@ -1149,7 +1153,7 @@ and we can read off $Y^a \ind A \mid L^a$ but not $Y^a \ind A \mid L$, since $L$
 The problem in @exm-descendant-blocks-backdoor is that $L$ is a **descendant** of $A$, not that $L$ occurs **after** $A$.
 Without the arrow $A \rightarrow L$, $L$ would be a non-descendant that blocks all backdoor paths,
 and adjusting for it would remove all bias even if $L$ were measured after $A$.
-What matters is the topology of the causal diagram, not the time order of the nodes.
+Only which variables cause which matters, not when they are measured [@hernan2020causal, p. 103].
 :::
 
 ### Methods That Do Not Require Conditional Exchangeability
@@ -1241,7 +1245,7 @@ Because $A$ has no effect on $C$, $\E{C \mid A = 1} - \E{C \mid A = 0}$ measures
 Suppose unmeasured $U$ (e.g., history of heart disease) confounds the effect of aspirin $A$ on blood pressure $Y$,
 and we also measured blood pressure just before treatment, $C$ (Figure 7.13).
 Aspirin taken later cannot change an earlier reading, so $C$ is a negative outcome control.
-The arrow $C \rightarrow Y$ is not necessary for $C$ to be a negative outcome control.
+$C$ qualifies as a negative outcome control whether or not it also causes $Y$.
 :::
 
 ::: {#def-additive-equi-confounding}
@@ -1311,7 +1315,7 @@ it needs $Y$ and $C$ on the same scale and additive equi-confounding;
 Sofer et al. (2016) describe more general methods.
 
 A **negative treatment control** is, analogously, a variable $Z$ that shares the unmeasured causes $U$ but has no effect on $Y$.
-Given a negative outcome control $C$ and a negative treatment control $Z$ together,
+Given both kinds of control, an outcome control $C$ and a treatment control $Z$,
 additional assumptions allow nonparametric identification of the effect even though $U$ is unmeasured;
 for discrete $U$, $C$, $Z$ with $C$ and $Z$ having at least as many levels as $U$, identification holds quite generally (Miao et al. 2018).
 This is **proximal causal inference** (Cui et al. 2024);
@@ -1347,7 +1351,7 @@ $$ {#eq-front-door}
 
 ::: {.proof}
 1. By the law of total probability, $\Pr[Y^a = 1] = \sum_m \Pr[M^a = m] \Pr[Y^a = 1 \mid M^a = m]$.
-2. $\Pr[M^a = m] = \Pr[M = m \mid A = a]$, because there is no confounding for the effect of $A$ on $M$ ($M^a \ind A$), and by consistency.
+2. $\Pr[M^a = m] = \Pr[M = m \mid A = a]$, because $A$ and $M$ share no common cause, so $M^a \ind A$, and by consistency.
 3. $\Pr[Y^a = 1 \mid M^a = m] = \Pr[Y^m = 1]$, because
    (i) $Y^a = Y^m$ when $M^a = m$ ($A$ affects $Y$ only through $M$), and
    (ii) $Y^m \ind M^a$ by d-separation on the SWIG for the joint intervention setting $M$ to $m$ and $A$ to $a$.
@@ -1363,10 +1367,10 @@ Technical Points 21.11 and 21.12 give proofs without that condition [@hernan2020
 
 ---
 
-1. Confounding (@def-confounding) is the bias due to common causes of treatment and outcome, which create open backdoor paths.
+1. Confounding (@def-confounding) is bias produced by causes shared by treatment and outcome, which open backdoor paths.
 2. **No confounding is equivalent to marginal exchangeability** (under faithfulness);
    with confounding, a sufficient set $L$ of measured non-descendants of $A$ gives conditional exchangeability, and standardization or IP weighting identifies the average causal effect.
-3. Under faithfulness and an FFRCISTG model, $Y^a \ind A \mid L$ holds **if and only if** $L$ satisfies the **backdoor criterion**.
+3. Under faithfulness and an FFRCISTG model, $Y^a \ind A \mid L$ is equivalent to $L$ satisfying the **backdoor criterion**.
 4. Adjusting for a collider such as $L$ in Figure 7.4 (M-bias) creates selection bias;
    in Figure 7.5 no adjustment set based on $L$ alone works.
 5. The **traditional** associational definition of confounder can recommend harmful adjustment;
