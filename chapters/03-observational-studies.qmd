@@ -63,8 +63,8 @@ Then an associational risk ratio of 1.1 may be a **compromise** between two oppo
 
 ::: {.notes}
 So an observational association may owe more to who got treated than to what treatment does.
-A usual response is to proceed *as though* treatment had been assigned at random within levels of measured covariates $L$, while accepting that this is an approximation at best.
-Causal inference from observational data then rests on the hope that the study can be viewed as a **conditionally randomized experiment**.
+Observational analyses commonly act *as though* treatment had been randomized within levels of the measured covariates $L$, an approximation at best.
+Their validity then hinges on whether the study really resembles a **conditionally randomized experiment**.
 :::
 
 ---
@@ -97,10 +97,9 @@ Consistency comes from Chapter 1, exchangeability from Chapter 2, and positivity
 Sections 3.2 to 3.5 take them one at a time and define each formally.
 
 ::: {.callout-important title="Data Alone Are Not Enough"}
-In an ideal randomized experiment, the identifiability conditions hold by design.
-In an observational study, they have to be *assumed*.
-Causal inference from observational data therefore needs two ingredients:
-the data **and** the identifiability conditions (@def-identifiability-conditions).
+An ideal randomized experiment secures the identifiability conditions (@def-identifiability-conditions) through its design.
+An observational study cannot; there, they are *assumptions* brought to the data from outside.
+A causal conclusion from observational data is only as good as the data **and** those assumptions together.
 :::
 
 ::: {.notes}
@@ -274,7 +273,7 @@ In [Table 3.1](#tbl-table-3-1), 69% of the treated ($9/13$) but only 43% of the 
 Because $L$ is a risk factor (@exm-table-3-1-risk-factor), the treated had a worse prognosis on average.
 
 To make this concrete, suppose, as in Chapter 2, that the data come from a conditionally randomized experiment,
-so that consistency and $Y^a \ind A \mid L$ hold.
+so that consistency, $Y^a \ind A \mid L$, and positivity hold (positivity is checked for these data in Section 3.3).
 Then the risk the treated would have had without treatment is
 
 $$
@@ -322,7 +321,7 @@ and, together with consistency and positivity (which holds here, since $\Pr[A = 
 
 ::: {.notes}
 Chapter 7 calls such outcome predictors *confounders*.
-Whether $L$ really is the only imbalanced outcome predictor is the crucial question for the observational study, and it cannot be answered from the data.
+Nothing in the data can show whether $L$ is the only imbalanced outcome predictor; an observational analysis has to assume it.
 :::
 
 ### Not every imbalanced variable must be in $L$
@@ -530,7 +529,8 @@ Summing $\E{Y^a \mid L = l} \Pr[L = l \mid L \in Q(a)]$ over $l \in Q(a)$ gives 
 ::: {#rem-ipw-contrast-without-positivity}
 ## An IP weighted contrast without positivity compares different groups
 
-Let $A$ be binary and $L$ discrete, with $f$ and $Q(a)$ as in @prp-ipw-without-positivity, and assume $\Pr[L \in Q(0)] > 0$ and $\Pr[L \in Q(1)] > 0$.
+Let $A$ be binary, and let $L$, $Y$, $f$ and $Q(a)$ be as in @prp-ipw-without-positivity ($L$ with finitely many values, $Y$ with finite mean);
+assume also that $Y^{a=0}$ and $Y^{a=1}$ have finite means, $\Pr[L \in Q(0)] > 0$, and $\Pr[L \in Q(1)] > 0$.
 If positivity (@def-positivity) fails, some $l$ with $\Pr[L = l] > 0$ has $f[a \mid l] = 0$ for one value $a$, and then $f[1 - a \mid l] = 1$;
 so that $l$ lies in exactly one of $Q(0)$ and $Q(1)$, and $Q(0) \neq Q(1)$.
 The IP weighted contrast $\E{\frac{I(A = 1) Y}{f[A \mid L]}} - \E{\frac{I(A = 0) Y}{f[A \mid L]}}$ then compares two different groups and has no causal interpretation, even under exchangeability.
@@ -687,10 +687,10 @@ An intervention $a$ is **sufficiently well-defined** when whatever vagueness is 
 
 Suppose the investigators of an observational study agree to mean Trial 1's version of heart transplant (@exm-two-transplant-trials).
 Details remain open even so:
-the color of the surgeons' scrubs, which cannot change anyone's outcome,
-and the surgeons' training, which does (@exm-surgeon-training).
+the color of the surgeons' scrubs, which experts agree would not change outcomes,
+and the surgeons' training, which affects mortality (@exm-surgeon-training).
 Whether this version of $a = 1$ is sufficiently well-defined (@def-sufficiently-well-defined) depends on whether the experts judge the open details to matter for the question at hand;
-scrub color plainly does not, while training is a matter for their judgment.
+leaving scrub color open raises no concern, whereas leaving training open is acceptable only if the experts judge that its effect does not matter for the decision the study is meant to inform.
 :::
 
 ::: {.callout-warning title="No Test for Sufficiently Well-Defined"}
@@ -796,7 +796,7 @@ For a change in blood pressure of $\Delta$ mm Hg with $\Delta$ near 0:
 - direct effects may appear only with large changes (an antihypertensive drug without direct effects at low doses may be toxic at high doses).
 
 Let $Y^{\Delta}$ denote $Y^a$ evaluated at $a = A - \Delta$, where $A$ is each individual's own pre-intervention blood pressure.
-Then $Y^{\Delta}$ and $\E{Y^{\Delta} - Y^{\Delta = 0}}$ are (essentially) well-defined for all individuals.
+If (essentially) every individual has an ENDE intervention for changes of size $\Delta$ near 0, then $Y^{\Delta}$ is (essentially) well-defined for every individual, and so is the average effect $\E{Y^{\Delta} - Y^{\Delta = 0}}$.
 :::
 
 ::: {.callout-note title="Fine Point 3.4: An interventionist approach to causal inference"}
