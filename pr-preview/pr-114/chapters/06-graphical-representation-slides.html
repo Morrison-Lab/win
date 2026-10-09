@@ -1,0 +1,1783 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+<script src="../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../site_libs/quarto-html/tabby.min.js"></script>
+<script src="../site_libs/quarto-html/popper.min.js"></script>
+<script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
+<link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../site_libs/quarto-html/light-border.css" rel="stylesheet">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-bf27225e3a48a9273f3daa8f8e829971.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<link href="../site_libs/quarto-contrib/code-language-labels-1.0.2/code-language-labels.css" rel="stylesheet">
+<script src="../site_libs/quarto-contrib/glightbox/glightbox.min.js"></script>
+<link href="../site_libs/quarto-contrib/glightbox/glightbox.min.css" rel="stylesheet">
+<link href="../site_libs/quarto-contrib/glightbox/lightbox.css" rel="stylesheet"><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.10.19">
+<title>What If? - Lecture Notes – Chapter 6: Graphical Representation of Causal Effects</title>
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, minimal-ui">
+<link rel="stylesheet" href="../site_libs/revealjs/dist/reset.css">
+<link rel="stylesheet" href="../site_libs/revealjs/dist/reveal.css">
+<style>
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: 1.5em;}
+    div.column{flex: auto;}
+    @media screen {
+    div.columns{gap: min(4vw, 1.5em);}
+    div.column{overflow-x: auto;}
+    }
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    ul.task-list{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+      vertical-align: middle;
+    }
+    /* CSS for citations */
+    div.csl-bib-body { }
+    div.csl-entry {
+      clear: both;
+    }
+    .hanging-indent div.csl-entry {
+      margin-left:2em;
+      text-indent:-2em;
+    }
+    div.csl-left-margin {
+      min-width:2em;
+      float:left;
+    }
+    div.csl-right-inline {
+      margin-left:2em;
+      padding-left:1em;
+    }
+    div.csl-indent {
+      margin-left: 2em;
+    }  </style>
+<link rel="stylesheet" href="../site_libs/revealjs/dist/theme/quarto-0427d8d92a431aa6a6430e53ec02a470.css">
+<link href="../site_libs/revealjs/plugin/quarto-line-highlight/line-highlight.css" rel="stylesheet">
+<link href="../site_libs/revealjs/plugin/reveal-menu/menu.css" rel="stylesheet">
+<link href="../site_libs/revealjs/plugin/reveal-menu/quarto-menu.css" rel="stylesheet">
+<link href="../site_libs/revealjs/plugin/reveal-chalkboard/font-awesome/css/all.css" rel="stylesheet">
+<link href="../site_libs/revealjs/plugin/reveal-chalkboard/style.css" rel="stylesheet">
+<link href="../site_libs/revealjs/plugin/quarto-support/footer.css" rel="stylesheet">
+<style type="text/css">
+    .reveal div.sourceCode {
+      margin: 0;
+      overflow: auto;
+    }
+    .reveal div.hanging-indent {
+      margin-left: 1em;
+      text-indent: -1em;
+    }
+    .reveal .slide:not(.center) {
+      height: 100%;
+      overflow-y: auto;
+    }
+    .reveal .slide.scrollable {
+      overflow-y: auto;
+    }
+    .reveal .footnotes {
+      height: 100%;
+      overflow-y: auto;
+    }
+    .reveal .slide .absolute {
+      position: absolute;
+      display: block;
+    }
+    .reveal .footnotes ol {
+      counter-reset: ol;
+      list-style-type: none; 
+      margin-left: 0;
+    }
+    .reveal .footnotes ol li:before {
+      counter-increment: ol;
+      content: counter(ol) ". "; 
+    }
+    .reveal .footnotes ol li > p:first-child {
+      display: inline-block;
+    }
+    .reveal .slide ul,
+    .reveal .slide ol {
+      margin-bottom: 0.5em;
+    }
+    .reveal .slide ul li,
+    .reveal .slide ol li {
+      margin-top: 0.4em;
+      margin-bottom: 0.2em;
+    }
+    .reveal .slide ul[role="tablist"] li {
+      margin-bottom: 0;
+    }
+    .reveal .slide ul li > *:first-child,
+    .reveal .slide ol li > *:first-child {
+      margin-block-start: 0;
+    }
+    .reveal .slide ul li > *:last-child,
+    .reveal .slide ol li > *:last-child {
+      margin-block-end: 0;
+    }
+    .reveal .slide .columns:nth-child(3) {
+      margin-block-start: 0.8em;
+    }
+    .reveal blockquote {
+      box-shadow: none;
+    }
+    .reveal .tippy-content>* {
+      margin-top: 0.2em;
+      margin-bottom: 0.7em;
+    }
+    .reveal .tippy-content>*:last-child {
+      margin-bottom: 0.2em;
+    }
+    .reveal .slide > img.stretch.quarto-figure-center,
+    .reveal .slide > img.r-stretch.quarto-figure-center {
+      display: block;
+      margin-left: auto;
+      margin-right: auto; 
+    }
+    .reveal .slide > img.stretch.quarto-figure-left,
+    .reveal .slide > img.r-stretch.quarto-figure-left  {
+      display: block;
+      margin-left: 0;
+      margin-right: auto; 
+    }
+    .reveal .slide > img.stretch.quarto-figure-right,
+    .reveal .slide > img.r-stretch.quarto-figure-right  {
+      display: block;
+      margin-left: auto;
+      margin-right: 0; 
+    }
+  </style>
+<link href="../site_libs/pagedtable-1.1/css/pagedtable.css" rel="stylesheet">
+<script src="../site_libs/pagedtable-1.1/js/pagedtable.js"></script>
+</head>
+<body class="quarto-light">
+  <div class="reveal">
+    <div class="slides">
+
+<section id="title-slide" class="quarto-title-block center"><h1 class="title">Chapter 6: Graphical Representation of Causal Effects</h1>
+
+<div class="quarto-title-authors">
+</div>
+
+</section><section class="slide level2"><p>Causal inference needs expert knowledge and untestable assumptions about the causal network linking treatment, outcome, and other variables. In the simple settings of Chapters 1-5 that network could stay implicit; in realistic settings we must state what we know and what we assume.</p>
+<p>This chapter introduces <strong>causal diagrams</strong>, a graphical tool for encoding qualitative causal assumptions. The book’s advice: draw your assumptions before your conclusions.</p>
+<aside class="notes"><p>This chapter is based on <span class="citation" data-cites="hernan2020causal">Hernán and Robins (<a href="#/references" role="doc-biblioref" onclick="">2020, chap. 6</a>, pp.&nbsp;75-89)</span>. Chapters 6-9 of the book use causal diagrams to conceptualize problems.</p>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside></section><section><section id="causal-diagrams-pp.-75-77" class="title-slide slide level1 center" data-number="1"><h1>
+<span class="header-section-number">1</span> 6.1 Causal Diagrams (pp.&nbsp;75-77)</h1>
+
+</section><section class="slide level2"><div class="cell">
+<div class="cell-output-display">
+<div id="fig-dag-6-1" class="quarto-float quarto-figure quarto-figure-center">
+<figure class="quarto-float quarto-float-fig"><figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-fig" id="fig-dag-6-1-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;1: Book Figure 6.1: disease severity <span class="math inline">\(L\)</span>, heart transplant <span class="math inline">\(A\)</span>, death <span class="math inline">\(Y\)</span>.
+</figcaption><div aria-describedby="fig-dag-6-1-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<a href="06-graphical-representation_files/figure-html/fig-dag-6-1-1.png" class="lightbox" data-gallery="quarto-lightbox-gallery-1" title="Figure&nbsp;1: Book Figure 6.1: disease severity L, heart transplant A, death Y."><img data-src="06-graphical-representation_files/figure-html/fig-dag-6-1-1.png" width="384"></a>
+</div>
+</figure>
+</div>
+</div>
+</div>
+<ul>
+<li>Nodes are random variables; time flows left to right.</li>
+<li>An arrow <span class="math inline">\(V \to W\)</span>: <span class="math inline">\(V\)</span> has a <strong>direct</strong> causal effect on <span class="math inline">\(W\)</span> (not mediated by other variables on the graph) <strong>for at least one individual</strong>.</li>
+<li>No arrow from <span class="math inline">\(V\)</span> to <span class="math inline">\(W\)</span>: <span class="math inline">\(V\)</span> has no direct causal effect on <span class="math inline">\(W\)</span> <strong>for any individual</strong>.</li>
+</ul>
+<aside class="notes"><p>A standard causal diagram does not say whether an arrow is harmful or protective, and when a variable (here <span class="math inline">\(Y\)</span>) has two causes it does not say how they interact <span class="citation" data-cites="hernan2020causal">(<a href="#/references" role="doc-biblioref" onclick="">Hernán and Robins 2020, 75</a>)</span>. The modern theory of causal diagrams arose in computer science and artificial intelligence; see Pearl (2009) and Spirtes, Glymour, and Scheines (2000).</p>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside></section><section id="directed-acyclic-graphs-and-the-causal-markov-assumption" class="slide level2"><h2>Directed Acyclic Graphs and the Causal Markov Assumption</h2>
+<ul>
+<li>
+<strong>Directed</strong>: each edge has a direction (<span class="math inline">\(L \to A\)</span> means <span class="math inline">\(L\)</span> may cause <span class="math inline">\(A\)</span>, not the reverse).</li>
+<li>
+<strong>Acyclic</strong>: no variable causes itself, directly or through other variables.</li>
+</ul>
+<div id="def-causal-markov" class="theorem definition">
+<p><span class="theorem-title"><strong>Definition 1 (Causal Markov Assumption)</strong></span> Conditional on its direct causes (parents), any variable on a causal DAG is independent of any variable for which it is not a cause (its non-descendants) <span class="citation" data-cites="hernan2020causal">(<a href="#/references" role="doc-biblioref" onclick="">Hernán and Robins 2020, 76–77</a>)</span>.</p>
+</div>
+<p>A consequence: <strong>all common causes of any pair of variables on the graph must also be on the graph</strong>, even if unmeasured.</p>
+</section><section id="randomized-experiments-and-observational-studies" class="slide level2"><h2>Randomized Experiments and Observational Studies</h2>
+<div class="cell">
+<div class="cell-output-display">
+<div id="fig-dag-6-2" class="quarto-float quarto-figure quarto-figure-center">
+<figure class="quarto-float quarto-float-fig"><figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-fig" id="fig-dag-6-2-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;2: Book Figure 6.2: a marginally randomized experiment.
+</figcaption><div aria-describedby="fig-dag-6-2-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<a href="06-graphical-representation_files/figure-html/fig-dag-6-2-1.png" class="lightbox" data-gallery="quarto-lightbox-gallery-2" title="Figure&nbsp;2: Book Figure 6.2: a marginally randomized experiment."><img data-src="06-graphical-representation_files/figure-html/fig-dag-6-2-1.png" width="288"></a>
+</div>
+</figure>
+</div>
+</div>
+</div>
+<ul>
+<li>If transplant is randomized with a probability that depends on severity <span class="math inline">\(L\)</span>, <span class="math inline">\(L\)</span> is a common cause of <span class="math inline">\(A\)</span> and <span class="math inline">\(Y\)</span> and must appear: <a href="#/fig-dag-6-1" class="quarto-xref">Figure&nbsp;1</a> (conditionally randomized experiment).</li>
+<li>If everyone has the same probability of transplant, <span class="math inline">\(L\)</span> is not a common cause and can be omitted: <a href="#/fig-dag-6-2" class="quarto-xref">Figure&nbsp;2</a> (marginally randomized experiment).</li>
+<li>
+<a href="#/fig-dag-6-1" class="quarto-xref">Figure&nbsp;1</a> can also depict an observational study in which the only parent of <span class="math inline">\(A\)</span> is <span class="math inline">\(L\)</span>, with no other causes of <span class="math inline">\(Y\)</span> affecting <span class="math inline">\(A\)</span>.</li>
+</ul>
+<aside class="notes"><p>Chapter 7 shows that being willing to draw <a href="#/fig-dag-6-1" class="quarto-xref">Figure&nbsp;1</a> for an observational study is the graphical translation of conditional exchangeability <span class="math inline">\(Y^a \perp\!\!\!\perp A \mid L\)</span> for all <span class="math inline">\(a\)</span> <span class="citation" data-cites="hernan2020causal">(<a href="#/references" role="doc-biblioref" onclick="">Hernán and Robins 2020, 77</a>)</span>.</p>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside></section><section class="slide level2 scrollable"><div title="Technical Point 6.1: Causal DAGs, Formally">
+<div class="callout callout-note callout-titled callout-style-default">
+<div class="callout-body">
+<div class="callout-title">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<p><strong>Technical Point 6.1: Causal DAGs, Formally</strong></p>
+</div>
+<div class="callout-content">
+<p>For a DAG <span class="math inline">\(G\)</span> with nodes <span class="math inline">\(V = (V_1, \ldots, V_M)\)</span>, ordered so that <span class="math inline">\(V_m\)</span> is not an ancestor of <span class="math inline">\(V_j\)</span> when <span class="math inline">\(m &gt; j\)</span>:</p>
+<ul>
+<li>
+<span class="math inline">\(PA_m\)</span>, the <strong>parents</strong> of <span class="math inline">\(V_m\)</span>, are the nodes with an arrow into <span class="math inline">\(V_m\)</span>;</li>
+<li>
+<span class="math inline">\(V_m\)</span> is a <strong>descendant</strong> of <span class="math inline">\(V_j\)</span> (and <span class="math inline">\(V_j\)</span> an <strong>ancestor</strong> of <span class="math inline">\(V_m\)</span>) if one can reach <span class="math inline">\(V_m\)</span> from <span class="math inline">\(V_j\)</span> by following arrows.</li>
+</ul>
+<p>The distribution of <span class="math inline">\(V\)</span> is <strong>Markov</strong> with respect to <span class="math inline">\(G\)</span> if each <span class="math inline">\(V_j\)</span> is independent of its non-descendants given its parents, which is equivalent to the <strong>Markov factorization</strong></p>
+<p><span class="math display">\[
+f(v) = \prod_{j=1}^{M} f(v_j \mid pa_j).
+\]</span></p>
+<aside class="notes"><p>A <strong>causal DAG</strong> is a DAG in which <span class="citation" data-cites="hernan2020causal">(<a href="#/references" role="doc-biblioref" onclick="">Hernán and Robins 2020</a>, Technical Point 6.1, p.&nbsp;76)</span>:</p>
+<ol type="1">
+<li>the lack of an arrow from <span class="math inline">\(V_j\)</span> to <span class="math inline">\(V_m\)</span> means no direct causal effect of <span class="math inline">\(V_j\)</span> on <span class="math inline">\(V_m\)</span> relative to the other variables on the graph;</li>
+<li>all common causes, even unmeasured, of any pair of variables on the graph are on the graph;</li>
+<li>any variable is a cause of its descendants.</li>
+</ol>
+<p>The causal Markov assumption links the causal DAG to the data: it says the distribution is Markov with respect to the causal DAG.</p>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside>
+</div>
+</div>
+</div>
+</div>
+<div id="exm-markov-factorization" class="theorem example">
+<p><span class="theorem-title"><strong>Example 1 (Markov Factorization Implies an Independence)</strong></span> Take the DAG <span class="math inline">\(A \leftarrow L \to Y\)</span> (<a href="#/fig-dag-6-3" class="quarto-xref">Figure&nbsp;3</a>). The parents are: none for <span class="math inline">\(L\)</span>; <span class="math inline">\(L\)</span> for <span class="math inline">\(A\)</span>; <span class="math inline">\(L\)</span> for <span class="math inline">\(Y\)</span>. Start from the chain rule, which holds for any distribution, and apply the Markov factorization:</p>
+<p><span class="math display">\[
+\begin{aligned}
+f(l, a, y)
+  &amp;= f(l)\, f(a \mid l)\, f(y \mid l, a)
+  &amp;&amp; \text{(chain rule)} \\
+  &amp;= f(l)\, f(a \mid l)\, f(y \mid l)
+  &amp;&amp; \text{(the only parent of } Y \text{ is } L\text{)}.
+\end{aligned}
+\]</span></p>
+<p>Dividing both sides by <span class="math inline">\(f(l)\)</span>:</p>
+<p><span class="math display">\[
+\begin{aligned}
+f(a, y \mid l)
+  &amp;= \frac{f(l, a, y)}{f(l)}
+  &amp;&amp; \text{(definition of conditional density)} \\
+  &amp;= f(a \mid l)\, f(y \mid l)
+  &amp;&amp; \text{(substitute the factorization)},
+\end{aligned}
+\]</span></p>
+<p>so <span class="math inline">\(A \perp\!\!\!\perp Y \mid L\)</span>: the missing arrow from <span class="math inline">\(A\)</span> to <span class="math inline">\(Y\)</span> implies a conditional independence.</p>
+</div>
+</section><section id="graphs-and-counterfactuals" class="slide level2"><h2>Graphs and Counterfactuals</h2>
+<p>Each causal DAG has an <strong>underlying counterfactual model</strong> (Technical Points 6.2 and 6.3). That model justifies the intuitive graphical rules in this chapter, but conventional diagrams do not show the counterfactual variables.</p>
+<p><strong>Single World Intervention Graphs (SWIGs)</strong> (Richardson and Robins 2013) put counterfactuals on the graph; they are introduced in Chapter 7.</p>
+<aside class="notes"><p>Causal diagrams encode both causation (our subject-matter knowledge) and the associations that the causal structure implies. That simultaneous representation is what makes them attractive <span class="citation" data-cites="hernan2020causal">(<a href="#/references" role="doc-biblioref" onclick="">Hernán and Robins 2020, 77</a>)</span>. The book’s treatment is informal, aiming at conceptual insight rather than rigor.</p>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside></section><section class="slide level2"><div title="Technical Point 6.2: Nonparametric Structural Equation Models">
+<div class="callout callout-note callout-titled callout-style-default">
+<div class="callout-body">
+<div class="callout-title">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<p><strong>Technical Point 6.2: Nonparametric Structural Equation Models</strong></p>
+</div>
+<div class="callout-content">
+<p>A <strong>nonparametric structural equation model (NPSEM)</strong> for a DAG with ordered nodes <span class="math inline">\(V_1, \ldots, V_M\)</span> assumes unobserved errors <span class="math inline">\(\epsilon_m\)</span> and unknown deterministic functions <span class="math inline">\(f_m\)</span> such that</p>
+<ul>
+<li>
+<span class="math inline">\(V_1 = f_1(\epsilon_1)\)</span>;</li>
+<li>the one-step-ahead counterfactual <span class="math inline">\(V_m^{pa_m}\)</span>, the value of <span class="math inline">\(V_m\)</span> when its parents are set to <span class="math inline">\(pa_m\)</span>, equals <span class="math inline">\(f_m(pa_m, \epsilon_m)\)</span>.</li>
+</ul>
+<p>Only the parents of <span class="math inline">\(V_m\)</span> have a direct effect on it. Every variable can be intervened on, and all factual and counterfactual values are obtained recursively.</p>
+</div>
+</div>
+</div>
+</div>
+<div id="exm-npsem-6-1" class="theorem example">
+<p><span class="theorem-title"><strong>Example 2 (The NPSEM for Book Figure 6.1)</strong></span> The structural equations are <span class="math inline">\(L = f_L(\epsilon_L)\)</span>, <span class="math inline">\(A = f_A(L, \epsilon_A)\)</span>, <span class="math inline">\(Y = f_Y(L, A, \epsilon_Y)\)</span>. Setting <span class="math inline">\(A\)</span> to <span class="math inline">\(a\)</span> leaves <span class="math inline">\(L\)</span> unchanged, because <span class="math inline">\(L\)</span> is not a descendant of <span class="math inline">\(A\)</span>, so the counterfactual outcome is obtained by substituting <span class="math inline">\(a\)</span> for <span class="math inline">\(A\)</span>: <span class="math inline">\(Y^a = f_Y(L, a, \epsilon_Y)\)</span>.</p>
+</div>
+<aside class="notes"><p>Robins (1986) introduced this model as a finest causally interpreted structural tree graph (FCISTG) “as detailed as the data”; Pearl (2009) showed how to represent it with a DAG <span class="citation" data-cites="hernan2020causal">(<a href="#/references" role="doc-biblioref" onclick="">Hernán and Robins 2020</a>, Technical Point 6.2, p.&nbsp;77)</span>. For exposition the book assumes every variable can be intervened on, although its statistical methods do not require this.</p>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside><div title="Technical Point 6.3: Which Independences?">
+<div class="callout callout-note callout-titled callout-style-default">
+<div class="callout-body">
+<div class="callout-title">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<p><strong>Technical Point 6.3: Which Independences?</strong></p>
+</div>
+<div class="callout-content">
+<p>An FCISTG alone does not imply the causal Markov assumption; independence assumptions must be added.</p>
+<table class="caption-top">
+<colgroup>
+<col style="width: 33%">
+<col style="width: 33%">
+<col style="width: 33%">
+</colgroup>
+<thead><tr class="header">
+<th>Model</th>
+<th>Assumption</th>
+<th>Fig. 6.2 implies</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td>NPSEM-IE (Pearl)</td>
+<td>all errors <span class="math inline">\(\epsilon_m\)</span> mutually independent</td>
+<td>full exchangeability <span class="math inline">\((Y^{a=0}, Y^{a=1}) \perp\!\!\!\perp A\)</span>
+</td>
+</tr>
+<tr class="even">
+<td>FFRCISTG (Robins 1986)</td>
+<td>one-step-ahead counterfactuals jointly independent</td>
+<td>marginal exchangeability <span class="math inline">\(Y^a \perp\!\!\!\perp A\)</span> for each <span class="math inline">\(a\)</span>
+</td>
+</tr>
+</tbody>
+</table>
+<p>Both imply the causal Markov assumption. An NPSEM-IE is an FFRCISTG, not vice versa. <strong>Unless stated otherwise, the book’s causal DAGs represent an FFRCISTG.</strong></p>
+<aside class="notes"><p>Source: <span class="citation" data-cites="hernan2020causal">Hernán and Robins (<a href="#/references" role="doc-biblioref" onclick="">2020</a>, Technical Point 6.3, p.&nbsp;78)</span>. Robins and Richardson (2010) showed that Robins’s original formulation is equivalent to the joint-independence assumption for a positive distribution, and that an NPSEM-IE makes many more independence assumptions than an FFRCISTG.</p>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside>
+</div>
+</div>
+</div>
+</div>
+</section></section><section><section id="causal-diagrams-and-marginal-independence-pp.-77-79" class="title-slide slide level1 center" data-number="2"><h1>
+<span class="header-section-number">2</span> 6.2 Causal Diagrams and Marginal Independence (pp.&nbsp;77-79)</h1>
+
+</section><section class="slide level2"><p>Three examples, all with no conditioning:</p>
+<div class="cell">
+<div class="cell-output-display">
+<div id="fig-dag-6-3" class="quarto-float quarto-figure quarto-figure-center">
+<figure class="quarto-float quarto-float-fig"><figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-fig" id="fig-dag-6-3-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;3: Book Figure 6.3: smoking <span class="math inline">\(L\)</span> causes carrying a lighter <span class="math inline">\(A\)</span> and lung cancer <span class="math inline">\(Y\)</span>.
+</figcaption><div aria-describedby="fig-dag-6-3-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<a href="06-graphical-representation_files/figure-html/fig-dag-6-3-1.png" class="lightbox" data-gallery="quarto-lightbox-gallery-3" title="Figure&nbsp;3: Book Figure 6.3: smoking L causes carrying a lighter A and lung cancer Y."><img data-src="06-graphical-representation_files/figure-html/fig-dag-6-3-1.png" width="384"></a>
+</div>
+</figure>
+</div>
+</div>
+</div>
+<div class="cell">
+<div class="cell-output-display">
+<div id="fig-dag-6-4" class="quarto-float quarto-figure quarto-figure-center">
+<figure class="quarto-float quarto-float-fig"><figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-fig" id="fig-dag-6-4-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;4: Book Figure 6.4: haplotype <span class="math inline">\(A\)</span> and smoking <span class="math inline">\(Y\)</span> both cause heart disease <span class="math inline">\(L\)</span>, a collider.
+</figcaption><div aria-describedby="fig-dag-6-4-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<a href="06-graphical-representation_files/figure-html/fig-dag-6-4-1.png" class="lightbox" data-gallery="quarto-lightbox-gallery-4" title="Figure&nbsp;4: Book Figure 6.4: haplotype A and smoking Y both cause heart disease L, a collider."><img data-src="06-graphical-representation_files/figure-html/fig-dag-6-4-1.png" width="384"></a>
+</div>
+</figure>
+</div>
+</div>
+</div>
+<table class="caption-top">
+<colgroup>
+<col style="width: 25%">
+<col style="width: 25%">
+<col style="width: 25%">
+<col style="width: 25%">
+</colgroup>
+<thead><tr class="header">
+<th>Figure</th>
+<th>Structure</th>
+<th>Example</th>
+<th>
+<span class="math inline">\(A\)</span> and <span class="math inline">\(Y\)</span>
+</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td><a href="#/fig-dag-6-2" class="quarto-xref">Figure&nbsp;2</a></td>
+<td><span class="math inline">\(A \to Y\)</span></td>
+<td>aspirin prevents heart disease (randomized)</td>
+<td>associated</td>
+</tr>
+<tr class="even">
+<td><a href="#/fig-dag-6-3" class="quarto-xref">Figure&nbsp;3</a></td>
+<td><span class="math inline">\(A \leftarrow L \to Y\)</span></td>
+<td>lighter, smoking, lung cancer</td>
+<td>associated (no effect of <span class="math inline">\(A\)</span>)</td>
+</tr>
+<tr class="odd">
+<td><a href="#/fig-dag-6-4" class="quarto-xref">Figure&nbsp;4</a></td>
+<td><span class="math inline">\(A \to L \leftarrow Y\)</span></td>
+<td>haplotype, heart disease, smoking</td>
+<td>independent</td>
+</tr>
+</tbody>
+</table></section><section id="paths-and-the-flow-of-association" class="slide level2"><h2>Paths and the Flow of Association</h2>
+<div id="def-path" class="theorem definition">
+<p><span class="theorem-title"><strong>Definition 2 (Path; Causal Path)</strong></span> A <strong>path</strong> between <span class="math inline">\(R\)</span> and <span class="math inline">\(S\)</span> is a route connecting them along a sequence of edges that visits no variable more than once. A path is <strong>causal</strong> if all its arrows point in the same direction; otherwise it is <strong>noncausal</strong> <span class="citation" data-cites="hernan2020causal">(<a href="#/references" role="doc-biblioref" onclick="">Hernán and Robins 2020, 78</a>, margin note)</span>.</p>
+</div>
+<p>Picture paths as pipes through which <strong>association</strong> flows. Association is symmetric, so it flows regardless of the direction of the arrows.</p>
+<div id="def-collider" class="theorem definition">
+<p><span class="theorem-title"><strong>Definition 3 (Collider)</strong></span> A variable on a path is a <strong>collider</strong> on that path if two arrowheads on the path collide at it, as <span class="math inline">\(L\)</span> does on <span class="math inline">\(A \to L \leftarrow Y\)</span>.</p>
+</div>
+</section><section id="the-three-examples" class="slide level2"><h2>The Three Examples</h2>
+<ul>
+<li>
+<a href="#/fig-dag-6-2" class="quarto-xref">Figure&nbsp;2</a>: causation implies association; in an ideal randomized experiment <span class="math inline">\(\Pr[Y^{a=1}=1] \neq \Pr[Y^{a=0}=1]\)</span> if and only if <span class="math inline">\(\Pr[Y=1 \mid A=1] \neq \Pr[Y=1 \mid A=0]\)</span>.</li>
+<li>
+<a href="#/fig-dag-6-3" class="quarto-xref">Figure&nbsp;3</a>: learning that Hera carries a lighter makes it likelier she smokes, hence likelier she gets lung cancer; association flows through the common cause <span class="math inline">\(L\)</span>, though <span class="math inline">\(A\)</span> has no effect on <span class="math inline">\(Y\)</span>.</li>
+<li>
+<a href="#/fig-dag-6-4" class="quarto-xref">Figure&nbsp;4</a>: learning that Apollo lacks the haplotype says nothing about his smoking; a collider <strong>blocks</strong> the flow of association, so <span class="math inline">\(A \perp\!\!\!\perp Y\)</span>.</li>
+</ul>
+<p><strong>Summary</strong>: two variables are marginally associated if one causes the other or if they share a common cause; otherwise they are marginally independent.</p>
+<aside class="notes"><p>In <a href="#/fig-dag-6-3" class="quarto-xref">Figure&nbsp;3</a>, an investigator who concludes from the association that carrying a lighter causes lung cancer makes a mistake: information about <span class="math inline">\(A\)</span> improves prediction of <span class="math inline">\(Y\)</span> without <span class="math inline">\(A\)</span> affecting <span class="math inline">\(Y\)</span> <span class="citation" data-cites="hernan2020causal">(<a href="#/references" role="doc-biblioref" onclick="">Hernán and Robins 2020, 79</a>)</span>. In <a href="#/fig-dag-6-4" class="quarto-xref">Figure&nbsp;4</a>, that both <span class="math inline">\(A\)</span> and <span class="math inline">\(Y\)</span> cause heart disease <span class="math inline">\(L\)</span> is irrelevant to the marginal association between <span class="math inline">\(A\)</span> and <span class="math inline">\(Y\)</span>.</p>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside></section></section><section><section id="causal-diagrams-and-conditional-independence-pp.-80-81" class="title-slide slide level1 center" data-number="3"><h1>
+<span class="header-section-number">3</span> 6.3 Causal Diagrams and Conditional Independence (pp.&nbsp;80-81)</h1>
+
+</section><section class="slide level2"><p>A square box around a node means we condition on it (e.g., restrict to one of its levels).</p>
+<div class="cell">
+<div class="cell-output-display">
+<div id="fig-dag-6-5" class="quarto-float quarto-figure quarto-figure-center">
+<figure class="quarto-float quarto-float-fig"><figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-fig" id="fig-dag-6-5-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;5: Book Figure 6.5: aspirin <span class="math inline">\(A\)</span> lowers platelet aggregation <span class="math inline">\(B\)</span>, which affects heart disease <span class="math inline">\(Y\)</span> (the square node <span class="math inline">\(B\)</span> marks conditioning).
+</figcaption><div aria-describedby="fig-dag-6-5-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<a href="06-graphical-representation_files/figure-html/fig-dag-6-5-1.png" class="lightbox" data-gallery="quarto-lightbox-gallery-5" title="Figure&nbsp;5: Book Figure 6.5: aspirin A lowers platelet aggregation B, which affects heart disease Y (the square node B marks conditioning)."><img data-src="06-graphical-representation_files/figure-html/fig-dag-6-5-1.png" width="384"></a>
+</div>
+</figure>
+</div>
+</div>
+</div>
+<table class="caption-top">
+<colgroup>
+<col style="width: 25%">
+<col style="width: 25%">
+<col style="width: 25%">
+<col style="width: 25%">
+</colgroup>
+<thead><tr class="header">
+<th>Structure</th>
+<th>Conditioning on</th>
+<th>Path</th>
+<th>
+<span class="math inline">\(A\)</span>, <span class="math inline">\(Y\)</span> given the conditioning variable</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td>
+<span class="math inline">\(A \to B \to Y\)</span> (Fig. 6.5)</td>
+<td>mediator <span class="math inline">\(B\)</span>
+</td>
+<td>blocked</td>
+<td>independent: <span class="math inline">\(A \perp\!\!\!\perp Y \mid B\)</span>
+</td>
+</tr>
+<tr class="even">
+<td>
+<span class="math inline">\(A \leftarrow L \to Y\)</span> (Fig. 6.6)</td>
+<td>common cause <span class="math inline">\(L\)</span>
+</td>
+<td>blocked</td>
+<td>independent: <span class="math inline">\(A \perp\!\!\!\perp Y \mid L\)</span>
+</td>
+</tr>
+<tr class="odd">
+<td>
+<span class="math inline">\(A \to L \leftarrow Y\)</span> (Fig. 6.7)</td>
+<td>collider <span class="math inline">\(L\)</span>
+</td>
+<td><strong>opened</strong></td>
+<td>associated</td>
+</tr>
+</tbody>
+</table>
+<aside class="notes"><ul>
+<li>
+<strong>Mediator</strong> <span class="citation" data-cites="hernan2020causal">(<a href="#/references" role="doc-biblioref" onclick="">Hernán and Robins 2020, 80</a>)</span>: among those with low platelet aggregation (<span class="math inline">\(B=0\)</span>), knowing whether someone took aspirin adds no information about heart disease, because aspirin acts only through <span class="math inline">\(B\)</span>: <span class="math inline">\(\Pr[Y=1 \mid A=1, B=b] = \Pr[Y=1 \mid A=0, B=b]\)</span> for all <span class="math inline">\(b\)</span>.</li>
+<li>
+<strong>Common cause</strong>: among nonsmokers (<span class="math inline">\(L=0\)</span>), carrying a lighter no longer predicts lung cancer. Blocking the flow of association through common causes is the graph-based justification for stratification as a way to achieve exchangeability.</li>
+<li>Because complete diagrams (all possible arrows present) imply no conditional independences, it is often said that the information about associations is in the <strong>missing</strong> arrows.</li>
+</ul><style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside></section><section id="conditioning-on-a-collider-opens-the-path" class="slide level2"><h2>Conditioning on a Collider Opens the Path</h2>
+<p>In <a href="#/fig-dag-6-4" class="quarto-xref">Figure&nbsp;4</a>, restrict to people with heart disease (<span class="math inline">\(L=1\)</span>, book Figure 6.7). Among them, someone without the haplotype is more likely to have the other cause, smoking: <span class="math inline">\(A\)</span> and <span class="math inline">\(Y\)</span> are <strong>inversely associated</strong> given <span class="math inline">\(L=1\)</span>.</p>
+<p>In the extreme, if <span class="math inline">\(A\)</span> and <span class="math inline">\(Y\)</span> were the only causes of <span class="math inline">\(L\)</span>, then among those with <span class="math inline">\(L=1\)</span> the absence of one would perfectly predict the presence of the other.</p>
+<aside class="notes"><p>Intuition from the book <span class="citation" data-cites="hernan2020causal">(<a href="#/references" role="doc-biblioref" onclick="">Hernán and Robins 2020, 81</a>)</span>: whether two causes are associated cannot depend on a future event (their common effect), but two causes of an effect generally become associated once we stratify on that effect. Chapter 8 develops associations due to conditioning on common effects.</p>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside></section><section id="conditioning-on-a-descendant-of-a-collider" class="slide level2"><h2>Conditioning on a Descendant of a Collider</h2>
+<div class="cell">
+<div class="cell-output-display">
+<div id="fig-dag-6-8" class="quarto-float quarto-figure quarto-figure-center">
+<figure class="quarto-float quarto-float-fig"><figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-fig" id="fig-dag-6-8-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;6: Book Figure 6.8: diuretic use <span class="math inline">\(C\)</span> follows a diagnosis of heart disease <span class="math inline">\(L\)</span> (the square node <span class="math inline">\(C\)</span> marks conditioning).
+</figcaption><div aria-describedby="fig-dag-6-8-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<a href="06-graphical-representation_files/figure-html/fig-dag-6-8-1.png" class="lightbox" data-gallery="quarto-lightbox-gallery-6" title="Figure&nbsp;6: Book Figure 6.8: diuretic use C follows a diagnosis of heart disease L (the square node C marks conditioning)."><img data-src="06-graphical-representation_files/figure-html/fig-dag-6-8-1.png" width="384"></a>
+</div>
+</figure>
+</div>
+</div>
+</div>
+<p>Conditioning on <span class="math inline">\(C\)</span>, a variable affected by the collider <span class="math inline">\(L\)</span>, also opens <span class="math inline">\(A \to L \leftarrow Y\)</span>. The path stays blocked only if we condition on neither <span class="math inline">\(L\)</span> nor <span class="math inline">\(C\)</span>.</p>
+</section><section id="three-structural-sources-of-association" class="slide level2 scrollable"><h2>Three Structural Sources of Association</h2>
+<p>Two variables can be associated because</p>
+<ol type="1">
+<li>one causes the other;</li>
+<li>they share a common cause;</li>
+<li>they share a common effect and the analysis is restricted to a level of that effect (or of its descendants).</li>
+</ol>
+<p>A fourth, nonstructural source is <strong>chance</strong> (random variability), which shrinks as the study population grows. Until Chapter 10 the book assumes a very large population, so all associations discussed are structural.</p>
+<aside class="notes"><p>The heuristic arguments of this section are formalized by <strong>d-separation</strong> (Pearl 1995); Fine Point 6.1 lists the rules and Fine Point 6.2 introduces faithfulness <span class="citation" data-cites="hernan2020causal">(<a href="#/references" role="doc-biblioref" onclick="">Hernán and Robins 2020, 81</a>)</span>.</p>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside></section></section><section><section id="positivity-and-consistency-in-causal-diagrams-pp.-81-85" class="title-slide slide level1 center" data-number="4"><h1>
+<span class="header-section-number">4</span> 6.4 Positivity and Consistency in Causal Diagrams (pp.&nbsp;81-85)</h1>
+
+</section><section class="slide level2"><div title="Fine Point 6.1: D-Separation">
+<div class="callout callout-note callout-titled callout-style-default">
+<div class="callout-body">
+<div class="callout-title">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<p><strong>Fine Point 6.1: D-Separation</strong></p>
+</div>
+<div class="callout-content">
+<p>A path is <strong>blocked</strong> if and only if</p>
+<ul>
+<li>it contains a <strong>non-collider</strong> that has been conditioned on, or</li>
+<li>it contains a <strong>collider</strong> that has not been conditioned on and has no descendant that has been conditioned on.</li>
+</ul>
+<p>Otherwise it is <strong>open</strong>. Two variables are <strong>d-separated</strong> if all paths between them are blocked; otherwise they are <strong>d-connected</strong>. Two sets are d-separated if each variable in one is d-separated from every variable in the other.</p>
+</div>
+</div>
+</div>
+</div>
+<div id="exm-d-separation" class="theorem example">
+<p><span class="theorem-title"><strong>Example 3 (D-Separation in Book Figures 6.1 and 6.4)</strong></span> &nbsp;</p>
+<ul>
+<li>
+<a href="#/fig-dag-6-1" class="quarto-xref">Figure&nbsp;1</a>, <span class="math inline">\(A\)</span> and <span class="math inline">\(L\)</span>: the path <span class="math inline">\(L \to A\)</span> is open, so they are d-connected, even though the other path <span class="math inline">\(A \to Y \leftarrow L\)</span> is blocked by the collider <span class="math inline">\(Y\)</span>.</li>
+<li>
+<a href="#/fig-dag-6-4" class="quarto-xref">Figure&nbsp;4</a>, <span class="math inline">\(A\)</span> and <span class="math inline">\(Y\)</span>: the only path is blocked by the collider <span class="math inline">\(L\)</span>, so they are d-separated.</li>
+</ul>
+</div>
+</section><section id="from-d-separation-to-independence" class="slide level2"><h2>From D-Separation to Independence</h2>
+<ul>
+<li>
+<strong>Pearl (1988)</strong>: under the causal Markov assumption, if <span class="math inline">\(\mathcal{A}\)</span> is d-separated from <span class="math inline">\(\mathcal{B}\)</span> given <span class="math inline">\(\mathcal{C}\)</span>, then <span class="math inline">\(\mathcal{A}\)</span> is statistically independent of <span class="math inline">\(\mathcal{B}\)</span> given <span class="math inline">\(\mathcal{C}\)</span> (disjoint sets of variables).</li>
+<li>
+<strong>Faithfulness</strong> is the separate assumption that the converse holds: independence implies d-separation.</li>
+</ul>
+<aside class="notes"><p>“d-” stands for directional. An equivalent set of graphical rules, <strong>moralization</strong>, was developed by Lauritzen et al.&nbsp;(1990) <span class="citation" data-cites="hernan2020causal">(<a href="#/references" role="doc-biblioref" onclick="">Hernán and Robins 2020</a>, Fine Point 6.1, p.&nbsp;82)</span>.</p>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside></section><section class="slide level2"><div title="Fine Point 6.2: Faithfulness">
+<div class="callout callout-note callout-titled callout-style-default">
+<div class="callout-body">
+<div class="callout-title">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<p><strong>Fine Point 6.2: Faithfulness</strong></p>
+</div>
+<div class="callout-content">
+<p>An arrow <span class="math inline">\(A \to Y\)</span> means <span class="math inline">\(A\)</span> affects <span class="math inline">\(Y\)</span> for at least one individual, yet the average causal effect and the association can still both be null, when effects in different individuals cancel exactly. Such exact cancellation is rare, so the book assumes faithfulness: lack of d-separation can almost always be equated with a non-zero association.</p>
+</div>
+</div>
+</div>
+</div>
+<div id="exm-unfaithful-table-4-1" class="theorem example">
+<p><span class="theorem-title"><strong>Example 4 (Unfaithfulness from Cancelling Effects)</strong></span> In the book’s Table 4.1, transplant increases the risk of death in women and decreases it in men, each half of the population, and the effects cancel exactly: <span class="math inline">\(\Pr[Y^{a=1}=1] = \Pr[Y^{a=0}=1]\)</span>. <a href="#/fig-dag-6-2" class="quarto-xref">Figure&nbsp;2</a> is still the correct diagram, because <span class="math inline">\(A\)</span> affects every individual’s <span class="math inline">\(Y\)</span>, but the expected association is absent: the distribution is <strong>not faithful</strong> to the DAG <span class="citation" data-cites="hernan2020causal">(<a href="#/references" role="doc-biblioref" onclick="">Hernán and Robins 2020</a>, Fine Point 6.2, p.&nbsp;83)</span>.</p>
+</div>
+<aside class="notes"><p>Faithfulness can be violated <strong>by design</strong>. In a matched study (book Section 4.5, Figure 6.9), selection <span class="math inline">\(S\)</span> depends on both <span class="math inline">\(A\)</span> and <span class="math inline">\(L\)</span>, and the analysis is restricted to <span class="math inline">\(S=1\)</span>. D-separation predicts <span class="math inline">\(L\)</span> and <span class="math inline">\(A\)</span> associated given <span class="math inline">\(S\)</span> (open paths <span class="math inline">\(L \to A\)</span> and <span class="math inline">\(L \to S \leftarrow A\)</span>), but matching makes them unassociated: the association created through <span class="math inline">\(L \to S \leftarrow A\)</span> exactly cancels the one through <span class="math inline">\(L \to A\)</span>.</p>
+<p>Faithfulness may also fail when variables are linked by deterministic arrows: two variables can then be independent even though some paths between them are open.</p>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside></section><section id="graphs-do-calculus-and-notation" class="slide level2"><h2>Graphs, Do-Calculus, and Notation</h2>
+<p>Standardization and IP weighting (Chapter 2) can also be derived from causal graph theory, as part of what is sometimes called the <strong>do-calculus</strong> (reviewed in Pearl 2009). So using counterfactuals in Chapters 1-5 privileged a notation, not an approach.</p>
+<p>Whatever the notation, causal inference via standardization or IP weighting requires exchangeability, positivity, and consistency. This section covers positivity and consistency; exchangeability is translated into graphs in Section 6.5 and Chapters 7-8.</p>
+</section><section id="positivity-and-consistency-in-the-graph" class="slide level2"><h2>Positivity and Consistency in the Graph</h2>
+<ul>
+<li>
+<strong>Positivity</strong> concerns arrows <strong>into</strong> treatment nodes. Causal graphs generally cannot encode its violations, except special cases, e.g., <span class="math inline">\(A\)</span> a deterministic function of a pretreatment <span class="math inline">\(L\)</span> (drawn as a bold <span class="math inline">\(L \to A\)</span> arrow).</li>
+<li>
+<strong>Consistency</strong> (well-defined counterfactuals) concerns arrows <strong>out of</strong> treatment nodes: <span class="math inline">\(A \to Y\)</span> must correspond to a possibly hypothetical but relatively unambiguous intervention (or, if <span class="math inline">\(A\)</span> is a state, to well-defined interventions that affect <span class="math inline">\(Y\)</span> only through <span class="math inline">\(A\)</span>; Fine Point 6.4).</li>
+</ul>
+<p>In the book’s diagrams, positivity is implicit unless stated and consistency is embedded in the notation.</p>
+<aside class="notes"><p>Treatment nodes thus have a special status <span class="citation" data-cites="hernan2020causal">(<a href="#/references" role="doc-biblioref" onclick="">Hernán and Robins 2020, 83–84</a>)</span>. Some authors draw it explicitly with <strong>decision nodes</strong>; influence diagrams are causal diagrams augmented with decision nodes (Dawid 2000, 2002). The book omits them, because it is always explicit about the interventions on <span class="math inline">\(A\)</span>, but gives treatment nodes a distinct status in SWIGs later. The causal trees of Chapter 2 and the sufficient-cause “pies” of Chapter 5 also distinguished treatments from other variables.</p>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside></section><section id="treatment-nodes-need-well-defined-interventions" class="slide level2"><h2>Treatment Nodes Need Well-Defined Interventions</h2>
+<p>Diagrams read as NPSEMs with independent errors seem to give all variables equal status, which can mislead when some nodes correspond to ill-defined interventions.</p>
+<ul>
+<li>A node for “obesity” may be acceptable as an outcome <span class="math inline">\(Y\)</span> or a covariate <span class="math inline">\(L\)</span>.</li>
+<li>It is generally <strong>not</strong> acceptable as a treatment <span class="math inline">\(A\)</span> (Chapter 3).</li>
+</ul>
+<aside class="notes"><p>Pearl (2018, 2019) has proposed a concept of causation based on variables that “listen to others”, which still assumes well-defined counterfactuals for every variable <span class="citation" data-cites="hernan2020causal">(<a href="#/references" role="doc-biblioref" onclick="">Hernán and Robins 2020, 84</a>, margin note)</span>.</p>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside></section><section class="slide level2"><div class="cell">
+<div class="cell-output-display">
+<div id="fig-dag-6-10" class="quarto-float quarto-figure quarto-figure-center">
+<figure class="quarto-float quarto-float-fig"><figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-fig" id="fig-dag-6-10-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;7: Book Figure 6.10, as described in the text: caloric intake <span class="math inline">\(Z\)</span>, exercise <span class="math inline">\(L\)</span>, and genetic traits <span class="math inline">\(U\)</span> affect weight loss <span class="math inline">\(A\)</span>; <span class="math inline">\(L\)</span> and <span class="math inline">\(U\)</span> also affect mortality <span class="math inline">\(Y\)</span> through other pathways.
+</figcaption><div aria-describedby="fig-dag-6-10-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<a href="06-graphical-representation_files/figure-html/fig-dag-6-10-1.png" class="lightbox" data-gallery="quarto-lightbox-gallery-7" title="Figure&nbsp;7: Book Figure 6.10, as described in the text: caloric intake Z, exercise L, and genetic traits U affect weight loss A; L and U also affect mortality Y through other pathways."><img data-src="06-graphical-representation_files/figure-html/fig-dag-6-10-1.png" width="480"></a>
+</div>
+</figure>
+</div>
+</div>
+</div>
+<p>When there are several ways to intervene on <span class="math inline">\(A\)</span> and some of them affect <span class="math inline">\(Y\)</span> directly, “the effect of <span class="math inline">\(A\)</span> on <span class="math inline">\(Y\)</span>” is unclear: losing weight by caloric restriction, by exercise, or by genetic manipulation would lead to different mortality. Being explicit about the intervention is a step toward a well-defined effect, relevant data, and the right adjustment variables.</p>
+</section><section class="slide level2"><div title="Fine Point 6.3: Discovery of Causal Structure">
+<div class="callout callout-note callout-titled callout-style-default">
+<div class="callout-body">
+<div class="callout-title">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<p><strong>Fine Point 6.3: Discovery of Causal Structure</strong></p>
+</div>
+<div class="callout-content">
+<p><strong>Discovery</strong> is learning parts of the causal structure from data. It sometimes works if we assume faithfulness, but often it does not: a strong association between <span class="math inline">\(B\)</span> and <span class="math inline">\(C\)</span> fits <span class="math inline">\(B \to C\)</span>, <span class="math inline">\(C \to B\)</span>, a shared unmeasured cause, a conditioned-on common effect, and combinations.</p>
+</div>
+</div>
+</div>
+</div>
+<div id="exm-discovery" class="theorem example">
+<p><span class="theorem-title"><strong>Example 5 (Learning <span class="math inline">\(Z \to A \to Y\)</span> <span class="citation" data-cites="hernan2020causal">(<a href="#/references" role="doc-biblioref" onclick="">Hernán and Robins 2020</a>, Fine Point 6.3, p.&nbsp;85)</span>)</strong></span> Suppose <span class="math inline">\(Z\)</span> precedes <span class="math inline">\(A\)</span>, which precedes <span class="math inline">\(Y\)</span>, and with infinite data all three are marginally associated and the only conditional independence is <span class="math inline">\(Z \perp\!\!\!\perp Y \mid A\)</span>. Under faithfulness the only consistent causal DAGs are <span class="math inline">\(Z \to A \to Y\)</span>, possibly with a common cause of <span class="math inline">\(Z\)</span> and <span class="math inline">\(A\)</span> in addition to, or instead of, <span class="math inline">\(Z \to A\)</span>. Then there is no unmeasured common cause of <span class="math inline">\(A\)</span> and <span class="math inline">\(Y\)</span>, and the average causal effect is identified by <span class="math inline">\(\operatorname{E}\mathopen{}\left[Y \mid A=1\right]\mathclose{} - \operatorname{E}\mathopen{}\left[Y \mid A=0\right]\mathclose{}\)</span>.</p>
+</div>
+<aside class="notes"><p>Why: a direct arrow <span class="math inline">\(Z \to Y\)</span>, a common cause of <span class="math inline">\(Z\)</span> and <span class="math inline">\(Y\)</span>, or an unmeasured common cause of <span class="math inline">\(A\)</span> and <span class="math inline">\(Y\)</span> would each make <span class="math inline">\(Z\)</span> and <span class="math inline">\(Y\)</span> dependent given <span class="math inline">\(A\)</span> (assuming faithfulness); the marginal association of <span class="math inline">\(A\)</span> and <span class="math inline">\(Y\)</span> then requires an arrow <span class="math inline">\(A \to Y\)</span>. If an unmeasured common cause of <span class="math inline">\(A\)</span> and <span class="math inline">\(Y\)</span> existed, no conditional independence would be found, and discovery could not tell whether <span class="math inline">\(A\)</span> causes <span class="math inline">\(Y\)</span>. Approaches to discovery are described by Spirtes et al.&nbsp;(2000) and Peters et al.&nbsp;(2017); finite samples are discussed in the book’s Technical Point 10.7.</p>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside></section></section><section><section id="a-structural-classification-of-bias-pp.-85-87" class="title-slide slide level1 center" data-number="5"><h1>
+<span class="header-section-number">5</span> 6.5 A Structural Classification of Bias (pp.&nbsp;85-87)</h1>
+
+</section><section class="slide level2"><div id="def-systematic-bias" class="theorem definition">
+<p><span class="theorem-title"><strong>Definition 4 (Systematic Bias)</strong></span> There is <strong>systematic bias</strong> when the data are insufficient to identify the causal effect even with an infinite sample size. Informally: any structural association between treatment and outcome that does not arise from the causal effect of treatment on outcome <span class="citation" data-cites="hernan2020causal">(<a href="#/references" role="doc-biblioref" onclick="">Hernán and Robins 2020, 85</a>)</span>.</p>
+</div>
+<ul>
+<li>
+<strong>Unconditional bias</strong>: <span class="math inline">\(\Pr[Y^{a=1}=1] - \Pr[Y^{a=0}=1] \neq \Pr[Y=1 \mid A=1] - \Pr[Y=1 \mid A=0]\)</span>, the case when <span class="math inline">\(Y^a \perp\!\!\!\perp A\)</span> fails.</li>
+<li>
+<strong>Conditional bias</strong>: <span class="math inline">\(\Pr[Y^{a=1}=1 \mid L=l] - \Pr[Y^{a=0}=1 \mid L=l] \neq \Pr[Y=1 \mid L=l, A=1] - \Pr[Y=1 \mid L=l, A=0]\)</span> for at least one <span class="math inline">\(l\)</span>, generally the case when <span class="math inline">\(Y^a \perp\!\!\!\perp A \mid L=l\)</span> fails for some <span class="math inline">\(a\)</span> and <span class="math inline">\(l\)</span>.</li>
+</ul>
+<aside class="notes"><p>With systematic bias no estimator can be consistent (see Chapter 1 for consistent estimators). Absence of unconditional bias means the association measure in the population is a consistent estimate of the corresponding effect measure. In this chapter “bias” means systematic bias, because the sample size is assumed infinite.</p>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside></section><section id="bias-under-the-null" class="slide level2"><h2>Bias Under the Null</h2>
+<p>Lack of exchangeability causes bias <strong>even when treatment has no effect</strong>: <strong>bias under the null</strong>.</p>
+<div id="exm-bias-under-null" class="theorem example">
+<p><span class="theorem-title"><strong>Example 6 (Table 3.1)</strong></span> In the book’s observational study of Table 3.1 the causal risk ratio was 1, whereas the associational risk ratio was 1.26 <span class="citation" data-cites="hernan2020causal">(<a href="#/references" role="doc-biblioref" onclick="">Hernán and Robins 2020, 86</a>)</span>.</p>
+</div>
+<p>Any structure that causes bias under the null also causes bias under the alternative (a non-null effect); the converse is false.</p>
+<aside class="notes"><p>For example, conditioning on some variables may cause selection bias under the alternative but not under the null (Greenland 1977; Hernán 2017; see also Chapter 18) <span class="citation" data-cites="hernan2020causal">(<a href="#/references" role="doc-biblioref" onclick="">Hernán and Robins 2020, 86</a>, margin note)</span>.</p>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside></section><section id="two-structures-that-break-exchangeability" class="slide level2 scrollable"><h2>Two Structures That Break Exchangeability</h2>
+<ol type="1">
+<li>
+<strong>Common causes</strong> of treatment and outcome: what many epidemiologists call <strong>confounding</strong> (Chapter 7).</li>
+<li>
+<strong>Conditioning on common effects</strong>: what many epidemiologists call <strong>selection bias under the null</strong> (Chapter 8).</li>
+</ol>
+<p>A third source is <strong>measurement bias</strong> (information bias), from mismeasured treatment, outcome, or covariates; some types also cause bias under the null (Chapter 9). Random variability is a separate, nonstructural source (Chapter 10).</p>
+<aside class="notes"><p>All three biases can arise in observational studies <strong>and</strong> in randomized experiments. Earlier chapters used idealized experiments (no loss to follow-up, full adherence, blinded assignment), but real experiments rarely look like that; the remaining chapters of Part I examine the boundary between experimenting and observing <span class="citation" data-cites="hernan2020causal">(<a href="#/references" role="doc-biblioref" onclick="">Hernán and Robins 2020, 86–87</a>)</span>.</p>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside></section></section><section><section id="the-structure-of-effect-modification-pp.-87-89" class="title-slide slide level1 center" data-number="6"><h1>
+<span class="header-section-number">6</span> 6.6 The Structure of Effect Modification (pp.&nbsp;87-89)</h1>
+
+</section><section class="slide level2"><p>Causal diagrams are good at locating sources of bias, but less helpful for illustrating effect modification.</p>
+<div class="cell">
+<div class="cell-output-display">
+<div id="fig-dag-6-12" class="quarto-float quarto-figure quarto-figure-center">
+<figure class="quarto-float quarto-float-fig"><figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-fig" id="fig-dag-6-12-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;8: Book Figure 6.12: randomized transplant <span class="math inline">\(A\)</span>; quality of care <span class="math inline">\(V\)</span> affects death <span class="math inline">\(Y\)</span>.
+</figcaption><div aria-describedby="fig-dag-6-12-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<a href="06-graphical-representation_files/figure-html/fig-dag-6-12-1.png" class="lightbox" data-gallery="quarto-lightbox-gallery-8" title="Figure&nbsp;8: Book Figure 6.12: randomized transplant A; quality of care V affects death Y."><img data-src="06-graphical-representation_files/figure-html/fig-dag-6-12-1.png" width="384"></a>
+</div>
+</figure>
+</div>
+</div>
+</div>
+<p>Transplant <span class="math inline">\(A\)</span> is randomized, so association is causation; investigators stratify by quality of care <span class="math inline">\(V\)</span> and find additive effect modification.</p>
+</section><section id="two-caveats" class="slide level2 scrollable"><h2>Two Caveats</h2>
+<ol type="1">
+<li>
+<a href="#/fig-dag-6-12" class="quarto-xref">Figure&nbsp;8</a> would be valid <strong>without</strong> <span class="math inline">\(V\)</span>, since <span class="math inline">\(V\)</span> is not a common cause of <span class="math inline">\(A\)</span> and <span class="math inline">\(Y\)</span>; <span class="math inline">\(V\)</span> appears only because the question refers to it. Variables on the path from <span class="math inline">\(V\)</span> to <span class="math inline">\(Y\)</span>, such as therapy complications <span class="math inline">\(N\)</span> (book Figure 6.13), could also be effect modifiers.</li>
+<li>
+<a href="#/fig-dag-6-12" class="quarto-xref">Figure&nbsp;8</a> does <strong>not</strong> show whether, or how, <span class="math inline">\(V\)</span> modifies the effect of <span class="math inline">\(A\)</span>. It cannot distinguish:
+<ul>
+<li>effects in the same direction in both strata of <span class="math inline">\(V\)</span>;</li>
+<li>effects in opposite directions (<strong>qualitative</strong> effect modification);</li>
+<li>an effect in one stratum only (e.g., <span class="math inline">\(A\)</span> kills only those with <span class="math inline">\(V=0\)</span>).</li>
+</ul>
+</li>
+</ol></section><section id="surrogate-effect-modifiers" class="slide level2"><h2>Surrogate Effect Modifiers</h2>
+<p>A <strong>surrogate effect modifier</strong> is associated with the causal effect modifier <span class="math inline">\(V\)</span> but does not affect <span class="math inline">\(Y\)</span>. The association can come from any structure:</p>
+<table class="caption-top">
+<colgroup>
+<col style="width: 33%">
+<col style="width: 33%">
+<col style="width: 33%">
+</colgroup>
+<thead><tr class="header">
+<th>Book figure</th>
+<th>Surrogate</th>
+<th>Structure linking it to <span class="math inline">\(V\)</span>
+</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td>6.14</td>
+<td>cost of treatment <span class="math inline">\(S\)</span>
+</td>
+<td>cause and effect: <span class="math inline">\(V \to S\)</span>
+</td>
+</tr>
+<tr class="even">
+<td>6.15</td>
+<td>passport nationality <span class="math inline">\(P\)</span>
+</td>
+<td>common cause: residence <span class="math inline">\(U\)</span> affects <span class="math inline">\(V\)</span> and <span class="math inline">\(P\)</span>
+</td>
+</tr>
+<tr class="odd">
+<td>6.16</td>
+<td>bottled mineral water <span class="math inline">\(W\)</span>
+</td>
+<td>conditioning on a common effect: <span class="math inline">\(V\)</span> and <span class="math inline">\(W\)</span> affect cost <span class="math inline">\(S\)</span>, analysis restricted to <span class="math inline">\(S=0\)</span>
+</td>
+</tr>
+</tbody>
+</table>
+<aside class="notes"><p>Causal and surrogate effect modifiers are often indistinguishable in practice, so “effect modification” covers both (Section 4.2); some prefer the neutral term “heterogeneity of causal effects”. Reading “cost modifies the effect of transplant” causally could suggest raising prices without raising quality <span class="citation" data-cites="hernan2020causal">(<a href="#/references" role="doc-biblioref" onclick="">Hernán and Robins 2020, 88</a>)</span>.</p>
+<p>Intuition for the mineral-water example (book margin note, p.&nbsp;88): low-cost hospitals that buy mineral water must spend less on care that lowers mortality, so among low-cost hospitals, mineral water use is inversely associated with quality of care. VanderWeele and Robins (2007b) give a finer classification of effect modification via causal diagrams.</p>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside></section><section id="interaction-in-causal-diagrams" class="slide level2"><h2>Interaction in Causal Diagrams</h2>
+<p>Causal diagrams are agnostic about interaction between two treatments <span class="math inline">\(A\)</span> and <span class="math inline">\(E\)</span>. They can encode it if augmented with nodes for sufficient-component causes (Chapter 5), with deterministic arrows from the treatments to those nodes; the book develops such diagrams in Chapter 8.</p>
+</section><section class="slide level2"><div title="Fine Point 6.4: Evidence That a State Has Well-Defined Counterfactuals">
+<div class="callout callout-note callout-titled callout-style-default">
+<div class="callout-body">
+<div class="callout-title">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<p><strong>Fine Point 6.4: Evidence That a State Has Well-Defined Counterfactuals</strong></p>
+</div>
+<div class="callout-content">
+<p>Consider drug <span class="math inline">\(Z\)</span>, systolic blood pressure <span class="math inline">\(A\)</span> (a state, not directly manipulable), and stroke <span class="math inline">\(Y\)</span>. If (i) <span class="math inline">\(Z\)</span> is associated with <span class="math inline">\(A\)</span> and <span class="math inline">\(Y\)</span>, (ii) <span class="math inline">\(A\)</span> and <span class="math inline">\(Y\)</span> are associated, and (iii) <span class="math inline">\(Z \perp\!\!\!\perp Y \mid A\)</span>, then under faithfulness the only causal DAG has <span class="math inline">\(A \to Y\)</span>, no <span class="math inline">\(Z \to Y\)</span>, and no unmeasured common cause of <span class="math inline">\(A\)</span> and <span class="math inline">\(Y\)</span> or of <span class="math inline">\(Z\)</span> and <span class="math inline">\(Y\)</span> (the discovery argument of Fine Point 6.3).</p>
+<ul>
+<li>If <span class="math inline">\(Y^a\)</span> is well defined, <span class="math inline">\(Y^a \perp\!\!\!\perp A\)</span> holds and <span class="math inline">\(\operatorname{E}\mathopen{}\left[Y \mid A=1\right]\mathclose{} - \operatorname{E}\mathopen{}\left[Y \mid A=0\right]\mathclose{}\)</span> is the average causal effect.</li>
+<li>An investigator who doubted that <span class="math inline">\(Y^a\)</span> was well defined might take (i)-(iii) as empirical evidence that it is.</li>
+</ul>
+<aside class="notes"><p>Usually unmeasured common causes <span class="math inline">\(U_3\)</span> of <span class="math inline">\(A\)</span> and <span class="math inline">\(Y\)</span> remain; then <span class="math inline">\(Z\)</span> and <span class="math inline">\(Y\)</span> are associated given the collider <span class="math inline">\(A\)</span>, (iii) fails, and the data give no support for <span class="math inline">\(Y^a\)</span> being well defined <span class="citation" data-cites="hernan2020causal">(<a href="#/references" role="doc-biblioref" onclick="">Hernán and Robins 2020</a>, Fine Point 6.4, p.&nbsp;89)</span>.</p>
+<p>The book’s remedy is a four-arm factorial <strong>dose-finding</strong> trial: randomize the drug (<span class="math inline">\(Z=1\)</span> or <span class="math inline">\(Z=2\)</span>) and the target blood-pressure reduction (<span class="math inline">\(A=a_1\)</span> or <span class="math inline">\(A=a_2\)</span>), and increase each individual’s dose <span class="math inline">\(D\)</span> until the assigned reduction is reached and maintained. The achieved <span class="math inline">\(A\)</span> is then a deterministic function of the assigned value, so nothing else has an arrow into <span class="math inline">\(A\)</span> (book Figure 6.18). If <span class="math inline">\(Y\)</span> is independent of <span class="math inline">\(D\)</span> given <span class="math inline">\(A\)</span> and <span class="math inline">\(\operatorname{E}\mathopen{}\left[Y \mid A=a_1\right]\mathclose{} \neq \operatorname{E}\mathopen{}\left[Y \mid A=a_2\right]\mathclose{}\)</span>, then under faithfulness (and assuming <span class="math inline">\(Y^{d,a}\)</span> and <span class="math inline">\(Y^a\)</span> are well defined) <span class="math inline">\(D\)</span> has no direct effect on <span class="math inline">\(Y\)</span> outside <span class="math inline">\(A\)</span>, and <span class="math inline">\(\operatorname{E}\mathopen{}\left[Y^{a_1} - Y^{a_2}\right]\mathclose{}\)</span> is identified by <span class="math inline">\(\operatorname{E}\mathopen{}\left[Y \mid A=a_1\right]\mathclose{} - \operatorname{E}\mathopen{}\left[Y \mid A=a_2\right]\mathclose{}\)</span>, even with unknown common causes of <span class="math inline">\(A\)</span> and <span class="math inline">\(Y\)</span>. In a standard trial (book Figure 6.17), by contrast, <span class="math inline">\(Y\)</span> and <span class="math inline">\(Z\)</span> are associated given <span class="math inline">\(A\)</span>, so a direct effect of <span class="math inline">\(Z\)</span> on <span class="math inline">\(Y\)</span> cannot be ruled out.</p>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside>
+</div>
+</div>
+</div>
+</div>
+</section></section><section><section id="summary" class="title-slide slide level1 center" data-number="7"><h1>
+<span class="header-section-number">7</span> Summary</h1>
+
+</section><section class="slide level2"><ul>
+<li>A <strong>causal DAG</strong> encodes qualitative causal knowledge: an arrow means a direct effect for at least one individual; a missing arrow means none for anyone; all common causes of variables on the graph must be on the graph (causal Markov assumption).</li>
+<li>Each causal DAG represents a counterfactual model (by default an FFRCISTG).</li>
+<li>Association flows along open paths: marginally, causal chains and common causes transmit association, colliders block it; conditioning on a non-collider blocks a path, conditioning on a collider or its descendant opens it (<strong>d-separation</strong>).</li>
+<li>
+<strong>Faithfulness</strong>, assumed throughout the book, lets us equate d-connection with association.</li>
+<li>Graphs rarely show <strong>positivity</strong> violations; <strong>consistency</strong> requires treatment nodes with well-defined interventions.</li>
+<li>
+<strong>Systematic bias</strong> from lack of exchangeability has two structures: common causes (confounding) and conditioning on common effects (selection bias); measurement bias is a third type.</li>
+<li>Causal diagrams do not show whether or how a variable modifies an effect, and cannot separate causal from surrogate effect modifiers.</li>
+</ul>
+<aside class="notes"><p><strong>Looking ahead</strong>: Chapter 7 (confounding), Chapter 8 (selection bias), Chapter 9 (measurement bias), Chapter 10 (random variability).</p>
+<p>The diagrams in this chapter are drawn with the R packages <code>dagitty</code> and <code>ggdag</code>.</p>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside></section></section><section><section id="references" class="title-slide slide level1 center" data-number="8"><h1>
+<span class="header-section-number">8</span> References</h1>
+
+</section><section class="slide level2 smaller scrollable" id="references"><div id="refs" class="references csl-bib-body hanging-indent" role="list">
+<div id="ref-hernan2020causal" class="csl-entry" role="listitem">
+Hernán, Miguel A, and James M Robins. 2020. <em>Causal Inference: What If</em>. Chapman &amp; Hall/CRC. <a href="https://miguelhernan.org/whatifbook">https://miguelhernan.org/whatifbook</a>.
+</div>
+</div>
+
+
+<script>
+(function () {
+  "use strict";
+
+  /**
+   * CSS selector matching all Quarto theorem and proof div environments.
+   *
+   * Quarto adds the `.theorem` class to all theorem-type divs
+   * (theorem, lemma, corollary, proposition, conjecture, definition,
+   * example, exercise, algorithm), so `.theorem[id]` covers all of them.
+   * Proof-type environments (.proof, .remark, .solution) are listed
+   * separately because they do not carry the `.theorem` class.
+   */
+  var THEOREM_SELECTOR = [
+    ".theorem[id]",
+    ".proof[id]",
+    ".remark[id]",
+    ".solution[id]",
+  ].join(", ");
+
+  function getQuartoHeadingAnchorIcon() {
+    var afterBodyScript = document.getElementById("quarto-html-after-body");
+    if (!afterBodyScript) {
+      return null;
+    }
+
+    var match = afterBodyScript.textContent.match(/const icon = ["']([^"']+)["']/);
+    return match ? match[1] : null;
+  }
+
+  // Quarto chain-link glyph from Bootstrap Icons.
+  var chainLinkIconFallback = "\ue9cb";
+  var headingAnchorIcon = getQuartoHeadingAnchorIcon();
+  var defaultAnchorIconFallback =
+    headingAnchorIcon && headingAnchorIcon !== "#" ? headingAnchorIcon : chainLinkIconFallback;
+
+  function getDefaultAnchorTemplate() {
+    var defaultAnchor =
+      document.querySelector(".anchored > a.anchorjs-link") ||
+      document.querySelector("a.anchorjs-link[data-anchorjs-icon]");
+    if (!defaultAnchor) {
+      return null;
+    }
+
+    return {
+      icon: defaultAnchor.getAttribute("data-anchorjs-icon") || defaultAnchor.textContent.trim(),
+      hasDataIcon: defaultAnchor.hasAttribute("data-anchorjs-icon"),
+      style: defaultAnchor.getAttribute("style")
+    };
+  }
+
+  function normalizeAnchorIcon(icon) {
+    if (!icon || icon === "#") {
+      return defaultAnchorIconFallback;
+    }
+
+    return icon;
+  }
+
+  function createChainLinkSvgIcon() {
+    var svgNs = "http://www.w3.org/2000/svg";
+    var svg = document.createElementNS(svgNs, "svg");
+    svg.setAttribute("viewBox", "0 0 16 16");
+    svg.setAttribute("fill", "currentColor");
+    svg.setAttribute("aria-hidden", "true");
+    svg.setAttribute("focusable", "false");
+    svg.setAttribute("class", "div-anchor-icon");
+
+    // Bootstrap Icons chain-link icon (bi-link-45deg), paths for the two
+    // chain links and the connecting segment.
+    [
+      "M6.354 5.5H4a3 3 0 0 0 0 6h3a3 3 0 0 0 2.83-2H11a4 4 0 0 1-4 3H4a4 4 0 0 1 0-8h2.354z",
+      "M9.646 10.5H12a3 3 0 1 0 0-6H9a3 3 0 0 0-2.83 2H5a4 4 0 0 1 4-3h3a4 4 0 0 1 0 8H9.646z",
+      "M5.5 8a.5.5 0 0 1 .5-.5h4a.5.5 0 0 1 0 1H6a.5.5 0 0 1-.5-.5"
+    ].forEach(function (pathData) {
+      var path = document.createElementNS(svgNs, "path");
+      path.setAttribute("d", pathData);
+      svg.appendChild(path);
+    });
+
+    return svg;
+  }
+
+  function alignDivAnchorWithDefault(anchor, template) {
+    if (!anchor) {
+      return;
+    }
+
+    anchor.classList.remove("external");
+    anchor.classList.add("no-external");
+
+    var normalizedIcon = normalizeAnchorIcon(template && template.icon);
+    if (normalizedIcon === chainLinkIconFallback) {
+      anchor.removeAttribute("data-anchorjs-icon");
+      anchor.textContent = "";
+      anchor.appendChild(createChainLinkSvgIcon());
+    } else if (template && template.hasDataIcon) {
+      anchor.setAttribute("data-anchorjs-icon", normalizedIcon);
+      anchor.textContent = normalizedIcon;
+    } else {
+      anchor.removeAttribute("data-anchorjs-icon");
+      anchor.textContent = normalizedIcon;
+    }
+
+    if (template && template.style) {
+      anchor.setAttribute("style", template.style);
+    } else {
+      anchor.removeAttribute("style");
+    }
+  }
+
+  function alignDivAnchorsWithDefault() {
+    var template = getDefaultAnchorTemplate();
+    document.querySelectorAll("a.div-anchor").forEach(function (anchor) {
+      alignDivAnchorWithDefault(anchor, template);
+    });
+  }
+
+  function ensureDivAnchorStyles() {
+    if (document.getElementById("div-anchor-styles")) {
+      return;
+    }
+
+    var style = document.createElement("style");
+    style.id = "div-anchor-styles";
+    style.textContent = [
+      ".div-anchor {",
+      "  opacity: 0;",
+      "  font-size: 0.875em;",
+      "  font-weight: 400;",
+      "  margin-left: 0.375em;",
+      "  text-decoration: none;",
+      "  color: inherit;",
+      "  vertical-align: middle;",
+      "  transition: opacity 0.2s ease;",
+      "}",
+      ".div-anchor:hover,",
+      ".div-anchor:focus {",
+      "  opacity: 1;",
+      "  text-decoration: none;",
+      "}",
+      ".div-anchor-icon {",
+      "  width: 0.875em;",
+      "  height: 0.875em;",
+      "  vertical-align: -0.125em;",
+      "}",
+      ":is(.theorem, .proof, .remark, .solution):hover .div-anchor,",
+      ":is(.theorem, .proof, .remark, .solution):focus-within .div-anchor {",
+      "  opacity: 1;",
+      "}"
+    ].join("\n");
+    document.head.appendChild(style);
+  }
+
+  /**
+   * Add anchor links to all theorem/proof divs with ids on the page.
+   */
+  function addDivAnchors() {
+    ensureDivAnchorStyles();
+
+    var divs = document.querySelectorAll(THEOREM_SELECTOR);
+    divs.forEach(function (div) {
+      var id = div.id;
+      if (!id) {
+        return;
+      }
+
+      // Skip if already processed.
+      if (div.querySelector(".div-anchor")) {
+        return;
+      }
+
+      var anchor = document.createElement("a");
+      anchor.className = "div-anchor anchorjs-link";
+      anchor.href = "#" + id;
+      anchor.setAttribute("aria-label", "Permalink to this block");
+      anchor.classList.add("no-external");
+
+      // Find the theorem-title or proof-title span
+      var titleSpan = div.querySelector(".theorem-title, .proof-title");
+
+      if (titleSpan) {
+        // Insert anchor immediately after the title span
+        titleSpan.insertAdjacentElement("afterend", anchor);
+      } else {
+        // Fallback: prepend to the first paragraph
+        var firstPara = div.querySelector("p");
+        if (firstPara) {
+          firstPara.insertAdjacentElement("afterbegin", anchor);
+        }
+      }
+    });
+
+    alignDivAnchorsWithDefault();
+  }
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", addDivAnchors);
+  } else {
+    addDivAnchors();
+  }
+
+  window.addEventListener("load", alignDivAnchorsWithDefault);
+})();
+</script><script>
+function getQuartoHeadingAnchorIcon() {
+  const afterBodyScript = document.getElementById("quarto-html-after-body");
+  if (!afterBodyScript) {
+    return null;
+  }
+
+  const match = afterBodyScript.textContent.match(/const icon = ["']([^"']+)["']/);
+  return match ? match[1] : null;
+}
+
+// Quarto chain-link glyph from Bootstrap Icons.
+const chainLinkIconFallback = "\ue9cb";
+const headingAnchorIcon = getQuartoHeadingAnchorIcon();
+const defaultAnchorIconFallback =
+  headingAnchorIcon && headingAnchorIcon !== "#" ? headingAnchorIcon : chainLinkIconFallback;
+
+function getDefaultAnchorTemplate() {
+  // Prefer Quarto heading anchors first so the visible chain-link icon is reused.
+  const defaultAnchor =
+    document.querySelector(".anchored > a.anchorjs-link") ||
+    document.querySelector("a.anchorjs-link[data-anchorjs-icon]");
+  if (!defaultAnchor) {
+    return null;
+  }
+
+  return {
+    // Detect icon value from the template anchor's attribute or text.
+    icon: defaultAnchor.getAttribute("data-anchorjs-icon") || defaultAnchor.textContent.trim(),
+    hasDataIcon: defaultAnchor.hasAttribute("data-anchorjs-icon"),
+    style: defaultAnchor.getAttribute("style")
+  };
+}
+
+function normalizeAnchorIcon(icon) {
+  if (!icon || icon === "#") {
+    return defaultAnchorIconFallback;
+  }
+
+  return icon;
+}
+
+function createChainLinkSvgIcon() {
+  const svgNs = "http://www.w3.org/2000/svg";
+  const svg = document.createElementNS(svgNs, "svg");
+  svg.setAttribute("viewBox", "0 0 16 16");
+  svg.setAttribute("fill", "currentColor");
+  svg.setAttribute("aria-hidden", "true");
+  svg.setAttribute("focusable", "false");
+  svg.setAttribute("class", "equation-anchor-icon");
+
+  [
+    "M6.354 5.5H4a3 3 0 0 0 0 6h3a3 3 0 0 0 2.83-2H11a4 4 0 0 1-4 3H4a4 4 0 0 1 0-8h2.354z",
+    "M9.646 10.5H12a3 3 0 1 0 0-6H9a3 3 0 0 0-2.83 2H5a4 4 0 0 1 4-3h3a4 4 0 0 1 0 8H9.646z",
+    "M5.5 8a.5.5 0 0 1 .5-.5h4a.5.5 0 0 1 0 1H6a.5.5 0 0 1-.5-.5"
+  ].forEach(function (pathData) {
+    const path = document.createElementNS(svgNs, "path");
+    path.setAttribute("d", pathData);
+    svg.appendChild(path);
+  });
+
+  return svg;
+}
+
+function alignEquationAnchorWithDefault(anchor, template) {
+  if (!anchor) {
+    return;
+  }
+
+  anchor.classList.remove("external");
+  anchor.classList.add("no-external");
+
+  const normalizedIcon = normalizeAnchorIcon(template && template.icon);
+  if (normalizedIcon === chainLinkIconFallback) {
+    anchor.removeAttribute("data-anchorjs-icon");
+    anchor.textContent = "";
+    anchor.appendChild(createChainLinkSvgIcon());
+  } else if (template && template.hasDataIcon) {
+    anchor.setAttribute("data-anchorjs-icon", normalizedIcon);
+    anchor.textContent = normalizedIcon;
+  } else {
+    anchor.removeAttribute("data-anchorjs-icon");
+    anchor.textContent = normalizedIcon;
+  }
+
+  if (template && template.style) {
+    anchor.setAttribute("style", template.style);
+  } else {
+    anchor.removeAttribute("style");
+  }
+}
+
+function alignEquationAnchorsWithDefault() {
+  const template = getDefaultAnchorTemplate();
+  document.querySelectorAll("a.equation-anchor").forEach(function (anchor) {
+    alignEquationAnchorWithDefault(anchor, template);
+  });
+}
+
+function ensureEquationAnchorStyles() {
+  if (document.getElementById("equation-anchor-styles")) {
+    return;
+  }
+
+  const style = document.createElement("style");
+  style.id = "equation-anchor-styles";
+  style.textContent = `
+    .equation-anchor-target {
+      --equation-anchor-offset: 1.2rem;
+      position: relative;
+      display: block;
+    }
+    .equation-anchor {
+      position: absolute;
+      left: calc(-1 * var(--equation-anchor-offset));
+      top: 50%;
+      transform: translateY(-50%);
+      text-decoration: none;
+      opacity: 0.7;
+      font-size: 0.9em;
+    }
+    .equation-anchor:hover {
+      opacity: 1;
+    }
+    .equation-anchor-icon {
+      width: 0.9em;
+      height: 0.9em;
+      vertical-align: -0.125em;
+    }
+  `;
+  document.head.appendChild(style);
+}
+
+document.addEventListener("DOMContentLoaded", function () {
+  ensureEquationAnchorStyles();
+
+  let counter = 0;
+
+  document.querySelectorAll(".math.display").forEach(function (mathEl) {
+    // For labeled equations, Quarto wraps the math display span in an eq-* span.
+    // For unlabeled equations, use the parent element (typically a <p>).
+    const labeledContainer = mathEl.closest("[id^='eq-']");
+    const target = labeledContainer || mathEl.parentElement;
+
+    if (!target) {
+      return;
+    }
+
+    // Skip if already processed.
+    if (target.querySelector(".equation-anchor")) {
+      return;
+    }
+
+    // Use the labeled container's id, or assign an auto-generated id.
+    let id = labeledContainer ? labeledContainer.id : target.id;
+    if (!id) {
+      counter++;
+      id = "eq-anchor-" + counter;
+      target.id = id;
+    }
+
+    target.classList.add("equation-anchor-target");
+
+    const anchor = document.createElement("a");
+    anchor.className = "equation-anchor anchorjs-link";
+    anchor.href = "#" + id;
+    anchor.setAttribute("aria-label", "Permalink to this equation");
+    target.appendChild(anchor);
+  });
+
+  alignEquationAnchorsWithDefault();
+});
+
+window.addEventListener("load", alignEquationAnchorsWithDefault);
+</script></section></section>
+</div>
+  <div class="quarto-auto-generated-content" style="display: none;">
+<div class="footer footer-default">
+
+</div>
+</div></div>
+
+  <script>window.backupDefine = window.define; window.define = undefined;</script><script src="../site_libs/revealjs/dist/reveal.js"></script><!-- reveal.js plugins --><script src="../site_libs/revealjs/plugin/quarto-line-highlight/line-highlight.js"></script><script src="../site_libs/revealjs/plugin/pdf-export/pdfexport.js"></script><script src="../site_libs/revealjs/plugin/reveal-menu/menu.js"></script><script src="../site_libs/revealjs/plugin/reveal-menu/quarto-menu.js"></script><script src="../site_libs/revealjs/plugin/reveal-chalkboard/plugin.js"></script><script src="../site_libs/revealjs/plugin/quarto-support/support.js"></script><script src="../site_libs/revealjs/plugin/notes/notes.js"></script><script src="../site_libs/revealjs/plugin/search/search.js"></script><script src="../site_libs/revealjs/plugin/zoom/zoom.js"></script><script src="../site_libs/revealjs/plugin/math/math.js"></script><script>window.define = window.backupDefine; window.backupDefine = undefined;</script><script>
+
+      // Full list of configuration options available at:
+      // https://revealjs.com/config/
+      Reveal.initialize({
+'controlsAuto': false,
+'previewLinksAuto': true,
+'pdfSeparateFragments': false,
+'autoAnimateEasing': "ease",
+'autoAnimateDuration': 1,
+'autoAnimateUnmatched': true,
+'jumpToSlide': true,
+'menu': {"side":"left","useTextContentForMissingTitles":true,"markers":false,"loadIcons":false,"custom":[{"title":"Tools","icon":"<i class=\"fas fa-gear\"></i>","content":"<ul class=\"slide-menu-items\">\n<li class=\"slide-tool-item active\" data-item=\"0\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.fullscreen(event)\"><kbd>f</kbd> Fullscreen</a></li>\n<li class=\"slide-tool-item\" data-item=\"1\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.speakerMode(event)\"><kbd>s</kbd> Speaker View</a></li>\n<li class=\"slide-tool-item\" data-item=\"2\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.overview(event)\"><kbd>o</kbd> Slide Overview</a></li>\n<li class=\"slide-tool-item\" data-item=\"3\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.togglePdfExport(event)\"><kbd>e</kbd> PDF Export Mode</a></li>\n<li class=\"slide-tool-item\" data-item=\"4\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.toggleScrollView(event)\"><kbd>r</kbd> Scroll View Mode</a></li>\n<li class=\"slide-tool-item\" data-item=\"5\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.toggleChalkboard(event)\"><kbd>b</kbd> Toggle Chalkboard</a></li>\n<li class=\"slide-tool-item\" data-item=\"6\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.toggleNotesCanvas(event)\"><kbd>c</kbd> Toggle Notes Canvas</a></li>\n<li class=\"slide-tool-item\" data-item=\"7\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.downloadDrawings(event)\"><kbd>d</kbd> Download Drawings</a></li>\n<li class=\"slide-tool-item\" data-item=\"8\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.keyboardHelp(event)\"><kbd>?</kbd> Keyboard Help</a></li>\n</ul>"}],"openButton":true},
+'chalkboard': {"buttons":true},
+'smaller': true,
+ 
+        // Display controls in the bottom right corner
+        controls: true,
+
+        // Help the user learn the controls by providing hints, for example by
+        // bouncing the down arrow when they first encounter a vertical slide
+        controlsTutorial: false,
+
+        // Determines where controls appear, "edges" or "bottom-right"
+        controlsLayout: 'edges',
+
+        // Visibility rule for backwards navigation arrows; "faded", "hidden"
+        // or "visible"
+        controlsBackArrows: 'faded',
+
+        // Display a presentation progress bar
+        progress: true,
+
+        // Display the page number of the current slide
+        slideNumber: 'c/t',
+
+        // 'all', 'print', or 'speaker'
+        showSlideNumber: 'all',
+
+        // Add the current slide number to the URL hash so that reloading the
+        // page/copying the URL will return you to the same slide
+        hash: true,
+
+        // Start with 1 for the hash rather than 0
+        hashOneBasedIndex: false,
+
+        // Flags if we should monitor the hash and change slides accordingly
+        respondToHashChanges: true,
+
+        // Push each slide change to the browser history
+        history: true,
+
+        // Enable keyboard shortcuts for navigation
+        keyboard: true,
+
+        // Enable the slide overview mode
+        overview: true,
+
+        // Disables the default reveal.js slide layout (scaling and centering)
+        // so that you can use custom CSS layout
+        disableLayout: false,
+
+        // Vertical centering of slides
+        center: false,
+
+        // Enables touch navigation on devices with touch input
+        touch: true,
+
+        // Loop the presentation
+        loop: false,
+
+        // Change the presentation direction to be RTL
+        rtl: false,
+
+        // see https://revealjs.com/vertical-slides/#navigation-mode
+        navigationMode: 'linear',
+
+        // Randomizes the order of slides each time the presentation loads
+        shuffle: false,
+
+        // Turns fragments on and off globally
+        fragments: true,
+
+        // Flags whether to include the current fragment in the URL,
+        // so that reloading brings you to the same fragment position
+        fragmentInURL: false,
+
+        // Flags if the presentation is running in an embedded mode,
+        // i.e. contained within a limited portion of the screen
+        embedded: false,
+
+        // Flags if we should show a help overlay when the questionmark
+        // key is pressed
+        help: true,
+
+        // Flags if it should be possible to pause the presentation (blackout)
+        pause: true,
+
+        // Flags if speaker notes should be visible to all viewers
+        showNotes: false,
+
+        // Global override for autoplaying embedded media (null/true/false)
+        autoPlayMedia: null,
+
+        // Global override for preloading lazy-loaded iframes (null/true/false)
+        preloadIframes: null,
+
+        // Number of milliseconds between automatically proceeding to the
+        // next slide, disabled when set to 0, this value can be overwritten
+        // by using a data-autoslide attribute on your slides
+        autoSlide: 0,
+
+        // Stop auto-sliding after user input
+        autoSlideStoppable: true,
+
+        // Use this method for navigation when auto-sliding
+        autoSlideMethod: null,
+
+        // Specify the average time in seconds that you think you will spend
+        // presenting each slide. This is used to show a pacing timer in the
+        // speaker view
+        defaultTiming: null,
+
+        // Enable slide navigation via mouse wheel
+        mouseWheel: false,
+
+        // The display mode that will be used to show slides
+        display: 'block',
+
+        // Hide cursor if inactive
+        hideInactiveCursor: true,
+
+        // Time before the cursor is hidden (in ms)
+        hideCursorTime: 5000,
+
+        // Opens links in an iframe preview overlay
+        previewLinks: false,
+
+        // Transition style (none/fade/slide/convex/concave/zoom)
+        transition: 'slide',
+
+        // Transition speed (default/fast/slow)
+        transitionSpeed: 'default',
+
+        // Transition style for full page slide backgrounds
+        // (none/fade/slide/convex/concave/zoom)
+        backgroundTransition: 'fade',
+
+        // Number of slides away from the current that are visible
+        viewDistance: 3,
+
+        // Number of slides away from the current that are visible on mobile
+        // devices. It is advisable to set this to a lower number than
+        // viewDistance in order to save resources.
+        mobileViewDistance: 2,
+
+        // The "normal" size of the presentation, aspect ratio will be preserved
+        // when the presentation is scaled to fit different resolutions. Can be
+        // specified using percentage units.
+        width: 1050,
+
+        height: 700,
+
+        // Factor of the display size that should remain empty around the content
+        margin: 0,
+
+        math: {
+          mathjax: 'https://cdn.jsdelivr.net/npm/mathjax@4/tex-chtml.js',
+          config: 'TeX-AMS_HTML-full',
+          tex2jax: {
+            inlineMath: [['\\(','\\)']],
+            displayMath: [['\\[','\\]']],
+            balanceBraces: true,
+            processEscapes: false,
+            processRefs: true,
+            processEnvironments: true,
+            preview: 'TeX',
+            skipTags: ['script','noscript','style','textarea','pre','code'],
+            ignoreClass: 'tex2jax_ignore',
+            processClass: 'tex2jax_process'
+          },
+        },
+
+        // reveal.js plugins
+        plugins: [QuartoLineHighlight, PdfExport, RevealMenu, RevealChalkboard, QuartoSupport,
+
+          RevealMath,
+          RevealNotes,
+          RevealSearch,
+          RevealZoom
+        ]
+      });
+    </script><script id="quarto-html-after-body" type="application/javascript">
+      window.document.addEventListener("DOMContentLoaded", function (event) {
+        const tabsets =  window.document.querySelectorAll(".panel-tabset-tabby")
+        tabsets.forEach(function(tabset) {
+          const tabby = new Tabby('#' + tabset.id);
+        });
+        const isCodeAnnotation = (el) => {
+          for (const clz of el.classList) {
+            if (clz.startsWith('code-annotation-')) {                     
+              return true;
+            }
+          }
+          return false;
+        }
+        const onCopySuccess = function(e) {
+          // button target
+          const button = e.trigger;
+          // don't keep focus
+          button.blur();
+          // flash "checked"
+          button.classList.add('code-copy-button-checked');
+          var currentTitle = button.getAttribute("title");
+          button.setAttribute("title", "Copied!");
+          let tooltip;
+          if (window.bootstrap) {
+            button.setAttribute("data-bs-toggle", "tooltip");
+            button.setAttribute("data-bs-placement", "left");
+            button.setAttribute("data-bs-title", "Copied!");
+            tooltip = new bootstrap.Tooltip(button, 
+              { trigger: "manual", 
+                customClass: "code-copy-button-tooltip",
+                offset: [0, -8]});
+            tooltip.show();    
+          }
+          setTimeout(function() {
+            if (tooltip) {
+              tooltip.hide();
+              button.removeAttribute("data-bs-title");
+              button.removeAttribute("data-bs-toggle");
+              button.removeAttribute("data-bs-placement");
+            }
+            button.setAttribute("title", currentTitle);
+            button.classList.remove('code-copy-button-checked');
+          }, 1000);
+          // clear code selection
+          e.clearSelection();
+        }
+        const getTextToCopy = function(trigger) {
+          const outerScaffold = trigger.parentElement.cloneNode(true);
+          const codeEl = outerScaffold.querySelector('code');
+          for (const childEl of codeEl.children) {
+            if (isCodeAnnotation(childEl)) {
+              childEl.remove();
+            }
+          }
+          return codeEl.innerText;
+        }
+        const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+          text: getTextToCopy
+        });
+        clipboard.on('success', onCopySuccess);
+        if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+          const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+            text: getTextToCopy,
+            container: window.document.getElementById('quarto-embedded-source-code-modal')
+          });
+          clipboardModal.on('success', onCopySuccess);
+        }
+          var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+          var mailtoRegex = new RegExp(/^mailto:/);
+            var filterRegex = new RegExp("https:\/\/ucdavis\.github\.io\/win\/");
+          var isInternal = (href) => {
+              return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+          }
+          // Inspect non-navigation links and adorn them if external
+         var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+          for (var i=0; i<links.length; i++) {
+            const link = links[i];
+            if (!isInternal(link.href)) {
+              // undo the damage that might have been done by quarto-nav.js in the case of
+              // links that we want to consider external
+              if (link.dataset.originalHref !== undefined) {
+                link.href = link.dataset.originalHref;
+              }
+            }
+          }
+        function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+          const config = {
+            allowHTML: true,
+            maxWidth: 500,
+            delay: 100,
+            arrow: false,
+            appendTo: function(el) {
+                return el.closest('section.slide') || el.parentElement;
+            },
+            interactive: true,
+            interactiveBorder: 10,
+            theme: 'light-border',
+            placement: 'bottom-start',
+          };
+          if (contentFn) {
+            config.content = contentFn;
+          }
+          if (onTriggerFn) {
+            config.onTrigger = onTriggerFn;
+          }
+          if (onUntriggerFn) {
+            config.onUntrigger = onUntriggerFn;
+          }
+            config['offset'] = [0,0];
+            config['maxWidth'] = 700;
+          window.tippy(el, config); 
+        }
+        const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+        for (var i=0; i<noterefs.length; i++) {
+          const ref = noterefs[i];
+          tippyHover(ref, function() {
+            // use id or data attribute instead here
+            let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+            try { href = new URL(href).hash; } catch {}
+            const id = href.replace(/^#\/?/, "");
+            const note = window.document.getElementById(id);
+            if (note) {
+              return note.innerHTML;
+            } else {
+              return "";
+            }
+          });
+        }
+        const findCites = (el) => {
+          const parentEl = el.parentElement;
+          if (parentEl) {
+            const cites = parentEl.dataset.cites;
+            if (cites) {
+              return {
+                el,
+                cites: cites.split(' ')
+              };
+            } else {
+              return findCites(el.parentElement)
+            }
+          } else {
+            return undefined;
+          }
+        };
+        var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+        for (var i=0; i<bibliorefs.length; i++) {
+          const ref = bibliorefs[i];
+          const citeInfo = findCites(ref);
+          if (citeInfo) {
+            tippyHover(citeInfo.el, function() {
+              var popup = window.document.createElement('div');
+              citeInfo.cites.forEach(function(cite) {
+                var citeDiv = window.document.createElement('div');
+                citeDiv.classList.add('hanging-indent');
+                citeDiv.classList.add('csl-entry');
+                var biblioDiv = window.document.getElementById('ref-' + cite);
+                if (biblioDiv) {
+                  citeDiv.innerHTML = biblioDiv.innerHTML;
+                }
+                popup.appendChild(citeDiv);
+              });
+              return popup.innerHTML;
+            });
+          }
+        }
+      });
+      </script><script>var lightboxQuarto = GLightbox({"closeEffect":"zoom","descPosition":"bottom","loop":false,"openEffect":"zoom","selector":".lightbox"});
+    (function() {
+      let previousOnload = window.onload;
+      window.onload = () => {
+        if (previousOnload) {
+          previousOnload();
+        }
+        lightboxQuarto.on('slide_before_load', (data) => {
+          const { slideIndex, slideNode, slideConfig, player, trigger } = data;
+          const href = trigger.getAttribute('href');
+          if (href !== null) {
+            const imgEl = window.document.querySelector(`a[href="${href}"] img`);
+            if (imgEl !== null) {
+              const srcAttr = imgEl.getAttribute("src");
+              if (srcAttr && srcAttr.startsWith("data:")) {
+                slideConfig.href = srcAttr;
+              }
+            }
+          } 
+        });
+      
+        lightboxQuarto.on('slide_after_load', (data) => {
+          const { slideIndex, slideNode, slideConfig, player, trigger } = data;
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(slideNode);
+          }
+        });
+      
+      };
+      
+    })();
+              </script>
+
+
+</body></html>
