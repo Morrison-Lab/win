@@ -404,7 +404,7 @@ $$
   &= \Pr[Y^{a,e}=1 \mid E=e]
   && \text{(exchangeability for } E\text{: } Y^{a,e} \ind E\text{)} \\
   &= \Pr[Y^{a,E}=1 \mid E=e]
-  && \text{(}Y^{a,e} = Y^{a,E}\text{ when } E=e\text{)} \\
+  && \text{(}Y^{a,E} \text{ is } Y^{a,e} \text{ for those with } E=e\text{)} \\
   &= \Pr[Y^{a}=1 \mid E=e]
   && \text{(recursive substitution, } Y^a = Y^{a,E}\text{)}.
 \end{aligned}
@@ -479,6 +479,15 @@ $(Y^{a=0}, Y^{a=1})$ for one dichotomous treatment $A$,
 and $(Y^{a=1,e=1}, Y^{a=0,e=1}, Y^{a=1,e=0}, Y^{a=0,e=0})$ for two dichotomous treatments $A$ and $E$.
 :::
 
+| Type | $Y^{a=0}$ | $Y^{a=1}$ | Zeus's family (Table 1.1) |
+|---|---|---|---|
+| Doomed | 1 | 1 | Artemis, Athena, Persephone, Ares |
+| Helped | 1 | 0 | Hebe, Kronos, Poseidon, Apollo, Hermes, Dionysus |
+| Hurt | 0 | 1 | Rheia, Leto, Aphrodite, Zeus, Hephaestus, Polyphemus |
+| Immune | 0 | 0 | Demeter, Hestia, Hera, Hades |
+
+: Response types for one dichotomous treatment [@hernan2020causal, Table 5.1, p. 64] {#tbl-response-types-one}
+
 ::: {#exm-zeus-response-types}
 ## Response Types in Zeus's Family
 
@@ -489,15 +498,6 @@ the **helped** die only if untreated,
 the **hurt** die only if treated,
 and the **immune** survive whatever the treatment.
 :::
-
-| Type | $Y^{a=0}$ | $Y^{a=1}$ | Zeus's family (Table 1.1) |
-|---|---|---|---|
-| Doomed | 1 | 1 | Artemis, Athena, Persephone, Ares |
-| Helped | 1 | 0 | Hebe, Kronos, Poseidon, Apollo, Hermes, Dionysus |
-| Hurt | 0 | 1 | Rheia, Leto, Aphrodite, Zeus, Hephaestus, Polyphemus |
-| Immune | 0 | 0 | Demeter, Hestia, Hera, Hades |
-
-: Response types for one dichotomous treatment [@hernan2020causal, Table 5.1, p. 64] {#tbl-response-types-one}
 
 ---
 
@@ -520,16 +520,6 @@ the individual's effect of $A$ when $E$ is set to 1 minus their effect of $A$ wh
 It depends only on the response type.
 Because expectations are linear, its population mean is the interaction contrast of @prp-additive-interaction-symmetric:
 $\E{c} = p_{11} - p_{01} - p_{10} + p_{00}$.
-:::
-
-::: {#exm-individual-interaction-contrast}
-## Individual Contrasts of Types 7 and 8
-
-An individual with $(Y^{1,1}, Y^{0,1}, Y^{1,0}, Y^{0,0}) = (1, 0, 0, 1)$ (type 7 in @tbl-response-types-two)
-has $c = 1 - 0 - 0 + 1 = 2$:
-transplant kills them if they take vitamins and saves them if they do not.
-An individual with $(1, 0, 0, 0)$ (type 8) has $c = 1$:
-they die only if given both treatments.
 :::
 
 | Type | $Y^{1,1}$ | $Y^{0,1}$ | $Y^{1,0}$ | $Y^{0,0}$ | $c$ |
@@ -555,6 +545,16 @@ they die only if given both treatments.
 superscripts are $(a, e)$.
 The first five columns follow @hernan2020causal [Table 5.2, p. 65];
 the last adds the individual interaction contrast $c$ of @def-individual-interaction-contrast {#tbl-response-types-two}
+
+::: {#exm-individual-interaction-contrast}
+## Individual Contrasts of Types 7 and 8
+
+An individual with $(Y^{1,1}, Y^{0,1}, Y^{1,0}, Y^{0,0}) = (1, 0, 0, 1)$ (type 7 in @tbl-response-types-two)
+has $c = 1 - 0 - 0 + 1 = 2$:
+transplant kills them if they take vitamins and saves them if they do not.
+An individual with $(1, 0, 0, 0)$ (type 8) has $c = 1$:
+they die only if given both treatments.
+:::
 
 ---
 
@@ -853,7 +853,11 @@ Its conditions are its **component causes**;
 Continue @exm-background-factor-allergy.
 Suppose also that not receiving a transplant kills only those with an ejection fraction below 20% ($U_2 = 1$),
 and that pancreatic cancer at study start ($U_0 = 1$) kills whatever the treatment.
-Then death has the three minimal sufficient causes in @tbl-sufficient-causes-one.
+Then death has three minimal sufficient causes:
+
+- $A=1$ together with $U_1=1$;
+- $A=0$ together with $U_2=1$;
+- $U_0=1$, with no treatment component.
 :::
 
 | Sufficient cause | Treatment component | Background factor |
@@ -862,7 +866,7 @@ Then death has the three minimal sufficient causes in @tbl-sufficient-causes-one
 | $A=0$ with $U_2=1$ | no transplant | ejection fraction below 20% |
 | $U_0=1$ | none | pancreatic cancer at study start |
 
-: Three sufficient causes of death in an oversimplified heart transplant example {#tbl-sufficient-causes-one}
+: The three sufficient causes of death in @exm-three-sufficient-causes {#tbl-sufficient-causes-one}
 
 Figure 5.1 of the book draws each sufficient cause as a circle ("causal pie")
 divided into its components.
@@ -917,15 +921,21 @@ VanderWeele and Robins (2008) generalized some results to two or more treatments
 ::: {#exm-allergy-prevalence}
 ## Prevalence of Allergy and the Size of the Effect
 
-Compare two populations that have the same distribution of $U_0$ and $U_2$ from @exm-three-sufficient-causes,
+Take the sufficient causes of @exm-three-sufficient-causes,
+and compare two populations that have the same joint distribution of $U_0$ and $U_2$,
+with $\Pr[U_0 = 0] > 0$,
 but in which allergy to anesthesia ($U_1=1$) has prevalence
 
 - 1% in the first;
 - 10% in the second.
 
-Randomize half of each population to $A=1$.
-The average causal effect of transplant on death is greater in the second population,
-because the sufficient cause "$A=1$ plus $U_1=1$" is ten times more common there.
+In each population, let $U_1$ be independent of $(U_0, U_2)$.
+Since $Y^{a=1}=1$ exactly when $U_0=1$ or $U_1=1$,
+the risk had everyone been transplanted is $\Pr[Y^{a=1}=1] = \Pr[U_0=1] + \Pr[U_0=0]\Pr[U_1=1]$,
+while $\Pr[Y^{a=0}=1] = \Pr[U_0=1 \text{ or } U_2=1]$ is the same in both populations.
+So the causal risk difference is larger in the second population by $0.09 \Pr[U_0=0]$:
+the sufficient cause "$A=1$ plus $U_1=1$" is ten times more common there.
+A randomized experiment in each population, assigning half to $A=1$, would estimate this larger effect.
 :::
 
 ::: {.notes}
@@ -981,8 +991,9 @@ A second concept of interaction refers to mechanisms directly.
 ## Sufficient Cause Interaction
 
 There is a **sufficient cause interaction** between treatments $A$ and $E$ in a population
-if some sufficient cause (@def-sufficient-cause) that is completed in at least one individual
-has a component involving $A$ and a component involving $E$.
+if some sufficient cause (@def-sufficient-cause) has a component involving $A$ and a component involving $E$,
+and at least one individual has all of its background-factor components,
+so that it would be completed under some joint intervention on $A$ and $E$.
 :::
 
 ::: {#exm-sufficient-cause-interaction}
@@ -1108,7 +1119,7 @@ The two frameworks answer different questions:
 | | Sufficient-component causes | Counterfactuals |
 |---|---|---|
 | Starts from | a particular effect | a particular cause or intervention |
-| Asks | "how does it happen?" | "what happens?" |
+| Central question | by what mechanisms the outcome came about | what the outcome would be under an intervention |
 | Describes mechanisms | yes | no |
 
 : Two frameworks for causation {#tbl-two-frameworks}
@@ -1117,8 +1128,8 @@ For estimating average causal effects of hypothetical interventions,
 the subject of the book, the counterfactual framework is the natural one.
 
 ::: {.notes}
-The sufficient-component-cause model asks which events might have caused a given effect;
-the counterfactual model asks what would have happened had a factor been set to a different level than it was
+The sufficient-component-cause model starts from an outcome and looks for the events that could have produced it;
+the counterfactual model starts from one factor and looks at what changing that factor would do to the outcome
 [@hernan2020causal, p. 71].
 In philosophy the sufficient-component-cause framework goes back to Mackie (1965),
 whose **INUS condition** for $Y$ is an **I**nsufficient but **N**ecessary part of a condition
@@ -1237,8 +1248,8 @@ Figure 5.3 of the book crosses out the sufficient causes excluded this way.
   additive interaction requires individuals of interaction types, but their presence can cancel out.
 - **Sufficient cause interaction** means $A$ and $E$ appear in the same sufficient cause;
   synergism can sometimes be detected from counterfactual risks alone (@prp-detect-synergism).
-- The counterfactual framework answers "what happens?" and is the one used in the rest of the book;
-  sufficient-component causes answer "how does it happen?" and are mainly a teaching tool.
+- The counterfactual framework describes what would happen under interventions and is the one used in the rest of the book;
+  sufficient-component causes describe mechanisms and are mainly a teaching tool.
 
 ::: {.notes}
 **Looking ahead**: Chapter 6 introduces causal diagrams,
