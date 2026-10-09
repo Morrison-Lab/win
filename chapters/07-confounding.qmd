@@ -114,6 +114,7 @@ The common cause $L$ adds a second source of association.
 ## Confounding
 
 Let $A$ be a treatment and $Y$ an outcome in a causal DAG.
+A **common cause** of $A$ and $Y$ is a variable with a directed path to $A$ and a directed path to $Y$ that does not pass through $A$.
 **Confounding** is present for the effect of $A$ on $Y$ when $A$ and $Y$ share a common cause, measured or unmeasured;
 each common cause opens a backdoor path (@def-backdoor-path-ch7) between them.
 The word also names the bias this structure produces:
@@ -130,7 +131,8 @@ For illustration, let $L$ be binary,
 let $\Pr[A = 1 \mid L = 1] > \Pr[A = 1 \mid L = 0]$
 and $\Pr[Y = 1 \mid L = 1] > \Pr[Y = 1 \mid L = 0]$,
 and let $A$ have no effect on $Y$,
-so that within each level of $L$ the treated and the untreated have the same risk.
+so that within each level of $L$ the treated and the untreated have the same risk,
+and let both treatment levels occur within each level of $L$.
 Then the treated include a larger share of individuals with $L = 1$ than the untreated do,
 so their risk is higher,
 and the associational risk ratio exceeds the causal risk ratio of 1.
@@ -264,7 +266,7 @@ Positivity makes the conditional mean in the first line well defined.
 
 In a trial in which a coin decides who is treated, nothing causes both $A$ and $Y$,
 so $Y^a \ind A$ holds by design.
-If 30% of the treated and 40% of the untreated die,
+If, hypothetically, 30% of the treated and 40% of the untreated die,
 @prp-marginal-identification-ch7 gives a causal risk difference of $0.30 - 0.40 = -0.10$.
 :::
 
@@ -1076,17 +1078,16 @@ which in principle would allow measuring $A$ and still intervening.
 ---
 
 Without randomization, causal inference relies on the uncheckable assumption that the measured $L$ is a sufficient set for confounding adjustment (@def-sufficient-set).
-Under that assumption, methods that adjust for $L$ fall into two categories.
+Under that assumption, methods that adjust for $L$ fall into two categories,
+both of which rely on conditional exchangeability given $L$.
 
 ::: {#def-g-methods-ch7}
 ## G-methods and Conventional Stratification-Based Methods
 
-Assume conditional exchangeability given $L$.
-
-- **G-methods** ("g" for generalized) are standardization, IP weighting, and g-estimation.
-  Relying on conditional exchangeability given $L$, they target the causal effect in the whole population or in any subset of it.
-- **Conventional stratification-based methods** are stratification (including restriction) and matching.
-  Relying on the same assumption, they target the $A$-$Y$ association within subsets defined by $L$.
+- **G-methods** ("g" for generalized) are standardization, IP weighting, and g-estimation:
+  methods whose target is the causal effect in the whole population or in any subset of it.
+- **Conventional stratification-based methods** are stratification (including restriction) and matching:
+  methods whose target is the $A$-$Y$ association within subsets defined by $L$.
 :::
 
 ::: {#exm-heart-transplant-methods}
@@ -1107,7 +1108,7 @@ Standardization and IP weighting reproduce the $A$-$Y$ association that the popu
 IP weighting, for example, creates a pseudo-population in which $A$ is independent of $L$, "deleting" the arrow $L \rightarrow A$.
 Stratification does not delete that arrow but computes the effect in a subset, represented by a selection box.
 Part III explains why deleting the arrow is advantageous with time-varying treatments,
-why, among stratification-based methods, only g-estimation remains valid in general,
+why g-estimation, a g-method that like stratification works within levels of the covariates, remains valid in general when stratification and matching do not,
 and why conventional stratification-based methods can cause selection bias with time-varying confounders (Chapter 20).
 :::
 
