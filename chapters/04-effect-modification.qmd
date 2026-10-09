@@ -69,8 +69,14 @@ The book notes that calling these deities "women" and "men" is a slight abuse of
   causal risk difference $0.4 - 0.6 = -0.2$: transplant **decreases** risk.
 :::
 
-A null average effect in the population does not imply a null effect in every subset.
-Here the two sex-specific effects are equal in magnitude, opposite in sign, and each sex is 50% of the population, so they cancel exactly.
+::: {#rem-null-average-subset-effects}
+## A Null Average Can Hide Subset Effects
+
+A population average causal effect of zero can coexist with nonzero average causal effects within some of its subsets.
+In @exm-sex-specific-effects the two sex-specific risk differences are equal in magnitude and opposite in sign,
+and each sex is 50% of the population,
+so they cancel exactly in the population risk difference of 0.
+:::
 
 ::: {.notes}
 Exact cancellation is probably rare, but heterogeneity of individual effects is often expected because individuals differ in their susceptibility to treatment.
@@ -93,7 +99,23 @@ For binary $V$:
 Only variables $V$ not affected by treatment $A$ are considered as effect modifiers.
 :::
 
-In Table 4.1, sex modifies the effect on both scales, and the effects in the two strata go in **opposite directions**: this is **qualitative** effect modification.
+::: {#def-qualitative-effect-modification}
+## Qualitative Effect Modification
+
+Let $V$ be binary and let $\RD_v \eqdef \E{Y^{a=1} - Y^{a=0} \mid V = v}$ be the average causal effect on the additive scale in stratum $V = v$.
+We call $V$ a **qualitative** effect modifier if the two stratum-specific effects point in **opposite directions**:
+either $\RD_1 > 0 > \RD_0$ or $\RD_1 < 0 < \RD_0$.
+:::
+
+::: {#exm-sex-qualitative}
+## Sex as a Qualitative Modifier in Table 4.1
+
+In @exm-sex-specific-effects, $\RD_1 = 0.2 > 0$ in women and $\RD_0 = -0.2 < 0$ in men,
+so sex is a qualitative modifier of the effect of transplant on death.
+It modifies the effect on both scales:
+the risk differences are $0.2$ and $-0.2$,
+and the risk ratios are $1.5$ and $2/3$.
+:::
 
 ::: {.notes}
 The book does not consider effect modification on the odds ratio scale, because the odds ratio is rarely, if ever, the parameter of interest for causal inference (see also Fine Point 4.3).
@@ -104,8 +126,29 @@ Section 6.6 gives a structural classification of effect modifiers.
 
 ---
 
-With qualitative effect modification, additive implies multiplicative effect modification and vice versa.
-Without it, there can be modification on one scale but not the other.
+::: {#prp-qualitative-both-scales}
+## Opposite Directions Show Up on Both Scales
+
+Let $V$ be binary,
+let $p_v \eqdef \E{Y^{a=0} \mid V = v}$ be the counterfactual mean under no treatment in stratum $V = v$, with $p_v > 0$ for $v = 0, 1$,
+and let $\RR_v \eqdef \E{Y^{a=1} \mid V = v} / p_v$ be the causal risk ratio in stratum $V = v$.
+If $V$ is a qualitative effect modifier (@def-qualitative-effect-modification),
+then $V$ modifies that effect on both the additive and the multiplicative scale (@def-effect-modification).
+:::
+
+::: {.proof}
+In each stratum,
+
+$$
+\RR_v - 1 = \frac{\E{Y^{a=1} \mid V = v} - p_v}{p_v} = \frac{\RD_v}{p_v}.
+$$ {#eq-rr-minus-one-ch4}
+
+Because $p_v > 0$, $\RR_v - 1$ has the same sign as $\RD_v$.
+Under qualitative modification, $\RD_1$ and $\RD_0$ are nonzero with opposite signs, so $\RD_1 \neq \RD_0$: additive modification.
+By @eq-rr-minus-one-ch4, $\RR_1 - 1$ and $\RR_0 - 1$ are also nonzero with opposite signs, so $\RR_1 \neq \RR_0$: multiplicative modification.
+:::
+
+Without qualitative effect modification, there can be modification on one scale but not the other, as the next example shows.
 
 ::: {#exm-multiplicative-not-additive}
 ## Multiplicative but not additive effect modification
@@ -126,14 +169,20 @@ Because "effect modification" means nothing without naming the effect measure, s
 
 ---
 
-A **stratified analysis** is the natural way to identify effect modification by measured variables: compute the effect of $A$ on $Y$ in each level (stratum) of $V$.
-For dichotomous $V$, the stratified causal risk differences are
+::: {#def-stratified-analysis}
+## Stratified Analysis
+
+A **stratified analysis** of the effect of $A$ on $Y$ by a variable $V$ computes that effect separately within each level (**stratum**) $V = v$.
+For dichotomous $V$ and a dichotomous outcome $Y$, the stratified causal risk differences are
 
 $$
 \Pr[Y^{a=1} = 1 \mid V = 1] - \Pr[Y^{a=0} = 1 \mid V = 1]
 \quad\text{and}\quad
 \Pr[Y^{a=1} = 1 \mid V = 0] - \Pr[Y^{a=0} = 1 \mid V = 0].
-$$
+$$ {#eq-stratified-rd-ch4}
+:::
+
+Stratified analysis is the standard tool for detecting effect modification by measured variables.
 
 In real data we see $A$ and $Y$, not $Y^{a=1}$ and $Y^{a=0}$.
 How we stratify depends on the design.
@@ -143,13 +192,37 @@ How we stratify depends on the design.
 ---
 
 If treatment is randomly and unconditionally assigned, exchangeability is expected in **every subset** of the population.
-So within each stratum the associational risk difference equals the causal one, e.g.,
+
+::: {#prp-stratum-association-marginal}
+## Stratum-Specific Association Under Marginal Randomization
+
+Let $V$ be a pre-treatment variable and $Y$ a dichotomous outcome.
+Suppose that
+
+- treatment is assigned independently of the counterfactual outcomes and of $V$: $(Y^{a=0}, Y^{a=1}, V) \ind A$;
+- consistency holds: $Y = Y^a$ for individuals with $A = a$;
+- $\Pr[A = a, V = v] > 0$ for $a = 0, 1$.
+
+Then $\Pr[Y = 1 \mid A = a, V = v] = \Pr[Y^a = 1 \mid V = v]$ for each $a$ and $v$,
+so the associational risk difference in stratum $V = v$ equals the causal risk difference in that stratum.
+:::
+
+::: {.proof}
+The joint independence $(Y^a, V) \ind A$ implies $Y^a \ind A \mid V$.
+Hence
 
 $$
-\Pr[Y = 1 \mid A = 1, V = 1] - \Pr[Y = 1 \mid A = 0, V = 1] = \Pr[Y^{a=1} = 1 \mid V = 1] - \Pr[Y^{a=0} = 1 \mid V = 1],
-$$
+\begin{aligned}
+\Pr[Y = 1 \mid A = a, V = v]
+&= \Pr[Y^a = 1 \mid A = a, V = v] && \text{(consistency)} \\
+&= \Pr[Y^a = 1 \mid V = v] && \text{(} Y^a \ind A \mid V \text{)}.
+\end{aligned}
+$$ {#eq-stratum-association-marginal}
 
-and a stratified analysis of association measures identifies effect modification.
+Positivity makes every conditional probability on the left well defined.
+:::
+
+So a stratified analysis of association measures identifies effect modification in a marginally randomized experiment.
 
 ::: {.notes}
 Stratification yields average effects in subsets of the population, not individual effects (Fine Points 2.1 and 3.2).
@@ -177,35 +250,58 @@ Nationality $V$: 20 Greeks ($V = 1$, data in Table 3.1) and 20 Romans ($V = 0$, 
 | Diana | 1 | 0 | 0 | Juventas | 1 | 1 | 0 |
 | Phoebus | 1 | 0 | 1 | Bacchus | 1 | 1 | 0 |
 
-In the whole population of 40, $\Pr[Y^{a=1} = 1] = 0.55$ and $\Pr[Y^{a=0} = 1] = 0.40$: a risk difference of $0.15$ and a risk ratio of $0.55/0.40 = 1.375$.
+::: {#exm-greeks-romans-population}
+## The Effect in All 40 Greeks and Romans
 
-::: {.notes}
-The calculation is the same if the data came from an observational study in which we believe $Y^a \ind A \mid L$ holds (Chapter 3).
-
-The book leaves these risks to the reader.
-Pooling Greeks and Romans: 16 individuals have $L = 0$ and 24 have $L = 1$, so $\Pr[L = 0] = 0.4$ and $\Pr[L = 1] = 0.6$.
+Randomization depended only on $L$, so $Y^a \ind A \mid L$ holds in the combined population, and every stratum of $L$ has treated and untreated individuals.
+Pooling Greeks and Romans, 16 individuals have $L = 0$ and 24 have $L = 1$, so $\Pr[L = 0] = 0.4$ and $\Pr[L = 1] = 0.6$.
 The stratum-specific risks are $\Pr[Y = 1 \mid A = 1, L = 0] = 3/8$, $\Pr[Y = 1 \mid A = 1, L = 1] = 12/18 = 2/3$, $\Pr[Y = 1 \mid A = 0, L = 0] = 2/8$, and $\Pr[Y = 1 \mid A = 0, L = 1] = 3/6$.
-Standardizing,
+Standardizing by $L$,
 
 $$
 \begin{aligned}
 \Pr[Y^{a=1} = 1] &= (3/8)(0.4) + (2/3)(0.6) = 0.15 + 0.40 = 0.55, \\
 \Pr[Y^{a=0} = 1] &= (2/8)(0.4) + (3/6)(0.6) = 0.10 + 0.30 = 0.40.
 \end{aligned}
-$$
+$$ {#eq-greeks-romans-population}
+
+The causal risk difference in the population of 40 is $0.15$ and the causal risk ratio is $0.55/0.40 = 1.375$.
+:::
+
+::: {.notes}
+The same calculation applies to observational data if we are willing to assume $Y^a \ind A \mid L$ (Chapter 3).
+The book states these two risks without the intermediate steps.
 :::
 
 ---
 
-To estimate $\Pr[Y^{a} = 1 \mid V = v]$ in each stratum, use two stages:
+To compute $\Pr[Y^{a} = 1 \mid V = v]$ in each stratum, use two stages.
 
-1. **stratify** by $V$;
-2. **standardize** by $L$ (or, equivalently, IP weight with weights depending on $L$) within each stratum.
+::: {#alg-stratify-then-standardize}
+## Stratify by the Modifier, Then Adjust for the Confounders
 
-Step 2 can be skipped when $V$ is itself the set of variables needed for conditional exchangeability (Section 4.4).
+Assume consistency, conditional exchangeability $Y^a \ind A \mid L, V$,
+and positivity $\Pr[A = a \mid L = l, V = v] > 0$ whenever $\Pr[L = l, V = v] > 0$.
+
+1. **Stratify** by $V$.
+2. Within each stratum $V = v$, **standardize** by $L$:
+   $$
+   \Pr[Y^a = 1 \mid V = v] = \sum_l \Pr[Y = 1 \mid A = a, L = l, V = v] \Pr[L = l \mid V = v],
+   $$ {#eq-stratify-then-standardize}
+   or, equivalently, IP weight with weights that depend on $L$ (and $V$).
+3. Compare the resulting stratum-specific causal risk differences or risk ratios across levels of $V$.
+
+Step 2 can be skipped when $Y^a \ind A \mid V$ already holds,
+that is, when $V$ itself suffices for conditional exchangeability (Section 4.4).
+:::
+
+In the Greeks and Romans example, randomization depended only on $L$,
+so $A$ is independent of $(Y^{a=0}, Y^{a=1}, V)$ given $L$, and in particular $Y^a \ind A \mid L, V$.
 
 ::: {#exm-greeks-romans}
 ## Effect modification by nationality
+
+Apply Algorithm [-@alg-stratify-then-standardize] with $V$ = nationality.
 
 **Greeks** ($V = 1$): as computed in Chapter 2, causal risk difference 0, risk ratio 1.
 
@@ -231,25 +327,59 @@ The modification is **not qualitative**: the effect is harmful or null in both s
 ---
 
 Nationality may only be a **marker** for the factor truly responsible.
-If heart surgery is better in Greece than in Rome, an intervention that improved surgery in Rome could remove the modification by passport-defined nationality.
 
-- **surrogate effect modifier**: nationality
-- **causal effect modifier**: quality of care
+::: {#def-surrogate-causal-effect-modifier}
+## Surrogate Versus Causal Effect Modifier
 
+Suppose there is effect modification by $V$ (@def-effect-modification).
+$V$ is a **surrogate effect modifier** when the effect varies across levels of $V$ only because $V$ is associated with another variable $W$ whose levels drive that variation,
+so that an intervention that changed $W$ while leaving $V$ alone could remove the modification by $V$.
+Such a variable $W$ is a **causal effect modifier**.
+Section 6.6 represents both kinds graphically.
+:::
+
+::: {#exm-nationality-quality-of-care}
+## Nationality and Quality of Care
+
+Suppose Greek hospitals provide better heart surgery than Roman ones.
+Then the modification by nationality in @exm-greeks-romans could be due to quality of care:
+an intervention that improved surgery in Rome could remove the modification by passport-defined nationality.
+Nationality would be a surrogate effect modifier, and quality of care a causal effect modifier.
+:::
+
+::: {.callout-warning title="Modification Does Not Make the Modifier a Cause"}
 "Effect modification by $V$" does not imply that $V$ plays a causal role;
 some authors prefer the more neutral "effect heterogeneity across strata of $V$".
 Chapter 5's **interaction** does attribute a causal role to the variables involved.
+:::
 
-::: {.callout-note title="Fine Point 4.1: Effect in the treated"}
-The average causal effect can also be defined in one particular subset, the treated ($A = 1$).
-By consistency, the average causal effect in the treated is non-null if
+::: {.callout-note title="Fine Point 4.1: Effect in the Treated"}
+The individuals who actually received treatment form one subset of special interest.
+The definition that follows gives the average causal effect in the treated and in the untreated,
+and the remark after it explains when the effect in the treated differs from the population effect
+[@hernan2020causal, p. 50].
+:::
 
-$$\Pr[Y = 1 \mid A = 1] \neq \Pr[Y^{a=0} = 1 \mid A = 1].$$
+::: {#def-effect-in-treated}
+## Average Causal Effect in the Treated and in the Untreated
 
-The causal risk difference in the treated is $\Pr[Y = 1 \mid A = 1] - \Pr[Y^{a=0} = 1 \mid A = 1]$, and the causal risk ratio in the treated, also called the **standardized morbidity ratio (SMR)**, is $\Pr[Y = 1 \mid A = 1] / \Pr[Y^{a=0} = 1 \mid A = 1]$;
-effects in the untreated replace $A = 1$ by $A = 0$ (book Figure 4.1).
+Let $A$ and $Y$ be dichotomous, with $\Pr[A = 1] > 0$.
+Among the treated, the **causal risk difference in the treated** contrasts $\Pr[Y^{a=1} = 1 \mid A = 1]$ with $\Pr[Y^{a=0} = 1 \mid A = 1]$ by subtraction,
+and the **causal risk ratio in the treated** contrasts them by division:
+$\Pr[Y^{a=1} = 1 \mid A = 1] / \Pr[Y^{a=0} = 1 \mid A = 1]$.
+The latter is also called the **standardized morbidity ratio** (SMR).
+Replacing $A = 1$ by $A = 0$ in the conditioning event (with $\Pr[A = 0] > 0$) gives the causal risk difference and ratio **in the untreated** (book Figure 4.1).
 
-The effect in the treated differs from the population effect if the distribution of individual effects differs between treated and untreated.
+Under consistency, $\Pr[Y^{a=1} = 1 \mid A = 1] = \Pr[Y = 1 \mid A = 1]$,
+so there is a nonzero average causal effect among the treated exactly when
+
+$$\Pr[Y = 1 \mid A = 1] \neq \Pr[Y^{a=0} = 1 \mid A = 1].$$ {#eq-effect-in-treated-nonnull}
+:::
+
+::: {#rem-treatment-group-as-marker}
+## When the Effect in the Treated Differs from the Population Effect
+
+If individual causal effects are distributed differently among the treated than among the untreated, the effect in the treated generally differs from the population effect.
 Treatment group then acts as a marker for the true modifiers, but we would not say the effect of $A$ is "modified by $A$";
 the modification is by unidentified variables distributed differently between treatment groups.
 The book focuses on population effects because effects in the treated or untreated do not generalize directly to time-varying treatments (Part III).
@@ -274,19 +404,32 @@ In a population with more women (e.g., graduating college students), the average
 
 - With non-qualitative effect modification, the **magnitude** (but not the direction) of the average effect varies across populations, e.g., the effects of asbestos exposure (different in smokers and nonsmokers) or of universal health care (different in low- and high-income families).
 
+::: {.callout-important title="No Effect Without a Population"}
 There is no such thing as "the average causal effect of $A$ on $Y$ (period)", only "the average causal effect of $A$ on $Y$ in a population with a particular mix of causal effect modifiers."
+:::
 
 ### Transportability
 
 ---
 
-Extrapolating an effect from one population to another is **transportability** (lack of it is sometimes called lack of external validity).
+::: {#def-transportability}
+## Transportable Effect
+
+An average causal effect computed in one population (the **study population**) is **transportable** to another population (the **target population**) when it coincides with the target population's own average causal effect.
+Extrapolating an effect from one population to another relies on **transportability**;
+lack of it is sometimes called lack of external validity.
+:::
+
 The effect in the population of Greeks and Romans may not transport to a population with a different mix of sex and nationality.
 
 - Conditional effects within strata of modifiers may transport better, but there is no guarantee: other unmeasured modifiers may be distributed differently.
 - Those unmeasured modifiers are not variables needed for exchangeability;
   they are just risk factors for the outcome, about which we have much less information.
-- So transportability is harder than identification within one population, and is an **unverifiable assumption** resting on subject-matter knowledge.
+
+::: {.callout-warning title="Transportability Cannot Be Checked in the Data"}
+Transportability is harder to justify than identification within one population.
+It is an **unverifiable assumption** that rests on subject-matter knowledge.
+:::
 
 ::: {.notes}
 The book's examples: most experts would agree that the health effects of raising a household's annual income by \$100 in Niger cannot be transported to the Netherlands, but that the effects of cholesterol-lowering drugs in Europeans can be transported to Canadians.
@@ -295,29 +438,105 @@ The book cites Hernán and VanderWeele (2011), Pearl and Bareinboim (2014), and 
 :::
 
 ::: {.callout-note title="Fine Point 4.2: Transportability"}
-Effects may be transported if the two populations are similar with respect to:
+Whether an effect carries over from a study population to a target population depends on features of both.
+The remark that follows lists the features that must be similar,
+and the one after it shows how stratum-specific effects can be reweighted to a target population, and why that may still fall short
+[@hernan2020causal, p. 54].
+Methods for transporting effects are discussed by Westreich et al. (2017), Rudolph and van der Laan (2017), and Dahabreh et al. (2020b).
+:::
+
+::: {#rem-transportability-requirements}
+## What Must Be Similar for an Effect to Transport
+
+An average causal effect (@def-transportability) may be transported from a study population to a target population if the two populations are similar with respect to:
 
 - **effect modification**: the distribution of effect modifiers;
 - **the definition of treatment**: different versions of treatment can have different effects;
 - **interference** (Fine Point 1.1): e.g., a socially active person may bring friends along to exercise, so contact patterns affect the magnitude of an exercise intervention's effect.
-
-Stratum-specific effects can be combined in a weighted average to reconstruct the effect in a target population, with weights equal to the target population's proportions in each stratum (e.g., Roman women, Greek women, Roman men, Greek men).
-The result still need not equal the true target effect because of unmeasured modifiers, interference patterns, and treatment definitions.
-Methods for transporting effects are discussed by Westreich et al. (2017), Rudolph and van der Laan (2017), and Dahabreh et al. (2020b).
 :::
 
-::: {.callout-note title="Technical Point 4.1: Computing the effect in the treated"}
-The population effect required $Y^a \ind A \mid L$ for both $a = 0$ and $a = 1$.
-The effect in the treated needs only **partial exchangeability** $Y^{a=0} \ind A \mid L$;
-the effect in the untreated needs only $Y^{a=1} \ind A \mid L$.
-Counterfactual means of the form $\E{Y^a \mid A = a'}$ can be computed by
+::: {#rem-transport-by-reweighting}
+## Reweighting Strata to a Target Population
 
-- standardization: $\E{Y^a \mid A = a'} = \sum_l \E{Y \mid A = a, L = l} \Pr[L = l \mid A = a']$;
-- IP weighting, with weights $\Pr[A = a' \mid L] / f(A \mid L)$:
+Let $S$ index strata defined by measured effect modifiers (e.g., Roman women, Greek women, Roman men, Greek men),
+and let $q_s$ be the proportion of the target population in stratum $s$.
+If, for each $a$, the stratum-specific counterfactual risks $\Pr[Y^a = 1 \mid S = s]$ computed in the study population also hold in the target population,
+then the target population's counterfactual risk under treatment level $a$ is
+
 $$
-\E{Y^a \mid A = a'} = \frac{\E{\dfrac{I(A = a)\, Y}{f(A \mid L)} \Pr[A = a' \mid L]}}{\E{\dfrac{I(A = a)}{f(A \mid L)} \Pr[A = a' \mid L]}}.
+\sum_s \Pr[Y^a = 1 \mid S = s]\, q_s,
+$$ {#eq-transport-reweighting}
+
+and the target causal risk difference and risk ratio follow by contrasting these risks for $a = 1$ and $a = 0$.
+That condition can fail because of unmeasured effect modifiers, different interference patterns, or different versions of treatment,
+so the reweighted value need not equal the true effect in the target population.
+:::
+
+::: {.callout-note title="Technical Point 4.1: Computing the Effect in the Treated"}
+Effects among the treated, or among the untreated, need a weaker exchangeability condition than the population effect.
+The definition that follows names that condition,
+and the proposition after it shows how standardization and IP weighting compute the needed counterfactual means;
+Sato and Matsuyama (2003) derived the IP weighting equality for dichotomous $A$
+[@hernan2020causal, p. 52].
+:::
+
+::: {#def-partial-exchangeability}
+## Partial Exchangeability
+
+The population effect required $Y^a \ind A \mid L$ for both $a = 0$ and $a = 1$.
+**Partial exchangeability** requires it for only one treatment level:
+$Y^{a=0} \ind A \mid L$ suffices for the effect in the treated (@def-effect-in-treated),
+and $Y^{a=1} \ind A \mid L$ suffices for the effect in the untreated.
+:::
+
+::: {#prp-effect-in-treated-identification}
+## Identifying Counterfactual Means in a Treatment Group
+
+Let $a, a' \in \{0, 1\}$ with $\Pr[A = a'] > 0$.
+Assume consistency, partial exchangeability $Y^a \ind A \mid L$ for this $a$ (@def-partial-exchangeability),
+and positivity $f(a \mid L = l) \eqdef \Pr[A = a \mid L = l] > 0$ for every $l$ with $\Pr[L = l] > 0$.
+Then $\E{Y^a \mid A = a'}$ equals both the standardized mean
+
 $$
-For dichotomous $A$, this equality was derived by Sato and Matsuyama (2003).
+\E{Y^a \mid A = a'} = \sum_l \E{Y \mid A = a, L = l} \Pr[L = l \mid A = a']
+$$ {#eq-effect-in-treated-standardization}
+
+and the IP weighted mean with weights $\Pr[A = a' \mid L] / f(A \mid L)$:
+
+$$
+\E{Y^a \mid A = a'} = \frac{\E{\dfrac{\indicp{A = a}\, Y}{f(A \mid L)} \Pr[A = a' \mid L]}}{\E{\dfrac{\indicp{A = a}}{f(A \mid L)} \Pr[A = a' \mid L]}}.
+$$ {#eq-effect-in-treated-ipw}
+:::
+
+::: {.proof}
+**Standardization.**
+For each $l$ with $\Pr[L = l \mid A = a'] > 0$,
+
+$$
+\begin{aligned}
+\E{Y^a \mid A = a', L = l}
+&= \E{Y^a \mid L = l} && \text{(partial exchangeability)} \\
+&= \E{Y^a \mid A = a, L = l} && \text{(partial exchangeability; positivity)} \\
+&= \E{Y \mid A = a, L = l} && \text{(consistency)}.
+\end{aligned}
+$$ {#eq-effect-in-treated-std-proof}
+
+Averaging over $\Pr[L = l \mid A = a']$ (law of total expectation) gives @eq-effect-in-treated-standardization.
+
+**IP weighting.**
+Because $\indicp{A = a}$ is zero unless $A = a$, the numerator of @eq-effect-in-treated-ipw is
+
+$$
+\begin{aligned}
+\E{\frac{\indicp{A = a}\, Y}{f(A \mid L)} \Pr[A = a' \mid L]}
+&= \E{\frac{\Pr[A = a \mid L]\, \E{Y \mid A = a, L}}{f(a \mid L)} \Pr[A = a' \mid L]} && \text{(iterated expectations given } L\text{)} \\
+&= \E{\E{Y \mid A = a, L} \Pr[A = a' \mid L]} && \text{(} f(a \mid L) = \Pr[A = a \mid L] > 0 \text{)} \\
+&= \sum_l \E{Y \mid A = a, L = l} \Pr[L = l \mid A = a'] \Pr[A = a'] && \text{(Bayes' rule)}.
+\end{aligned}
+$$ {#eq-effect-in-treated-ipw-numerator}
+
+The same steps with $Y$ replaced by 1 show that the denominator equals $\Pr[A = a']$.
+Their ratio is the standardized mean, which equals $\E{Y^a \mid A = a'}$ by @eq-effect-in-treated-standardization.
 :::
 
 ### 2. Who benefits most
@@ -328,8 +547,37 @@ If physicians knew of the qualitative modification by sex in Table 4.1, then, la
 
 In the second study (@exm-multiplicative-not-additive), treatment changes the risk by the same 0.1 in both strata, so treating everyone would change risk equally in both strata, despite the multiplicative effect modification.
 
-- **Additive**, not multiplicative, effect modification is the scale for identifying the groups that would benefit most from intervention.
-- If there is a nonzero effect in at least one stratum and $\Pr[Y^{a=0} = 1 \mid V = v]$ varies with $v$, effect modification is guaranteed on at least one of the two scales.
+::: {#rem-additive-scale-for-targeting}
+## The Additive Scale Identifies Who Benefits Most
+
+To identify the groups that would benefit most from an intervention, look for **additive**, not multiplicative, effect modification:
+the causal risk difference in a stratum is the average change in risk that treating everyone in that stratum would produce,
+whatever the risk ratio in that stratum is.
+:::
+
+::: {#prp-em-at-least-one-scale}
+## Modification on at Least One Scale
+
+Let $V$ be binary, and let $p_v \eqdef \Pr[Y^{a=0} = 1 \mid V = v] > 0$,
+$\RD_v \eqdef \Pr[Y^{a=1} = 1 \mid V = v] - p_v$,
+and $\RR_v \eqdef \Pr[Y^{a=1} = 1 \mid V = v] / p_v$ for $v = 0, 1$.
+If $\RD_v \neq 0$ for at least one $v$ and $p_1 \neq p_0$,
+then there is effect modification by $V$ on the additive scale, the multiplicative scale, or both.
+:::
+
+::: {.proof}
+Suppose there is no additive modification, so $\RD_1 = \RD_0$; write $d$ for this common value.
+Since at least one $\RD_v$ is nonzero, $d \neq 0$.
+By @eq-rr-minus-one-ch4 (which holds for any binary outcome), $\RR_v = 1 + d / p_v$.
+Because $d \neq 0$ and $p_1 \neq p_0$, $d / p_1 \neq d / p_0$, so $\RR_1 \neq \RR_0$: there is multiplicative modification.
+:::
+
+In @exm-multiplicative-not-additive, $d = 0.1$, $p_1 = 0.8$, and $p_0 = 0.1$, so $\RR_1 = 1.125$ and $\RR_0 = 2$.
+
+::: {.callout-tip title="Report the Counterfactual Risks"}
+Reporting both counterfactual risks, $\Pr[Y^{a=1} = 1 \mid V = v]$ and $\Pr[Y^{a=0} = 1 \mid V = v]$, for every stratum tells the reader more than reporting only their difference or ratio:
+the risks determine both scales, and neither scale alone determines the risks.
+:::
 
 ::: {.notes}
 Several authors (e.g., Blot and Day 1979; Rothman et al. 1980;
@@ -337,7 +585,6 @@ Saracci 1980) have called additive effect modification the scale of interest for
 
 In the second study, multiplicative modification is expected: with $\Pr[Y^{a=0} = 1 \mid V = 1] = 0.8$, the causal risk ratio in that stratum can be at most $1/0.8 = 1.25$, so it must differ from the risk ratio of 2 in the $V = 0$ stratum.
 Multiplicative modification here arises from differences in the untreated risk across levels of $V$.
-As a general rule, it is more informative to report the absolute counterfactual risks $\Pr[Y^{a=1} = 1 \mid V = v]$ and $\Pr[Y^{a=0} = 1 \mid V = v]$ in every stratum than only their ratio or difference.
 
 (The book's text says that treatment "reduces" the risk by 10% in this example;
 in its numbers, 0.8 to 0.9 and 0.1 to 0.2, treatment increases the risk by 0.1 in both strata.
@@ -377,8 +624,17 @@ Under $Y^a \ind A \mid L$, each is the causal risk ratio in its stratum, because
 
 ---
 
-- The two stratum-specific risk ratios are **conditional** effect measures;
-  the risk ratio of 1 from Chapter 2 is a **marginal** (unconditional) one.
+::: {#def-conditional-marginal-effect-measure}
+## Conditional and Unconditional Effect Measures
+
+A **conditional** effect measure contrasts counterfactual outcomes within the subset of the population with $L = l$,
+e.g., the conditional causal risk ratio $\Pr[Y^{a=1} = 1 \mid L = l] / \Pr[Y^{a=0} = 1 \mid L = l]$.
+A **marginal** (unconditional) effect measure contrasts them in the whole population,
+e.g., the marginal causal risk ratio $\Pr[Y^{a=1} = 1] / \Pr[Y^{a=0} = 1]$.
+:::
+
+- The two stratum-specific risk ratios in @exm-stratified-adjustment are **conditional** effect measures;
+  the risk ratio of 1 from Chapter 2 is a **marginal** one.
   All three equal 1 here only because $L$ does not modify the effect.
 - Each stratum-specific measure describes a nonoverlapping subset;
   in general none of them is the population effect.
@@ -389,35 +645,47 @@ Under $Y^a \ind A \mid L$, each is the causal risk ratio in its stratum, because
 So stratification forces one to evaluate effect modification by all variables in $L$, whether or not that is of interest.
 Stratifying by $V$ and then standardizing or IP weighting for $L$ handles exchangeability and effect modification separately.
 
-::: {.notes}
-Other problems with stratification:
-
-- **noncollapsibility** of some effect measures such as the odds ratio (Fine Point 4.3);
-- with time-varying treatments, inappropriate adjustment for time-varying $L$ affected by prior treatment (Part III);
+::: {.callout-warning title="More Pitfalls of Stratification as Adjustment"}
+- Some effect measures, such as the odds ratio, are **noncollapsible** (Fine Point 4.3).
+- With time-varying treatments, stratifying on time-varying $L$ affected by prior treatment is inappropriate adjustment (Part III):
   stratum-specific measures may then lack a causal interpretation even under exchangeability, positivity, and well-defined interventions (Robins 1986, 1987;
-  Chapter 20);
-- stratification requires **positivity** as well as exchangeability: no effect can be computed in a stratum $L = l$ containing only treated or only untreated individuals.
+  Chapter 20).
+- Stratification requires **positivity** as well as exchangeability: no effect can be computed in a stratum $L = l$ containing only treated or only untreated individuals.
 :::
 
 ### Restriction
 
 ---
 
-Computing the effect in only some strata of $L$ is **restriction**.
-Stratification is restriction applied to several comprehensive, mutually exclusive subsets, with exchangeability in each.
+::: {#def-restriction}
+## Restricting the Analysis to Some Strata
+
+**Restriction** computes the effect of $A$ on $Y$ only in some strata of $L$, for example only in $L = 1$.
+Stratification is restriction applied to each of several mutually exclusive subsets that together cover the population,
+with conditional exchangeability required in each.
+:::
+
 When positivity fails in some strata, restriction limits the inference to the strata where positivity holds (Chapter 3).
 
 ## 4.5 Matching as Another Form of Adjustment (pp. 55-56)
 
 ---
 
-The goal of **matching** is to build a subset of the population in which $L$ has the same distribution among the treated and the untreated.
+::: {#def-matching}
+## Matching
+
+**Matching** selects individuals so that, among those selected, the variables $L$ (the **matching factors**) are distributed identically in the treated and the untreated.
+
+- In one-to-one matching, each individual in a reference group (e.g., the untreated) is paired with an individual of the other treatment group who has the same value of $L$, forming **matched pairs**;
+  one-to-many matching forms **matched sets**.
+- **Frequency matching** instead selects individuals in each treatment group so that $L$ has a chosen distribution in both groups.
+:::
 
 ::: {#exm-matching-table-2-2}
 ## Matching in Table 2.2
 
-For each untreated individual, randomly select a treated individual with the same $L$ (the **matching factor**).
-One possible set of 7 **matched pairs** (untreated first):
+For each untreated individual, randomly select a treated individual with the same $L$ (the matching factor).
+One possible set of 7 matched pairs (untreated first):
 
 - $L = 0$: Rheia-Hestia, Kronos-Poseidon, Demeter-Hera, Hades-Zeus
 - $L = 1$: Artemis-Ares, Apollo-Aphrodite, Leto-Hermes
@@ -440,12 +708,16 @@ even if the matching factors suffice for conditional exchangeability, this does 
 
 ---
 
-- The group used as the reference for finding matches defines the population in which the effect is computed.
-  Matching each untreated individual to a treated one estimates the **effect in the untreated**;
-  with fewer treated than untreated in every stratum of $L$, one usually estimates the **effect in the treated**.
-- Matching need not be one-to-one (pairs); it can be one-to-many (matched sets).
+::: {#rem-matching-reference-group}
+## The Reference Group Sets the Target Population
+
+In matching (@def-matching), the group used as the reference for finding matches defines the population in which the effect is computed.
+Matching each untreated individual to a treated one, as in @exm-matching-table-2-2, estimates the effect in the untreated (@def-effect-in-treated);
+with fewer treated than untreated in every stratum of $L$, one usually matches each treated individual and estimates the effect in the treated.
+:::
+
 - With several variables in $L$, matches come from the same stratum of the combination of all of them.
-- **Frequency matching** creates any chosen distribution of $L$, e.g., selecting treated individuals so that 70% have $L = 1$, then doing the same for the untreated.
+- Frequency matching can create any chosen distribution of $L$, e.g., selecting treated individuals so that 70% have $L = 1$, then doing the same for the untreated.
 
 Because the matched population is a subset of the original one, its distribution of effect modifiers generally differs, which is the topic of Section 4.6.
 
@@ -459,13 +731,17 @@ Stuart (2010) is an introduction.
 
 ---
 
-Standardization, IP weighting, stratification/restriction, and matching estimate **different types** of causal effects:
+::: {#rem-adjustment-methods-targets}
+## What Each Adjustment Method Computes
+
+Standardization, IP weighting, stratification/restriction, and matching compute **different types** of causal effects (@def-conditional-marginal-effect-measure):
 
 - standardization and IP weighting can compute **marginal or conditional** effects;
 - stratification/restriction and matching compute only **conditional** effects in certain subsets.
 
 All four require exchangeability and positivity, but only in the subset to which the effect refers: for the effect among $L = l$, only in that subset;
 for the marginal effect, in all levels of $L$.
+:::
 
 Without effect modification all four give the same answer: in Table 2.2 the causal risk ratio was 1 in the population, in each stratum of $L$, and in the untreated.
 
@@ -559,14 +835,38 @@ In Table 4.3, $w(0) = (1/4)(0.4)/0.5 = 0.2 < 1/3$, and indeed $2(0.2) + 0.5(0.8)
 
 ---
 
+::: {#rem-well-characterized-target-population}
+## A Second Prerequisite for Causal Inference
+
 Chapter 3 argued that a well-defined causal effect is a prerequisite for meaningful causal inference.
-A **well-characterized target population** is another.
+A **well-characterized target population** is another:
+the population, or subset, to which the effect refers must be stated.
 Experiments that compare interventions in a population meeting a priori eligibility criteria have both automatically;
 observational studies must define them explicitly.
+:::
+
+::: {#exm-effect-untreated-standardization}
+## The Effect in the Untreated in Table 4.3 by Standardization
+
+Under $Z^{a=1} \ind A \mid L$, @prp-effect-in-treated-identification with $a = 1$ and $a' = 0$ computes the effect in the untreated without matching.
+Of the 7 untreated individuals in Table 4.3, 4 have $L = 0$ and 3 have $L = 1$, so
+
+$$
+\begin{aligned}
+\Pr[Z^{a=1} = 1 \mid A = 0]
+&= \Pr[Z = 1 \mid A = 1, L = 0] \Pr[L = 0 \mid A = 0] + \Pr[Z = 1 \mid A = 1, L = 1] \Pr[L = 1 \mid A = 0] \\
+&= (2/4)(4/7) + (1/3)(3/7) \\
+&= 3/7.
+\end{aligned}
+$$ {#eq-effect-untreated-table-4-3}
+
+By consistency, $\Pr[Z^{a=0} = 1 \mid A = 0] = \Pr[Z = 1 \mid A = 0] = 3/7$,
+so the causal risk ratio in the untreated is $1.0$, the same answer that matching gave in @exm-four-risk-ratios.
+:::
 
 ::: {.notes}
 An investigator who used IP weighting (population effect) and one who used matching (effect in the untreated) need not debate which method is better: their answers differ because they asked different causal questions.
-The second could have used IP weighting to compute the effect in the untreated (Technical Point 4.1).
+The second could also have obtained the effect in the untreated by standardization or IP weighting, as in @exm-effect-untreated-standardization.
 
 Part II shows how standardization, IP weighting, and stratification combine with parametric or semiparametric models.
 Standard regression models are a form of stratification: the treatment-outcome association is estimated within levels of all the other covariates in the model.
@@ -574,34 +874,65 @@ Standard regression models are a form of stratification: the treatment-outcome a
 Finally, stratification yields average effects in subsets, not individual effects, which are identified only under extreme assumptions (Fine Points 2.1 and 3.2).
 :::
 
-::: {.notes}
-
-::: {.callout-note title="Technical Point 4.2: Pooling stratum-specific effect measures"}
+::: {.callout-note title="Technical Point 4.2: Pooling of Stratum-Specific Effect Measures"}
 Until Chapter 10, the book works with whole populations and so talks of computing, not estimating, effects.
-With samples, a common way to reduce the variability of stratum-specific estimates is to **pool** them (Woolf, Mantel-Haenszel, maximum likelihood), or to fit regression models saturated with respect to $L$ with no product terms between $A$ and $L$.
-Pooling targets a narrower confidence interval around a *common* stratum-specific effect;
-the pooled measure is still conditional.
+With samples, stratum-specific estimates are variable, and pooling them is a common response.
+The definition that follows describes pooling,
+the example after it pools the Table 4.3 risk ratios,
+and the warning after that explains when the pooled value is hard to interpret
+[@hernan2020causal, p. 57].
+:::
 
+::: {#def-pooled-effect-measure}
+## Pooled Stratum-Specific Effect Measure
+
+A **pooled** effect measure combines the stratum-specific estimates of an effect measure across strata of $L$ into a single estimate (e.g., by the Woolf, Mantel-Haenszel, or maximum likelihood method),
+or comes from a regression model saturated with respect to $L$ with no product terms between $A$ and $L$.
+Pooling aims at a narrower confidence interval around a *common* stratum-specific effect;
+the pooled measure is still a conditional effect measure (@def-conditional-marginal-effect-measure).
+:::
+
+::: {#exm-mantel-haenszel-table-4-3}
+## Mantel-Haenszel Risk Ratio in Table 4.3
+
+In stratum $l$, let $a_l$ and $b_l$ be the numbers of cases among the treated and the untreated,
+$n_{1l}$ and $n_{0l}$ the numbers treated and untreated,
+and $N_l$ the stratum size.
 In Table 4.3, the Mantel-Haenszel risk ratio for $Z$ is
 
 $$
-\RR_{\text{MH}} = \frac{\sum_l a_l n_{0l} / N_l}{\sum_l b_l n_{1l} / N_l}
-= \frac{(2 \cdot 4)/8 + (3 \cdot 3)/12}{(1 \cdot 4)/8 + (2 \cdot 9)/12}
-= \frac{1 + 0.75}{0.5 + 1.5} = \frac{1.75}{2} \approx 0.88,
-$$
+\begin{aligned}
+\RR_{\text{MH}}
+&= \frac{\sum_l a_l n_{0l} / N_l}{\sum_l b_l n_{1l} / N_l} \\
+&= \frac{(2 \cdot 4)/8 + (3 \cdot 3)/12}{(1 \cdot 4)/8 + (2 \cdot 9)/12} \\
+&= \frac{1.75}{2} \\
+&\approx 0.88.
+\end{aligned}
+$$ {#eq-mantel-haenszel-table-4-3}
+:::
 
-where $a_l, b_l$ are the numbers of cases among the treated and untreated in stratum $l$, $n_{1l}, n_{0l}$ the numbers treated and untreated, and $N_l$ the stratum size.
-This is meaningful only if the stratum-specific estimates 2.0 and 0.5 estimate the same effect (e.g., a true risk ratio of 0.9 in both strata, with small-sample noise);
+::: {.callout-warning title="Pooling Assumes a Common Effect"}
+The pooled value in @exm-mantel-haenszel-table-4-3 is meaningful only if the stratum-specific estimates 2.0 and 0.5 estimate the same effect (e.g., a true risk ratio of 0.9 in both strata, with small-sample noise);
 if the true stratum effects really are 0.5 and 2.0, the pooled value is hard to interpret.
 The same issue arises in meta-analyses of heterogeneous studies (Dahabreh et al. 2020a).
 The finer the stratification, the harder it is to tell sampling variability from effect-measure modification.
 :::
+
+::: {.callout-note title="Fine Point 4.3: Collapsibility and the Odds Ratio"}
+A desirable property of an effect measure is that its population value lies within the range of its stratum-specific values.
+The definition that follows names that property,
+and the example after it uses the data in Table 4.4 to show that the odds ratio lacks it
+[@hernan2020causal, p. 60].
 :::
 
-::: {.callout-note title="Fine Point 4.3: Collapsibility and the odds ratio"}
-An effect measure is **collapsible** when its population value is a weighted average of its stratum-specific values.
-In follow-up studies the risk ratio and risk difference are collapsible,
+::: {#def-collapsible-effect-measure}
+## Collapsible Effect Measure
+
+An effect measure is **collapsible** over a variable $V$ when its value in the population is a weighted average of its values in the strata of $V$.
+In follow-up studies the risk difference and the risk ratio are collapsible
+(the first display in the proof of @prp-marginal-rr-condition writes the marginal risk ratio as such an average),
 but the odds ratio (and the rarely used odds difference) is not (Greenland 1987).
+:::
 
 **Table 4.4**: effect of moving to high altitude $A$ (top of Mount Olympus) on depression $Y$;
 $V = 1$ for women.
@@ -619,7 +950,6 @@ The decision to move was random, so $Y^a \ind A$.
 | Aphrodite | 1 | 1 | 1 | Polyphemus | 0 | 1 | 1 |
 | Persephone | 1 | 1 | 0 | Hermes | 0 | 1 | 0 |
 | Hebe | 1 | 1 | 1 | Dionysus | 0 | 1 | 1 |
-:::
 
 ::: {#exm-odds-ratio-noncollapsible}
 ## The odds ratio is not collapsible
@@ -634,14 +964,17 @@ The population risk ratio (2.3) lies between the stratum-specific ones (2 and 3)
 The population odds ratio (5.4) is closer to the null than **both** stratum-specific odds ratios (6), even though there is no confounding.
 :::
 
-::: {.notes}
-Noncollapsibility of the odds ratio is a special case of Jensen's inequality (Samuels 1981).
-The population odds ratio can be closer to the null than the non-null stratum-specific odds ratios when $V$ is an independent risk factor for $Y$ and $A$ is independent of $V$, as here (Miettinen and Cook 1981).
+::: {#rem-when-odds-ratio-collapses}
+## When the Odds Ratio Is Nearly Collapsible
 
+Noncollapsibility of the odds ratio is a consequence of Jensen's inequality (Samuels 1981).
+The population odds ratio may lie nearer the null than every non-null stratum-specific odds ratio when $V$ predicts $Y$ on its own and is independent of $A$, as in Table 4.4 (Miettinen and Cook 1981).
 The odds ratio is collapsible under the sharp null, and approximately collapsible (and approximately equal to the risk ratio) when the outcome is rare (say, under 10%) in every stratum of a follow-up study.
+:::
 
-A consequence: "lack of exchangeability" cannot be equated with "a change in the conditional odds ratio compared with the unconditional one".
-Here the odds ratio changes by about 10% ($6/5.4 \approx 1.1$) although the treated and untreated are exchangeable.
+::: {.callout-warning title="A Changed Odds Ratio Is Not Evidence of Confounding"}
+A difference between the conditional and the unconditional odds ratio does not by itself indicate lack of exchangeability.
+In @exm-odds-ratio-noncollapsible the odds ratio changes by about 10% ($6/5.4 \approx 1.1$) although the treated and untreated are exchangeable.
 Greenland, Robins, and Pearl (1999) review the relation between noncollapsibility and lack of exchangeability.
 :::
 
