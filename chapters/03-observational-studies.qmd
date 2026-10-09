@@ -197,7 +197,7 @@ Treatment assignment is therefore strongly ignorable given $L$, and hence also w
 ---
 
 ::: {#def-identifiability}
-## Identifiability
+## Identifiability of an average causal effect
 
 Fix a set of assumptions and an effect measure for an average causal effect, such as the causal risk ratio.
 The effect is (nonparametrically) **identifiable** under those assumptions if, once the distribution of the observed data is known, the assumptions leave exactly one possible value of the effect measure.
@@ -312,13 +312,14 @@ inside each stratum of $L$, treatment is assigned at random, so the remaining ou
 ::: {#exm-table-3-1-two-descriptions}
 ## Two descriptions of the Table 3.1 study
 
-The study in [Table 3.1](#tbl-table-3-1) can be described in two logically equivalent ways:
+Suppose $L$ is the **only** outcome predictor unequally distributed between treatment groups.
+Then the study in [Table 3.1](#tbl-table-3-1) can be described in two logically equivalent ways:
 
 1. an observational study in which $\Pr[A = 1 \mid L = 1] = 9/12 = 0.75$ and $\Pr[A = 1 \mid L = 0] = 4/8 = 0.50$, e.g., because doctors direct the scarce hearts to those in critical condition;
    or
 2. a conditionally randomized experiment, not blinded, whose investigators gave $A = 1$ with probability 0.75 when $L = 1$ and 0.50 when $L = 0$.
 
-Under either description, if $L$ is the **only** outcome predictor unequally distributed between treatment groups, then $Y^a \ind A \mid L$ holds (@def-exchangeability-conditional),
+Under either description, $Y^a \ind A \mid L$ holds (@def-exchangeability-conditional),
 and, together with consistency and positivity (which holds here, since $\Pr[A = 1 \mid L = l]$ is 0.75 or 0.50), standardization or IP weighting identifies the causal effect.
 :::
 
@@ -353,15 +354,16 @@ Within the stratum $L = 1$, smokers ($U = 1$) are then less likely to be treated
 ::: {#rem-exchangeability-untestable}
 ## Conditional exchangeability cannot be verified
 
+Let $A$ be a treatment, $Y$ a dichotomous outcome with counterfactual outcomes $Y^a$, $L$ the measured covariates, and $U$ an unmeasured variable.
 Conditional exchangeability $Y^a \ind A \mid L$ generally fails when some unmeasured variable $U$ both independently predicts the outcome and, within strata of $L$, changes the chance of being treated.
-Even when it holds, it cannot be checked: verifying it would require comparing $\Pr[Y^a = 1 \mid A = a, L = l]$ with $\Pr[Y^a = 1 \mid A \neq a, L = l]$, but $Y^a$ is unknown for individuals with $A \neq a$.
+Even when it holds, it cannot be checked: verifying it would require comparing $\Pr[Y^a = 1 \mid A = a, L = l]$ with $\Pr[Y^a = 1 \mid A \neq a, L = l]$ at each $l$ where both groups exist,
+but $Y^a$ is unknown for individuals with $A \neq a$.
 :::
 
 ::: {.callout-tip title="Use Expert Knowledge to Choose the Covariates"}
-Investigators cannot test conditional exchangeability, but they can make it more plausible.
-Rather than a single covariate, they can measure many relevant variables
-(for example, determinants of treatment that also independently predict the outcome),
-and then assume exchangeability within the strata those variables define.
+Conditional exchangeability cannot be tested,
+so investigators make it more plausible by using expert knowledge to choose and measure many relevant covariates,
+and then assuming exchangeability within their joint strata.
 :::
 
 ::: {.notes}
@@ -473,8 +475,10 @@ The data would contain no untreated individuals with $L = 1$ who could stand in 
 ::: {#rem-positivity-checkable}
 ## Positivity can sometimes be checked
 
-Unlike exchangeability, positivity can sometimes be **checked empirically** (Chapter 12).
-In [Table 3.1](#tbl-table-3-1) there are treated and untreated individuals in both levels of $L$ (@exm-table-3-1-positivity).
+Let $A$ be a treatment and $L$ the covariates required for exchangeability.
+Unlike exchangeability, positivity can sometimes be **checked empirically** (Chapter 12):
+when $L$ has few levels, the data can show that every treatment value occurs at every level of $L$.
+That is how it was checked in [Table 3.1](#tbl-table-3-1), where both levels of $L$ contain treated and untreated individuals (@exm-table-3-1-positivity).
 :::
 
 ::: {.callout-note title="Technical Point 3.1: Positivity for standardization and IP weighting"}
@@ -720,7 +724,7 @@ because in observational studies counterfactuals are vague to the degree that th
 ---
 
 ::: {#def-non-intervention-variable}
-## Non-intervention variable
+## Variables that are not interventions
 
 A **non-intervention variable** is a treatment variable $A$ whose values do not correspond to interventions that anyone actually carries out on $A$ itself;
 typically $A$ can be changed only by intervening on its causes.
@@ -730,7 +734,7 @@ Whether a particular variable counts as one is a matter of degree, and experts m
 ::: {#exm-obesity-blood-pressure}
 ## Obesity and blood pressure
 
-Biological states (blood pressure, LDL cholesterol, body weight) and social factors (socioeconomic status) are non-intervention variables (@def-non-intervention-variable).
+Body weight, blood pressure and cholesterol, and social factors such as socioeconomic status, are non-intervention variables (@def-non-intervention-variable).
 
 - A phrase such as "the effect of obesity on heart attack" has no clear meaning, because the counterfactual it refers to is ill-defined.
   Specifying the timing and the method of weight change (medication, surgery, diet, exercise) would turn it into the effect of *those* interventions, not of obesity.
@@ -1075,7 +1079,7 @@ Glymour and Spiegelman 2016) [@hernan2020causal, p. 42].
 ---
 
 ::: {#rem-valid-emulation}
-## What a valid emulation needs
+## Requirements for a valid emulation
 
 Once the protocol of a target trial (@def-target-trial) for the effect of a treatment $A$ on an outcome $Y$ is specified, emulating it with observational data requires
 
