@@ -62,8 +62,8 @@ Then an associational risk ratio of 1.1 may be a **compromise** between two oppo
 :::
 
 ::: {.notes}
-The best explanation for an association in an observational study is not necessarily a causal effect.
-The common strategy is to analyze the data *as if* treatment had been randomly assigned conditional on measured covariates $L$, knowing this is at best an approximation.
+So an observational association may owe more to who got treated than to what treatment does.
+A usual response is to proceed *as though* treatment had been assigned at random within levels of measured covariates $L$, while accepting that this is an approximation at best.
 Causal inference from observational data then rests on the hope that the study can be viewed as a **conditionally randomized experiment**.
 :::
 
@@ -131,7 +131,7 @@ The book notes that Rubin (1974, 1978) extended Neyman's theory to observational
 | Artemis | 1 | 0 | 1 | Hebe | 1 | 1 | 0 |
 | Apollo | 1 | 0 | 1 | Dionysus | 1 | 1 | 0 |
 
-Critical condition at baseline $L$ (1: yes), heart transplant $A$, and death $Y$ for 20 individuals [@hernan2020causal, Table 3.1, p. 28].
+The book's Table 3.1: critical condition at baseline $L$ (1: yes), heart transplant $A$, and death $Y$ for 20 individuals [@hernan2020causal, p. 28].
 :::
 
 [Table 3.1](#tbl-table-3-1) contains the same data as Table 2.2.
@@ -437,9 +437,7 @@ and positivity holds (@def-positivity).
 :::
 
 ::: {.notes}
-Experiments rarely need to discuss positivity, because randomization builds it in:
-a marginally randomized design gives both $\Pr[A = 1]$ and $\Pr[A = 0]$ a positive value,
-and any randomized design, marginal or conditional, gives every $\Pr[A = a \mid L = l]$ a positive value for each level $l$ of $L$.
+Randomized experiments guarantee positivity by design, which is why Chapter 2 hardly mentioned it.
 :::
 
 ### Two refinements
@@ -481,14 +479,13 @@ otherwise it is undefined.
 
 For IP weighting, write $f[a \mid L] \eqdef \Pr[A = a \mid L]$.
 The version $\E{\frac{I(A = a) Y}{f[a \mid L]}}$ is undefined without positivity (it involves $0/0$).
-The version $\E{\frac{I(A = a) Y}{f[A \mid L]}}$ is always defined, because $f[A \mid L]$ is never 0, but without positivity it no longer equals the counterfactual mean:
-it averages only over the covariate values at which $A = a$ can occur, as @prp-ipw-without-positivity (stated and proved next) makes precise.
+The version $\E{\frac{I(A = a) Y}{f[A \mid L]}}$ is always defined, because $f[A \mid L]$ is never 0, but without positivity it no longer equals the counterfactual mean.
 :::
 
 ::: {#prp-ipw-without-positivity}
 ## The IP weighted mean without positivity
 
-Let $A$ be a discrete treatment, $L$ a discrete covariate, $Y$ an outcome with finite mean, and $f[a \mid l] \eqdef \Pr[A = a \mid L = l]$;
+Let $A$ be a discrete treatment, $L$ a covariate taking finitely many values, $Y$ an outcome with finite mean, and $f[a \mid l] \eqdef \Pr[A = a \mid L = l]$;
 write $f[A \mid L]$ for this function evaluated at each individual's own values of $A$ and $L$.
 For a treatment value $a$, let $Q(a) \eqdef \{l : \Pr[L = l] > 0 \text{ and } f[a \mid l] > 0\}$ be the set of covariate values at which $A = a$ occurs with positive probability, and suppose $\Pr[L \in Q(a)] > 0$.
 Then
@@ -497,7 +494,7 @@ $$
 \E{\frac{I(A = a) Y}{f[A \mid L]}} = \Pr[L \in Q(a)] \sum_{l \in Q(a)} \E{Y \mid A = a, L = l} \Pr[L = l \mid L \in Q(a)].
 $$ {#eq-ipw-without-positivity}
 
-If, in addition, consistency ($Y = Y^A$) and conditional exchangeability ($Y^a \ind A \mid L$) hold, the right-hand side of @eq-ipw-without-positivity equals $\E{Y^a \mid L \in Q(a)} \Pr[L \in Q(a)]$.
+If, in addition, $Y^a$ has finite mean and consistency ($Y = Y^A$) and conditional exchangeability ($Y^a \ind A \mid L$) hold, the right-hand side of @eq-ipw-without-positivity equals $\E{Y^a \mid L \in Q(a)} \Pr[L \in Q(a)]$.
 :::
 
 ::: {.proof}
@@ -598,6 +595,7 @@ Consistency (@def-consistency) has two components:
 ::: {#rem-well-defined-average-effect}
 ## Average effects need well-defined individual effects
 
+Let $A$ be a binary treatment and $Y$ a dichotomous outcome.
 An individual's causal effect $Y^{a=1} - Y^{a=0}$ can be well-defined only if her $Y^a$ is well-defined for both $a = 1$ and $a = 0$.
 In turn, the average causal effect $\Pr[Y^{a=1} = 1] - \Pr[Y^{a=0} = 1]$ in a given population can be well-defined only if every member of that population has a well-defined individual causal effect.
 :::
@@ -608,8 +606,8 @@ One answer, sufficient but not necessary, is to tie each treatment value to an i
 ::: {#def-well-defined-intervention}
 ## Well-defined intervention
 
-A treatment value $a$ is a **well-defined intervention** when it corresponds to an action that could be written into the protocol of an experiment.
-The counterfactual outcome $Y^a$ is then well-defined: it is the outcome that would have been observed had that action been carried out.
+Call a treatment value $a$ a **well-defined intervention** if an experimental protocol could spell out the action it stands for.
+For such an $a$, $Y^a$ needs no further explanation: it is the outcome under that action.
 :::
 
 ::: {#exm-two-transplant-trials}
@@ -624,10 +622,11 @@ In both trials $a = 1$ is a well-defined intervention (@def-well-defined-interve
 But the two counterfactuals, and hence the two causal effects, will likely differ.
 :::
 
-::: {#def-pragmatic-trial}
+::: {#def-pragmatic-trial-ch3}
 ## Pragmatic trial
 
-As the term is used here, a **pragmatic trial** is a randomized trial whose protocol fixes only the initial assignment and leaves later components of care to take whatever values they take in routine practice.
+A **pragmatic trial** is a trial meant to estimate the effects of treatment strategies as they would play out in routine care.
+Its protocol can fix the initial assignment and leave later components of care to take whatever values they take in routine practice.
 Trial 2 of @exm-two-transplant-trials is a pragmatic trial;
 Trial 1 is not, because its protocol also fixes $a_1$, $a_2$, and $a_3$.
 :::
@@ -789,6 +788,7 @@ this effect is well-defined if every individual in the population has both an EN
 ::: {#exm-small-changes-blood-pressure}
 ## Small changes in blood pressure
 
+Let $A$ be blood pressure and $Y$ stroke, as in @exm-ende-blood-pressure.
 Considering **small changes** in $A$ makes ENDE interventions more credible.
 For a change in blood pressure of $\Delta$ mm Hg with $\Delta$ near 0:
 
@@ -884,7 +884,12 @@ Assuming exchangeability,
 The excess fraction (@def-excess-fraction) is
 
 $$
-\frac{\Pr[Y = 1] - \Pr[Y^{a=0} = 1]}{\Pr[Y = 1]} = \frac{0.4 - 0.1}{0.4} = \frac{0.3}{0.4} = 0.75.
+\begin{aligned}
+\frac{\Pr[Y = 1] - \Pr[Y^{a=0} = 1]}{\Pr[Y = 1]}
+&= \frac{0.4 - 0.1}{0.4} \\
+&= \frac{0.3}{0.4} \\
+&= 0.75.
+\end{aligned}
 $$
 
 Had everyone received $a = 0$, we would expect $0.1 \times 20 = 2$ cases rather than the 8 observed;
@@ -1010,6 +1015,8 @@ Whether a variable corresponds to an intervention is often debatable: assignment
 
 ::: {#exm-three-non-interventions}
 ## Genotype, blood pressure, and socioeconomic status
+
+Let $Y$ be an outcome of interest, and let $A$ be, in turn, genotype, systolic blood pressure, and socioeconomic status.
 
 1. **Genotype.** $Y^a$ is well-defined if ENDE interventions $X$ (@def-ende) could set each target-population member's genotype to $a$ at conception, so that $Y^a$ and $Y^{x,a}$ are equal for each of them.
    The interventions need not be known: decades ago most experts considered the effect of genotype well-defined, and gene editing was eventually developed.
