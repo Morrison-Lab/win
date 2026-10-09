@@ -26,7 +26,7 @@ so even a strong effect would appear diluted.
 :::
 
 In @exm-looking-up-misrecorded, the recording process, not the treatment, weakened the observed association
-(on the additive scale, as a worked example later in the chapter shows).
+(on the additive scale, as a worked example of ours at the end of Section 9.2 shows).
 Distortions of this kind, produced by the way the data are measured, are the subject of this chapter.
 Because measurement errors occur in any study design, randomized or observational, they always need to be considered.
 This chapter describes the structure of measurement error and then asks what the arrows of a causal diagram mean
@@ -220,12 +220,13 @@ read off the causal diagram through the error nodes.
 ::: {#def-error-structure-graphical}
 ## Graphical Classification of Measurement Error
 
-Let $U_A$ and $U_Y$ be the nodes of a causal diagram standing for the factors, other than $A$ and $Y$, that determine $A^*$ and $Y^*$.
+Consider a causal diagram with a treatment $A$, an outcome $Y$, and their measured versions $A^*$ and $Y^*$.
+Let $U_A$ and $U_Y$ be the nodes standing for the factors, other than $A$ and $Y$, that determine $A^*$ and $Y^*$.
 The measurement errors are
 
 - **independent** if $U_A$ and $U_Y$ are d-separated, as in Figure 9.2,
   and **dependent** if they are not, for example when a common factor $U_{AY}$ affects both (Figure 9.3);
-- **nondifferential** if $U_A$ is independent of the true $Y$ and $U_Y$ is independent of the true $A$ (Figures 9.2 and 9.3),
+- **nondifferential** if $U_A$ is d-separated from the true $Y$ and $U_Y$ is d-separated from the true $A$ (Figures 9.2 and 9.3),
   and **differential** otherwise, for example when the true outcome affects the measurement of treatment ($Y \rightarrow U_A$, Figure 9.4)
   or the true treatment affects the measurement of the outcome ($A \rightarrow U_Y$, Figure 9.5).
 :::
@@ -272,7 +273,8 @@ The path $U_A \leftarrow U_{AY} \rightarrow U_Y$ is open, so the errors are depe
 ## Recall Bias
 
 **Recall bias** is measurement bias (@def-measurement-bias) that arises when treatment is ascertained by asking participants to remember it,
-and the true outcome affects how well they remember ($Y \rightarrow U_A$, Figure 9.4).
+and the true outcome affects how well they remember
+(an arrow $Y \rightarrow U_A$ into the error node $U_A$ of @def-error-structure-graphical, Figure 9.4).
 :::
 
 ::: {#exm-recall-bias}
@@ -288,7 +290,8 @@ Two settings produce recall bias (@def-recall-bias):
 ## Reverse Causation Bias
 
 **Reverse causation bias** is measurement bias (@def-measurement-bias) that arises when the measured treatment $A^*$ is a quantity that the outcome itself changes,
-giving the same structure $Y \rightarrow U_A$ as recall bias.
+giving the same structure as recall bias:
+an arrow from $Y$ into the error node $U_A$ of @def-error-structure-graphical.
 :::
 
 ::: {#exm-reverse-causation-drug-levels}
@@ -304,11 +307,13 @@ so the measured treatment depends on the outcome: reverse causation bias (@def-r
 
 Physicians who suspect that the drug causes liver toxicity may monitor treated patients more closely than untreated ones.
 Toxicity is then more likely to be detected and recorded among the treated,
-so the true treatment affects the measurement of the outcome ($A \rightarrow U_Y$, Figure 9.5),
+so the true treatment affects the measurement of the outcome
+(an arrow $A \rightarrow U_Y$ into the error node of @def-error-structure-graphical, Figure 9.5),
 a differential outcome error (@def-nondifferential-measurement-error).
 :::
 
-Figures 9.6 and 9.7 combine these settings, giving errors that are both dependent and differential.
+These settings can combine, as in Figures 9.6 and 9.7,
+giving errors that are both dependent and differential.
 
 | Type | Figure |
 |:-----|:------:|
@@ -381,7 +386,8 @@ VanderWeele and Hernán (2009) give a more general framework based on signed cau
 ## Outcome Misclassification With Perfect Specificity
 
 This proposition is ours, not the book's.
-Let $A$ and $Y$ be binary, and let $A$ be measured without error, so $A^* = A$.
+Let $A$ and $Y$ be binary,
+and let $A$ be measured without error, so $A^* = A$.
 Assume $\Pr[Y = y, A = a] > 0$ for all $y, a \in \{0, 1\}$, so that the conditional probabilities below are defined.
 The **sensitivity** of the outcome measurement in treatment group $a$ is $\Pr[Y^* = 1 \mid Y = 1, A = a]$
 and its **specificity** is $\Pr[Y^* = 0 \mid Y = 0, A = a]$.
@@ -391,10 +397,10 @@ $$
 \Pr[Y^* = 1 \mid Y = 1, A = a] = s, \quad \Pr[Y^* = 1 \mid Y = 0, A = a] = 0, \quad a = 0, 1.
 $$ {#eq-perfect-specificity}
 
-Assume $0 < \Pr[A = 1] < 1$.
 Then, for $a = 0, 1$, $\Pr[Y^* = 1 \mid A = a] = s \Pr[Y = 1 \mid A = a]$.
-So the measured risk difference is $s$ times the true associational risk difference,
-while the measured risk ratio equals the true associational risk ratio (when $\Pr[Y = 1 \mid A = 0] > 0$).
+Because $A^* = A$, conditioning on $A^* = a$ is conditioning on $A = a$,
+so the measured risk difference is $s$ times the true associational risk difference,
+while the measured risk ratio equals the true associational risk ratio.
 :::
 
 ::: {.proof}
@@ -414,7 +420,8 @@ dividing them cancels $s$.
 ## The Pedestrian Experiment in Numbers
 
 Return to @exm-looking-up-misrecorded with hypothetical numbers.
-Suppose that, in truth, 60% of pedestrians look up when the investigator looks up ($A = 1$) and 20% when she does not ($A = 0$).
+Suppose that, in truth, 60% of pedestrians look up when the investigator looks up ($A = 1$)
+and 20% when she does not ($A = 0$).
 Randomization makes these associational risks causal (as in @prp-true-association-causal),
 so the causal risk difference is $0.6 - 0.2 = 0.4$
 and the causal risk ratio is $0.6 / 0.2 = 3$.
@@ -453,10 +460,12 @@ there is measurement bias [@hernan2020causal, pp. 128-129].
 ::: {#exm-figure-9-9}
 ## A Mismeasured Variable on a Longer Backdoor Path
 
-In Figure 9.9 the confounding path is $A \leftarrow L \leftarrow U \rightarrow Y$, with $U$ unmeasured,
-so $L$ is not itself a common cause of $A$ and $Y$.
+In Figure 9.9, $A$ is treatment, $Y$ the outcome, $L$ a covariate, and $L^*$ its mismeasured version.
+As we read the figure, the confounding path is $A \leftarrow L \leftarrow U \rightarrow Y$ with $U$ unmeasured,
+and $L^*$ is a child of $L$.
+So $L$ is not itself a common cause of $A$ and $Y$.
 Conditioning on the true $L$ would block this path,
-but conditioning on $L^*$ (a child of $L$) does not generally block it,
+but conditioning on $L^*$ does not generally block it,
 so again there is measurement bias.
 :::
 
@@ -478,7 +487,8 @@ Mismeasured confounders can also create **apparent effect modification**.
 ::: {#exm-apparent-effect-modification}
 ## Hepatitis Misreported in One Stratum Only
 
-In the setting of @exm-hepatitis, suppose the sharp null hypothesis holds (treatment has no effect on anyone's liver disease), and
+In the setting of @exm-hepatitis (drug use $A$, liver disease $Y$, true hepatitis history $L$, reported history $L^*$),
+suppose the sharp null hypothesis holds (treatment has no effect on anyone's liver disease), and
 
 - everyone who reported prior hepatitis ($L^* = 1$) truly had it ($L = 1$);
 - half of those who reported none ($L^* = 0$) truly had it.
@@ -538,7 +548,8 @@ so either one satisfies the backdoor criterion
 ::: {#exm-figure-9-12}
 ## Only the Measured Value Suffices
 
-As we read Figure 9.12, its arrows are $L \rightarrow L^* \rightarrow A \rightarrow Y$, $U_1 \rightarrow L$, $U_1 \rightarrow Y$, $U_2 \rightarrow L$, and $U_2 \rightarrow L^*$,
+In Figure 9.12, $A$ is antihypertensive therapy, $Y$ stroke, $L$ true blood pressure, and $L^*$ its office measurement.
+As we read the figure, its arrows are $L \rightarrow L^* \rightarrow A \rightarrow Y$, $U_1 \rightarrow L$, $U_1 \rightarrow Y$, $U_2 \rightarrow L$, and $U_2 \rightarrow L^*$,
 with $U_1$ and $U_2$ unmeasured.
 Conditioning on $L^*$ blocks every backdoor path, because each one enters $A$ through the non-collider $L^*$.
 Conditioning on the true $L$ instead leaves $A \leftarrow L^* \leftarrow U_2 \rightarrow L \leftarrow U_1 \rightarrow Y$ open,
@@ -569,7 +580,7 @@ This is unrealistic.
 As this chapter showed, measurement error can
 
 - create a noncausal association between $A^*$ and $Y^*$ even when $A$ has no effect on $Y$ and there is no confounding or selection bias,
-  for example when the errors are dependent or differential (compare @prp-null-preserved), and
+  for example when the errors are dependent or differential (our example, to be read against @prp-null-preserved), and
 - prevent a measured confounder $L^*$ from blocking a backdoor path that the true $L$ would block (@exm-hepatitis).
 :::
 
@@ -597,7 +608,8 @@ The next section turns to the second assumption, which is fundamental to any cau
 Let $A$ be antiviral treatment for COVID-19, $Y$ death, and $L$ obesity (body mass index above 30), all binary.
 Obese patients are more likely to be treated, and more likely to be hospitalized if untreated,
 so experts draw Figure 9.13 (equal to Figure 7.1): $L \rightarrow A$, $L \rightarrow Y$, $A \rightarrow Y$.
-Assume treatment depends only on $L$ and on physician preference, and that there is no measurement error.
+Assume treatment depends only on $L$ and on physician preference,
+and that there is no measurement error.
 :::
 
 ::: {#rem-assumption-well-defined-arrows}
@@ -643,7 +655,7 @@ The book keeps "noncausal" in quotes because much of the causal inference litera
 - **$L \rightarrow Y$ is not.**
   Experts know obese patients are more likely to die,
   but because they do not accept that ENDE interventions on obesity exist for that effect,
-  the arrow has no causal interpretation for them.
+  so, for those experts, the arrow carries no causal meaning.
 
 So Figure 9.13, given what is known today, is a "noncausal" diagram (@def-causal-dag-strict).
 :::
@@ -763,6 +775,9 @@ Figure 9.14 has arrows $L \rightarrow A$, $A \rightarrow Y$, $H \rightarrow L$, 
 Mapping $L$ to $A$, $A$ to $M$, and $H$ to $U$ turns one edge list into the other.
 In particular, $L$ has no direct arrow to $Y$, so $A$ intercepts every directed path from $L$ to $Y$,
 and the strict-causal hypothesis makes the counterfactuals $Y^l$ and $Y^a$ well defined.
+The front door conditions also hold in Figure 9.14:
+the only backdoor path from $L$ to $A$, $L \leftarrow H \rightarrow Y \leftarrow A$, is blocked at the collider $Y$,
+and the only backdoor path from $A$ to $Y$, $A \leftarrow L \leftarrow H \rightarrow Y$, is blocked by $L$.
 The front door formula of Technical Point 7.4 ([Chapter 7](07-confounding.qmd)) therefore applies
 after substituting $L, l, l'$ for $A, a, a'$ and $A, a$ for $M, m$,
 which gives @eq-front-door-obesity.
@@ -788,6 +803,7 @@ The effect along $L \rightarrow A \rightarrow Y$ alone remains identified by the
 ::: {#prp-adjust-l-both-dags}
 ## Adjusting for Obesity in Figure 9.14
 
+Let $A$ be antiviral treatment, $Y$ death, $L$ obesity, and $H$ the hidden factors of @exm-hidden-factors-obesity.
 Suppose the causal Figure 9.14 (@eq-figure-9-14) is the true causal DAG, with $L$ discrete.
 Assume consistency and $\Pr[A = a \mid L = l] > 0$ for every $l$ with $\Pr[L = l] > 0$.
 Then
@@ -836,7 +852,8 @@ and $L$ blocks the backdoor path $A \leftarrow U \rightarrow L \rightarrow Y$.
 
 Suppose instead that $L$ is a surrogate for hidden factors $H$ for which well-defined interventions exist (Figure 9.16):
 $U \rightarrow H$, $U \rightarrow A$, $H \rightarrow L$, $H \rightarrow Y$, and $A \rightarrow Y$.
-The backdoor path is now $A \leftarrow U \rightarrow H \rightarrow Y$, and $L$ is not on it, so $L$ does not block it.
+The backdoor path is now $A \leftarrow U \rightarrow H \rightarrow Y$,
+and $L$ is not on it, so $L$ does not block it.
 Investigators unaware that $L$ is only a surrogate confounder would wrongly conclude that adjusting for $L$ suffices,
 the same trap as with the mismeasured confounder of @exm-hepatitis [@hernan2020causal, p. 134].
 :::
@@ -874,7 +891,8 @@ The examples below follow one set of investigators through that step, and then a
 Investigators who want the effect of $A$ on $Y$ draw Figure 9.17,
 with arrows $U \rightarrow A$, $U \rightarrow L$, $A \rightarrow L$, $L \rightarrow Y$, and $A \rightarrow Y$,
 from the temporal order of the variables and two facts:
-the measured $L$ is associated with $Y$, and known but unmeasured factors $U$ affect $A$ and are associated with $L$.
+the measured $L$ is associated with $Y$,
+and known but unmeasured factors $U$ affect $A$ and are associated with $L$.
 If Figure 9.17 were the true causal diagram, the effect would not be identifiable,
 because $L$ is a descendant of $A$ ([Fine Point 7.4](07-confounding.qmd)).
 
@@ -891,6 +909,7 @@ and conditioning on $L$ leaves paths through $H$ open.
 ::: {#exm-figure-9-19}
 ## A Hidden Variable That Should Not Inherit Every Arrow
 
+Keep $A$, $Y$, $U$, $L$, and $H$ as in @exm-figure-9-17-to-9-18.
 Letting $H$ inherit all arrows into $L$ is not always warranted.
 Suppose $U$ affects $L$ directly rather than $H$,
 as in Figure 9.19, with arrows $U \rightarrow A$, $U \rightarrow L$, $A \rightarrow H$, $H \rightarrow L$, $H \rightarrow Y$, and $A \rightarrow Y$.
@@ -903,7 +922,8 @@ Example: $U$ is a physician's decision to order a diagnostic test, $L$ the test 
 
 ---
 
-1. **Measurement bias** (information bias) arises when the association between measured treatment $A^*$ and measured outcome $Y^*$ differs from the causal effect of $A$ on $Y$;
+1. **Measurement bias** (information bias) arises when an association computed from mismeasured variables
+   (the treatment $A^*$, the outcome $Y^*$, or covariates such as confounders) differs from the causal effect of $A$ on $Y$;
    it can occur in any study design.
 2. Measurement error has no single structure;
    it is classified as **independent or dependent** and **nondifferential or differential** (Figures 9.2-9.7).
