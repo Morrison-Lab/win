@@ -1,0 +1,1464 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+<script src="../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../site_libs/quarto-html/tabby.min.js"></script>
+<script src="../site_libs/quarto-html/popper.min.js"></script>
+<script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
+<link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../site_libs/quarto-html/light-border.css" rel="stylesheet">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-bf27225e3a48a9273f3daa8f8e829971.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<link href="../site_libs/quarto-contrib/code-language-labels-1.0.2/code-language-labels.css" rel="stylesheet"><meta charset="utf-8">
+  <meta name="generator" content="quarto-1.10.19">
+
+  <title>What If? - Lecture Notes – Chapter 14: G-Estimation of Structural Nested Models</title>
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, minimal-ui">
+  <link rel="stylesheet" href="../site_libs/revealjs/dist/reset.css">
+  <link rel="stylesheet" href="../site_libs/revealjs/dist/reveal.css">
+  <style>
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: 1.5em;}
+    div.column{flex: auto;}
+    @media screen {
+    div.columns{gap: min(4vw, 1.5em);}
+    div.column{overflow-x: auto;}
+    }
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    ul.task-list{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+      vertical-align: middle;
+    }
+    /* CSS for citations */
+    div.csl-bib-body { }
+    div.csl-entry {
+      clear: both;
+    }
+    .hanging-indent div.csl-entry {
+      margin-left:2em;
+      text-indent:-2em;
+    }
+    div.csl-left-margin {
+      min-width:2em;
+      float:left;
+    }
+    div.csl-right-inline {
+      margin-left:2em;
+      padding-left:1em;
+    }
+    div.csl-indent {
+      margin-left: 2em;
+    }  </style>
+  <link rel="stylesheet" href="../site_libs/revealjs/dist/theme/quarto-0427d8d92a431aa6a6430e53ec02a470.css">
+  <link href="../site_libs/revealjs/plugin/quarto-line-highlight/line-highlight.css" rel="stylesheet">
+  <link href="../site_libs/revealjs/plugin/reveal-menu/menu.css" rel="stylesheet">
+  <link href="../site_libs/revealjs/plugin/reveal-menu/quarto-menu.css" rel="stylesheet">
+  <link href="../site_libs/revealjs/plugin/reveal-chalkboard/font-awesome/css/all.css" rel="stylesheet">
+  <link href="../site_libs/revealjs/plugin/reveal-chalkboard/style.css" rel="stylesheet">
+  <link href="../site_libs/revealjs/plugin/quarto-support/footer.css" rel="stylesheet">
+  <style type="text/css">
+    .reveal div.sourceCode {
+      margin: 0;
+      overflow: auto;
+    }
+    .reveal div.hanging-indent {
+      margin-left: 1em;
+      text-indent: -1em;
+    }
+    .reveal .slide:not(.center) {
+      height: 100%;
+      overflow-y: auto;
+    }
+    .reveal .slide.scrollable {
+      overflow-y: auto;
+    }
+    .reveal .footnotes {
+      height: 100%;
+      overflow-y: auto;
+    }
+    .reveal .slide .absolute {
+      position: absolute;
+      display: block;
+    }
+    .reveal .footnotes ol {
+      counter-reset: ol;
+      list-style-type: none; 
+      margin-left: 0;
+    }
+    .reveal .footnotes ol li:before {
+      counter-increment: ol;
+      content: counter(ol) ". "; 
+    }
+    .reveal .footnotes ol li > p:first-child {
+      display: inline-block;
+    }
+    .reveal .slide ul,
+    .reveal .slide ol {
+      margin-bottom: 0.5em;
+    }
+    .reveal .slide ul li,
+    .reveal .slide ol li {
+      margin-top: 0.4em;
+      margin-bottom: 0.2em;
+    }
+    .reveal .slide ul[role="tablist"] li {
+      margin-bottom: 0;
+    }
+    .reveal .slide ul li > *:first-child,
+    .reveal .slide ol li > *:first-child {
+      margin-block-start: 0;
+    }
+    .reveal .slide ul li > *:last-child,
+    .reveal .slide ol li > *:last-child {
+      margin-block-end: 0;
+    }
+    .reveal .slide .columns:nth-child(3) {
+      margin-block-start: 0.8em;
+    }
+    .reveal blockquote {
+      box-shadow: none;
+    }
+    .reveal .tippy-content>* {
+      margin-top: 0.2em;
+      margin-bottom: 0.7em;
+    }
+    .reveal .tippy-content>*:last-child {
+      margin-bottom: 0.2em;
+    }
+    .reveal .slide > img.stretch.quarto-figure-center,
+    .reveal .slide > img.r-stretch.quarto-figure-center {
+      display: block;
+      margin-left: auto;
+      margin-right: auto; 
+    }
+    .reveal .slide > img.stretch.quarto-figure-left,
+    .reveal .slide > img.r-stretch.quarto-figure-left  {
+      display: block;
+      margin-left: 0;
+      margin-right: auto; 
+    }
+    .reveal .slide > img.stretch.quarto-figure-right,
+    .reveal .slide > img.r-stretch.quarto-figure-right  {
+      display: block;
+      margin-left: auto;
+      margin-right: 0; 
+    }
+  </style>
+</head>
+<body class="quarto-light">
+  <div class="reveal">
+    <div class="slides">
+
+<section id="title-slide" class="quarto-title-block center">
+  <h1 class="title">Chapter 14: G-Estimation of Structural Nested Models</h1>
+
+<div class="quarto-title-authors">
+</div>
+
+</section>
+<section class="slide level2">
+
+<p>Chapters 12 and 13 estimated the average causal effect of smoking cessation on weight gain with IP weighting and standardization. This chapter describes the third <strong>g-method</strong>: <strong>g-estimation</strong>, applied to the same NHEFS data. Models whose parameters are estimated by g-estimation are called <strong>structural nested models</strong>.</p>
+<aside class="notes">
+<p>This chapter is based on <span class="citation" data-cites="hernan2020causal">Hernán and Robins (<a href="#/references" role="doc-biblioref" onclick="">2020, chap. 14</a>, pp.&nbsp;187-198)</span>.</p>
+<p><strong>Why g-methods?</strong> IP weighting, standardization, and g-estimation are called g-methods because they are designed for generalized treatment contrasts involving time-varying treatments. For time-fixed treatments they may be overkill, but the simple setting lets us focus on their main features before Part III.</p>
+<p><strong>Why only now?</strong> IP weighting and standardization appeared already in Part I (Chapter 2). G-estimation waits until Part II because it is easiest to describe with a structural model, even a saturated one. The three g-methods rest on different modeling assumptions.</p>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside>
+</section>
+<section>
+<section id="the-causal-question-revisited-pp.-187-188" class="title-slide slide level1 center" data-number="1">
+<h1><span class="header-section-number">1</span> 14.1 The Causal Question Revisited (pp.&nbsp;187-188)</h1>
+
+</section>
+<section class="slide level2">
+
+<p><strong>Setting</strong> (as in Chapters 12-13): 1566 cigarette smokers aged 25-74 in NHEFS.</p>
+<ul>
+<li>Treatment <span class="math inline">\(A\)</span>: quitting smoking (<span class="math inline">\(A = 1\)</span>) vs.&nbsp;not (<span class="math inline">\(A = 0\)</span>)</li>
+<li>Outcome <span class="math inline">\(Y\)</span>: weight gain (kg)</li>
+<li>Covariates <span class="math inline">\(L\)</span>: sex, age, race, education, intensity and duration of smoking, physical activity in daily life, recreational exercise, and weight</li>
+<li>Assumption: conditional exchangeability given <span class="math inline">\(L\)</span></li>
+</ul>
+<p>Chapters 12-13 targeted the <strong>population</strong> average causal effect <span class="math display">\[\operatorname{E}\mathopen{}\left[Y^{a=1,c=0}\right]\mathclose{} - \operatorname{E}\mathopen{}\left[Y^{a=0,c=0}\right]\mathclose{}\]</span> the mean weight difference had everybody been treated and uncensored vs.&nbsp;untreated and uncensored.</p>
+<aside class="notes">
+<p>The analysis is restricted to individuals with known sex, age, race, weight, height, education, alcohol use, and smoking intensity at baseline (1971-75) and follow-up (1982), who answered the baseline medical history questionnaire.</p>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside>
+</section>
+<section id="effects-within-strata-of-l" class="slide level2">
+<h2>Effects Within Strata of <span class="math inline">\(L\)</span></h2>
+<p>This chapter instead targets the effect <strong>within each stratum</strong> of <span class="math inline">\(L\)</span>: <span class="math display">\[\operatorname{E}\mathopen{}\left[Y^{a=1,c=0} \mid L\right]\mathclose{} - \operatorname{E}\mathopen{}\left[Y^{a=0,c=0} \mid L\right]\mathclose{}\]</span></p>
+<ul>
+<li>With extremely large data, one could estimate the effect separately in every stratum <span class="math inline">\(L = l\)</span> (Chapter 4), e.g., {non-quitter, female, white, age 26, college dropout, 15 cigarettes/day, 12 years of smoking, moderate exercise, very active, weight 112 kg}</li>
+<li>Alternatively, add all of <span class="math inline">\(L\)</span> and all <span class="math inline">\(A \times L\)</span> product terms to the marginal structural model (Section 12.5): then <span class="math inline">\(SW^A(L) = 1\)</span> and the unweighted outcome regression, if correctly specified, adjusts for all confounding by <span class="math inline">\(L\)</span> (Chapter 15)</li>
+<li>G-estimation of a <strong>structural nested model</strong> is a third route</li>
+</ul>
+<aside class="notes">
+<p>For effects in a subset (e.g., individuals aged 45) one could also use marginal structural models with product terms (Chapter 12) or standardize to that subset only (Chapter 13).</p>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside>
+</section></section>
+<section>
+<section id="exchangeability-revisited-pp.-188-189" class="title-slide slide level1 center" data-number="2">
+<h1><span class="header-section-number">2</span> 14.2 Exchangeability Revisited (pp.&nbsp;188-189)</h1>
+
+</section>
+<section class="slide level2">
+
+<p>Conditional exchangeability says that, within levels of <span class="math inline">\(L\)</span>, the treated and untreated would have the same outcome distribution under the same treatment level: <span class="math display">\[Y^a \perp\!\!\!\perp A \mid L \quad \text{for } a = 0, 1\]</span></p>
+<p>For <span class="math inline">\(Y^{a=0}\)</span>: knowing <span class="math inline">\(Y^{a=0}\)</span> does not help distinguish quitters from non-quitters with the same <span class="math inline">\(L\)</span>. For a dichotomous <span class="math inline">\(A\)</span> this is equivalent to <span class="math display">\[\Pr[A = 1 \mid Y^{a=0}, L] = \Pr[A = 1 \mid L]\]</span></p>
+<aside class="notes">
+<p>The book’s margin note: if this paragraph feels repetitious given earlier discussions of exchangeability, “we could not be happier” <span class="citation" data-cites="hernan2020causal">(<a href="#/references" role="doc-biblioref" onclick="">Hernán and Robins 2020, 188</a>)</span>.</p>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside>
+</section>
+<section id="a-logistic-model-including-the-counterfactual" class="slide level2">
+<h2>A Logistic Model Including the Counterfactual</h2>
+<p><span class="math display">\[\operatorname{logit}\Pr[A = 1 \mid Y^{a=0}, L] = \alpha_0 + \alpha_1 Y^{a=0} + \alpha_2 L\]</span></p>
+<ul>
+<li><span class="math inline">\(\alpha_2 L = \sum_{j=1}^{p} \alpha_{2j} L_j\)</span> for <span class="math inline">\(L = (L_1, \ldots, L_p)\)</span></li>
+<li>Same as the model for the IP weight denominator in Chapter 12, plus <span class="math inline">\(Y^{a=0}\)</span> as a covariate</li>
+<li>We cannot fit it, since <span class="math inline">\(Y^{a=0}\)</span> is unknown for the treated</li>
+</ul>
+<p><strong>Question</strong>: If we could fit it, and exchangeability held and the model were correct, what would <span class="math inline">\(\hat\alpha_1\)</span> be?</p>
+<p><strong>Answer</strong>: its expected value is <strong>zero</strong>, because <span class="math inline">\(Y^{a=0}\)</span> does not predict <span class="math inline">\(A\)</span> given <span class="math inline">\(L\)</span>. This is half of g-estimation; the other half is the structural model.</p>
+</section></section>
+<section>
+<section id="structural-nested-mean-models-pp.-189-191" class="title-slide slide level1 center" data-number="3">
+<h1><span class="header-section-number">3</span> 14.3 Structural Nested Mean Models (pp.&nbsp;189-191)</h1>
+
+</section>
+<section class="slide level2">
+
+<p>Target: <span class="math inline">\(\operatorname{E}\mathopen{}\left[Y^{a=1} \mid L\right]\mathclose{} - \operatorname{E}\mathopen{}\left[Y^{a=0} \mid L\right]\mathclose{} = \operatorname{E}\mathopen{}\left[Y^{a=1} - Y^{a=0} \mid L\right]\mathclose{}\)</span> (the difference of means equals the mean of differences). Ignore censoring for now.</p>
+<p><strong>No effect modification by <span class="math inline">\(L\)</span></strong>: <span class="math display">\[\operatorname{E}\mathopen{}\left[Y^a - Y^{a=0} \mid L\right]\mathclose{} = \beta_1 a\]</span></p>
+<ul>
+<li>No intercept <span class="math inline">\(\beta_0\)</span> and no main effect of <span class="math inline">\(L\)</span>: these cancel in the difference</li>
+</ul>
+<p><strong>Effect modification by <span class="math inline">\(L\)</span></strong> (e.g., larger effect in heavy smokers): <span class="math display">\[\operatorname{E}\mathopen{}\left[Y^a - Y^{a=0} \mid L\right]\mathclose{} = \beta_1 a + \beta_2 a L\]</span></p>
+</section>
+<section id="conditioning-on-treatment" class="slide level2">
+<h2>Conditioning on Treatment</h2>
+<p>Under <span class="math inline">\(Y^a \perp\!\!\!\perp A \mid L\)</span>, the treated and untreated are the same type of people within levels of <span class="math inline">\(L\)</span>, so the conditional effect is the same in both groups and we can write:</p>
+<div id="def-snmm" class="theorem definition">
+<p><span class="theorem-title"><strong>Definition 1 (Structural Nested Mean Model)</strong></span> <span class="math display">\[\operatorname{E}\mathopen{}\left[Y^a - Y^{a=0} \mid A = a, L\right]\mathclose{} = \beta_1 a + \beta_2 a L\]</span></p>
+<p>The parameters <span class="math inline">\(\beta_1\)</span> and <span class="math inline">\(\beta_2\)</span> (a vector), estimated by g-estimation, quantify the average causal effect of <span class="math inline">\(A\)</span> on <span class="math inline">\(Y\)</span> within levels of <span class="math inline">\(A\)</span> and <span class="math inline">\(L\)</span>.</p>
+</div>
+<aside class="notes">
+<p>Robins (1994) first described structural nested models. They are “nested” when treatment is time-varying (Part III).</p>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside>
+</section>
+<section id="why-semiparametric" class="slide level2">
+<h2>Why “Semiparametric”?</h2>
+<ul>
+<li>The parametric g-formula (Chapter 13) also models the outcome conditional on <span class="math inline">\(A\)</span> and <span class="math inline">\(L\)</span></li>
+<li>But a structural nested model is <strong>agnostic</strong> about the intercept and the main effect of <span class="math inline">\(L\)</span>: there is no <span class="math inline">\(\beta_0\)</span> and no <span class="math inline">\(\beta_3 L\)</span></li>
+<li>Leaving these unspecified means fewer assumptions and possibly more robustness to model misspecification than the parametric g-formula</li>
+</ul>
+<div title="Fine Point 14.1: Marginal vs. Structural Nested Models">
+<div class="callout callout-note callout-titled callout-style-default">
+<div class="callout-body">
+<div class="callout-title">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<p><strong>Fine Point 14.1: Marginal vs.&nbsp;Structural Nested Models</strong></p>
+</div>
+<div class="callout-content">
+<p>Consider the marginal structural model for a continuous covariate <span class="math inline">\(V\)</span> (a component of <span class="math inline">\(L\)</span>): <span class="math display">\[\operatorname{E}\mathopen{}\left[Y^a \mid V\right]\mathclose{} = \beta_0 + \beta_1 a + \beta_2 a V + \beta_3 V\]</span></p>
+<ul>
+<li><span class="math inline">\(\beta_1 + \beta_2 v = \operatorname{E}\mathopen{}\left[Y^{a=1} - Y^{a=0} \mid V = v\right]\mathclose{}\)</span>, the effect in individuals with <span class="math inline">\(V = v\)</span></li>
+<li><span class="math inline">\(\beta_0 + \beta_3 v = \operatorname{E}\mathopen{}\left[Y^{a=0} \mid V = v\right]\mathclose{}\)</span></li>
+</ul>
+<p>If only the effect is of interest, leave <span class="math inline">\(\operatorname{E}\mathopen{}\left[Y^{a=0} \mid V\right]\mathclose{}\)</span> unspecified: <span class="math display">\[\operatorname{E}\mathopen{}\left[Y^a - Y^{a=0} \mid V\right]\mathclose{} = \beta_1 a + \beta_2 a V\]</span></p>
+<p>This <strong>semiparametric marginal structural mean model</strong> is more robust when <span class="math inline">\(V\)</span> is continuous or high-dimensional, because a misspecified model <span class="math inline">\(\beta_0 + \beta_3 V\)</span> can bias <span class="math inline">\((\hat \beta_1, \hat \beta_2)\)</span> through correlated estimates.</p>
+<ul>
+<li>Conditional on a strict subset <span class="math inline">\(V\)</span> of <span class="math inline">\(L\)</span>, it equals a structural nested model for a “blip” of treatment given <span class="math inline">\(V\)</span>; estimate it by g-estimation with <span class="math inline">\(V\)</span> in place of <span class="math inline">\(L\)</span>, weighting each individual by <span class="math inline">\(SW^A(V) = f(A \mid V)/f(A \mid L)\)</span></li>
+<li>Conditional on all of <span class="math inline">\(L\)</span> (<span class="math inline">\(SW^A = 1\)</span>), the “faux semiparametric MSM” <span class="math inline">\(\operatorname{E}\mathopen{}\left[Y^a - Y^{a=0} \mid L\right]\mathclose{} = \beta_1 a + \beta_2 a L\)</span> is, under conditional exchangeability, the structural nested mean model of this chapter</li>
+</ul>
+</div>
+</div>
+</div>
+</div>
+</section>
+<section id="censoring" class="slide level2">
+<h2>Censoring</h2>
+<p>With censoring, the target is <span class="math inline">\(\operatorname{E}\mathopen{}\left[Y^{a=1,c=0} - Y^{a=0,c=0} \mid A, L\right]\mathclose{}\)</span>, which requires adjusting for both confounding and selection bias.</p>
+<ul>
+<li>G-estimation adjusts for <strong>confounding only</strong>, not selection bias</li>
+<li>So first create a pseudo-population with nonstabilized IP weights for censoring, <span class="math inline">\(W^C = 1/\Pr[C = 0 \mid L, A]\)</span> (from Chapter 12), then g-estimate in that pseudo-population</li>
+<li>In the pseudo-population, the model is a structural model in the absence of censoring: <span class="math display">\[\operatorname{E}\mathopen{}\left[Y^{a,c=0} - Y^{a=0,c=0} \mid A = a, L\right]\mathclose{} = \beta_1 a + \beta_2 a L\]</span></li>
+</ul>
+<p>The superscript <span class="math inline">\(c = 0\)</span> is omitted hereafter.</p>
+<aside class="notes">
+<p>Technically, IP weighting for censoring is not necessary with g-estimation when treatment is time-fixed and does not affect any variable in <span class="math inline">\(L\)</span>, and the outcome is measured at a single time: if <span class="math inline">\(Y^a \perp\!\!\!\perp(A, C) \mid L\)</span>, g-estimation can be applied to the uncensored individuals without weights.</p>
+<p><strong>Continuous treatments</strong>: the model must specify the dose-response function, e.g., <span class="math inline">\(\operatorname{E}\mathopen{}\left[Y^a - Y^{a=0} \mid A = a, L\right]\mathclose{} = \beta_1 a + \beta_2 a^2 + \beta_3 a L + \beta_4 a^2 L\)</span>, or a smooth (e.g., spline) function of <span class="math inline">\(A\)</span> and <span class="math inline">\(L\)</span>.</p>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside>
+</section>
+<section class="slide level2">
+
+<div title="Technical Point 14.1: Multiplicative Structural Nested Mean Models">
+<div class="callout callout-note callout-titled callout-style-default">
+<div class="callout-body">
+<div class="callout-title">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<p><strong>Technical Point 14.1: Multiplicative Structural Nested Mean Models</strong></p>
+</div>
+<div class="callout-content">
+<p>For positive outcomes, a multiplicative model is often preferred: <span class="math display">\[\log\mathopen{}\left(\frac{\operatorname{E}\mathopen{}\left[Y^a \mid A = a, L\right]\mathclose{}}{\operatorname{E}\mathopen{}\left[Y^{a=0} \mid A = a, L\right]\mathclose{}}\right)\mathclose{} = \beta_1 a + \beta_2 a L\]</span> It can be g-estimated with <span class="math inline">\(H(\psi^\dagger) = Y \operatorname{exp}\mathopen{}\left\{-\psi_1^\dagger a - \psi_2^\dagger a L\right\}\mathclose{}\)</span>.</p>
+<ul>
+<li>For binary outcomes, this model was originally usable only for rare outcomes (to avoid predicted probabilities above 1); Richardson, Robins, and Wang (2017) removed that restriction, and the approach was extended to time-varying treatments with doubly robust g-estimation (Wang et al.&nbsp;2022)</li>
+<li>The older alternative, a structural nested <strong>logistic</strong> model (<span class="math inline">\(\operatorname{logit}\)</span> contrast of <span class="math inline">\(Y^a\)</span> vs.&nbsp;<span class="math inline">\(Y^{a=0}\)</span>), is not collapsible (Fine Point 4.3) and does not generalize easily to time-varying treatments <span class="citation" data-cites="hernan2020causal">(<a href="#/references" role="doc-biblioref" onclick="">Hernán and Robins 2020, 191</a>)</span></li>
+</ul>
+</div>
+</div>
+</div>
+</div>
+</section></section>
+<section>
+<section id="rank-preservation-pp.-191-193" class="title-slide slide level1 center" data-number="4">
+<h1><span class="header-section-number">4</span> 14.4 Rank Preservation (pp.&nbsp;191-193)</h1>
+
+</section>
+<section class="slide level2">
+
+<p>Rank all individuals by their observed <span class="math inline">\(Y\)</span>: individual 23522 first (48.5 kg), 6928 second (47.5 kg), …, 23321 last (<span class="math inline">\(-41.3\)</span> kg). Now imagine ranking everyone by <span class="math inline">\(Y^{a=1}\)</span> and, separately, by <span class="math inline">\(Y^{a=0}\)</span>.</p>
+<div id="def-rank-preservation" class="theorem definition">
+<p><span class="theorem-title"><strong>Definition 2 (Rank Preservation)</strong></span> <strong>Rank preservation</strong> holds if the ranking of individuals by <span class="math inline">\(Y^{a=1}\)</span> is identical to their ranking by <span class="math inline">\(Y^{a=0}\)</span>.</p>
+<ul>
+<li><strong>Additive rank preservation</strong>: the effect of <span class="math inline">\(A\)</span> on <span class="math inline">\(Y\)</span> is exactly the same, on the additive scale, for every individual</li>
+<li><strong>Conditional additive rank preservation</strong>: the effect is exactly the same for all individuals with the same value of <span class="math inline">\(L\)</span></li>
+</ul>
+</div>
+<div id="exm-rank-preservation" class="theorem example">
+<p><span class="theorem-title"><strong>Example 1 (Rank-Preserving Structural Model)</strong></span> &nbsp;</p>
+<ul>
+<li>If quitting increases everyone’s weight by exactly 3 kg, additive rank preservation holds</li>
+<li>The sharp null hypothesis (Chapter 1) is a special case</li>
+<li>An (additive conditional) rank-preserving structural model: <span class="math display">\[Y_i^a - Y_i^{a=0} = \psi_1 a + \psi_2 a L_i \quad \text{for all individuals } i\]</span> so every individual with <span class="math inline">\(L = l\)</span> has <span class="math inline">\(Y_i^{a=1} = Y_i^{a=0} + \psi_1 + \psi_2 l\)</span></li>
+</ul>
+</div>
+<aside class="notes">
+<p><strong>Figures 14.1-14.3</strong>: In Figure 14.1 (stratum <span class="math inline">\(L = l\)</span>) every individual’s outcome shifts by the same <span class="math inline">\(\psi_1 + \psi_2 l\)</span> from <span class="math inline">\(Y^{a=0}\)</span> to <span class="math inline">\(Y^{a=1}\)</span>; Figure 14.2 shows another stratum <span class="math inline">\(L = l'\)</span> with a different outcome distribution and shift <span class="math inline">\(\psi_1 + \psi_2 l'\)</span>. Figure 14.3 shows the realistic case: shifts vary across individuals with the same <span class="math inline">\(L\)</span>, and ranks are not preserved (individual <span class="math inline">\(i\)</span> is below <span class="math inline">\(j\)</span> under <span class="math inline">\(a = 0\)</span> but not under <span class="math inline">\(a = 1\)</span>).</p>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside>
+</section>
+<section id="rank-preservation-is-implausible-and-not-needed" class="slide level2">
+<h2>Rank Preservation Is Implausible, and Not Needed</h2>
+<ul>
+<li>Individual effects of quitting surely vary even within levels of <span class="math inline">\(L\)</span>: some gain a lot, some little, some may lose weight</li>
+<li><strong>None of the methods in the book require rank preservation</strong>: the MSM of Chapter 12 (estimate 3.5 kg, 95% CI 2.5 to 4.5) and the structural nested <strong>mean</strong> model of Section 14.3 are models for average effects</li>
+<li>The rank-preserving model is used only to <strong>introduce</strong> g-estimation, because g-estimation is easier to understand for it and the procedure is the same for rank-preserving and non-rank-preserving models</li>
+</ul>
+<aside class="notes">
+<p>A structural nested mean model is well defined without rank preservation; for the setting of Figure 14.3, one can still model the average effect within strata of <span class="math inline">\(L\)</span>. The rank-preserving model is a special structural mean model: the mean of the individual shifts within levels of <span class="math inline">\(L\)</span> equals each individual shift.</p>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside>
+</section></section>
+<section>
+<section id="g-estimation-pp.-193-196" class="title-slide slide level1 center" data-number="5">
+<h1><span class="header-section-number">5</span> 14.5 G-Estimation (pp.&nbsp;193-196)</h1>
+
+</section>
+<section class="slide level2">
+
+<p>Goal: estimate <span class="math inline">\(\beta_1\)</span> in <span class="math inline">\(\operatorname{E}\mathopen{}\left[Y^a - Y^{a=0} \mid A = a, L\right]\mathclose{} = \beta_1 a\)</span> (no effect modification by <span class="math inline">\(L\)</span>).</p>
+<p>Temporarily assume the rank-preserving model <span class="math inline">\(Y_i^a - Y_i^{a=0} = \psi_1 a\)</span> for all <span class="math inline">\(i\)</span>, so <span class="math inline">\(\psi_1 = \beta_1\)</span>. Rewrite it as <span class="math display">\[Y^{a=0} = Y^a - \psi_1 a\]</span></p>
+</section>
+<section id="linking-the-model-to-the-observed-data" class="slide level2">
+<h2>Linking the Model to the Observed Data</h2>
+<p>By consistency, <span class="math inline">\(Y = Y^A\)</span>. Replacing <span class="math inline">\(a\)</span> by each individual’s observed <span class="math inline">\(A\)</span>: <span class="math display">\[
+\begin{aligned}
+Y^{a=0} &amp;= Y^A - \psi_1 A &amp;&amp; \text{(set } a = A\text{)} \\
+&amp;= Y - \psi_1 A &amp;&amp; \text{(consistency: } Y^A = Y\text{)}
+\end{aligned}
+\]</span></p>
+<p>If we knew <span class="math inline">\(\psi_1\)</span> we could compute <span class="math inline">\(Y^{a=0}\)</span> for everyone. We don’t.</p>
+</section>
+<section id="the-guessing-game" class="slide level2">
+<h2>The Guessing Game</h2>
+<p>A friend says <span class="math inline">\(\psi_1\)</span> is one of <span class="math inline">\(\psi^\dagger \in \{-20, 0, 10\}\)</span>. For each candidate compute <span class="math display">\[H(\psi^\dagger) = Y - \psi^\dagger A\]</span></p>
+<ul>
+<li><span class="math inline">\(H(\psi^\dagger) = Y^{a=0}\)</span> only when <span class="math inline">\(\psi^\dagger = \psi_1\)</span></li>
+<li>Under conditional exchangeability, <span class="math inline">\(Y^{a=0}\)</span> does not predict <span class="math inline">\(A\)</span> given <span class="math inline">\(L\)</span> (Section 14.2)</li>
+<li>So fit, for each candidate, <span class="math display">\[\operatorname{logit}\Pr[A = 1 \mid H(\psi^\dagger), L] = \alpha_0 + \alpha_1 H(\psi^\dagger) + \alpha_2 L\]</span></li>
+<li>The candidate with <span class="math inline">\(\alpha_1 = 0\)</span> is <span class="math inline">\(Y^{a=0}\)</span>; e.g., if <span class="math inline">\(H(10)\)</span> is unassociated with <span class="math inline">\(A\)</span> given <span class="math inline">\(L\)</span>, then <span class="math inline">\(\hat\psi_1 = 10\)</span></li>
+</ul>
+<div class="callout callout-important callout-titled callout-style-default">
+<div class="callout-body">
+<div class="callout-title">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<p><strong>Important</strong></p>
+</div>
+<div class="callout-content">
+<p>G-estimation does <strong>not test</strong> whether conditional exchangeability holds; it <strong>assumes</strong> it <span class="citation" data-cites="hernan2020causal">(<a href="#/references" role="doc-biblioref" onclick="">Hernán and Robins 2020, 194</a>)</span>.</p>
+</div>
+</div>
+</div>
+<aside class="notes">
+<p>Rosenbaum (1987) proposed a version of this procedure for non-time-varying treatments. Without a friend, we search over many values <span class="math inline">\(\psi^\dagger\)</span> (e.g., <span class="math inline">\(-20\)</span> to <span class="math inline">\(20\)</span> in steps of 0.01); a finer search is closer to <span class="math inline">\(\hat\psi_1\)</span> but more computationally demanding.</p>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside>
+</section>
+<section id="nhefs-results" class="slide level2">
+<h2>NHEFS Results</h2>
+<div id="exm-g-estimate-nhefs" class="theorem example">
+<p><span class="theorem-title"><strong>Example 2 (G-Estimate of the Effect of Smoking Cessation (Program 14.2))</strong></span> &nbsp;</p>
+<ul>
+<li>Computed 31 candidates <span class="math inline">\(H(2.0), H(2.1), \ldots, H(5.0)\)</span> and fit 31 logistic models (the Chapter 12 IP-weight denominator model plus <span class="math inline">\(H(\psi^\dagger)\)</span>)</li>
+<li><span class="math inline">\(\hat\alpha_1\)</span> was closest to zero for <span class="math inline">\(H(3.4)\)</span> and <span class="math inline">\(H(3.5)\)</span>; a finer search found <span class="math inline">\(\hat\alpha_1 \approx 0\)</span> at <span class="math inline">\(H(3.446)\)</span></li>
+<li><strong>G-estimate</strong>: <span class="math inline">\(\hat\psi_1 = 3.4\)</span> kg</li>
+<li><strong>95% CI</strong>: 2.5 to 4.5 kg</li>
+</ul>
+</div>
+</section>
+<section id="confidence-intervals-by-test-inversion" class="slide level2">
+<h2>Confidence Intervals by Test Inversion</h2>
+<ul>
+<li>For each <span class="math inline">\(\psi^\dagger\)</span>, test <span class="math inline">\(\alpha_1 = 0\)</span> (Wald test); at <span class="math inline">\(\psi^\dagger = 3.446\)</span> the P-value was 0.998</li>
+<li>The P-value exceeded 0.05 for <span class="math inline">\(\psi^\dagger\)</span> between about 2.5 and 4.5</li>
+<li>The 95% CI is the set of <span class="math inline">\(\psi^\dagger\)</span> with P-value <span class="math inline">\(&gt; 0.05\)</span>: <strong>inversion</strong> of the test</li>
+</ul>
+<aside class="notes">
+<ul>
+<li>Any valid test can be used; a score test avoids fitting multiple models and is essentially equivalent to the Wald test in large samples.</li>
+<li>With censoring, the logistic models are fit to uncensored individuals (<span class="math inline">\(C = 0\)</span>), each weighted by the estimated IP weight for censoring (Technical Point 14.2).</li>
+<li>Because the test used a robust variance estimator (due to the IP weights), the 95% CI is conservative in large samples: it traps the true value at least 95% of the time. Bootstrapping the whole g-estimation procedure gives a non-conservative, possibly narrower, interval.</li>
+</ul>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside>
+</section>
+<section id="back-to-non-rank-preserving-models" class="slide level2">
+<h2>Back to Non-Rank-Preserving Models</h2>
+<p>The g-estimation algorithm for <span class="math inline">\(\psi_1\)</span> gives a <strong>consistent estimate of <span class="math inline">\(\beta_1\)</span></strong> in the mean model whenever the mean model is correctly specified, <strong>regardless of whether rank preservation holds</strong>.</p>
+<ul>
+<li>It does not need <span class="math inline">\(H(\beta_1) = Y^{a=0}\)</span> for every individual</li>
+<li>It only needs <span class="math inline">\(H(\beta_1)\)</span> and <span class="math inline">\(Y^{a=0}\)</span> to have the same conditional mean given <span class="math inline">\(L\)</span></li>
+</ul>
+<div title="Fine Point 14.2: Sensitivity Analysis for Unmeasured Confounding">
+<div class="callout callout-note callout-titled callout-style-default">
+<div class="callout-body">
+<div class="callout-title">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<p><strong>Fine Point 14.2: Sensitivity Analysis for Unmeasured Confounding</strong></p>
+</div>
+<div class="callout-content">
+<p>G-estimation uses the fact that <span class="math inline">\(\alpha_1 = 0\)</span> under conditional exchangeability given <span class="math inline">\(L\)</span>.</p>
+<ul>
+<li>Suppose quitting is less likely when one’s spouse smokes, and spouse’s smoking is associated with determinants of weight gain not in <span class="math inline">\(L\)</span>: unmeasured confounding, so <span class="math inline">\(\alpha_1 \neq 0\)</span></li>
+<li>G-estimation does not actually require <span class="math inline">\(\alpha_1 = 0\)</span>, only that the <strong>magnitude of nonexchangeability</strong> (the value of <span class="math inline">\(\alpha_1\)</span>) be known: if <span class="math inline">\(\alpha_1 = 0.1\)</span>, search for the <span class="math inline">\(\psi^\dagger\)</span> at which <span class="math inline">\(\hat\alpha_1 = 0.1\)</span></li>
+<li>Repeating the analysis over a range of <span class="math inline">\(\alpha_1\)</span> values and plotting the estimates gives a <strong>sensitivity analysis</strong> for unmeasured confounding</li>
+<li>A practical difficulty: how much confounding is <span class="math inline">\(\alpha_1 = 0.1\)</span>? See Robins, Rotnitzky, and Scharfstein (1999) for technical details</li>
+</ul>
+</div>
+</div>
+</div>
+</div>
+</section></section>
+<section>
+<section id="structural-nested-models-with-two-or-more-parameters-pp.-196-197" class="title-slide slide level1 center" data-number="6">
+<h1><span class="header-section-number">6</span> 14.6 Structural Nested Models with Two or More Parameters (pp.&nbsp;196-197)</h1>
+
+</section>
+<section class="slide level2">
+
+<p>Without the product term <span class="math inline">\(\beta_2 a L\)</span>, the model assumes no effect modification by <span class="math inline">\(L\)</span>.</p>
+<ul>
+<li>If some components <span class="math inline">\(V\)</span> of <span class="math inline">\(L\)</span> modify the effect and the term <span class="math inline">\(\beta_2 a V\)</span> is omitted, the structural nested model is <strong>misspecified</strong> and generally biased</li>
+<li>Contrast: the saturated MSM <span class="math inline">\(\operatorname{E}\mathopen{}\left[Y^a\right]\mathclose{} = \beta_0 + \beta_1 a\)</span> is not misspecified when it omits <span class="math inline">\(\beta_2 a V\)</span> and <span class="math inline">\(\beta_3 V\)</span>, because it targets the population effect</li>
+<li>Structural nested models, by definition, target effects <strong>within levels of <span class="math inline">\(L\)</span></strong></li>
+</ul>
+<aside class="notes">
+<p><strong>Null preservation</strong>: when the null of no average causal effect is true, marginal structural models (Chapter 12) and structural nested models are never misspecified. The parametric g-formula preserves the null for time-fixed treatments but not in the time-varying setting (Part III).</p>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside>
+</section>
+<section id="two-parameters" class="slide level2">
+<h2>Two Parameters</h2>
+<p>Suppose the effect depends on baseline smoking intensity <span class="math inline">\(V\)</span>: <span class="math display">\[\operatorname{E}\mathopen{}\left[Y^a - Y^{a=0} \mid A = a, L\right]\mathclose{} = \beta_1 a + \beta_2 a V\]</span></p>
+<ul>
+<li>Candidate: <span class="math inline">\(\beta^\dagger = (\beta_1^\dagger, \beta_2^\dagger)\)</span> and <span class="math inline">\(H(\beta^\dagger) = Y - \beta_1^\dagger A - \beta_2^\dagger A V\)</span></li>
+<li>Fit the IP-weighted logistic model <span class="math display">\[\operatorname{logit}\Pr[A = 1 \mid H(\beta^\dagger), L] = \alpha_0 + \alpha_1 H(\beta^\dagger) + \alpha_2 H(\beta^\dagger) V + \alpha_3 L\]</span></li>
+<li>Find <span class="math inline">\((\beta_1^\dagger, \beta_2^\dagger)\)</span> making <strong>both</strong> <span class="math inline">\(\alpha_1\)</span> and <span class="math inline">\(\alpha_2\)</span> zero: a two-dimensional search</li>
+</ul>
+</section>
+<section id="no-search-needed-in-general" class="slide level2">
+<h2>No Search Needed in General</h2>
+<ul>
+<li>For <strong>linear</strong> structural nested mean models the estimator has <strong>closed form</strong> (Technical Point 14.2)</li>
+<li>For nonlinear models, g-estimation solves an <strong>estimating equation</strong>, so derivative-based methods (e.g., Newton-Raphson) apply</li>
+<li>Some structural nested survival models need a search, because their estimating equation is not differentiable (Chapter 17)</li>
+</ul>
+<div id="exm-two-parameter-nhefs" class="theorem example">
+<p><span class="theorem-title"><strong>Example 3 (Two-Parameter Model in NHEFS (Program 14.3))</strong></span> G-estimates: <span class="math inline">\(\hat \beta_1 = 2.86\)</span> and <span class="math inline">\(\hat \beta_2 = 0.03\)</span>. Confidence intervals are most easily obtained by bootstrapping.</p>
+</div>
+</section>
+<section id="effect-modification-by-all-of-l" class="slide level2">
+<h2>Effect Modification by All of <span class="math inline">\(L\)</span></h2>
+<p>For dichotomous <span class="math inline">\(A\)</span>, the unsaturated model <span class="math display">\[\operatorname{E}\mathopen{}\left[Y^a - Y^{a=0} \mid A = a, L\right]\mathclose{} = \beta_1 a + a \sum_{j=1}^{p} \beta_{2j} L_j\]</span> has <span class="math inline">\(p + 1\)</span> parameters. The average causal effect in the study population is then estimated by averaging the stratum-specific effect over the <span class="math inline">\(n\)</span> individuals: <span class="math display">\[
+\begin{aligned}
+\frac{1}{n} \sum_{i=1}^n\mathopen{}\left(\beta_1 + \sum_{j=1}^{p} \beta_{2j} L_{ij}\right)\mathclose{}
+&amp;= \frac{1}{n} \sum_{i=1}^n\beta_1 + \frac{1}{n} \sum_{i=1}^n\sum_{j=1}^{p} \beta_{2j} L_{ij} \\
+&amp;= \beta_1 + \frac{1}{n} \sum_{i=1}^n\sum_{j=1}^{p} \beta_{2j} L_{ij}
+\end{aligned}
+\]</span></p>
+<aside class="notes">
+<p>The book writes the left-hand side of this model as <span class="math inline">\(\operatorname{E}\mathopen{}\left[Y^a - Y^{a=0}\right]\mathclose{}\)</span>; the conditioning on <span class="math inline">\(A = a, L\)</span> is implied by the right-hand side depending on <span class="math inline">\(L\)</span> <span class="citation" data-cites="hernan2020causal">(<a href="#/references" role="doc-biblioref" onclick="">Hernán and Robins 2020, 197</a>)</span>.</p>
+<p><strong>Next</strong>: after the three g-methods, Chapter 15 reviews arguably the most common approaches to confounding adjustment: outcome regression and propensity scores.</p>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside>
+</section>
+<section class="slide level2">
+
+<div title="Technical Point 14.2: G-Estimation of Structural Nested Mean Models">
+<div class="callout callout-note callout-titled callout-style-default">
+<div class="callout-body">
+<div class="callout-title">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<p><strong>Technical Point 14.2: G-Estimation of Structural Nested Mean Models</strong></p>
+</div>
+<div class="callout-content">
+<p>General model: <span class="math inline">\(\operatorname{E}\mathopen{}\left[Y - Y^{a=0} \mid A, L\right]\mathclose{} = A \gamma(L; \beta)\)</span>, with <span class="math inline">\(\gamma(L; \beta^\dagger)\)</span> known and <span class="math inline">\(\gamma(L; 0) = 0\)</span>.</p>
+<p><strong>Estimating equation.</strong> Choose <span class="math inline">\(\beta^\dagger\)</span> minimizing the association between <span class="math inline">\(H(\beta^\dagger) = Y - A\gamma(L; \beta^\dagger)\)</span> and <span class="math inline">\(A\)</span> given <span class="math inline">\(L\)</span>. Basing this on a score test means solving <span class="math display">\[\sum_{i=1}^nI[C_i = 0] \, W_i^C \, H_i(\beta^\dagger) \mathopen{}\left(A_i - \operatorname{E}\mathopen{}\left[A \mid L_i\right]\mathclose{}\right)\mathclose{} q(L_i) = 0\]</span> where <span class="math inline">\(q(L_i)\)</span> is a user-chosen vector function of the same dimension as <span class="math inline">\(\beta\)</span>, and <span class="math inline">\(W_i^C\)</span> and <span class="math inline">\(\operatorname{E}\mathopen{}\left[A \mid L_i\right]\mathclose{} = \Pr[A = 1 \mid L_i]\)</span> are replaced by estimates. The choice of <span class="math inline">\(q\)</span> affects efficiency (CI length), not consistency; Robins (1994) derived the choice that minimizes CI length.</p>
+<p><strong>Closed form.</strong> If <span class="math inline">\(\gamma(L; \beta^\dagger) = \beta^{\dagger T} d(L)\)</span> for a known <span class="math inline">\(d(L)\)</span>, choose <span class="math inline">\(q(L) = d(L)\)</span> and write <span class="math inline">\(R_i = I[C_i = 0] W_i^C (A_i - \operatorname{E}\mathopen{}\left[A \mid L_i\right]\mathclose{})\)</span>. Then <span class="math display">\[
+\begin{aligned}
+0 &amp;= \sum_i R_i \mathopen{}\left(Y_i - A_i\, d(L_i)^T \beta\right)\mathclose{} d(L_i)
+&amp;&amp; \text{(substitute } H_i\text{; } \beta^T d = d^T \beta\text{)} \\
+\sum_i R_i A_i\, d(L_i)\, d(L_i)^T \beta &amp;= \sum_i R_i Y_i\, d(L_i)
+&amp;&amp; \text{(move the } \beta \text{ term to the left)} \\
+\hat \beta&amp;= \mathopen{}\left(\sum_i R_i A_i\, d(L_i)\, d(L_i)^T\right)\mathclose{}^{-1} \sum_i R_i Y_i\, d(L_i)
+&amp;&amp; \text{(solve for } \beta\text{)}
+\end{aligned}
+\]</span></p>
+<p><strong>Mean vs.&nbsp;distributional independence.</strong> Structural nested mean models only impose <span class="math inline">\(\operatorname{E}\mathopen{}\left[H(\beta_1) \mid A, L\right]\mathclose{} = \operatorname{E}\mathopen{}\left[H(\beta_1) \mid L\right]\mathclose{}\)</span>, so nonlinear functions of <span class="math inline">\(H_i(\beta^\dagger)\)</span> (e.g., its cube) cannot be used in the estimating equation; they can be for <strong>structural nested distribution models</strong>, which impose <span class="math inline">\(H(\beta_1) \perp\!\!\!\perp A \mid L\)</span>.</p>
+<p><strong>Double robustness.</strong> The estimator above is consistent only if the models for <span class="math inline">\(\operatorname{E}\mathopen{}\left[A \mid L\right]\mathclose{}\)</span> and <span class="math inline">\(\Pr[C = 1 \mid A, L]\)</span> are both correct. Replacing <span class="math inline">\(H(\beta^\dagger)\)</span> by <span class="math inline">\(H(\beta^\dagger) - \operatorname{E}\mathopen{}\left[H(\beta^\dagger) \mid L\right]\mathclose{}\)</span>, with the latter estimated by an unweighted linear model among the uncensored, gives an estimator that is consistent if either (i) the model for <span class="math inline">\(\operatorname{E}\mathopen{}\left[H(\beta^\dagger) \mid L\right]\mathclose{}\)</span> or (ii) both the treatment and censoring models are correct: a <strong>doubly robust</strong> estimator <span class="citation" data-cites="hernan2020causal">(<a href="#/references" role="doc-biblioref" onclick="">Hernán and Robins 2020, 198</a>)</span>.</p>
+</div>
+</div>
+</div>
+</div>
+</section></section>
+<section>
+<section id="summary" class="title-slide slide level1 center" data-number="7">
+<h1><span class="header-section-number">7</span> Summary</h1>
+
+</section>
+<section class="slide level2 scrollable">
+
+<ol type="1">
+<li><strong>Structural nested mean models</strong> <span class="math inline">\(\operatorname{E}\mathopen{}\left[Y^a - Y^{a=0} \mid A = a, L\right]\mathclose{} = \beta_1 a + \beta_2 a L\)</span> model the effect within levels of <span class="math inline">\(L\)</span> and leave <span class="math inline">\(\operatorname{E}\mathopen{}\left[Y^{a=0} \mid L\right]\mathclose{}\)</span> unspecified (semiparametric).</li>
+<li><strong>Exchangeability</strong> can be written as: <span class="math inline">\(Y^{a=0}\)</span> does not predict <span class="math inline">\(A\)</span> given <span class="math inline">\(L\)</span> (<span class="math inline">\(\alpha_1 = 0\)</span>).</li>
+<li><strong>G-estimation</strong> finds the parameter value whose candidate counterfactual <span class="math inline">\(H(\psi^\dagger)\)</span> is unassociated with <span class="math inline">\(A\)</span> given <span class="math inline">\(L\)</span>; NHEFS: 3.4 kg (95% CI 2.5, 4.5).</li>
+<li><strong>Rank preservation</strong> is implausible and <strong>not required</strong>: it only simplifies the explanation.</li>
+<li><strong>Censoring</strong> is handled by IP weights; g-estimation itself adjusts only for confounding.</li>
+<li>Models with <strong>effect modification</strong> need product terms; linear models have a closed-form g-estimator, which can be made <strong>doubly robust</strong>.</li>
+</ol>
+</section></section>
+<section>
+<section id="references" class="title-slide slide level1 center" data-number="8">
+<h1><span class="header-section-number">8</span> References</h1>
+
+</section>
+<section class="slide level2 smaller scrollable" id="references">
+
+<div id="refs" class="references csl-bib-body hanging-indent" role="list">
+<div id="ref-hernan2020causal" class="csl-entry" role="listitem">
+Hernán, Miguel A, and James M Robins. 2020. <em>Causal Inference: What If</em>. Chapman &amp; Hall/CRC. <a href="https://miguelhernan.org/whatifbook">https://miguelhernan.org/whatifbook</a>.
+</div>
+</div>
+
+
+<script>
+(function () {
+  "use strict";
+
+  /**
+   * CSS selector matching all Quarto theorem and proof div environments.
+   *
+   * Quarto adds the `.theorem` class to all theorem-type divs
+   * (theorem, lemma, corollary, proposition, conjecture, definition,
+   * example, exercise, algorithm), so `.theorem[id]` covers all of them.
+   * Proof-type environments (.proof, .remark, .solution) are listed
+   * separately because they do not carry the `.theorem` class.
+   */
+  var THEOREM_SELECTOR = [
+    ".theorem[id]",
+    ".proof[id]",
+    ".remark[id]",
+    ".solution[id]",
+  ].join(", ");
+
+  function getQuartoHeadingAnchorIcon() {
+    var afterBodyScript = document.getElementById("quarto-html-after-body");
+    if (!afterBodyScript) {
+      return null;
+    }
+
+    var match = afterBodyScript.textContent.match(/const icon = ["']([^"']+)["']/);
+    return match ? match[1] : null;
+  }
+
+  // Quarto chain-link glyph from Bootstrap Icons.
+  var chainLinkIconFallback = "\ue9cb";
+  var headingAnchorIcon = getQuartoHeadingAnchorIcon();
+  var defaultAnchorIconFallback =
+    headingAnchorIcon && headingAnchorIcon !== "#" ? headingAnchorIcon : chainLinkIconFallback;
+
+  function getDefaultAnchorTemplate() {
+    var defaultAnchor =
+      document.querySelector(".anchored > a.anchorjs-link") ||
+      document.querySelector("a.anchorjs-link[data-anchorjs-icon]");
+    if (!defaultAnchor) {
+      return null;
+    }
+
+    return {
+      icon: defaultAnchor.getAttribute("data-anchorjs-icon") || defaultAnchor.textContent.trim(),
+      hasDataIcon: defaultAnchor.hasAttribute("data-anchorjs-icon"),
+      style: defaultAnchor.getAttribute("style")
+    };
+  }
+
+  function normalizeAnchorIcon(icon) {
+    if (!icon || icon === "#") {
+      return defaultAnchorIconFallback;
+    }
+
+    return icon;
+  }
+
+  function createChainLinkSvgIcon() {
+    var svgNs = "http://www.w3.org/2000/svg";
+    var svg = document.createElementNS(svgNs, "svg");
+    svg.setAttribute("viewBox", "0 0 16 16");
+    svg.setAttribute("fill", "currentColor");
+    svg.setAttribute("aria-hidden", "true");
+    svg.setAttribute("focusable", "false");
+    svg.setAttribute("class", "div-anchor-icon");
+
+    // Bootstrap Icons chain-link icon (bi-link-45deg), paths for the two
+    // chain links and the connecting segment.
+    [
+      "M6.354 5.5H4a3 3 0 0 0 0 6h3a3 3 0 0 0 2.83-2H11a4 4 0 0 1-4 3H4a4 4 0 0 1 0-8h2.354z",
+      "M9.646 10.5H12a3 3 0 1 0 0-6H9a3 3 0 0 0-2.83 2H5a4 4 0 0 1 4-3h3a4 4 0 0 1 0 8H9.646z",
+      "M5.5 8a.5.5 0 0 1 .5-.5h4a.5.5 0 0 1 0 1H6a.5.5 0 0 1-.5-.5"
+    ].forEach(function (pathData) {
+      var path = document.createElementNS(svgNs, "path");
+      path.setAttribute("d", pathData);
+      svg.appendChild(path);
+    });
+
+    return svg;
+  }
+
+  function alignDivAnchorWithDefault(anchor, template) {
+    if (!anchor) {
+      return;
+    }
+
+    anchor.classList.remove("external");
+    anchor.classList.add("no-external");
+
+    var normalizedIcon = normalizeAnchorIcon(template && template.icon);
+    if (normalizedIcon === chainLinkIconFallback) {
+      anchor.removeAttribute("data-anchorjs-icon");
+      anchor.textContent = "";
+      anchor.appendChild(createChainLinkSvgIcon());
+    } else if (template && template.hasDataIcon) {
+      anchor.setAttribute("data-anchorjs-icon", normalizedIcon);
+      anchor.textContent = normalizedIcon;
+    } else {
+      anchor.removeAttribute("data-anchorjs-icon");
+      anchor.textContent = normalizedIcon;
+    }
+
+    if (template && template.style) {
+      anchor.setAttribute("style", template.style);
+    } else {
+      anchor.removeAttribute("style");
+    }
+  }
+
+  function alignDivAnchorsWithDefault() {
+    var template = getDefaultAnchorTemplate();
+    document.querySelectorAll("a.div-anchor").forEach(function (anchor) {
+      alignDivAnchorWithDefault(anchor, template);
+    });
+  }
+
+  function ensureDivAnchorStyles() {
+    if (document.getElementById("div-anchor-styles")) {
+      return;
+    }
+
+    var style = document.createElement("style");
+    style.id = "div-anchor-styles";
+    style.textContent = [
+      ".div-anchor {",
+      "  opacity: 0;",
+      "  font-size: 0.875em;",
+      "  font-weight: 400;",
+      "  margin-left: 0.375em;",
+      "  text-decoration: none;",
+      "  color: inherit;",
+      "  vertical-align: middle;",
+      "  transition: opacity 0.2s ease;",
+      "}",
+      ".div-anchor:hover,",
+      ".div-anchor:focus {",
+      "  opacity: 1;",
+      "  text-decoration: none;",
+      "}",
+      ".div-anchor-icon {",
+      "  width: 0.875em;",
+      "  height: 0.875em;",
+      "  vertical-align: -0.125em;",
+      "}",
+      ":is(.theorem, .proof, .remark, .solution):hover .div-anchor,",
+      ":is(.theorem, .proof, .remark, .solution):focus-within .div-anchor {",
+      "  opacity: 1;",
+      "}"
+    ].join("\n");
+    document.head.appendChild(style);
+  }
+
+  /**
+   * Add anchor links to all theorem/proof divs with ids on the page.
+   */
+  function addDivAnchors() {
+    ensureDivAnchorStyles();
+
+    var divs = document.querySelectorAll(THEOREM_SELECTOR);
+    divs.forEach(function (div) {
+      var id = div.id;
+      if (!id) {
+        return;
+      }
+
+      // Skip if already processed.
+      if (div.querySelector(".div-anchor")) {
+        return;
+      }
+
+      var anchor = document.createElement("a");
+      anchor.className = "div-anchor anchorjs-link";
+      anchor.href = "#" + id;
+      anchor.setAttribute("aria-label", "Permalink to this block");
+      anchor.classList.add("no-external");
+
+      // Find the theorem-title or proof-title span
+      var titleSpan = div.querySelector(".theorem-title, .proof-title");
+
+      if (titleSpan) {
+        // Insert anchor immediately after the title span
+        titleSpan.insertAdjacentElement("afterend", anchor);
+      } else {
+        // Fallback: prepend to the first paragraph
+        var firstPara = div.querySelector("p");
+        if (firstPara) {
+          firstPara.insertAdjacentElement("afterbegin", anchor);
+        }
+      }
+    });
+
+    alignDivAnchorsWithDefault();
+  }
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", addDivAnchors);
+  } else {
+    addDivAnchors();
+  }
+
+  window.addEventListener("load", alignDivAnchorsWithDefault);
+})();
+</script>
+
+<script>
+function getQuartoHeadingAnchorIcon() {
+  const afterBodyScript = document.getElementById("quarto-html-after-body");
+  if (!afterBodyScript) {
+    return null;
+  }
+
+  const match = afterBodyScript.textContent.match(/const icon = ["']([^"']+)["']/);
+  return match ? match[1] : null;
+}
+
+// Quarto chain-link glyph from Bootstrap Icons.
+const chainLinkIconFallback = "\ue9cb";
+const headingAnchorIcon = getQuartoHeadingAnchorIcon();
+const defaultAnchorIconFallback =
+  headingAnchorIcon && headingAnchorIcon !== "#" ? headingAnchorIcon : chainLinkIconFallback;
+
+function getDefaultAnchorTemplate() {
+  // Prefer Quarto heading anchors first so the visible chain-link icon is reused.
+  const defaultAnchor =
+    document.querySelector(".anchored > a.anchorjs-link") ||
+    document.querySelector("a.anchorjs-link[data-anchorjs-icon]");
+  if (!defaultAnchor) {
+    return null;
+  }
+
+  return {
+    // Detect icon value from the template anchor's attribute or text.
+    icon: defaultAnchor.getAttribute("data-anchorjs-icon") || defaultAnchor.textContent.trim(),
+    hasDataIcon: defaultAnchor.hasAttribute("data-anchorjs-icon"),
+    style: defaultAnchor.getAttribute("style")
+  };
+}
+
+function normalizeAnchorIcon(icon) {
+  if (!icon || icon === "#") {
+    return defaultAnchorIconFallback;
+  }
+
+  return icon;
+}
+
+function createChainLinkSvgIcon() {
+  const svgNs = "http://www.w3.org/2000/svg";
+  const svg = document.createElementNS(svgNs, "svg");
+  svg.setAttribute("viewBox", "0 0 16 16");
+  svg.setAttribute("fill", "currentColor");
+  svg.setAttribute("aria-hidden", "true");
+  svg.setAttribute("focusable", "false");
+  svg.setAttribute("class", "equation-anchor-icon");
+
+  [
+    "M6.354 5.5H4a3 3 0 0 0 0 6h3a3 3 0 0 0 2.83-2H11a4 4 0 0 1-4 3H4a4 4 0 0 1 0-8h2.354z",
+    "M9.646 10.5H12a3 3 0 1 0 0-6H9a3 3 0 0 0-2.83 2H5a4 4 0 0 1 4-3h3a4 4 0 0 1 0 8H9.646z",
+    "M5.5 8a.5.5 0 0 1 .5-.5h4a.5.5 0 0 1 0 1H6a.5.5 0 0 1-.5-.5"
+  ].forEach(function (pathData) {
+    const path = document.createElementNS(svgNs, "path");
+    path.setAttribute("d", pathData);
+    svg.appendChild(path);
+  });
+
+  return svg;
+}
+
+function alignEquationAnchorWithDefault(anchor, template) {
+  if (!anchor) {
+    return;
+  }
+
+  anchor.classList.remove("external");
+  anchor.classList.add("no-external");
+
+  const normalizedIcon = normalizeAnchorIcon(template && template.icon);
+  if (normalizedIcon === chainLinkIconFallback) {
+    anchor.removeAttribute("data-anchorjs-icon");
+    anchor.textContent = "";
+    anchor.appendChild(createChainLinkSvgIcon());
+  } else if (template && template.hasDataIcon) {
+    anchor.setAttribute("data-anchorjs-icon", normalizedIcon);
+    anchor.textContent = normalizedIcon;
+  } else {
+    anchor.removeAttribute("data-anchorjs-icon");
+    anchor.textContent = normalizedIcon;
+  }
+
+  if (template && template.style) {
+    anchor.setAttribute("style", template.style);
+  } else {
+    anchor.removeAttribute("style");
+  }
+}
+
+function alignEquationAnchorsWithDefault() {
+  const template = getDefaultAnchorTemplate();
+  document.querySelectorAll("a.equation-anchor").forEach(function (anchor) {
+    alignEquationAnchorWithDefault(anchor, template);
+  });
+}
+
+function ensureEquationAnchorStyles() {
+  if (document.getElementById("equation-anchor-styles")) {
+    return;
+  }
+
+  const style = document.createElement("style");
+  style.id = "equation-anchor-styles";
+  style.textContent = `
+    .equation-anchor-target {
+      --equation-anchor-offset: 1.2rem;
+      position: relative;
+      display: block;
+    }
+    .equation-anchor {
+      position: absolute;
+      left: calc(-1 * var(--equation-anchor-offset));
+      top: 50%;
+      transform: translateY(-50%);
+      text-decoration: none;
+      opacity: 0.7;
+      font-size: 0.9em;
+    }
+    .equation-anchor:hover {
+      opacity: 1;
+    }
+    .equation-anchor-icon {
+      width: 0.9em;
+      height: 0.9em;
+      vertical-align: -0.125em;
+    }
+  `;
+  document.head.appendChild(style);
+}
+
+document.addEventListener("DOMContentLoaded", function () {
+  ensureEquationAnchorStyles();
+
+  let counter = 0;
+
+  document.querySelectorAll(".math.display").forEach(function (mathEl) {
+    // For labeled equations, Quarto wraps the math display span in an eq-* span.
+    // For unlabeled equations, use the parent element (typically a <p>).
+    const labeledContainer = mathEl.closest("[id^='eq-']");
+    const target = labeledContainer || mathEl.parentElement;
+
+    if (!target) {
+      return;
+    }
+
+    // Skip if already processed.
+    if (target.querySelector(".equation-anchor")) {
+      return;
+    }
+
+    // Use the labeled container's id, or assign an auto-generated id.
+    let id = labeledContainer ? labeledContainer.id : target.id;
+    if (!id) {
+      counter++;
+      id = "eq-anchor-" + counter;
+      target.id = id;
+    }
+
+    target.classList.add("equation-anchor-target");
+
+    const anchor = document.createElement("a");
+    anchor.className = "equation-anchor anchorjs-link";
+    anchor.href = "#" + id;
+    anchor.setAttribute("aria-label", "Permalink to this equation");
+    target.appendChild(anchor);
+  });
+
+  alignEquationAnchorsWithDefault();
+});
+
+window.addEventListener("load", alignEquationAnchorsWithDefault);
+</script>
+
+</section></section>
+    </div>
+  <div class="quarto-auto-generated-content" style="display: none;">
+<div class="footer footer-default">
+
+</div>
+</div></div>
+
+  <script>window.backupDefine = window.define; window.define = undefined;</script>
+  <script src="../site_libs/revealjs/dist/reveal.js"></script>
+  <!-- reveal.js plugins -->
+  <script src="../site_libs/revealjs/plugin/quarto-line-highlight/line-highlight.js"></script>
+  <script src="../site_libs/revealjs/plugin/pdf-export/pdfexport.js"></script>
+  <script src="../site_libs/revealjs/plugin/reveal-menu/menu.js"></script>
+  <script src="../site_libs/revealjs/plugin/reveal-menu/quarto-menu.js"></script>
+  <script src="../site_libs/revealjs/plugin/reveal-chalkboard/plugin.js"></script>
+  <script src="../site_libs/revealjs/plugin/quarto-support/support.js"></script>
+  
+
+  <script src="../site_libs/revealjs/plugin/notes/notes.js"></script>
+  <script src="../site_libs/revealjs/plugin/search/search.js"></script>
+  <script src="../site_libs/revealjs/plugin/zoom/zoom.js"></script>
+  <script src="../site_libs/revealjs/plugin/math/math.js"></script>
+  <script>window.define = window.backupDefine; window.backupDefine = undefined;</script>
+
+  <script>
+
+      // Full list of configuration options available at:
+      // https://revealjs.com/config/
+      Reveal.initialize({
+'controlsAuto': false,
+'previewLinksAuto': true,
+'pdfSeparateFragments': false,
+'autoAnimateEasing': "ease",
+'autoAnimateDuration': 1,
+'autoAnimateUnmatched': true,
+'jumpToSlide': true,
+'menu': {"side":"left","useTextContentForMissingTitles":true,"markers":false,"loadIcons":false,"custom":[{"title":"Tools","icon":"<i class=\"fas fa-gear\"></i>","content":"<ul class=\"slide-menu-items\">\n<li class=\"slide-tool-item active\" data-item=\"0\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.fullscreen(event)\"><kbd>f</kbd> Fullscreen</a></li>\n<li class=\"slide-tool-item\" data-item=\"1\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.speakerMode(event)\"><kbd>s</kbd> Speaker View</a></li>\n<li class=\"slide-tool-item\" data-item=\"2\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.overview(event)\"><kbd>o</kbd> Slide Overview</a></li>\n<li class=\"slide-tool-item\" data-item=\"3\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.togglePdfExport(event)\"><kbd>e</kbd> PDF Export Mode</a></li>\n<li class=\"slide-tool-item\" data-item=\"4\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.toggleScrollView(event)\"><kbd>r</kbd> Scroll View Mode</a></li>\n<li class=\"slide-tool-item\" data-item=\"5\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.toggleChalkboard(event)\"><kbd>b</kbd> Toggle Chalkboard</a></li>\n<li class=\"slide-tool-item\" data-item=\"6\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.toggleNotesCanvas(event)\"><kbd>c</kbd> Toggle Notes Canvas</a></li>\n<li class=\"slide-tool-item\" data-item=\"7\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.downloadDrawings(event)\"><kbd>d</kbd> Download Drawings</a></li>\n<li class=\"slide-tool-item\" data-item=\"8\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.keyboardHelp(event)\"><kbd>?</kbd> Keyboard Help</a></li>\n</ul>"}],"openButton":true},
+'chalkboard': {"buttons":true},
+'smaller': true,
+ 
+        // Display controls in the bottom right corner
+        controls: true,
+
+        // Help the user learn the controls by providing hints, for example by
+        // bouncing the down arrow when they first encounter a vertical slide
+        controlsTutorial: false,
+
+        // Determines where controls appear, "edges" or "bottom-right"
+        controlsLayout: 'edges',
+
+        // Visibility rule for backwards navigation arrows; "faded", "hidden"
+        // or "visible"
+        controlsBackArrows: 'faded',
+
+        // Display a presentation progress bar
+        progress: true,
+
+        // Display the page number of the current slide
+        slideNumber: 'c/t',
+
+        // 'all', 'print', or 'speaker'
+        showSlideNumber: 'all',
+
+        // Add the current slide number to the URL hash so that reloading the
+        // page/copying the URL will return you to the same slide
+        hash: true,
+
+        // Start with 1 for the hash rather than 0
+        hashOneBasedIndex: false,
+
+        // Flags if we should monitor the hash and change slides accordingly
+        respondToHashChanges: true,
+
+        // Push each slide change to the browser history
+        history: true,
+
+        // Enable keyboard shortcuts for navigation
+        keyboard: true,
+
+        // Enable the slide overview mode
+        overview: true,
+
+        // Disables the default reveal.js slide layout (scaling and centering)
+        // so that you can use custom CSS layout
+        disableLayout: false,
+
+        // Vertical centering of slides
+        center: false,
+
+        // Enables touch navigation on devices with touch input
+        touch: true,
+
+        // Loop the presentation
+        loop: false,
+
+        // Change the presentation direction to be RTL
+        rtl: false,
+
+        // see https://revealjs.com/vertical-slides/#navigation-mode
+        navigationMode: 'linear',
+
+        // Randomizes the order of slides each time the presentation loads
+        shuffle: false,
+
+        // Turns fragments on and off globally
+        fragments: true,
+
+        // Flags whether to include the current fragment in the URL,
+        // so that reloading brings you to the same fragment position
+        fragmentInURL: false,
+
+        // Flags if the presentation is running in an embedded mode,
+        // i.e. contained within a limited portion of the screen
+        embedded: false,
+
+        // Flags if we should show a help overlay when the questionmark
+        // key is pressed
+        help: true,
+
+        // Flags if it should be possible to pause the presentation (blackout)
+        pause: true,
+
+        // Flags if speaker notes should be visible to all viewers
+        showNotes: false,
+
+        // Global override for autoplaying embedded media (null/true/false)
+        autoPlayMedia: null,
+
+        // Global override for preloading lazy-loaded iframes (null/true/false)
+        preloadIframes: null,
+
+        // Number of milliseconds between automatically proceeding to the
+        // next slide, disabled when set to 0, this value can be overwritten
+        // by using a data-autoslide attribute on your slides
+        autoSlide: 0,
+
+        // Stop auto-sliding after user input
+        autoSlideStoppable: true,
+
+        // Use this method for navigation when auto-sliding
+        autoSlideMethod: null,
+
+        // Specify the average time in seconds that you think you will spend
+        // presenting each slide. This is used to show a pacing timer in the
+        // speaker view
+        defaultTiming: null,
+
+        // Enable slide navigation via mouse wheel
+        mouseWheel: false,
+
+        // The display mode that will be used to show slides
+        display: 'block',
+
+        // Hide cursor if inactive
+        hideInactiveCursor: true,
+
+        // Time before the cursor is hidden (in ms)
+        hideCursorTime: 5000,
+
+        // Opens links in an iframe preview overlay
+        previewLinks: false,
+
+        // Transition style (none/fade/slide/convex/concave/zoom)
+        transition: 'slide',
+
+        // Transition speed (default/fast/slow)
+        transitionSpeed: 'default',
+
+        // Transition style for full page slide backgrounds
+        // (none/fade/slide/convex/concave/zoom)
+        backgroundTransition: 'fade',
+
+        // Number of slides away from the current that are visible
+        viewDistance: 3,
+
+        // Number of slides away from the current that are visible on mobile
+        // devices. It is advisable to set this to a lower number than
+        // viewDistance in order to save resources.
+        mobileViewDistance: 2,
+
+        // The "normal" size of the presentation, aspect ratio will be preserved
+        // when the presentation is scaled to fit different resolutions. Can be
+        // specified using percentage units.
+        width: 1050,
+
+        height: 700,
+
+        // Factor of the display size that should remain empty around the content
+        margin: 0,
+
+        math: {
+          mathjax: 'https://cdn.jsdelivr.net/npm/mathjax@4/tex-chtml.js',
+          config: 'TeX-AMS_HTML-full',
+          tex2jax: {
+            inlineMath: [['\\(','\\)']],
+            displayMath: [['\\[','\\]']],
+            balanceBraces: true,
+            processEscapes: false,
+            processRefs: true,
+            processEnvironments: true,
+            preview: 'TeX',
+            skipTags: ['script','noscript','style','textarea','pre','code'],
+            ignoreClass: 'tex2jax_ignore',
+            processClass: 'tex2jax_process'
+          },
+        },
+
+        // reveal.js plugins
+        plugins: [QuartoLineHighlight, PdfExport, RevealMenu, RevealChalkboard, QuartoSupport,
+
+          RevealMath,
+          RevealNotes,
+          RevealSearch,
+          RevealZoom
+        ]
+      });
+    </script>
+    <script id="quarto-html-after-body" type="application/javascript">
+      window.document.addEventListener("DOMContentLoaded", function (event) {
+        const tabsets =  window.document.querySelectorAll(".panel-tabset-tabby")
+        tabsets.forEach(function(tabset) {
+          const tabby = new Tabby('#' + tabset.id);
+        });
+        const isCodeAnnotation = (el) => {
+          for (const clz of el.classList) {
+            if (clz.startsWith('code-annotation-')) {                     
+              return true;
+            }
+          }
+          return false;
+        }
+        const onCopySuccess = function(e) {
+          // button target
+          const button = e.trigger;
+          // don't keep focus
+          button.blur();
+          // flash "checked"
+          button.classList.add('code-copy-button-checked');
+          var currentTitle = button.getAttribute("title");
+          button.setAttribute("title", "Copied!");
+          let tooltip;
+          if (window.bootstrap) {
+            button.setAttribute("data-bs-toggle", "tooltip");
+            button.setAttribute("data-bs-placement", "left");
+            button.setAttribute("data-bs-title", "Copied!");
+            tooltip = new bootstrap.Tooltip(button, 
+              { trigger: "manual", 
+                customClass: "code-copy-button-tooltip",
+                offset: [0, -8]});
+            tooltip.show();    
+          }
+          setTimeout(function() {
+            if (tooltip) {
+              tooltip.hide();
+              button.removeAttribute("data-bs-title");
+              button.removeAttribute("data-bs-toggle");
+              button.removeAttribute("data-bs-placement");
+            }
+            button.setAttribute("title", currentTitle);
+            button.classList.remove('code-copy-button-checked');
+          }, 1000);
+          // clear code selection
+          e.clearSelection();
+        }
+        const getTextToCopy = function(trigger) {
+          const outerScaffold = trigger.parentElement.cloneNode(true);
+          const codeEl = outerScaffold.querySelector('code');
+          for (const childEl of codeEl.children) {
+            if (isCodeAnnotation(childEl)) {
+              childEl.remove();
+            }
+          }
+          return codeEl.innerText;
+        }
+        const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+          text: getTextToCopy
+        });
+        clipboard.on('success', onCopySuccess);
+        if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+          const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+            text: getTextToCopy,
+            container: window.document.getElementById('quarto-embedded-source-code-modal')
+          });
+          clipboardModal.on('success', onCopySuccess);
+        }
+          var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+          var mailtoRegex = new RegExp(/^mailto:/);
+            var filterRegex = new RegExp("https:\/\/ucdavis\.github\.io\/win\/");
+          var isInternal = (href) => {
+              return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+          }
+          // Inspect non-navigation links and adorn them if external
+         var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+          for (var i=0; i<links.length; i++) {
+            const link = links[i];
+            if (!isInternal(link.href)) {
+              // undo the damage that might have been done by quarto-nav.js in the case of
+              // links that we want to consider external
+              if (link.dataset.originalHref !== undefined) {
+                link.href = link.dataset.originalHref;
+              }
+            }
+          }
+        function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+          const config = {
+            allowHTML: true,
+            maxWidth: 500,
+            delay: 100,
+            arrow: false,
+            appendTo: function(el) {
+                return el.closest('section.slide') || el.parentElement;
+            },
+            interactive: true,
+            interactiveBorder: 10,
+            theme: 'light-border',
+            placement: 'bottom-start',
+          };
+          if (contentFn) {
+            config.content = contentFn;
+          }
+          if (onTriggerFn) {
+            config.onTrigger = onTriggerFn;
+          }
+          if (onUntriggerFn) {
+            config.onUntrigger = onUntriggerFn;
+          }
+            config['offset'] = [0,0];
+            config['maxWidth'] = 700;
+          window.tippy(el, config); 
+        }
+        const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+        for (var i=0; i<noterefs.length; i++) {
+          const ref = noterefs[i];
+          tippyHover(ref, function() {
+            // use id or data attribute instead here
+            let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+            try { href = new URL(href).hash; } catch {}
+            const id = href.replace(/^#\/?/, "");
+            const note = window.document.getElementById(id);
+            if (note) {
+              return note.innerHTML;
+            } else {
+              return "";
+            }
+          });
+        }
+        const findCites = (el) => {
+          const parentEl = el.parentElement;
+          if (parentEl) {
+            const cites = parentEl.dataset.cites;
+            if (cites) {
+              return {
+                el,
+                cites: cites.split(' ')
+              };
+            } else {
+              return findCites(el.parentElement)
+            }
+          } else {
+            return undefined;
+          }
+        };
+        var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+        for (var i=0; i<bibliorefs.length; i++) {
+          const ref = bibliorefs[i];
+          const citeInfo = findCites(ref);
+          if (citeInfo) {
+            tippyHover(citeInfo.el, function() {
+              var popup = window.document.createElement('div');
+              citeInfo.cites.forEach(function(cite) {
+                var citeDiv = window.document.createElement('div');
+                citeDiv.classList.add('hanging-indent');
+                citeDiv.classList.add('csl-entry');
+                var biblioDiv = window.document.getElementById('ref-' + cite);
+                if (biblioDiv) {
+                  citeDiv.innerHTML = biblioDiv.innerHTML;
+                }
+                popup.appendChild(citeDiv);
+              });
+              return popup.innerHTML;
+            });
+          }
+        }
+      });
+      </script>
+    
+
+</body></html>
