@@ -285,8 +285,11 @@ and the average causal effect on the difference scale is $0.5 - 0.5 = 0$.
 
 ::: {.callout-warning title="Name Both Treatment Values"}
 With more than two possible actions, the contrast of interest must be specified.
-"The causal effect of aspirin" means nothing until we say, for example, "taking, while alive, 150 mg of aspirin by mouth (or nasogastric tube if need be) daily for 5 years" versus "not taking aspirin."
-That effect is well defined even if counterfactual outcomes under other interventions (e.g., absorbing 500 mg through the skin daily) are not [@hernan2020causal, p. 6].
+"The causal effect of aspirin" is undefined until both arms are spelled out,
+with dose, route, frequency, and duration:
+for example, a daily low-dose tablet for five years versus no aspirin.
+Such an effect can be well defined
+even when the counterfactual outcomes under other aspirin interventions, at another dose or by another route, are not [@hernan2020causal, p. 6].
 :::
 
 ### Null Average Effect, Non-Null Individual Effects
@@ -432,6 +435,16 @@ with counterfactual risks $\Pr[Y^{a=1} = 1]$ and $\Pr[Y^{a=0} = 1]$ (@def-counte
 Because they measure the causal effect, these are called **effect measures** [@hernan2020causal, p. 7].
 :::
 
+::: {#exm-effect-measures-zeus-family}
+## Effect measures in Zeus's family
+
+With both counterfactual risks equal to 0.5 (@exm-counterfactual-risks-zeus-family):
+
+- causal risk difference: $0.5 - 0.5 = 0$;
+- causal risk ratio: $0.5 / 0.5 = 1$;
+- causal odds ratio: $\dfrac{0.5 / 0.5}{0.5 / 0.5} = 1$.
+:::
+
 ---
 
 ::: {#prp-null-on-every-scale}
@@ -454,16 +467,6 @@ For statement (iii), the odds $p / (1 - p)$ is strictly increasing in $p$ on $(0
 so two risks in $(0, 1)$ have equal odds exactly when they are equal.
 :::
 
-::: {#exm-effect-measures-zeus-family}
-## Effect measures in Zeus's family
-
-With both counterfactual risks equal to 0.5 (@exm-counterfactual-risks-zeus-family):
-
-- causal risk difference: $0.5 - 0.5 = 0$;
-- causal risk ratio: $0.5 / 0.5 = 1$;
-- causal odds ratio: $\dfrac{0.5 / 0.5}{0.5 / 0.5} = 1$.
-:::
-
 When the causal null does not hold (say, smoking and lung cancer), these are not 0, 1, and 1;
 they quantify the same causal effect on different scales.
 
@@ -475,9 +478,10 @@ they quantify the same causal effect on different scales.
 By @prp-difference-of-averages, the causal risk difference is the average of the individual effects $Y^{a=1} - Y^{a=0}$ on the difference scale.
 The causal risk ratio has no such reading:
 it measures the causal effect in the population,
-but it is not the average of the individual ratios $Y^{a=1}/Y^{a=0}$,
-nor of any other individual causal effects [@hernan2020causal, p. 7, margin note].
+but, with the deterministic counterfactual outcomes used so far,
+it is not the average of the individual ratios $Y^{a=1}/Y^{a=0}$ [@hernan2020causal, p. 7, margin note].
 In Zeus's family, for instance, the individual ratio is $1/0$ for Zeus and $0/0$ for Hera, so it is not even defined for them.
+(Section 1.4 shows that with nondeterministic counterfactual outcomes the causal risk ratio can be written as a weighted average of individual ratio-scale effects.)
 :::
 
 ### Which Measure?
@@ -507,12 +511,13 @@ The choice of scale depends on the goal of the inference [@hernan2020causal, p. 
 
 For a dichotomous treatment and a dichotomous outcome in a population,
 suppose the treatment reduces the number of cases, that is, the causal risk difference (@def-effect-measures) is negative.
-The **number needed to treat** (NNT) is the average number of individuals who must receive $a = 1$, instead of $a = 0$, to prevent one case:
+The **number needed to treat** (NNT) is how many individuals, on average, must be treated ($a = 1$ rather than $a = 0$) to avoid one case.
+It is the reciprocal of the absolute causal risk difference:
 $$
-\text{NNT} = \frac{-1}{\Pr[Y^{a=1} = 1] - \Pr[Y^{a=0} = 1]} = \frac{1}{\abs{\Pr[Y^{a=1} = 1] - \Pr[Y^{a=0} = 1]}}.
+\text{NNT} = \frac{1}{\abs{\Pr[Y^{a=1} = 1] - \Pr[Y^{a=0} = 1]}}.
 $$ {#eq-nnt}
 For a treatment with a positive causal risk difference, the reciprocal of the risk difference is the **number needed to harm**.
-Like the risk difference, the NNT applies only to the population and time interval on which it is based [@hernan2020causal, p. 8].
+Like the risk difference, the NNT is specific to the population and the follow-up period it was computed for [@hernan2020causal, p. 8].
 :::
 
 ::: {.callout-note title="Fine Point 1.2: Number Needed to Treat"}
@@ -525,7 +530,7 @@ Equivalent summaries:
 - on average, one must treat 10 patients to save 1 life.
 
 The last line is the NNT (@def-number-needed-to-treat):
-$\text{NNT} = -1 / (-0.1) = 10$.
+$\text{NNT} = 1 / \abs{-0.1}$, which is 10.
 The NNT was introduced by Laupacis, Sackett, and Roberts (1988) [@hernan2020causal, p. 8].
 :::
 
@@ -550,7 +555,7 @@ from which the study individuals are viewed as a random sample.
 ## Zeus's family as a sample
 
 View the 20 individuals of Table 1.1 as a random sample from a near-infinite super-population (all immortals, say).
-The sample proportion who would have died untreated is $\hPr{Y^{a=0} = 1} = 10/20 = 0.50$.
+The proportion of the sample who would have died untreated is $10/20 = 0.50$.
 The super-population probability $\Pr[Y^{a=0} = 1]$ need not equal it:
 it could be 0.57, with the sample giving 0.50 because of sampling variability.
 :::
@@ -562,8 +567,15 @@ it could be 0.57, with the sample giving 0.50 because of sampling variability.
 
 An **estimator** is a rule that turns sample data into a value used as a guess for a super-population quantity.
 A hat marks it:
-$\hth$ is an estimator of $\th$,
-and the sample proportion $\hPr{Y^a = 1}$ is an estimator of $\Pr[Y^a = 1]$ [@hernan2020causal, p. 8].
+$\hth$ is an estimator of $\th$ [@hernan2020causal, p. 8].
+:::
+
+::: {#exm-estimator-ch1}
+## The sample proportion as an estimator
+
+When each sampled individual's $Y^a$ is known, as in Table 1.1,
+the sample proportion $\hPr{Y^a = 1}$ is an estimator of the super-population risk $\Pr[Y^a = 1]$.
+In @exm-zeus-family-sample it gives the estimate $\hPr{Y^{a=0} = 1} = 0.50$ of $\Pr[Y^{a=0} = 1]$.
 :::
 
 ::: {#def-consistent-estimator}
