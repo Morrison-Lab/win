@@ -130,6 +130,7 @@ Section 6.6 gives a structural classification of effect modifiers.
 ## Opposite Directions Show Up on Both Scales
 
 Let $V$ be binary,
+let $\RD_v \eqdef \E{Y^{a=1} - Y^{a=0} \mid V = v}$ be the average causal effect on the additive scale in stratum $V = v$,
 let $p_v \eqdef \E{Y^{a=0} \mid V = v}$ be the counterfactual mean under no treatment in stratum $V = v$, with $p_v > 0$ for $v = 0, 1$,
 and let $\RR_v \eqdef \E{Y^{a=1} \mid V = v} / p_v$ be the causal risk ratio in stratum $V = v$.
 If $V$ is a qualitative effect modifier (@def-qualitative-effect-modification),
@@ -140,7 +141,11 @@ then $V$ modifies that effect on both the additive and the multiplicative scale 
 In each stratum,
 
 $$
-\RR_v - 1 = \frac{\E{Y^{a=1} \mid V = v} - p_v}{p_v} = \frac{\RD_v}{p_v}.
+\begin{aligned}
+\RR_v - 1
+&= \frac{\E{Y^{a=1} \mid V = v} - p_v}{p_v} \\
+&= \frac{\RD_v}{p_v}.
+\end{aligned}
 $$ {#eq-rr-minus-one-ch4}
 
 Because $p_v > 0$, $\RR_v - 1$ has the same sign as $\RD_v$.
@@ -260,8 +265,12 @@ Standardizing by $L$,
 
 $$
 \begin{aligned}
-\Pr[Y^{a=1} = 1] &= (3/8)(0.4) + (2/3)(0.6) = 0.15 + 0.40 = 0.55, \\
-\Pr[Y^{a=0} = 1] &= (2/8)(0.4) + (3/6)(0.6) = 0.10 + 0.30 = 0.40.
+\Pr[Y^{a=1} = 1] &= (3/8)(0.4) + (2/3)(0.6) \\
+&= 0.15 + 0.40 \\
+&= 0.55, \\
+\Pr[Y^{a=0} = 1] &= (2/8)(0.4) + (3/6)(0.6) \\
+&= 0.10 + 0.30 \\
+&= 0.40.
 \end{aligned}
 $$ {#eq-greeks-romans-population}
 
@@ -291,7 +300,7 @@ and positivity $\Pr[A = a \mid L = l, V = v] > 0$ whenever $\Pr[L = l, V = v] > 
    or, equivalently, IP weight with weights that depend on $L$ (and $V$).
 3. Compare the resulting stratum-specific causal risk differences or risk ratios across levels of $V$.
 
-Step 2 can be skipped when $Y^a \ind A \mid V$ already holds,
+Step 2 can be skipped when $Y^a \ind A \mid V$ already holds and $\Pr[A = a \mid V = v] > 0$,
 that is, when $V$ itself suffices for conditional exchangeability (Section 4.4).
 :::
 
@@ -310,9 +319,13 @@ Apply Algorithm [-@alg-stratify-then-standardize] with $V$ = nationality.
 $$
 \begin{aligned}
 \Pr[Y^{a=1} = 1 \mid V = 0] &= \Pr[Y = 1 \mid A = 1, L = 0, V = 0](0.4) + \Pr[Y = 1 \mid A = 1, L = 1, V = 0](0.6) \\
-&= (2/4)(0.4) + (6/9)(0.6) = 0.2 + 0.4 = 0.6, \\
+&= (2/4)(0.4) + (6/9)(0.6) \\
+&= 0.2 + 0.4 \\
+&= 0.6, \\
 \Pr[Y^{a=0} = 1 \mid V = 0] &= \Pr[Y = 1 \mid A = 0, L = 0, V = 0](0.4) + \Pr[Y = 1 \mid A = 0, L = 1, V = 0](0.6) \\
-&= (1/4)(0.4) + (1/3)(0.6) = 0.1 + 0.2 = 0.3.
+&= (1/4)(0.4) + (1/3)(0.6) \\
+&= 0.1 + 0.2 \\
+&= 0.3.
 \end{aligned}
 $$
 
@@ -329,13 +342,14 @@ The modification is **not qualitative**: the effect is harmful or null in both s
 Nationality may only be a **marker** for the factor truly responsible.
 
 ::: {#def-surrogate-causal-effect-modifier}
-## Surrogate Versus Causal Effect Modifier
+## Modifiers That May Be Only Markers
 
 Suppose there is effect modification by $V$ (@def-effect-modification).
 $V$ is a **surrogate effect modifier** when the effect varies across levels of $V$ only because $V$ is associated with another variable $W$ whose levels drive that variation,
 so that an intervention that changed $W$ while leaving $V$ alone could remove the modification by $V$.
 Such a variable $W$ is a **causal effect modifier**.
-Section 6.6 represents both kinds graphically.
+This is a working definition for these notes;
+Section 6.6 makes both kinds precise with causal diagrams.
 :::
 
 ::: {#exm-nationality-quality-of-care}
@@ -369,12 +383,12 @@ and the **causal risk ratio in the treated** contrasts them by division:
 $\Pr[Y^{a=1} = 1 \mid A = 1] / \Pr[Y^{a=0} = 1 \mid A = 1]$.
 The latter is also called the **standardized morbidity ratio** (SMR).
 Replacing $A = 1$ by $A = 0$ in the conditioning event (with $\Pr[A = 0] > 0$) gives the causal risk difference and ratio **in the untreated** (book Figure 4.1).
+:::
 
 Under consistency, $\Pr[Y^{a=1} = 1 \mid A = 1] = \Pr[Y = 1 \mid A = 1]$,
-so there is a nonzero average causal effect among the treated exactly when
+so the treated have a non-null average causal effect exactly when
 
 $$\Pr[Y = 1 \mid A = 1] \neq \Pr[Y^{a=0} = 1 \mid A = 1].$$ {#eq-effect-in-treated-nonnull}
-:::
 
 ::: {#rem-treatment-group-as-marker}
 ## When the Effect in the Treated Differs from the Population Effect
@@ -391,7 +405,7 @@ The book focuses on population effects because effects in the treated or untreat
 
 Reasons to identify effect modification, and to collect pre-treatment descriptors $V$ even in randomized experiments:
 
-1. the average effect **differs between populations** with different prevalence of $V$ (transportability);
+1. the average effect **differs between populations** with different prevalence of $V$ (transportability, defined below);
 2. it identifies **who would benefit most** from an intervention;
 3. it may help understand **mechanisms**.
 
@@ -404,7 +418,7 @@ In a population with more women (e.g., graduating college students), the average
 
 - With non-qualitative effect modification, the **magnitude** (but not the direction) of the average effect varies across populations, e.g., the effects of asbestos exposure (different in smokers and nonsmokers) or of universal health care (different in low- and high-income families).
 
-::: {.callout-important title="No Effect Without a Population"}
+::: {.callout-important title="Name the Population Along with the Effect"}
 There is no such thing as "the average causal effect of $A$ on $Y$ (period)", only "the average causal effect of $A$ on $Y$ in a population with a particular mix of causal effect modifiers."
 :::
 
@@ -413,11 +427,12 @@ There is no such thing as "the average causal effect of $A$ on $Y$ (period)", on
 ---
 
 ::: {#def-transportability}
-## Transportable Effect
+## Transporting an Effect Between Populations
 
-An average causal effect computed in one population (the **study population**) is **transportable** to another population (the **target population**) when it coincides with the target population's own average causal effect.
-Extrapolating an effect from one population to another relies on **transportability**;
-lack of it is sometimes called lack of external validity.
+**Transportability** is the extrapolation of an average causal effect from the population in which it was computed (the **study population**) to another population (the **target population**).
+In these notes we call the effect **transportable** on a given scale (e.g., the causal risk difference or risk ratio)
+when its value in the study population equals its value in the target population.
+Lack of transportability is sometimes called lack of external validity.
 :::
 
 The effect in the population of Greeks and Romans may not transport to a population with a different mix of sex and nationality.
@@ -439,14 +454,14 @@ The book cites Hernán and VanderWeele (2011), Pearl and Bareinboim (2014), and 
 
 ::: {.callout-note title="Fine Point 4.2: Transportability"}
 Whether an effect carries over from a study population to a target population depends on features of both.
-The remark that follows lists the features that must be similar,
+The remark that follows lists the features whose similarity can justify transporting an effect,
 and the one after it shows how stratum-specific effects can be reweighted to a target population, and why that may still fall short
 [@hernan2020causal, p. 54].
 Methods for transporting effects are discussed by Westreich et al. (2017), Rudolph and van der Laan (2017), and Dahabreh et al. (2020b).
 :::
 
 ::: {#rem-transportability-requirements}
-## What Must Be Similar for an Effect to Transport
+## Similarities That Support Transporting an Effect
 
 An average causal effect (@def-transportability) may be transported from a study population to a target population if the two populations are similar with respect to:
 
@@ -459,12 +474,15 @@ An average causal effect (@def-transportability) may be transported from a study
 ## Reweighting Strata to a Target Population
 
 Let $S$ index strata defined by measured effect modifiers (e.g., Roman women, Greek women, Roman men, Greek men),
-and let $q_s$ be the proportion of the target population in stratum $s$.
-If, for each $a$, the stratum-specific counterfactual risks $\Pr[Y^a = 1 \mid S = s]$ computed in the study population also hold in the target population,
-then the target population's counterfactual risk under treatment level $a$ is
+let $\Pr^*$ denote probabilities in the target population,
+and let $q_s \eqdef \Pr^*[S = s]$.
+Suppose every stratum with $q_s > 0$ is also present in the study population,
+and, for each $a$ and $s$, the stratum-specific counterfactual risk in the target population equals the one computed in the study population:
+$\Pr^*[Y^a = 1 \mid S = s] = \Pr[Y^a = 1 \mid S = s]$.
+Then the target population's counterfactual risk under treatment level $a$ is
 
 $$
-\sum_s \Pr[Y^a = 1 \mid S = s]\, q_s,
+\Pr^*[Y^a = 1] = \sum_s \Pr[Y^a = 1 \mid S = s]\, q_s,
 $$ {#eq-transport-reweighting}
 
 and the target causal risk difference and risk ratio follow by contrasting these risks for $a = 1$ and $a = 0$.
@@ -476,17 +494,20 @@ so the reweighted value need not equal the true effect in the target population.
 Effects among the treated, or among the untreated, need a weaker exchangeability condition than the population effect.
 The definition that follows names that condition,
 and the proposition after it shows how standardization and IP weighting compute the needed counterfactual means;
-Sato and Matsuyama (2003) derived the IP weighting equality for dichotomous $A$
+Sato and Matsuyama (2003) derived the IP weighting equality for dichotomous $A$.
+Miettinen (1972) and Greenland and Rothman (2008) discuss standardized risk ratios,
+and Hernán and Robins (2006a) give further details
 [@hernan2020causal, p. 52].
 :::
 
 ::: {#def-partial-exchangeability}
 ## Partial Exchangeability
 
-The population effect required $Y^a \ind A \mid L$ for both $a = 0$ and $a = 1$.
-**Partial exchangeability** requires it for only one treatment level:
-$Y^{a=0} \ind A \mid L$ suffices for the effect in the treated (@def-effect-in-treated),
-and $Y^{a=1} \ind A \mid L$ suffices for the effect in the untreated.
+For a treatment level $a$, **partial exchangeability** is $Y^a \ind A \mid L$ for that one level,
+whereas the population effect uses conditional exchangeability for both $a = 0$ and $a = 1$.
+The effect in the treated (@def-effect-in-treated) uses partial exchangeability for $a = 0$,
+and the effect in the untreated uses it for $a = 1$.
+For the effect in the treated, for example, it does not matter whether the untreated would have had the same risk as the treated had they been treated.
 :::
 
 ::: {#prp-effect-in-treated-identification}
@@ -548,7 +569,7 @@ If physicians knew of the qualitative modification by sex in Table 4.1, then, la
 In the second study (@exm-multiplicative-not-additive), treatment changes the risk by the same 0.1 in both strata, so treating everyone would change risk equally in both strata, despite the multiplicative effect modification.
 
 ::: {#rem-additive-scale-for-targeting}
-## The Additive Scale Identifies Who Benefits Most
+## Use the Additive Scale to Target Treatment
 
 To identify the groups that would benefit most from an intervention, look for **additive**, not multiplicative, effect modification:
 the causal risk difference in a stratum is the average change in risk that treating everyone in that stratum would produce,
@@ -566,9 +587,10 @@ then there is effect modification by $V$ on the additive scale, the multiplicati
 :::
 
 ::: {.proof}
-Suppose there is no additive modification, so $\RD_1 = \RD_0$; write $d$ for this common value.
+Suppose there is no additive modification, so $\RD_1 = \RD_0$;
+write $d$ for this common value.
 Since at least one $\RD_v$ is nonzero, $d \neq 0$.
-By @eq-rr-minus-one-ch4 (which holds for any binary outcome), $\RR_v = 1 + d / p_v$.
+By the definitions, $\Pr[Y^{a=1} = 1 \mid V = v] = p_v + d$, so $\RR_v = 1 + d / p_v$.
 Because $d \neq 0$ and $p_1 \neq p_0$, $d / p_1 \neq d / p_0$, so $\RR_1 \neq \RR_0$: there is multiplicative modification.
 :::
 
@@ -625,7 +647,7 @@ Under $Y^a \ind A \mid L$, each is the causal risk ratio in its stratum, because
 ---
 
 ::: {#def-conditional-marginal-effect-measure}
-## Conditional and Unconditional Effect Measures
+## Effect Measures Within Strata and in the Whole Population
 
 A **conditional** effect measure contrasts counterfactual outcomes within the subset of the population with $L = l$,
 e.g., the conditional causal risk ratio $\Pr[Y^{a=1} = 1 \mid L = l] / \Pr[Y^{a=0} = 1 \mid L = l]$.
@@ -646,7 +668,8 @@ So stratification forces one to evaluate effect modification by all variables in
 Stratifying by $V$ and then standardizing or IP weighting for $L$ handles exchangeability and effect modification separately.
 
 ::: {.callout-warning title="More Pitfalls of Stratification as Adjustment"}
-- Some effect measures, such as the odds ratio, are **noncollapsible** (Fine Point 4.3).
+- Some effect measures, such as the odds ratio, are **noncollapsible**:
+  their population value need not be a weighted average of their stratum-specific values (Fine Point 4.3).
 - With time-varying treatments, stratifying on time-varying $L$ affected by prior treatment is inappropriate adjustment (Part III):
   stratum-specific measures may then lack a causal interpretation even under exchangeability, positivity, and well-defined interventions (Robins 1986, 1987;
   Chapter 20).
@@ -775,8 +798,12 @@ $\Pr[L = 0] = 0.4$.
 - **Standardization / IP weighting** (population):
 $$
 \begin{aligned}
-\Pr[Z^{a=1} = 1] &= (2/4)(0.4) + (1/3)(0.6) = 0.2 + 0.2 = 0.4, \\
-\Pr[Z^{a=0} = 1] &= (1/4)(0.4) + (2/3)(0.6) = 0.1 + 0.4 = 0.5,
+\Pr[Z^{a=1} = 1] &= (2/4)(0.4) + (1/3)(0.6) \\
+&= 0.2 + 0.2 \\
+&= 0.4, \\
+\Pr[Z^{a=0} = 1] &= (1/4)(0.4) + (2/3)(0.6) \\
+&= 0.1 + 0.4 \\
+&= 0.5,
 \end{aligned}
 $$
 so the risk ratio is $0.4/0.5 = 0.8$.
@@ -838,8 +865,8 @@ In Table 4.3, $w(0) = (1/4)(0.4)/0.5 = 0.2 < 1/3$, and indeed $2(0.2) + 0.5(0.8)
 ::: {#rem-well-characterized-target-population}
 ## A Second Prerequisite for Causal Inference
 
-Chapter 3 argued that a well-defined causal effect is a prerequisite for meaningful causal inference.
-A **well-characterized target population** is another:
+Chapter 3 required a well-defined intervention before a causal question can be answered.
+A **well-characterized target population** is a second requirement of that kind:
 the population, or subset, to which the effect refers must be stated.
 Experiments that compare interventions in a population meeting a priori eligibility criteria have both automatically;
 observational studies must define them explicitly.
@@ -879,7 +906,8 @@ Until Chapter 10, the book works with whole populations and so talks of computin
 With samples, stratum-specific estimates are variable, and pooling them is a common response.
 The definition that follows describes pooling,
 the example after it pools the Table 4.3 risk ratios,
-and the warning after that explains when the pooled value is hard to interpret
+and the warning after that explains when the pooled value is hard to interpret.
+Greenland and Rothman (2008) review common methods for stratified analysis
 [@hernan2020causal, p. 57].
 :::
 
@@ -919,7 +947,8 @@ The finer the stratification, the harder it is to tell sampling variability from
 :::
 
 ::: {.callout-note title="Fine Point 4.3: Collapsibility and the Odds Ratio"}
-A desirable property of an effect measure is that its population value lies within the range of its stratum-specific values.
+A desirable property of an effect measure is that its population value is a weighted average of its stratum-specific values,
+and so lies within their range.
 The definition that follows names that property,
 and the example after it uses the data in Table 4.4 to show that the odds ratio lacks it
 [@hernan2020causal, p. 60].
@@ -928,11 +957,14 @@ and the example after it uses the data in Table 4.4 to show that the odds ratio 
 ::: {#def-collapsible-effect-measure}
 ## Collapsible Effect Measure
 
-An effect measure is **collapsible** over a variable $V$ when its value in the population is a weighted average of its values in the strata of $V$.
+An effect measure is **collapsible** over a variable $V$ when, for every distribution of the data, its value in the population is a weighted average of its values in the strata of $V$,
+with nonnegative weights that sum to 1.
+It is **noncollapsible** otherwise.
+:::
+
 In follow-up studies the risk difference and the risk ratio are collapsible
 (the first display in the proof of @prp-marginal-rr-condition writes the marginal risk ratio as such an average),
 but the odds ratio (and the rarely used odds difference) is not (Greenland 1987).
-:::
 
 **Table 4.4**: effect of moving to high altitude $A$ (top of Mount Olympus) on depression $Y$;
 $V = 1$ for women.
@@ -965,11 +997,12 @@ The population odds ratio (5.4) is closer to the null than **both** stratum-spec
 :::
 
 ::: {#rem-when-odds-ratio-collapses}
-## When the Odds Ratio Is Nearly Collapsible
+## Where Noncollapsibility Comes From, and When It Vanishes
 
-Noncollapsibility of the odds ratio is a consequence of Jensen's inequality (Samuels 1981).
+Noncollapsibility of the odds ratio is one instance of Jensen's inequality (Samuels 1981).
 The population odds ratio may lie nearer the null than every non-null stratum-specific odds ratio when $V$ predicts $Y$ on its own and is independent of $A$, as in Table 4.4 (Miettinen and Cook 1981).
-The odds ratio is collapsible under the sharp null, and approximately collapsible (and approximately equal to the risk ratio) when the outcome is rare (say, under 10%) in every stratum of a follow-up study.
+Under the sharp null the odds ratio is collapsible.
+If, in a follow-up study, fewer than about 10% of individuals in each stratum develop the outcome, the odds ratio is close to collapsible and close to the risk ratio.
 :::
 
 ::: {.callout-warning title="A Changed Odds Ratio Is Not Evidence of Confounding"}
