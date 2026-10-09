@@ -19,6 +19,13 @@ This chapter therefore does not try to teach new causal intuitions.
 Its job is to introduce the mathematical notation that formalizes the intuition you already have, so that causal concepts can be defined precisely.
 The rest of the book uses this notation throughout.
 
+::: {.callout-tip title="Check Each Symbol Against Your Intuition"}
+As each piece of notation appears,
+restate it in words and check that it says what your intuition already says.
+If a formula and your intuition disagree, settle the disagreement before reading on:
+later chapters build on these definitions.
+:::
+
 ::: {.notes}
 This content is based on @hernan2020causal [Chapter 1, pp. 3-12].
 :::
@@ -27,7 +34,8 @@ This content is based on @hernan2020causal [Chapter 1, pp. 3-12].
 
 ---
 
-Two vignettes:
+::: {#exm-zeus-hera}
+## Two heart transplants
 
 - **Zeus** receives a heart transplant on January 1 and dies five days later.
   Suppose we somehow knew that, had he not received the transplant, he would have been alive five days later.
@@ -35,6 +43,7 @@ Two vignettes:
 - **Hera** also receives a heart transplant on January 1 and is alive five days later.
   Suppose we knew that she would also have been alive without the transplant.
   Then the transplant had no causal effect on her five-day survival.
+:::
 
 In each case we compare (usually only in our heads) the outcome when an action $A$ is taken with the outcome when it is withheld.
 If the two differ, $A$ has a causal effect (causative or preventive) on the outcome.
@@ -45,19 +54,55 @@ Epidemiologists, statisticians, economists, and other social scientists call the
 
 ### Notation
 
-- Treatment $A$: 1 if treated, 0 if untreated.
-- Outcome $Y$: 1 if death, 0 if survival.
-- $Y^{a=1}$ ("$Y$ under treatment $a = 1$"): the outcome that would have been observed under treatment value $a = 1$.
-- $Y^{a=0}$: the outcome that would have been observed under treatment value $a = 0$.
+::: {#def-counterfactual-outcome}
+## Treatment, outcome, and counterfactual outcomes
 
-Zeus has $Y^{a=1} = 1$ and $Y^{a=0} = 0$;
-Hera has $Y^{a=1} = 0$ and $Y^{a=0} = 0$.
+Let $A$ be a dichotomous **treatment** (1: treated, 0: untreated)
+and $Y$ a dichotomous **outcome** (1: death, 0: survival).
+For each treatment value $a$,
+the **counterfactual outcome** $Y^a$ (read "$Y$ under treatment $a$") is the outcome that would have been observed had the individual received treatment value $a$.
+With a dichotomous treatment, each individual has two counterfactual outcomes, $Y^{a=1}$ and $Y^{a=0}$.
+They are also called **potential outcomes** [@hernan2020causal, pp. 3-4].
+:::
+
+::: {#exm-zeus-hera-counterfactuals}
+## Counterfactual outcomes of Zeus and Hera
+
+In @exm-zeus-hera, Zeus died when treated and would have survived untreated,
+so $Y^{a=1} = 1$ and $Y^{a=0} = 0$ for him.
+Hera survived when treated and would also have survived untreated,
+so $Y^{a=1} = 0$ and $Y^{a=0} = 0$ for her.
+:::
 
 ::: {.notes}
 Capital letters denote random variables, that is, variables that may take different values for different individuals;
 lower-case letters denote particular values of a random variable. $Y^{a=1}$ and $Y^{a=0}$ are also random variables.
 We sometimes write $Y_i^a$ for the outcome of individual $i$;
 when $i$ refers to a specific individual such as Zeus, $Y_i^a$ is not random, because the book assumes for now that individual counterfactual outcomes are deterministic (Section 1.4 relaxes this) [@hernan2020causal, pp. 3-4].
+
+"Potential outcomes" emphasizes that, depending on the treatment received, either outcome could potentially be observed.
+"Counterfactual outcomes" emphasizes that these outcomes describe situations that may not actually happen (counter to the fact) [@hernan2020causal, p. 4].
+:::
+
+---
+
+Writing $Y^a$ for an individual takes for granted that the individual's own treatment value is all that matters.
+
+::: {#def-no-interference}
+## No interference
+
+There is **no interference** between individuals when each individual's counterfactual outcome $Y^a$ (@def-counterfactual-outcome) depends only on that individual's own treatment value $a$,
+and not on the treatment values of anyone else in the population [@hernan2020causal, p. 5].
+:::
+
+::: {#exm-interference-heart}
+## Interference between Zeus and Hera
+
+Suppose Zeus would survive his own transplant if Hera did not get a new heart,
+but Hera's transplant would upset him so much that he would die after his own.
+Then Zeus's outcome under $a = 1$ depends on Hera's treatment,
+so there is interference,
+and "Zeus's $Y^{a=1}$" has no single value until Hera's treatment is also fixed.
 :::
 
 ### Definition of an Individual Causal Effect
@@ -65,42 +110,88 @@ when $i$ refers to a specific individual such as Zeus, $Y_i^a$ is not random, be
 ::: {#def-individual-causal-effect}
 ## Individual causal effect
 
-Treatment $A$ has a causal effect on an individual's outcome $Y$ if $Y^{a=1} \neq Y^{a=0}$ for that individual.
+Let $Y^{a=1}$ and $Y^{a=0}$ be an individual's counterfactual outcomes under the two values of a dichotomous treatment $A$ (@def-counterfactual-outcome).
+Treatment $A$ has a **causal effect** on that individual's outcome $Y$ if $Y^{a=1} \neq Y^{a=0}$.
+The **individual causal effect** of individual $i$ is the contrast $Y_i^{a=1} - Y_i^{a=0}$,
+which is nonzero exactly when such an effect exists [@hernan2020causal, p. 4].
 :::
 
-The transplant has a causal effect on Zeus ($Y^{a=1} = 1 \neq 0 = Y^{a=0}$) but not on Hera ($Y^{a=1} = 0 = Y^{a=0}$).
+::: {#exm-individual-effects-zeus-hera}
+## Individual causal effects of Zeus and Hera
 
-The individual causal effect itself is the contrast $Y_i^{a=1} - Y_i^{a=0}$:
-it is 1 for Zeus and 0 for Hera,
-and an effect exists exactly when this difference is not 0 [@hernan2020causal, p. 4, margin note].
-
-$Y^{a=1}$ and $Y^{a=0}$ are called **potential outcomes** or **counterfactual outcomes**.
-
-::: {.notes}
-"Potential outcomes" emphasizes that, depending on the treatment received, either outcome could potentially be observed.
-"Counterfactual outcomes" emphasizes that these outcomes describe situations that may not actually happen (counter to the fact) [@hernan2020causal, p. 4].
+With the counterfactual outcomes of @exm-zeus-hera-counterfactuals,
+the transplant has a causal effect on Zeus, because $Y^{a=1} = 1 \neq 0 = Y^{a=0}$,
+and his individual causal effect is $1 - 0 = 1$.
+It has no causal effect on Hera, because $Y^{a=1} = 0 = Y^{a=0}$,
+and her individual causal effect is $0 - 0 = 0$.
 :::
 
 ### Consistency
 
 For each individual, the counterfactual outcome that corresponds to the treatment actually received is factual.
-Zeus was treated ($A = 1$), so his counterfactual outcome under treatment, $Y^{a=1} = 1$, equals his observed outcome $Y = 1$.
 
 ::: {#def-consistency-ch1}
 ## Consistency
 
-An individual with observed treatment $A = a$ has observed outcome equal to the counterfactual outcome under $a$:
+Let $A$ be an individual's observed treatment, $Y$ the observed outcome, and $Y^a$ the counterfactual outcomes (@def-counterfactual-outcome).
+**Consistency** holds if an individual with observed treatment $A = a$ has observed outcome equal to the counterfactual outcome under $a$:
 $$
 \text{if } A_i = a, \text{ then } Y_i^a = Y_i^A = Y_i,
-$$
-written compactly as $Y = Y^A$, where $Y^A$ is the counterfactual $Y^a$ evaluated at the individual's observed treatment value.
+$$ {#eq-consistency-ch1}
+written compactly as $Y = Y^A$, where $Y^A$ is the counterfactual $Y^a$ evaluated at the individual's observed treatment value [@hernan2020causal, p. 4].
+:::
+
+::: {#exm-consistency-zeus-hera}
+## Consistency for Zeus and Hera
+
+Zeus and Hera were both treated ($A = 1$).
+Under consistency, each one's observed outcome is their $Y^{a=1}$:
+Zeus's observed outcome is $Y = 1 = Y^{a=1}$,
+and Hera's is $Y = 0 = Y^{a=1}$.
+Consistency says nothing about $Y^{a=0}$ for either of them, because neither was untreated.
 :::
 
 ### Individual Effects Are Not Identified
 
 Only one counterfactual outcome is observed per individual (the one for the treatment actually received);
 the others are missing.
-Because of this missing data, individual causal effects cannot be **identified**, that is, they cannot be expressed as a function of the observed data.
+
+::: {#def-identified-ch1}
+## Identified
+
+A quantity is **identified** if it can be expressed as a function of the observed data.
+Equivalently, any two states of the world that produce the same observed data give the quantity the same value [@hernan2020causal, p. 4].
+:::
+
+::: {#exm-identified-ch1}
+## An identified quantity
+
+Zeus's counterfactual outcome under the treatment he received is identified under consistency (@def-consistency-ch1):
+whatever the rest of the world looks like, it equals his observed outcome, $Y^{a=1} = Y = 1$.
+:::
+
+---
+
+::: {#prp-individual-effect-not-identified}
+## Individual causal effects are not identified
+
+Suppose that, for each individual, only the treatment $A$ and the outcome $Y$ are observed,
+that $A$ and $Y$ are dichotomous,
+that consistency (@def-consistency-ch1) holds,
+and that nothing else is assumed about the counterfactual outcome under the treatment value the individual did not receive.
+Then the individual causal effect $Y^{a=1} - Y^{a=0}$ (@def-individual-causal-effect) is not identified (@def-identified-ch1).
+:::
+
+::: {.proof}
+Take Zeus, with observed $A = 1$ and $Y = 1$.
+By consistency, $Y^{a=1} = 1$.
+Two states of the world agree with these observed data:
+one with $Y^{a=0} = 0$, where Zeus's individual causal effect is $1 - 0 = 1$,
+and one with $Y^{a=0} = 1$, where it is $1 - 1 = 0$.
+The same observed data give two different values,
+so the individual causal effect is not a function of the observed data.
+The same argument applies to any individual, with the roles of $a = 1$ and $a = 0$ swapped for an untreated one.
+:::
 
 ::: {.notes}
 The book points to crossover experiments (Fine Point 2.1, in Chapter 2) as a possible exception, under strong assumptions [@hernan2020causal, p. 4].
@@ -144,14 +235,24 @@ Table 1.1 lists both counterfactual outcomes for each member.
 
 :::
 
+::: {#def-counterfactual-risk}
+## Counterfactual risk
+
+For a dichotomous outcome $Y$ and a treatment value $a$,
+the **counterfactual risk** $\Pr[Y^a = 1]$ is the proportion of the population who would develop the outcome had everyone in the population received treatment value $a$.
+Because $Y^a$ takes only the values 0 and 1, this proportion equals the mean $\E{Y^a}$ [@hernan2020causal, p. 5].
+:::
+
+::: {#exm-counterfactual-risks-zeus-family}
+## Counterfactual risks in Zeus's family
+
 From Table 1.1:
 
 - 10 of 20 would have died had everyone been treated: $\Pr[Y^{a=1} = 1] = 10/20 = 0.5$.
 - 10 of 20 would have died had no one been treated: $\Pr[Y^{a=0} = 1] = 10/20 = 0.5$.
 
-::: {.notes}
-Counting the deaths and dividing by 20 is the same as averaging the 0/1 counterfactual outcomes over the 20 individuals: for a dichotomous outcome, the risk equals the average.
-You can check this by averaging the $Y^{a=1}$ column of Table 1.1.
+Averaging the 0/1 entries of the $Y^{a=1}$ column gives the same $10/20$,
+as @def-counterfactual-risk says it must.
 :::
 
 ### Definition of Average Causal Effect
@@ -159,22 +260,30 @@ You can check this by averaging the $Y^{a=1}$ column of Table 1.1.
 ::: {#def-average-causal-effect}
 ## Average causal effect
 
-An average causal effect of treatment $A$ on outcome $Y$ is present if
+Let $A$ be a dichotomous treatment and $Y$ an outcome, with counterfactual outcomes $Y^{a=1}$ and $Y^{a=0}$ (@def-counterfactual-outcome),
+in a well-defined population of interest.
+An **average causal effect** of $A$ on $Y$ is present in that population if
 $$
 \Pr[Y^{a=1} = 1] \neq \Pr[Y^{a=0} = 1]
+$$ {#eq-ace-risk}
+for a dichotomous outcome, or, for any outcome with finite means,
 $$
-in the population of interest.
-Because the risk of a dichotomous outcome equals its mean, the definition can be written as $\E{Y^{a=1}} \neq \E{Y^{a=0}}$, which also applies to nondichotomous outcomes.
+\E{Y^{a=1}} \neq \E{Y^{a=0}}.
+$$ {#eq-ace-mean}
+When the two sides are equal, the **null hypothesis of no average causal effect** is true.
+On the difference scale, the average causal effect is the contrast $\E{Y^{a=1}} - \E{Y^{a=0}}$,
+which for a dichotomous outcome equals $\Pr[Y^{a=1} = 1] - \Pr[Y^{a=0} = 1]$ [@hernan2020causal, pp. 5-6].
 :::
 
-In Zeus's family both counterfactual risks are 0.5: whether all or none receive a transplant, half would die.
-The **null hypothesis of no average causal effect** is true.
+::: {#exm-null-average-effect-zeus-family}
+## No average causal effect in Zeus's family
 
-On the difference scale, the average causal effect is the contrast $\E{Y^{a=1}} - \E{Y^{a=0}}$,
-which for a binary outcome equals $\Pr[Y^{a=1} = 1] - \Pr[Y^{a=0} = 1]$;
-in Zeus's family it is $0.5 - 0.5 = 0$ [@hernan2020causal, p. 6, margin note].
+In @exm-counterfactual-risks-zeus-family both counterfactual risks are 0.5: whether all or none receive a transplant, half would die.
+The null hypothesis of no average causal effect is true,
+and the average causal effect on the difference scale is $0.5 - 0.5 = 0$.
+:::
 
-::: {.notes}
+::: {.callout-warning title="Name Both Treatment Values"}
 With more than two possible actions, the contrast of interest must be specified.
 "The causal effect of aspirin" means nothing until we say, for example, "taking, while alive, 150 mg of aspirin by mouth (or nasogastric tube if need be) daily for 5 years" versus "not taking aspirin."
 That effect is well defined even if counterfactual outcomes under other interventions (e.g., absorbing 500 mg through the skin daily) are not [@hernan2020causal, p. 6].
@@ -183,38 +292,91 @@ That effect is well defined even if counterfactual outcomes under other interven
 ### Null Average Effect, Non-Null Individual Effects
 
 Absence of an average causal effect does not imply absence of individual effects.
+
+::: {#exm-null-average-nonnull-individual}
+## Individual effects that cancel out
+
 In Table 1.1, 12 individuals have $Y^{a=1} \neq Y^{a=0}$:
 
 - 6 were harmed, $Y^{a=1} - Y^{a=0} = 1$ (Rheia, Zeus, Leto, Hephaestus, Aphrodite, Polyphemus);
 - 6 were helped, $Y^{a=1} - Y^{a=0} = -1$ (Kronos, Poseidon, Apollo, Hermes, Hebe, Dionysus).
 
-The two groups being the same size is not an accident: a difference of averages equals the average of the differences,
-$$
-\E{Y^{a=1}} - \E{Y^{a=0}} = \E{Y^{a=1} - Y^{a=0}},
-$$
-so a null average effect means the individual effects average to zero.
-
-::: {.notes}
-In Table 1.1 the right-hand side is $\frac{6 \times 1 + 6 \times (-1) + 8 \times 0}{20} = \frac{0}{20} = 0$, matching $0.5 - 0.5 = 0$ on the left.
+The other 8 have $Y^{a=1} - Y^{a=0} = 0$.
+The average of the 20 individual causal effects is
+$\frac{6 \times 1 + 6 \times (-1) + 8 \times 0}{20} = 0$,
+the same as the average causal effect $0.5 - 0.5 = 0$ of @exm-null-average-effect-zeus-family.
 :::
+
+The two groups being the same size is not an accident.
+
+::: {#prp-difference-of-averages}
+## The average causal effect is the average of the individual effects
+
+In any population in which $\E{Y^{a=1}}$ and $\E{Y^{a=0}}$ are finite,
+$$
+\E{Y^{a=1}} - \E{Y^{a=0}} = \E{Y^{a=1} - Y^{a=0}}.
+$$ {#eq-difference-of-averages}
+So the average causal effect on the difference scale (@def-average-causal-effect) is zero exactly when the individual causal effects (@def-individual-causal-effect) average to zero [@hernan2020causal, p. 6].
+:::
+
+::: {.proof}
+Expectation is linear: the mean of a difference is the difference of the means.
+In a finite population of $n$ individuals, for example,
+$\frac{1}{n}\sum_i Y_i^{a=1} - \frac{1}{n}\sum_i Y_i^{a=0} = \frac{1}{n}\sum_i \paren{Y_i^{a=1} - Y_i^{a=0}}$.
+:::
+
+---
 
 ::: {#def-sharp-null}
 ## Sharp causal null hypothesis
 
-The **sharp causal null hypothesis** holds when there is no causal effect for any individual in the population: $Y^{a=1} = Y^{a=0}$ for all individuals.
+The **sharp causal null hypothesis** holds in a population when there is no individual causal effect (@def-individual-causal-effect) for anyone in it: $Y^{a=1} = Y^{a=0}$ for all individuals [@hernan2020causal, p. 6].
 :::
 
-The sharp causal null implies the null hypothesis of no average effect, but (as Table 1.1 shows) not conversely.
+::: {#exm-sharp-null-subpopulation}
+## Where the sharp null does and does not hold
 
-::: {.notes}
-Even though individual effects are not identified, average causal effects sometimes are (Chapters 2 and 3).
-From here on, the book says "causal effect" for "average causal effect" and calls the null hypothesis of no average effect the **causal null hypothesis** [@hernan2020causal, p. 6].
+In the whole of Zeus's family the sharp causal null is false:
+Zeus, for one, has $Y^{a=1} = 1 \neq 0 = Y^{a=0}$.
+Among the 8 family members with no individual effect
+(Demeter, Hades, Hestia, and Hera, with $Y^{a=1} = Y^{a=0} = 0$,
+and Artemis, Ares, Athena, and Persephone, with $Y^{a=1} = Y^{a=0} = 1$),
+it holds.
 :::
+
+::: {#prp-sharp-null-implies-null}
+## The sharp null implies the null of no average effect
+
+Let $\E{Y^{a=1}}$ and $\E{Y^{a=0}}$ be finite.
+If the sharp causal null hypothesis (@def-sharp-null) holds in a population,
+then the null hypothesis of no average causal effect (@def-average-causal-effect) holds in that population.
+The converse is false.
+:::
+
+::: {.proof}
+Under the sharp null, $Y^{a=1} - Y^{a=0} = 0$ for every individual, so $\E{Y^{a=1} - Y^{a=0}} = 0$,
+and by @prp-difference-of-averages $\E{Y^{a=1}} = \E{Y^{a=0}}$.
+For the converse, Zeus's family is a counterexample:
+the null of no average effect holds (@exm-null-average-effect-zeus-family),
+but the sharp null does not (@exm-sharp-null-subpopulation).
+:::
+
+---
+
+::: {.callout-note title="Terminology for the Rest of the Book"}
+Individual causal effects are not identified (@prp-individual-effect-not-identified),
+but average causal effects sometimes are (Chapters 2 and 3).
+From here on, "causal effect" means average causal effect,
+and the null hypothesis of no average causal effect is called the **causal null hypothesis** [@hernan2020causal, p. 6].
+:::
+
+---
 
 ::: {.callout-note title="Fine Point 1.1: Interference"}
-The definition of $Y^a$ assumes that an individual's counterfactual outcome does not depend on other individuals' treatments.
-If Hera's getting a new heart upset Zeus so much that he would not survive his own transplant (although he would have survived it had Hera not been transplanted), Hera's treatment would **interfere** with Zeus's outcome.
-Interference is common with contagious agents and educational programs.
+@def-counterfactual-outcome assumes no interference (@def-no-interference),
+and @exm-interference-heart shows what goes wrong without it.
+Interference is common with contagious agents and educational programs,
+where an individual's outcome is influenced by social interaction with other members of the population.
 
 Under interference, $Y_i^a$ is not well defined;
 one must speak of, e.g., "the effect of transplant on Zeus when Hera does not get a new heart," and the effect may differ for every allocation of hearts.
@@ -222,6 +384,8 @@ Cox (1958) called the assumption of no interference "no interaction between unit
 it is part of Rubin's (1980) stable-unit-treatment-value assumption (SUTVA).
 The book assumes no interference unless stated otherwise [@hernan2020causal, p. 5].
 :::
+
+---
 
 ::: {.callout-note title="Technical Point 1.1: Causal Effects in the Population"}
 $\E{Y^a}$ is the mean counterfactual outcome had everyone received $a$:
@@ -253,34 +417,103 @@ The same holds for any nonlinear functional [@hernan2020causal, p. 6].
 ---
 
 In Zeus's family the causal null holds because both counterfactual risks equal 0.5.
-The causal null can be represented in equivalent ways:
+The causal null can be represented in equivalent ways, each on its own scale.
 
-(i) $\Pr[Y^{a=1} = 1] - \Pr[Y^{a=0} = 1] = 0$ (here $0.5 - 0.5 = 0$)
+::: {#def-effect-measures}
+## Causal risk difference, risk ratio, and odds ratio
 
-(ii) $\dfrac{\Pr[Y^{a=1} = 1]}{\Pr[Y^{a=0} = 1]} = 1$ (here $0.5 / 0.5 = 1$)
+For a dichotomous treatment and a dichotomous outcome in a population,
+with counterfactual risks $\Pr[Y^{a=1} = 1]$ and $\Pr[Y^{a=0} = 1]$ (@def-counterfactual-risk):
 
-(iii) $\dfrac{\Pr[Y^{a=1} = 1] / \Pr[Y^{a=1} = 0]}{\Pr[Y^{a=0} = 1] / \Pr[Y^{a=0} = 0]} = 1$
+- the **causal risk difference** is $\Pr[Y^{a=1} = 1] - \Pr[Y^{a=0} = 1]$;
+- the **causal risk ratio** is $\dfrac{\Pr[Y^{a=1} = 1]}{\Pr[Y^{a=0} = 1]}$, defined when $\Pr[Y^{a=0} = 1] > 0$;
+- the **causal odds ratio** is $\dfrac{\Pr[Y^{a=1} = 1] / \Pr[Y^{a=1} = 0]}{\Pr[Y^{a=0} = 1] / \Pr[Y^{a=0} = 0]}$, defined when both counterfactual risks lie strictly between 0 and 1.
 
-The left-hand sides are the **causal risk difference**, **causal risk ratio**, and **causal odds ratio**.
+Because they measure the causal effect, these are called **effect measures** [@hernan2020causal, p. 7].
+:::
+
+---
+
+::: {#prp-null-on-every-scale}
+## The causal null on each scale
+
+For a dichotomous treatment and a dichotomous outcome,
+whenever the measure in question is defined (@def-effect-measures),
+each of the following statements is equivalent to the causal null hypothesis $\Pr[Y^{a=1} = 1] = \Pr[Y^{a=0} = 1]$:
+
+(i) the causal risk difference equals 0;
+
+(ii) the causal risk ratio equals 1;
+
+(iii) the causal odds ratio equals 1.
+:::
+
+::: {.proof}
+Statements (i) and (ii) restate the equality of the two risks.
+For statement (iii), the odds $p / (1 - p)$ is strictly increasing in $p$ on $(0, 1)$,
+so two risks in $(0, 1)$ have equal odds exactly when they are equal.
+:::
+
+::: {#exm-effect-measures-zeus-family}
+## Effect measures in Zeus's family
+
+With both counterfactual risks equal to 0.5 (@exm-counterfactual-risks-zeus-family):
+
+- causal risk difference: $0.5 - 0.5 = 0$;
+- causal risk ratio: $0.5 / 0.5 = 1$;
+- causal odds ratio: $\dfrac{0.5 / 0.5}{0.5 / 0.5} = 1$.
+:::
 
 When the causal null does not hold (say, smoking and lung cancer), these are not 0, 1, and 1;
 they quantify the same causal effect on different scales.
-Because they measure the causal effect, they are called **effect measures**.
 
-::: {.notes}
-The causal risk difference is the average of the individual effects $Y^{a=1} - Y^{a=0}$ on the difference scale.
-The causal risk ratio is *not* the average of individual effects $Y^{a=1}/Y^{a=0}$ on the ratio scale: it measures the causal effect in the population but is not an average of any individual causal effects [@hernan2020causal, p. 7].
+---
+
+::: {#rem-risk-ratio-not-average}
+## The causal risk ratio is not an average of individual ratios
+
+By @prp-difference-of-averages, the causal risk difference is the average of the individual effects $Y^{a=1} - Y^{a=0}$ on the difference scale.
+The causal risk ratio has no such reading:
+it measures the causal effect in the population,
+but it is not the average of the individual ratios $Y^{a=1}/Y^{a=0}$,
+nor of any other individual causal effects [@hernan2020causal, p. 7, margin note].
+In Zeus's family, for instance, the individual ratio is $1/0$ for Zeus and $0/0$ for Hera, so it is not even defined for them.
 :::
 
 ### Which Measure?
 
-Each measure serves a purpose.
+::: {#exm-rare-outcome-measures}
+## A rare outcome on two scales
+
 Suppose 3 in a million would develop the outcome if treated and 1 in a million if untreated:
 
-- causal risk ratio $= \dfrac{3/10^6}{1/10^6} = 3$: treatment triples the risk (multiplicative scale);
-- causal risk difference $= \dfrac{3}{10^6} - \dfrac{1}{10^6} = 0.000002$: the absolute number of cases attributable to treatment (additive scale).
+- causal risk ratio $= \dfrac{3/10^6}{1/10^6} = 3$;
+- causal risk difference $= \dfrac{3}{10^6} - \dfrac{1}{10^6} = 0.000002$.
+:::
 
-The choice of scale depends on the goal of the inference.
+::: {.callout-tip title="Choose the Scale for the Question"}
+Each measure answers a different question.
+Use the causal risk ratio (multiplicative scale) to say how many times treatment multiplies the risk:
+in @exm-rare-outcome-measures, it triples it.
+Use the causal risk difference (additive scale) to count the cases attributable to treatment:
+in @exm-rare-outcome-measures, 2 per million treated.
+The choice of scale depends on the goal of the inference [@hernan2020causal, p. 7].
+:::
+
+---
+
+::: {#def-number-needed-to-treat}
+## Number needed to treat
+
+For a dichotomous treatment and a dichotomous outcome in a population,
+suppose the treatment reduces the number of cases, that is, the causal risk difference (@def-effect-measures) is negative.
+The **number needed to treat** (NNT) is the average number of individuals who must receive $a = 1$, instead of $a = 0$, to prevent one case:
+$$
+\text{NNT} = \frac{-1}{\Pr[Y^{a=1} = 1] - \Pr[Y^{a=0} = 1]} = \frac{1}{\abs{\Pr[Y^{a=1} = 1] - \Pr[Y^{a=0} = 1]}}.
+$$ {#eq-nnt}
+For a treatment with a positive causal risk difference, the reciprocal of the risk difference is the **number needed to harm**.
+Like the risk difference, the NNT applies only to the population and time interval on which it is based [@hernan2020causal, p. 8].
+:::
 
 ::: {.callout-note title="Fine Point 1.2: Number Needed to Treat"}
 In a population of 100 million, suppose 20 million would die within five years if treated and 30 million if untreated.
@@ -291,14 +524,9 @@ Equivalent summaries:
 - one must treat 100 million to save 10 million lives;
 - on average, one must treat 10 patients to save 1 life.
 
-The **number needed to treat** (NNT) is the average number of individuals who must receive $a = 1$ to reduce the number of cases by one.
-For treatments with a negative causal risk difference,
-$$
-\text{NNT} = \frac{-1}{\Pr[Y^{a=1} = 1] - \Pr[Y^{a=0} = 1]} = \frac{-1}{-0.1} = 10 .
-$$
-For harmful treatments (positive risk difference) the symmetric quantity is the number needed to harm.
-The NNT was introduced by Laupacis, Sackett, and Roberts (1988);
-like the risk difference, it applies only to the population and time interval on which it is based [@hernan2020causal, p. 8].
+The last line is the NNT (@def-number-needed-to-treat):
+$\text{NNT} = -1 / (-0.1) = 10$.
+The NNT was introduced by Laupacis, Sackett, and Roberts (1988) [@hernan2020causal, p. 8].
 :::
 
 ## 1.4 Random Variability (pp. 7-9)
@@ -310,35 +538,85 @@ In practice investigators collect data on a **sample** of the population of inte
 
 ### First Source of Random Error: Sampling Variability
 
-View the 20 individuals of Table 1.1 as a random sample from a near-infinite **super-population**.
+::: {#def-super-population-ch1}
+## Super-population and sampling variability
 
-- Sample proportion: $\hPr{Y^{a=0} = 1} = 10/20 = 0.50$.
-- Super-population probability $\Pr[Y^{a=0} = 1]$ need not equal it: it could be 0.57, with the sample giving 0.50 because of sampling variability.
+A **super-population** is a population so large that it can be treated as infinite,
+from which the study individuals are viewed as a random sample.
+**Sampling variability** is the random difference between a proportion computed in the sample and the corresponding proportion in the super-population [@hernan2020causal, p. 8].
+:::
 
-The "hat" marks an **estimator**: $\hPr{Y^a = 1}$ estimates $\Pr[Y^a = 1]$.
+::: {#exm-zeus-family-sample}
+## Zeus's family as a sample
+
+View the 20 individuals of Table 1.1 as a random sample from a near-infinite super-population (all immortals, say).
+The sample proportion who would have died untreated is $\hPr{Y^{a=0} = 1} = 10/20 = 0.50$.
+The super-population probability $\Pr[Y^{a=0} = 1]$ need not equal it:
+it could be 0.57, with the sample giving 0.50 because of sampling variability.
+:::
+
+---
+
+::: {#def-estimator-ch1}
+## Estimator
+
+An **estimator** is a rule that turns sample data into a value used as a guess for a super-population quantity.
+A hat marks it:
+$\hth$ is an estimator of $\th$,
+and the sample proportion $\hPr{Y^a = 1}$ is an estimator of $\Pr[Y^a = 1]$ [@hernan2020causal, p. 8].
+:::
 
 ::: {#def-consistent-estimator}
 ## Consistent estimator
 
-An estimator $\hth$ of $\theta$ is **consistent** if, with probability approaching 1, $\hth - \theta$ approaches zero as the sample size increases towards infinity.
+An estimator $\hth$ of $\th$ (@def-estimator-ch1) is **consistent** if, with probability approaching 1, $\hth - \th$ approaches zero as the sample size increases towards infinity:
+for every $\epsilon > 0$, $\Pr\sb{\abs{\hth - \th} > \epsilon} \to 0$ as the sample size $n \to \infty$,
+written $\hth \inprob \th$ [@hernan2020causal, p. 8, margin note].
 :::
 
-$\hPr{Y^a = 1}$ is consistent for $\Pr[Y^a = 1]$ because sampling error is random and obeys the law of large numbers.
+::: {#exm-sample-proportion-consistent-ch1}
+## The sample proportion is consistent
+
+If the sample in @exm-zeus-family-sample is a simple random sample from the super-population,
+the counterfactual outcomes $Y^{a=0}$ of its members are independent draws with mean $\Pr[Y^{a=0} = 1]$.
+By the law of large numbers, $\hPr{Y^{a=0} = 1} \inprob \Pr[Y^{a=0} = 1]$:
+with 20 individuals the estimate can be off by 0.07,
+but the chance of an error that large shrinks toward 0 as the sample grows.
+:::
+
+---
+
+::: {.callout-warning title="Two Meanings of Consistency"}
+"Consistency" of an estimator (@def-consistent-estimator) has nothing to do with "consistency" of counterfactual outcomes (@def-consistency-ch1) [@hernan2020causal, p. 9, margin note].
+The first is a property of a statistical procedure as the sample grows;
+the second links observed outcomes to counterfactual ones.
+:::
 
 ::: {.notes}
-Caution: "consistency" of an estimator has a different meaning from "consistency" of counterfactual outcomes (@def-consistency-ch1) [@hernan2020causal, p. 9].
-
 Because super-population probabilities can only be consistently estimated, never computed, we cannot conclude with certainty that there is or is not a causal effect;
 a statistical procedure is needed to evaluate the evidence about the causal null hypothesis $\Pr[Y^{a=1} = 1] = \Pr[Y^{a=0} = 1]$ (Chapter 10).
 :::
 
 ### Second Source of Random Error: Nondeterministic Counterfactuals
 
-So far counterfactual outcomes are **deterministic**: Zeus has a 100% chance of dying if treated and 0% if untreated.
+::: {#def-deterministic-counterfactuals}
+## Deterministic and nondeterministic counterfactuals
 
+For a dichotomous outcome,
+an individual's counterfactual outcomes are **deterministic** if each $Y^a$ has a fixed value for that individual,
+so the individual's probability of the outcome under each treatment value is 0 or 1.
+They are **nondeterministic** (stochastic) if, for some treatment value $a$, the individual's probability of $Y^a = 1$ lies strictly between 0 and 1 [@hernan2020causal, p. 9].
+:::
+
+::: {#exm-mortality-coins}
+## Zeus's mortality coins
+
+So far Zeus's counterfactual outcomes have been deterministic: a 100% chance of dying if treated and 0% if untreated.
 Alternatively, Zeus could have a 90% chance of dying if treated and 10% if untreated.
-Then his counterfactual outcomes are **stochastic** (nondeterministic), and the values in Table 1.1 are realizations of "random flips of mortality coins."
+His counterfactual outcomes would then be nondeterministic,
+and the values in Table 1.1 would be realizations of "random flips of mortality coins."
 These probabilities would likely vary across individuals.
+:::
 
 ::: {.notes}
 Quantum mechanics, unlike classical mechanics, holds that outcomes are inherently nondeterministic: if Zeus's quantum mechanical probability of dying is 90%, no amount of data about Zeus removes the uncertainty about whether he will die if treated [@hernan2020causal, p. 9].
@@ -347,15 +625,23 @@ Quantum mechanics, unlike classical mechanics, holds that outcomes are inherentl
 ### Simplifying Assumptions Until Chapter 10
 
 Random error comes from sampling variability, nondeterministic counterfactuals, or both.
-Until Chapter 10, the book assumes:
 
-- counterfactual outcomes are deterministic; and
-- we have data on every individual in a very large super-population, e.g. the 20 individuals stand for 20 billion, with 1 billion identical to Zeus, 1 billion identical to Hera, and so on.
+::: {.callout-important title="Assumed Until Chapter 10"}
+To set random error aside, the book assumes until Chapter 10 that:
+
+- counterfactual outcomes are deterministic (@def-deterministic-counterfactuals);
+- we have data on every individual in a very large super-population (@def-super-population-ch1).
+
+The second assumption amounts to letting the 20 individuals stand for 20 billion,
+with 1 billion identical to Zeus, 1 billion identical to Hera, and so on.
+:::
 
 ::: {.notes}
 Chapter 10 shows that estimates and confidence intervals for causal effects in the super-population are the same whether the world is stochastic (quantum) or deterministic (classical) at the individual level, whereas confidence intervals for the average causal effect in the actual study sample differ between the two cases.
 Super-population effects are usually the effects of substantive interest [@hernan2020causal, p. 9].
 :::
+
+---
 
 ::: {.callout-note title="Technical Point 1.2: Nondeterministic Counterfactuals"}
 For nondeterministic counterfactuals, $\E{Y^a} = \sum_y y \, p_{Y^a}(y)$, where $p_{Y^a}(\cdot) = \E{Q_{Y^a}(\cdot)}$ and $Q_{Y^a}(y)$ is an individual's random probability of outcome $y$ under $a$ (in the text, $Q_{Y^{a=1}}(1) = 0.9$ for Zeus).
@@ -407,29 +693,40 @@ We observe the treatment $A$ and the outcome $Y$, as in Table 1.2.
 
 :::
 
-The conditional probability $\Pr[Y = 1 \mid A = a]$ is the proportion who developed the outcome among those who happened to receive treatment $a$:
+::: {#def-conditional-risk}
+## Risk among those who received a treatment value
+
+For a dichotomous outcome $Y$ and observed treatment $A$,
+the conditional probability $\Pr[Y = 1 \mid A = a]$ is the proportion who developed the outcome among those in the population who happened to receive treatment value $a$ [@hernan2020causal, p. 10].
+:::
+
+::: {#exm-conditional-risks-zeus-family}
+## Risks in the treated and the untreated in Zeus's family
+
+From Table 1.2:
 
 - 7 of the 13 treated died: $\Pr[Y = 1 \mid A = 1] = 7/13$;
 - 3 of the 7 untreated died: $\Pr[Y = 1 \mid A = 0] = 3/7$.
+:::
 
 ### Independence and Association
 
 ::: {#def-independence}
 ## Independence
 
-Treatment $A$ and outcome $Y$ are **independent** ($A$ is not associated with $Y$, or $A$ does not predict $Y$) when $\Pr[Y = 1 \mid A = 1] = \Pr[Y = 1 \mid A = 0]$.
+For a dichotomous treatment $A$ and a dichotomous outcome $Y$,
+$A$ and $Y$ are **independent** ($A$ is not associated with $Y$, or $A$ does not predict $Y$) when $\Pr[Y = 1 \mid A = 1] = \Pr[Y = 1 \mid A = 0]$ (@def-conditional-risk).
 Independence is written $Y \ind A$, or equivalently $A \ind Y$.
+$A$ and $Y$ are **associated** (dependent) when $\Pr[Y = 1 \mid A = 1] \neq \Pr[Y = 1 \mid A = 0]$ [@hernan2020causal, p. 10].
 :::
 
-Equivalent statements of independence:
+::: {#exm-dependence-zeus-family}
+## Treatment and outcome are associated in Zeus's family
 
-(i) $\Pr[Y = 1 \mid A = 1] - \Pr[Y = 1 \mid A = 0] = 0$
-
-(ii) $\dfrac{\Pr[Y = 1 \mid A = 1]}{\Pr[Y = 1 \mid A = 0]} = 1$
-
-(iii) $\dfrac{\Pr[Y = 1 \mid A = 1] / \Pr[Y = 0 \mid A = 1]}{\Pr[Y = 1 \mid A = 0] / \Pr[Y = 0 \mid A = 0]} = 1$
-
-The left-hand sides are the **associational** risk difference, risk ratio, and odds ratio, collectively **association measures**. $A$ and $Y$ are **associated** (dependent) when $\Pr[Y = 1 \mid A = 1] \neq \Pr[Y = 1 \mid A = 0]$.
+In @exm-conditional-risks-zeus-family, $\Pr[Y = 1 \mid A = 1] = 7/13 \approx 0.54$
+and $\Pr[Y = 1 \mid A = 0] = 3/7 \approx 0.43$.
+These differ, so $A$ and $Y$ are associated: $A \ind Y$ does not hold.
+:::
 
 ::: {.notes}
 Dawid (1979) introduced the symbol $\ind$ for independence.
@@ -439,14 +736,34 @@ So association can be written $\E{Y \mid A = 1} \neq \E{Y \mid A = 0}$ for both 
 For binary $A$, $Y$ and $A$ are not associated if and only if they are uncorrelated [@hernan2020causal, pp. 10-11].
 :::
 
-### Association Measures in Zeus's Family
+---
 
-Treatment and outcome are associated because $7/13 \neq 3/7$:
+::: {#def-association-measures}
+## Associational risk difference, risk ratio, and odds ratio
+
+For a dichotomous treatment $A$ and a dichotomous outcome $Y$,
+with conditional risks $\Pr[Y = 1 \mid A = a]$ (@def-conditional-risk):
+
+- the **associational risk difference** is $\Pr[Y = 1 \mid A = 1] - \Pr[Y = 1 \mid A = 0]$;
+- the **associational risk ratio** is $\dfrac{\Pr[Y = 1 \mid A = 1]}{\Pr[Y = 1 \mid A = 0]}$, defined when $\Pr[Y = 1 \mid A = 0] > 0$;
+- the **associational odds ratio** is $\dfrac{\Pr[Y = 1 \mid A = 1] / \Pr[Y = 0 \mid A = 1]}{\Pr[Y = 1 \mid A = 0] / \Pr[Y = 0 \mid A = 0]}$, defined when both conditional risks lie strictly between 0 and 1.
+
+Together they are called **association measures**.
+Whenever the measure in question is defined,
+$A \ind Y$ (@def-independence) holds if and only if the associational risk difference is 0, if and only if the associational risk ratio is 1, and if and only if the associational odds ratio is 1,
+by the argument of @prp-null-on-every-scale [@hernan2020causal, p. 10].
+:::
+
+::: {#exm-association-measures-zeus-family}
+## Association measures in Zeus's family
+
+With the risks of @exm-conditional-risks-zeus-family:
 \begin{align}
 \text{risk difference} &= \frac{7}{13} - \frac{3}{7} = \frac{49 - 39}{91} = \frac{10}{91} \approx 0.11, \\
 \text{risk ratio} &= \frac{7/13}{3/7} = \frac{7 \times 7}{13 \times 3} = \frac{49}{39} \approx 1.26, \\
 \text{odds ratio} &= \frac{(7/13)/(6/13)}{(3/7)/(4/7)} = \frac{7/6}{3/4} = \frac{28}{18} \approx 1.56 .
 \end{align}
+:::
 
 ::: {.notes}
 Association measures are also subject to random variability;
@@ -455,10 +772,14 @@ until Chapter 10 the book ignores this by assuming the population of Table 1.2 i
 
 ### Causation Versus Association
 
+::: {#exm-causation-vs-association-zeus-family}
+## No causation, yet association
+
 In the same population of 20:
 
-- **no causation**: risk if all treated $= 10/20$ equals risk if all untreated $= 10/20$;
-- **association**: risk in the 13 treated $= 7/13$ is greater than risk in the 7 untreated $= 3/7$.
+- **no causation**: risk if all treated $= 10/20$ equals risk if all untreated $= 10/20$ (@exm-null-average-effect-zeus-family);
+- **association**: risk in the 13 treated $= 7/13$ is greater than risk in the 7 untreated $= 3/7$ (@exm-dependence-zeus-family).
+:::
 
 ::: {.notes}
 Figure 1.1 in the book draws the population as a diamond divided into a white area (the treated) and a smaller grey area (the untreated).
@@ -466,30 +787,49 @@ Causation contrasts the whole diamond all white (everyone treated) with the whol
 Association contrasts the white area with the grey area of the original diamond [@hernan2020causal, p. 11].
 :::
 
+---
+
+::: {#rem-causation-vs-association}
+## Two different contrasts
+
+Causation (@def-average-causal-effect) and association (@def-independence) compare different things [@hernan2020causal, pp. 11-12]:
+
 | | Causation | Association |
 |---|---|---|
 | Question | "What would the risk be if everybody had been treated / untreated?" | "What is the risk in the treated / the untreated?" |
 | World | counterfactual | actual |
 | Risk | marginal $\Pr[Y^a = 1]$, in the whole population | conditional $\Pr[Y = 1 \mid A = a]$, in the subset with $A = a$ |
 | Comparison | same population, two treatment values | two disjoint subsets defined by actual treatment |
+:::
 
-These different definitions explain the adage "association is not causation."
+::: {.callout-warning title="Association Is Not Causation"}
+The differences listed in @rem-causation-vs-association are why "association is not causation":
+an association measure (@def-association-measures) can differ from the corresponding effect measure (@def-effect-measures),
+as it does in @exm-causation-vs-association-zeus-family.
+The book often writes the redundant "causal effect" to keep "effect" from being read as association [@hernan2020causal, p. 12].
+:::
+
+::: {#exm-aspirin-association}
+## Acting on association instead of causation
+
+Suppose the causal risk ratio of 5-year mortality for aspirin versus no aspirin is 0.5,
+but the associational risk ratio is 1.5 because people at high cardiovascular risk are preferentially prescribed aspirin.
+A physician who stops prescribing aspirin because its users die more often is acting on the association,
+and withholds a treatment that would halve the risk [@hernan2020causal, p. 12].
+:::
 
 ::: {.notes}
-The book often writes the redundant "causal effect" to avoid confusion with the common use of "effect" to mean association.
-
 The discrepancy in Zeus's family would not be surprising if the transplant recipients were, on average, sicker than those who did not receive one.
 Chapter 7 calls this discrepancy **confounding**.
-
-Why the distinction matters: suppose the causal risk ratio of 5-year mortality for aspirin vs. no aspirin is 0.5, but the associational risk ratio is 1.5 because people at high cardiovascular risk are preferentially prescribed aspirin.
-A physician who withholds aspirin because the treated die more often is acting on association, not causation, and "will be sued for malpractice" [@hernan2020causal, p. 12].
 :::
 
 ### The Question for the Rest of the Book
 
+::: {.callout-important title="Under Which Conditions Can Real-World Data Be Used for Causal Inference?"}
 Causal inference needs data like the hypothetical Table 1.1, but real data look like Table 1.2.
-Under which conditions can real-world data be used for causal inference?
+The rest of the book asks when, and how, data like Table 1.2 can answer causal questions.
 Chapter 2 gives one answer: conduct a randomized experiment.
+:::
 
 ## Summary
 
