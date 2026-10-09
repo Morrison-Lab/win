@@ -12,17 +12,19 @@ format:
 
 {{< include ../latex-macros/macros.qmd >}}
 
-Does your looking up at the sky make other pedestrians look up too?
-The question has the parts of any causal question: an action (your looking up), an outcome (others looking up), and a population (say, residents of Madrid in 2019).
+If you look up at the sky on a busy street, do the people walking past look up as well?
+Like every causal question, this one names something done (your glance upward),
+something that may follow (passers-by glancing upward),
+and a group of people it concerns (for instance, people living in Madrid in 2019).
 This chapter explains why one kind of study, the randomized experiment, can answer such questions convincingly.
 
 ::: {#def-randomized-experiment}
 ## Experiment and randomized experiment
 
-A study is an **experiment** if the investigator carries out the action of interest,
-deciding which study subjects receive it.
-An experiment is **randomized** if those decisions are made by a random device, such as a coin flip,
-and **nonrandomized** if they follow a deterministic rule, such as one based on the subjects' characteristics [@hernan2020causal, p. 13].
+A study is an **experiment** if the investigator, not the subjects or anyone else, assigns the action of interest:
+the investigator decides who gets it.
+An experiment is **randomized** if a chance mechanism, such as a coin flip, makes those assignments,
+and **nonrandomized** if a fixed rule makes them, for example a rule based on each subject's characteristics [@hernan2020causal, p. 13].
 :::
 
 ::: {#exm-looking-up}
@@ -44,9 +46,10 @@ Suppose 55% looked up when you did and 1% when you did not.
 Now look up whenever a man approaches and straight ahead whenever a woman does.
 This is still an experiment, but a nonrandomized one (@def-randomized-experiment):
 sex, not a coin, decides the action.
-Critics could object that men and women may differ in how often they look up after someone else does,
-so the study compares "noncomparable" groups,
-and its result would be much less convincing [@hernan2020causal, p. 13].
+A skeptic could point out that men and women might respond differently to a stranger's upward glance,
+so any difference could reflect who was in each group rather than your action;
+the groups are not comparable,
+and the result persuades far less [@hernan2020causal, p. 13].
 :::
 
 ::: {.notes}
@@ -57,7 +60,8 @@ This chapter is based on @hernan2020causal [Chapter 2, pp. 13-25].
 
 ---
 
-In a real study we never know both of Zeus's potential outcomes, only his observed outcome under the treatment he received.
+Real data never show both of Zeus's potential outcomes:
+we see only the outcome under the treatment he actually got.
 Table 2.1 adds the counterfactual columns to the observed data of Table 1.2;
 "?" marks the counterfactual outcome that is missing.
 
@@ -90,10 +94,12 @@ Table 2.1 adds the counterfactual columns to the observed data of Table 1.2;
 :::
 
 With half the counterfactual outcomes missing, Table 2.1 by itself only supports association measures.
-Randomized experiments also have missing counterfactuals, but randomization ensures the values are **missing by chance**, so effect measures can be consistently estimated despite the missing data.
+Randomized experiments also have missing counterfactuals.
+But randomization ensures the values are **missing by chance**,
+so effect measures can be consistently estimated despite the missing data.
 
 ::: {.notes}
-Neyman (1923) applied counterfactual theory to the estimation of causal effects via randomized experiments [@hernan2020causal, p. 13].
+The use of counterfactuals to estimate effects in randomized experiments goes back to Neyman (1923) [@hernan2020causal, p. 13].
 :::
 
 ### An Ideal Randomized Experiment
@@ -101,12 +107,12 @@ Neyman (1923) applied counterfactual theory to the estimation of causal effects 
 ::: {#def-ideal-randomized-experiment}
 ## Ideal randomized experiment
 
-An **ideal randomized experiment** is a randomized experiment (@def-randomized-experiment) that also has
+An **ideal randomized experiment** is a randomized experiment (@def-randomized-experiment) that also satisfies the following:
 
 - every participant is followed until the end of the study (no loss to follow-up);
 - every participant takes the assigned treatment throughout (full adherence);
-- a single version of treatment;
-- double-blind assignment (Chapter 9) [@hernan2020causal, p. 14].
+- there is a single version of treatment;
+- assignment is double-blind: neither the participants nor the investigators know who received which treatment (Chapter 9) [@hernan2020causal, p. 14].
 :::
 
 ::: {#exm-diamond-experiment}
@@ -181,7 +187,8 @@ so $\Pr[Y^a = 1] = p \paren{\Pr[A = 1] + \Pr[A = 0]} = p$.
 Randomization is prized because exchangeability is what it is expected to deliver.
 
 ::: {.notes}
-When the treated and the untreated are exchangeable, treatment is sometimes called **exogenous**, so exogeneity is used as a synonym for exchangeability [@hernan2020causal, p. 14].
+Some authors call an exchangeable treatment **exogenous**,
+using exogeneity as another name for exchangeability [@hernan2020causal, p. 14].
 :::
 
 ### In Ideal Randomized Experiments, Association Is Causation
@@ -216,7 +223,8 @@ $$
 
 In @exm-diamond-experiment the white group was actually treated,
 so its risk under treatment is not counterfactual at all.
-By @prp-association-is-causation,
+Assume consistency, and assume, as @exm-swapped-groups argues, that the coin made the groups exchangeable.
+Then, by @prp-association-is-causation,
 $\Pr[Y^{a=1} = 1] = \Pr[Y = 1 \mid A = 1] = 0.3$
 and $\Pr[Y^{a=0} = 1] = \Pr[Y = 1 \mid A = 0] = 0.6$.
 The causal risk ratio is $0.3/0.6 = 0.5$ and the causal risk difference is $0.3 - 0.6 = -0.3$,
@@ -229,11 +237,13 @@ the same as the associational measures.
 ## Counterfactual outcomes as baseline traits
 
 Here is a second way to see why randomization gives $Y^a \ind A$.
-Like a person's genes, $Y^a$ can be treated as a fixed trait that already exists when treatment is assigned:
-it records what the outcome would be under $a$, whatever treatment comes later.
-A coin flip is independent of every trait a person already has, including genes and $Y^a$.
-Unlike genes, though, $Y^a$ can only be learned after treatment,
-and only for those whose treatment $A$ equals $a$ [@hernan2020causal, p. 15].
+Think of $Y^a$ as a characteristic each person carries into the study, much like a blood type:
+it is settled before the coin is flipped,
+because it describes the outcome under $a$ regardless of the treatment later assigned.
+A coin knows nothing about anyone's blood type, or about anyone's $Y^a$.
+The analogy has a limit:
+a blood type can be measured at any time,
+whereas $Y^a$ is revealed only after treatment, and only in people who actually received $a$ [@hernan2020causal, p. 15].
 :::
 
 ### Full and Mean Exchangeability
@@ -292,9 +302,10 @@ for all treatment values $a$ and $a'$ present in the population [@hernan2020caus
 ::: {#exm-mean-not-exchangeable}
 ## Equal means, unequal spreads
 
-For a dichotomous outcome, $\E{Y^a \mid A = a'} = \Pr[Y^a = 1 \mid A = a']$,
-so by @prp-exchangeability-marginal mean exchangeability says the same as exchangeability (@def-exchangeability).
-For a continuous outcome the two can differ.
+For a dichotomous outcome and treatment, $\E{Y^a \mid A = a'} = \Pr[Y^a = 1 \mid A = a']$,
+so mean exchangeability says that the risks in @eq-exchangeability are equal:
+it is the same as exchangeability (@def-exchangeability).
+For a continuous outcome, mean exchangeability can hold while exchangeability in the sense $Y^a \ind A$ fails.
 Suppose that, under each treatment value $a$, systolic blood pressure $Y^a$ has mean 130 millimeters of mercury in both the treated and the untreated,
 but a standard deviation of 10 in the treated and 20 in the untreated.
 Mean exchangeability (@def-mean-exchangeability) holds,
@@ -309,8 +320,9 @@ If consistency ($Y = Y^A$) and mean exchangeability (@def-mean-exchangeability) 
 $$
 \E{Y^a} = \E{Y \mid A = a}.
 $$ {#eq-mean-exchangeability-suffices}
-Exchangeability $Y^a \ind A$, and hence full exchangeability, implies mean exchangeability,
-so either one can take its place here [@hernan2020causal, p. 15].
+Full exchangeability implies exchangeability $Y^a \ind A$ (@prp-full-implies-exchangeability),
+which in turn implies mean exchangeability,
+so any of the three can take its place here [@hernan2020causal, p. 15].
 :::
 
 ::: {.proof}
@@ -347,15 +359,22 @@ $Y \ind A$ means that the left side is 0, and no average causal effect means tha
 - $Y \ind A$ says that observed treatment and observed outcome are not associated.
 
 In a randomized experiment in which treatment has an average causal effect,
-exchangeability holds but $Y \ind A$ fails (@prp-exchangeability-association).
-An effect in some individuals is not enough to create an association:
-if the individual effects cancel out on average, as in Table 1.1, exchangeability gives $Y \ind A$ [@hernan2020causal, p. 15].
+exchangeability holds but $Y \ind A$ fails [@hernan2020causal, p. 15].
+
+The book's margin note puts this in terms of individual effects,
+but an effect in some individuals is not enough to create an association.
+By @prp-exchangeability-association,
+if exchangeability held in a population whose individual effects cancel out on average, as in Table 1.1,
+then $Y \ind A$ would hold despite those individual effects.
 :::
 
 ### Does Exchangeability Hold in Table 2.1?
 
+Until Chapter 10, let each of the 20 individuals stand for 1 billion identical ones,
+so that proportions in the tables are population probabilities and sampling variability plays no role.
+
 ::: {#exm-table-2-1-exchangeability}
-## Exchangeability fails in Table 2.1
+## Exchangeability fails in the heart transplant study (Tables 1.1 and 2.1)
 
 Check $Y^a \ind A$ for $a = 0$, pretending we can see the counterfactual outcomes of Table 1.1.
 Among the 13 treated, $Y^{a=0} = 1$ for 7: Poseidon, Ares, Athena, Persephone, Hermes, Hebe, and Dionysus;
@@ -376,8 +395,8 @@ so we usually cannot tell whether exchangeability holds.
 Even if we knew that it failed, that would not prove the study was not randomized:
 
 1. Twenty people are too few;
-   sampling variability could explain almost anything (Chapter 10).
-   Until then, each individual stands for 1 billion identical ones.
+   sampling variability could explain almost anything (Chapter 10),
+   which is why we let each individual stand for 1 billion identical ones.
 2. A study can be randomized and still lack exchangeability in an infinite population,
    if the investigators used more than one coin (Section 2.2) [@hernan2020causal, p. 16].
 :::
@@ -403,9 +422,9 @@ and $Y_{i1}^{a_0, a_1}$ for the counterfactual outcome at $t = 1$ under $a_0$ at
 ::: {#exm-zeus-lightning}
 ## Zeus's lightning bolt
 
-Zeus agrees to use his lightning bolt only when we ask him to.
-Yesterday we asked him to call a lightning strike ($a = 1$), and afterwards his blood pressure rose;
-today we asked him to refrain ($a = 0$), and it did not.
+Zeus lets us decide when he throws his thunderbolt.
+On day 1 he throws it at our request ($a = 1$), and his blood pressure goes up;
+on day 2 we ask him to hold off ($a = 0$), and his blood pressure stays flat.
 This is a crossover experiment (@def-crossover-experiment) with one individual and two periods.
 It is tempting to say that we have seen both of Zeus's counterfactual outcomes,
 $Y^{a=1} = 1$ and $Y^{a=0} = 0$,
@@ -418,7 +437,7 @@ That conclusion holds only under the strong conditions stated next.
 ::: {#prp-crossover-identification}
 ## When a crossover experiment identifies an individual effect (Fine Point 2.1)
 
-Consider a two-period crossover experiment (@def-crossover-experiment) with deterministic counterfactual outcomes and consistency.
+Consider a two-period crossover experiment (@def-crossover-experiment) with dichotomous treatments $A_{it} \in \set{0, 1}$, deterministic counterfactual outcomes, and consistency.
 Write $Y_{it}^{a_t}$ for individual $i$'s outcome at $t$ under treatment $a_t$ at $t$,
 and suppose that
 
@@ -518,7 +537,8 @@ because each treatment group may, by design, have a different share of individua
 ::: {#exm-which-design}
 ## Table 2.2 came from design 2
 
-In Table 2.2, 9 of the 13 treated ($\approx 69\%$) but only 3 of the 7 untreated ($\approx 43\%$) were in critical condition.
+With each individual standing for 1 billion identical ones,
+9 of the 13 treated ($\approx 69\%$) but only 3 of the 7 untreated ($\approx 43\%$) in Table 2.2 were in critical condition.
 Since critical condition signals a bad prognosis,
 the treated would have had a higher risk than the untreated had they remained untreated:
 $A$ predicts $Y^{a=0}$, and exchangeability (@def-exchangeability) fails.
@@ -538,11 +558,10 @@ Within each stratum, the treated and the untreated should therefore be exchangea
 
 Let $A$ be a treatment with finitely many values,
 $Y$ an outcome with counterfactual outcomes $Y^a$,
-and $L$ a variable measured before treatment,
-with $\Pr[A = a \mid L = l] > 0$ for every $a$ and every $l$ with $\Pr[L = l] > 0$.
+and $L$ a variable measured before treatment.
 The treated and the untreated are **exchangeable within level $l$ of $L$**, written $Y^a \ind A \mid L = l$,
 if $Y^a$ and $A$ are independent given $L = l$.
-For a dichotomous treatment and outcome this means
+For a dichotomous treatment and outcome, and when both treatment values occur in level $l$, this means
 $$
 \Pr[Y^a = 1 \mid A = 1, L = l] = \Pr[Y^a = 1 \mid A = 0, L = l].
 $$ {#eq-conditional-exchangeability}
@@ -557,6 +576,26 @@ so within $L = 1$ the experiment is marginally randomized, and $Y^a \ind A \mid 
 Likewise the coin with probability 0.5 gives $Y^a \ind A \mid L = 0$.
 So conditional exchangeability (@def-conditional-exchangeability) holds,
 even though @exm-which-design showed that exchangeability fails in the population as a whole.
+:::
+
+::: {#def-positivity-ch2}
+## Positivity
+
+Let $A$ be a treatment with finitely many values and $L$ a variable measured before treatment.
+**Positivity** holds if every treatment value has a nonzero probability in every level of $L$ that occurs:
+$$
+\Pr[A = a \mid L = l] > 0 \quad \text{for every } a \text{ and every } l \text{ with } \Pr[L = l] > 0
+$$ {#eq-positivity-ch2}
+[@hernan2020causal, p. 25].
+:::
+
+::: {#exm-positivity-design-2}
+## Positivity in design 2
+
+In design 2 of @exm-two-designs, $\Pr[A = 1 \mid L = 1] = 0.75$, $\Pr[A = 0 \mid L = 1] = 0.25$,
+and $\Pr[A = 1 \mid L = 0] = \Pr[A = 0 \mid L = 0] = 0.5$.
+All four are positive, so positivity (@def-positivity-ch2) holds.
+Had the investigators transplanted everyone in critical condition, $\Pr[A = 0 \mid L = 1]$ would be 0, and positivity would fail.
 :::
 
 ---
@@ -643,7 +682,7 @@ Here only two of the four combinations of $(Y^{a=0}, Y^{a=1})$ occur.
 :::
 
 ::: {.notes}
-The terms MCAR, MAR, and MNAR (missing not at random) were introduced by Rubin (1976) and Marini, Olsen, and Rubin (1980) [@hernan2020causal, p. 18].
+Rubin (1976) and Marini, Olsen, and Rubin (1980) coined the labels MCAR, MAR, and MNAR [@hernan2020causal, p. 18].
 :::
 
 ### Two Targets
@@ -657,7 +696,7 @@ and by @prp-association-is-causation the causal risk ratio would be the associat
 $$
 \frac{\Pr[Y = 1 \mid A = 1]}{\Pr[Y = 1 \mid A = 0]} = \frac{7/13}{3/7} = \frac{49}{39} \approx 1.26 .
 $$
-Table 2.2 came from design 2 (@exm-which-design), so this calculation does not apply [@hernan2020causal, p. 19].
+Table 2.2 came from design 2 (@exm-which-design), so this calculation does not apply [@hernan2020causal, p. 18].
 :::
 
 Under conditional randomization there are two targets.
@@ -671,11 +710,11 @@ for example the stratum-specific causal risk ratio
 $$
 \frac{\Pr[Y^{a=1} = 1 \mid L = l]}{\Pr[Y^{a=0} = 1 \mid L = l]}
 $$
-[@hernan2020causal, p. 19].
+[@hernan2020causal, p. 18].
 :::
 
-Within the stratum $L = l$, conditional exchangeability (@def-conditional-exchangeability) is exchangeability,
-so @prp-association-is-causation applied to that stratum gives $\Pr[Y^a = 1 \mid L = l] = \Pr[Y = 1 \mid L = l, A = a]$:
+Within the stratum $L = l$, conditional exchangeability (@def-conditional-exchangeability) is exchangeability.
+So, assuming consistency and positivity (@def-positivity-ch2), @prp-association-is-causation applied to that stratum gives $\Pr[Y^a = 1 \mid L = l] = \Pr[Y = 1 \mid L = l, A = a]$:
 the stratum-specific causal risk ratio equals the stratum-specific associational risk ratio
 $\Pr[Y = 1 \mid L = l, A = 1] / \Pr[Y = 1 \mid L = l, A = 0]$.
 
@@ -756,7 +795,7 @@ Suppose that
 
 - consistency holds ($Y = Y^A$);
 - conditional exchangeability holds, $Y^a \ind A \mid L$ (@def-conditional-exchangeability);
-- $\Pr[A = a \mid L = l] > 0$ for every $l$ with $\Pr[L = l] > 0$.
+- positivity holds, $\Pr[A = a \mid L = l] > 0$ for every $l$ with $\Pr[L = l] > 0$ (@def-positivity-ch2).
 
 Then
 $$
@@ -793,7 +832,7 @@ otherwise it is **unidentified** [@hernan2020causal, p. 20].
 In the conditionally randomized experiment of Table 2.2,
 the conditions of @prp-standardization-identifies hold:
 conditional exchangeability by design (@exm-conditional-exchangeability-design-2),
-positivity because both coins have probabilities strictly between 0 and 1,
+positivity by @exm-positivity-design-2,
 and consistency by assumption.
 So $\Pr[Y^{a=1} = 1] = \sum_l \Pr[Y = 1 \mid L = l, A = 1] \Pr[L = l]$,
 which uses only the observed data:
@@ -856,7 +895,7 @@ Display Table 2.2 as a tree, from left to right:
 - then on $Y$: e.g. in $(L = 0, A = 0)$, 3 survived and 1 died, so $\Pr[Y = 1 \mid L = 0, A = 0] = 1/4$.
 
 ::: {.notes}
-Figure 2.1 is a fully randomized causally interpreted structured tree graph, or FRCISTG (Robins 1986, 1987), representation of a conditionally randomized experiment.
+In the terminology of Robins (1986, 1987), Figure 2.1 represents a conditionally randomized experiment as an FRCISTG: a fully randomized causally interpreted structured tree graph.
 The book asks whether this wins "the prize for the worst acronym ever" [@hernan2020causal, p. 20].
 :::
 
@@ -902,7 +941,7 @@ $$
 W^A = \frac{1}{f[A \mid L]},
 $$ {#eq-ip-weights}
 the inverse of the probability of receiving the treatment value the individual actually received, given the individual's own $L$.
-So a treated individual with $L = l$ gets $1/\Pr[A = 1 \mid L = l]$,
+For a dichotomous $A$, a treated individual with $L = l$ gets $1/\Pr[A = 1 \mid L = l]$,
 and an untreated one with $L = l'$ gets $1/\Pr[A = 0 \mid L = l']$ [@hernan2020causal, pp. 22-23].
 :::
 
@@ -1014,7 +1053,7 @@ Conditional exchangeability is what lets the stand-ins borrow this individual's 
 :::
 
 ::: {.notes}
-IP weighted estimators were proposed by Horvitz and Thompson (1952) for surveys in which subjects are sampled with unequal probabilities (see Technical Point 12.1) [@hernan2020causal, p. 22].
+IP weighted estimators date back to Horvitz and Thompson (1952), who designed them for surveys that sample units with unequal probabilities (Technical Point 12.1) [@hernan2020causal, p. 22].
 :::
 
 ### Standardization and IP Weighting Are Equivalent
@@ -1023,8 +1062,9 @@ IP weighted estimators were proposed by Horvitz and Thompson (1952) for surveys 
 ## IP weighting equals standardization (Technical Point 2.3)
 
 Let $A$ be discrete with finitely many values and $L$ discrete,
-and assume positivity: $f[a \mid l] > 0$ for every $l$ with $\Pr[L = l] > 0$,
-which conditionally randomized experiments guarantee.
+let $Y$ have finite mean,
+and assume positivity (@def-positivity-ch2): $f[a \mid l] > 0$ for every $l$ with $\Pr[L = l] > 0$,
+which holds in a conditionally randomized experiment whose randomization probabilities are all strictly between 0 and 1.
 Then the IP weighted mean (@def-ip-weighted-mean) equals the standardized mean (@def-standardization):
 $$
 \E{\frac{\indicp{A = a} Y}{f[A \mid L]}} = \sum_l \E{Y \mid A = a, L = l} \Pr[L = l].
@@ -1050,12 +1090,13 @@ For a continuous $L$, replace the sum by an integral.
 ## IP weighting identifies the counterfactual mean (Technical Point 2.3)
 
 Under the conditions of @prp-ipw-equals-standardization,
-suppose also consistency ($Y = Y^A$) and conditional exchangeability ($Y^a \ind A \mid L$, @def-conditional-exchangeability).
+suppose also that $\E{Y^a}$ is finite, and that consistency ($Y = Y^A$) and conditional exchangeability ($Y^a \ind A \mid L$, @def-conditional-exchangeability).
 Then the IP weighted mean equals the counterfactual mean:
 $$
 \E{\frac{\indicp{A = a} Y}{f[A \mid L]}} = \E{Y^a}.
 $$ {#eq-ipw-identifies}
-So, by @prp-pseudo-population-ch2, comparing the risks of treated and untreated members of the pseudo-population gives the causal risk ratio of the original population [@hernan2020causal, pp. 22, 25].
+So, by @prp-pseudo-population-ch2, for a dichotomous treatment and outcome,
+comparing the risks of treated and untreated members of the pseudo-population gives the causal risk ratio of the original population [@hernan2020causal, pp. 22, 25].
 :::
 
 ::: {.proof}
@@ -1071,7 +1112,7 @@ $$
 &= \E{Y^a} .
 \end{aligned}
 $$
-Positivity keeps $f[a \mid L]$ away from 0, so every step is defined.
+Positivity makes $f[a \mid L]$ nonzero, so every ratio is defined.
 :::
 
 ::: {#exm-two-methods-table-2-2}
@@ -1116,8 +1157,8 @@ An ideal randomized experiment plus standardization or IP weighting gives averag
 But such experiments are frequently unethical, infeasible, or too slow.
 For the heart transplant study:
 
-- **ethics**: hearts are scarce, and society prefers to give them to those most likely to benefit, not at random;
-- **feasibility**: double blinding is impossible, people assigned to medical treatment may not forgo a transplant, and compatible hearts may not be available;
+- **ethics**: donor hearts are in short supply, and allocating them by coin flip rather than by expected benefit would be hard to defend;
+- **feasibility**: nobody can be blinded to a transplant, patients randomized to medical therapy may seek one anyway, and a matching heart may not turn up for those randomized to receive one;
 - **timeliness**: the study would take years, and decisions must be made in the meantime.
 
 Often the least bad choice left is an observational study (Chapter 3) [@hernan2020causal, pp. 23-24].
