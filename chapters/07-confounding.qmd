@@ -39,11 +39,11 @@ draw_dag <- function(dag, unmeasured = character(), title = NULL) {
 ::: {#exm-looking-up-thunder}
 ## Looking Up at the Sky, with Thunder
 
-Suppose an investigator observes that when one pedestrian looks up at the sky, a second pedestrian tends to look up too.
-She also notices that pedestrians look up when they hear a thunderous noise overhead,
-so she cannot tell whether the second pedestrian looked up because of the first one or because of the noise:
-the noise drives both looks,
-so the effect of one person's looking up is entangled with the effect of the noise.
+An investigator sees that when one pedestrian glances at the sky, a second pedestrian often does the same.
+But a loud clap of thunder also makes passers-by glance upward,
+and the thunder can prompt both glances at once.
+From the data alone she cannot separate the influence of the first pedestrian from that of the thunder:
+the two effects are entangled.
 :::
 
 In a randomized experiment treatment is assigned by a coin flip,
@@ -84,8 +84,8 @@ In Figure 7.1 there are two sources of association between $A$ and $Y$:
 - the causal path $A \rightarrow Y$;
 - the path $A \leftarrow L \rightarrow Y$ through the common cause $L$.
 
-The second path enters $A$ through an arrow pointing into $A$.
-([Paths and causal paths](06-graphical-representation.qmd#def-path) and [colliders](06-graphical-representation.qmd#def-collider) are defined in Chapter 6.)
+The second path begins with an arrow into $A$ ($A \leftarrow L$).
+([Paths and causal paths](06-graphical-representation.qmd#def-path) are defined in Chapter 6.)
 
 ::: {#def-backdoor-path-ch7}
 ## Backdoor Path
@@ -209,8 +209,8 @@ What they cannot be is an estimate of the effect of treatment.
 Unless stated otherwise, this chapter assumes that
 
 - positivity and consistency hold;
-- every node in a causal diagram is measured without error;
 - there are no selection nodes, so the study sample represents the target population;
+- every node in a causal diagram is measured without error;
 - there is no random variability (the population is infinitely large).
 
 Chapters 8, 9, and 10 relax the last three assumptions in turn [@hernan2020causal, pp. 92-93].
@@ -313,8 +313,10 @@ $$\E{Y^a} = \sum_l \E{Y \mid L = l, A = a} \Pr[L = l]$$
 &= \sum_l \E{Y^a \mid L = l} \Pr[L = l]
 && \text{(law of total expectation)} \\
 &= \sum_l \E{Y \mid L = l, A = a} \Pr[L = l]
-&& \text{(@prp-conditional-identification-ch7)}
+&& \text{(stratum-specific identification)}
 \end{align}
+
+The second line applies @eq-conditional-identification-ch7 of @prp-conditional-identification-ch7 in each stratum.
 
 Positivity makes every conditional mean in the sums well defined.
 :::
@@ -363,8 +365,11 @@ Within each level of $L$ the treated and untreated have the same risk, so the wh
 ---
 
 If we know the true causal DAG, how can we tell whether some set $L$ yields conditional exchangeability?
-The book gives two approaches: the **backdoor criterion** (Pearl 1995) and the transformation of the DAG into a **SWIG** (Section 7.5).
-The criterion uses *blocking*: conditioning on a non-collider on a path blocks it, and so does leaving a collider (and its descendants) unconditioned
+The book gives two approaches: the **backdoor criterion** (Pearl 1995)
+and the transformation of the DAG into a single-world intervention graph (SWIG, defined in Section 7.5).
+The criterion uses *blocking*:
+conditioning on a non-collider on a path blocks it,
+and so does leaving a [collider](06-graphical-representation.qmd#def-collider) (and its descendants) unconditioned
 (see [d-separation in Chapter 6](06-graphical-representation.qmd#from-d-separation-to-independence)).
 
 ::: {#def-backdoor-criterion-ch7}
@@ -579,9 +584,9 @@ so the stratum-specific association mixes the causal effect with bias, even thou
 ::: {#rem-unconditional-without-conditional}
 ## Unconditional Without Conditional Exchangeability
 
-Figure 7.4 is the first example in which $Y^a \ind A$ holds but, under faithfulness, $Y^a \ind A \mid L$ does not.
+In Figure 7.4, $Y^a \ind A$ holds but, under faithfulness, $Y^a \ind A \mid L$ does not.
 The average causal effect is identified by @prp-marginal-identification-ch7,
-but the effects within levels of $L$ generally are not,
+but the effects within levels of $L$ are not identified by adjusting for $L$,
 and standardizing over $L$ gives a biased estimate of $\Pr[Y^a = 1]$.
 :::
 
@@ -623,11 +628,14 @@ A variable is a collider only relative to a given path.
 
 The bias in Figure 7.5 disappears if one more variable is measured:
 
-- a variable $L_1$ that sits between $U_1$ and either $A$ or $Y$ gives conditional exchangeability given $L_1$;
-- a variable $L_2$ that sits between $U_2$ and either $A$ or $L$ gives conditional exchangeability given $\{L_2, L\}$.
-
 **Figure 7.6** (not drawn here) is Figure 7.5 with the arrow $U_1 \rightarrow Y$ replaced by $U_1 \rightarrow L_1 \rightarrow Y$
 and the arrow $U_2 \rightarrow A$ replaced by $U_2 \rightarrow L_2 \rightarrow A$.
+In Figure 7.6,
+
+- measuring $L_1$ gives conditional exchangeability given $L_1$,
+  because $L_1$ blocks every backdoor path at its end near $Y$;
+- measuring $L_2$ (with $L$) gives conditional exchangeability given $\{L_2, L\}$,
+  because $L$ blocks $A \leftarrow L \leftarrow U_1 \rightarrow L_1 \rightarrow Y$ and $L_2$ blocks the path that conditioning on $L$ opens.
 :::
 
 ---
@@ -973,11 +981,11 @@ averaging over $\Pr[L = l]$ gives the formula for $\E{Y^a}$.
 :::
 
 ::: {#exm-nonconfounder-figure-7-4}
-## No Confounding in Figure 7.4, Without the Backdoor Criterion
+## Figure 7.4 via the Non-confounder Condition
 
 In Figure 7.4 take $L = \emptyset$ (adjust for nothing) and $U = \{U_1, U_2\}$.
 The set $\{U_1, U_2\}$ blocks the only backdoor path at $U_2$ and contains no descendant of $A$,
-so @thm-backdoor-exchangeability-ch7 gives $Y^a \ind A \mid U_1, U_2$.
+so @thm-backdoor-exchangeability-ch7 gives $Y^a \ind A \mid U_1, U_2$, the premise of @def-nonconfounder-given-data.
 Assume consistency and $\Pr[A = a \mid U_1, U_2] > 0$.
 The two conditions of @def-nonconfounder-given-data hold, with the subsets named as in the figure:
 
@@ -989,7 +997,7 @@ The two conditions of @def-nonconfounder-given-data hold, with the subsets named
    and $U_2 \rightarrow L \leftarrow U_1 \rightarrow Y$ is blocked by the unconditioned collider $L$ and by $U_1$.
 
 Both independence statements are read off the DAG by d-separation, which implies independence under the causal Markov assumption.
-So $\{U_1, U_2\}$ is a non-confounder given no data, and @prp-nonconfounder-given-data gives $\E{Y^a} = \E{Y \mid A = a}$:
+So $\{U_1, U_2\}$ is a non-confounder given data on $L = \emptyset$, and @prp-nonconfounder-given-data gives $\E{Y^a} = \E{Y \mid A = a}$:
 there is no confounding, as found with the backdoor criterion in @exm-figure-7-4-no-confounding.
 :::
 
@@ -1035,11 +1043,11 @@ the natural value $A$ keeps only the arrows into treatment,
 so every path between $A$ and $Y^a$ starts with an arrow into $A$, as a backdoor path does,
 and a descendant of $A$ appears on the SWIG only as a counterfactual, so the factual variable cannot be in the conditioning set.
 Under an FFRCISTG model, d-separation on the SWIG implies $Y^a \ind A \mid L$, which gives part 1.
-For part 2, if some backdoor path stays open given a set $L$ of non-descendants,
+For part 2 with a set $L$ of non-descendants,
+if some backdoor path stays open given $L$,
 then $Y^a$ and $A$ are not d-separated given $L$ on the SWIG, and faithfulness turns that into dependence.
-If $L$ contains a descendant of $A$, the SWIG does not display the independence,
-and under an FFRCISTG model an independence the SWIG does not display cannot be assumed to hold;
-Fine Point 7.4 gives a case in which it fails.
+When $L$ contains a descendant of $A$, the SWIG does not display the independence;
+that case of part 2 is taken from the book (Technical Point 7.1), not proved here.
 This is a sketch, not a full proof.
 :::
 
@@ -1117,8 +1125,11 @@ and the remark after it shows that timing alone does not matter [@hernan2020caus
 Figure 7.11 (not drawn here) has arrows $U \rightarrow A$, $U \rightarrow L$, $A \rightarrow L$, and $L \rightarrow Y$, with $U$ unmeasured.
 $L$ is a descendant of $A$ that blocks the only backdoor path, $A \leftarrow U \rightarrow L \rightarrow Y$,
 and the effect of $A$ on $Y$ is entirely through $L$.
-Conditioning on $L$ opens no collider path, but it blocks the causal pathway, so adjusting for $L$ does not remove bias.
-Hence conditional exchangeability $Y^a \ind A \mid L$ must fail.
+Conditioning on $L$ opens no path between $A$ and $Y$ through a collider, but it blocks the causal pathway.
+Because $Y$ depends on $A$ and $U$ only through $L$, $Y \ind A \mid L$,
+so the standardized risk $\sum_l \Pr[Y = 1 \mid A = a, L = l] \Pr[L = l]$ is the same for $a = 0$ and $a = 1$:
+adjusting for $L$ shows no effect however large the true effect is.
+Hence, whenever $A$ has an effect on $Y$, conditional exchangeability $Y^a \ind A \mid L$ fails.
 On the SWIG (Figure 7.12: $U \rightarrow A$, $U \rightarrow L^a$, $a \rightarrow L^a \rightarrow Y^a$) $L$ is replaced by the counterfactual $L^a$,
 and we can read off $Y^a \ind A \mid L^a$ but not $Y^a \ind A \mid L$, since $L$ is not on the graph.
 (Under an FFRCISTG model, an independence that cannot be read off the SWIG cannot be assumed to hold.)
@@ -1301,7 +1312,8 @@ The proposition that follows gives Pearl's (1995) front door formula and its pro
 Let $A$ be a treatment, $Y$ a binary outcome, and $M$ a discrete mediator, related as in Figure 7.14:
 an unmeasured $U$ causes $A$ and $Y$,
 $M$ fully mediates the effect of $A$ on $Y$,
-and $M$ shares no unmeasured causes with $A$ or $Y$.
+$A$ and $M$ share no common cause,
+and every backdoor path from $M$ to $Y$ passes through $A$.
 Assume an FFRCISTG model for Figure 7.14,
 well-defined counterfactuals $Y^m$ under interventions on $M$,
 consistency,
