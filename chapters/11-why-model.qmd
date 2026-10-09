@@ -35,7 +35,7 @@ the "code" margin notes point to the program (e.g., Program 11.1) that reproduce
 ## Sixteen Individuals with HIV
 
 Consider 16 individuals infected with HIV,
-randomly sampled from a large, possibly hypothetical **super-population**, the target population
+drawn at random from a large (possibly hypothetical) target population, called the **super-population**
 (see [Chapter 10](10-random-variability.qmd#def-super-population)).
 Unlike in Part I, they are not viewed as representatives of a billion identical individuals.
 
@@ -75,7 +75,8 @@ In @exm-hiv-cd4-study, let $A \in \{0, 1\}$, with 8 individuals in each group.
 ::: {#rem-not-causal-yet}
 ## Association, Not Yet Causation
 
-Under exchangeability of the treated and the untreated, the difference $146.25 - 67.50 = 78.75$ in @exm-dichotomous-cd4 could be interpreted as an estimate of the average causal effect of $A$ on $Y$ in the target population.
+If the treated and the untreated were exchangeable,
+the difference $146.25 - 67.50 = 78.75$ in @exm-dichotomous-cd4 would estimate the average causal effect of $A$ on $Y$ in the target population.
 This chapter, however, is not about causal inference: the goal is only to motivate models for estimating population quantities such as $\E{Y|A = a}$, whether or not they have a causal interpretation.
 :::
 
@@ -116,12 +117,13 @@ In @exm-hiv-cd4-study, let $A$ be a dose in mg/day taking integer values from 0 
 ::: {#rem-continuous-treatment}
 ## Continuous Treatments
 
-If $A$ were truly continuous, the sample average would be undefined for nearly all treatment levels:
-a continuous variable can be viewed as a categorical variable with uncountably many categories.
+If $A$ were truly continuous, almost every treatment level would have nobody in the sample,
+so the sample average would be undefined almost everywhere:
+think of a continuous variable as a categorical one with uncountably many categories.
 :::
 
 ::: {.callout-important title="Data Cannot Always Speak for Themselves"}
-@exm-dose-cd4 shows that we cannot always let the data "speak for themselves" to obtain a meaningful estimate.
+@exm-dose-cd4 shows that letting the data "speak for themselves" does not always yield a meaningful estimate.
 We often need to supplement the data with a model.
 :::
 
@@ -224,7 +226,7 @@ Through these a priori restrictions, the model adds information to compensate fo
 :::
 
 ::: {.callout-warning title="No Free Lunch"}
-Parametric estimators let us estimate quantities that cannot be estimated otherwise (e.g., $\E{Y|A = 90}$ when nobody received $A = 90$),
+Parametric estimators let us estimate quantities that would otherwise be out of reach (e.g., $\E{Y|A = 90}$ when nobody received $A = 90$),
 but the inferences are correct only if the model is correctly specified (@def-model).
 :::
 
@@ -322,7 +324,7 @@ A model with few parameters that is used to estimate many population quantities 
 ::: {#rem-saturated-not-model}
 ## A Saturated Model Is Not Really a Model
 
-Strictly, a saturated "model" is not a model under @def-model, because it lets the data speak for themselves just as the sample average does.
+Strictly, a saturated "model" is not a model under @def-model, because, like the sample average, it leaves the data to speak for themselves.
 Because saturated models look like models, they are still ordinarily called models.
 Part I was titled "Causal inference without models" because it only used saturated models.
 :::
@@ -344,7 +346,7 @@ A **nonparametric estimator** of the conditional mean function produces estimate
 
 ::: {.callout-warning title="Sometimes No Nonparametric Estimator Exists"}
 If $A$ has 101 levels and nobody has $A = 90$, as in @exm-dose-cd4, **no nonparametric estimator** of $\E{Y|A = 90}$ exists.
-That is why most methods in Part II use estimators that are parametric for **some part** of the distribution of the data.
+That is why most methods in Part II use estimators that are parametric for **some part** of the data's distribution.
 :::
 
 ::: {#def-identifiability-modeling-assumptions}
@@ -374,7 +376,7 @@ An estimator of a population quantity is **Fisher consistent** if, when computed
 
 - A Fisher consistent estimator lacks any model restrictions, but may not exist for many population quantities.
 - When they exist, Fisher consistent estimators are the nonparametric maximum likelihood estimators under a saturated model.
-- In the wider statistical literature, "nonparametric" sometimes also refers to estimators that are not Fisher consistent but impose only weak restrictions, such as kernel regression (@def-kernel-regression in @sec-bias-variance).
+- In the wider statistical literature, "nonparametric" is sometimes also applied to estimators that impose only weak restrictions without being Fisher consistent, such as kernel regression (@def-kernel-regression in @sec-bias-variance).
 :::
 
 ## 11.4 Smoothing (pp. 157-159)
@@ -442,7 +444,7 @@ Consider adding cubic, quartic, ..., up to 15th-degree terms to the model of @ex
 - A 15th-degree polynomial has 16 parameters, as many as data points.
 - In general, more parameters means more inflection points: the curve becomes more "wiggly".
 - The 2-parameter straight line is the **smoothest** model.
-- A model with as many parameters as data points is the **least smooth**: it **interpolates** the data, so every data point lies on the estimated curve.
+- The **least smooth** model has one parameter per data point: it **interpolates** the data, so every data point lies on the estimated curve.
 :::
 
 ### Smoothing as Borrowing Information
@@ -460,7 +462,7 @@ All parametric estimators smooth to some degree.
 For the dose data of @exm-dose-cd4:
 
 - The 2-parameter model borrows information from all 16 individuals to estimate $\E{Y|A = 90}$.
-- A model with as many parameters as individuals borrows no information at the observed values of $A$ (but does borrow, by interpolation, at unobserved values).
+- With one parameter per individual, the model borrows no information at the observed values of $A$ (but does borrow, by interpolation, at unobserved values).
 - Intermediate smoothing: use an intermediate number of parameters, or restrict which individuals contribute (e.g., fit the straight line only to individuals with doses 80 to 100;
   the wider the window, the more smoothing).
 :::
@@ -468,7 +470,7 @@ For the dose data of @exm-dose-cd4:
 ::: {#rem-smoothing-many-covariates}
 ## Smoothing with Many Covariates
 
-With many covariates, the fitted "curves" are hyperdimensional surfaces, but the principle is the same: the fewer parameters in the model, the smoother the prediction (response) surface.
+With many covariates, the fitted "curves" are hyperdimensional surfaces, but the principle is the same: fewer parameters give a smoother prediction (response) surface.
 The same reasoning applies to models for dichotomous outcomes, such as the logistic models of @exm-link-functions.
 :::
 
@@ -552,7 +554,7 @@ The **bias-variance trade-off** is the choice investigators face between more pr
 ## How Models Are Chosen in Practice
 
 Formal procedures exist to navigate the bias-variance trade-off (@def-bias-variance-tradeoff),
-but in practice models are often chosen by tradition, interpretability of the parameters, and software availability.
+but in practice models are often chosen by tradition, by how interpretable the parameters are, and by what software is available.
 :::
 
 ::: {#rem-working-convention}
@@ -586,7 +588,7 @@ A Bayesian 95% **credible interval** is an interval such that, given the observe
 ::: {#rem-credible-vs-confidence}
 ## When Credible Intervals Are Confidence Intervals
 
-- Partly because it requires specifying a prior, Bayesian inference is less commonly used than frequentist inference.
+- Partly because it requires specifying a prior, Bayesian inference is used less often than frequentist inference.
 - In **low-dimensional** parametric models with large samples, 95% credible intervals are also 95% confidence intervals: the data swamp reasonable priors.
 - In **high-dimensional** or nonparametric models, a 95% credible interval may trap the estimand much less than 95% of the time: if the true parameter values are unlikely under the prior, the interval is pulled toward values the prior favors.
 :::
