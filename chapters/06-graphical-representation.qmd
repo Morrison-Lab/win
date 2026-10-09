@@ -40,8 +40,13 @@ Causal inference needs expert knowledge and untestable assumptions about the cau
 In the simple settings of Chapters 1-5 that network could stay implicit;
 in realistic settings we must state what we know and what we assume.
 
-This chapter introduces **causal diagrams**, a graphical tool for encoding qualitative causal assumptions.
-The book's advice: draw your assumptions before your conclusions.
+This chapter introduces causal diagrams, a graphical tool for encoding qualitative causal assumptions.
+
+::: {.callout-tip title="Draw Your Assumptions Before Your Conclusions"}
+Put the causal structure you are willing to assume into a diagram before you analyze the data.
+A diagram makes the assumptions explicit,
+which clarifies conceptual problems and helps investigators communicate [@hernan2020causal, p. 75].
+:::
 
 ::: {.notes}
 This chapter is based on @hernan2020causal [Chapter 6, pp. 75-89].
@@ -68,14 +73,79 @@ draw_dag('dag {
 }')
 ```
 
-- Nodes are random variables; time flows left to right.
-- An arrow $V \to W$: $V$ has a **direct** causal effect on $W$ (not mediated by other variables on the graph) **for at least one individual**.
-- No arrow from $V$ to $W$: $V$ has no direct causal effect on $W$ **for any individual**.
+::: {#def-dag}
+## Directed Acyclic Graph
+
+A **directed acyclic graph (DAG)** is a set of nodes joined by arrows (directed edges)
+in which no node can be reached from itself by following arrows in their direction.
+:::
+
+::: {#exm-dag-6-1}
+## Book Figure 6.1 Is a DAG
+
+@fig-dag-6-1 has nodes $L$, $A$, $Y$ and arrows $L \to A$, $L \to Y$, $A \to Y$.
+The diagrams in this chapter put earlier variables to the left,
+so every arrow points rightward and following arrows never returns to a node already visited.
+Adding an arrow $Y \to L$ would create the cycle $L \to A \to Y \to L$,
+in which $L$ would be a cause of itself,
+and the graph would no longer be a DAG.
+:::
+
+---
+
+::: {#def-dag-relatives}
+## Parents, Descendants, and Ancestors
+
+In a DAG:
+
+- the **parents** of a node $V$ are the nodes with an arrow pointing directly into $V$;
+- a node $W$ is a **descendant** of $V$, and $V$ is an **ancestor** of $W$,
+  if $W$ can be reached from $V$ by following one or more arrows in their direction;
+- the **non-descendants** of $V$ are the nodes other than $V$ that are not descendants of $V$.
+:::
+
+::: {#exm-dag-relatives-6-1}
+## Parents and Descendants in Book Figure 6.1
+
+In @fig-dag-6-1, $L$ has no parents, the only parent of $A$ is $L$, and the parents of $Y$ are $L$ and $A$.
+$A$ and $Y$ are descendants of $L$,
+$Y$ is the only descendant of $A$,
+and the only non-descendant of $A$ is its parent $L$.
+:::
+
+---
+
+::: {#def-causal-dag}
+## Causal DAG
+
+A **causal DAG** is a DAG (@def-dag) whose nodes are random variables and in which:
+
+1. an arrow $V \to W$ means that $V$ has a direct causal effect on $W$ for at least one individual in the population,
+   where "direct" means not mediated by the other variables on the graph;
+2. the absence of an arrow from $V$ to $W$ means that $V$ has no direct causal effect on $W$ for any individual;
+3. every common cause of any pair of variables on the graph, measured or not, is also on the graph;
+4. every variable is a cause of its descendants (@def-dag-relatives).
+
+These conditions combine the book's description on p. 75 with its formal definition in Technical Point 6.1 [@hernan2020causal, pp. 75-76].
+:::
+
+::: {#exm-causal-dag-6-1}
+## Reading Book Figure 6.1 as a Causal DAG
+
+In @fig-dag-6-1, $L$ is disease severity, $A$ is heart transplant, and $Y$ is death.
+The arrow $L \to A$ says that severity affects whether at least one individual receives a transplant,
+and the arrow $A \to Y$ says that transplant directly affects at least one individual's death.
+Drawing the graph as a causal DAG also asserts that $L$ is the only common cause of any two of these variables:
+for instance, no unmeasured factor affects both transplant and death.
+:::
+
+::: {.callout-warning title="What an Arrow Does Not Say"}
+A standard causal diagram does not say whether an effect is harmful or protective.
+When a variable has two causes, as $Y$ does in @fig-dag-6-1,
+the diagram does not say how they interact [@hernan2020causal, p. 75].
+:::
 
 ::: {.notes}
-A standard causal diagram does not say whether an arrow is harmful or protective,
-and when a variable (here $Y$) has two causes it does not say how they interact
-[@hernan2020causal, p. 75].
 The modern theory of causal diagrams arose in computer science and artificial intelligence;
 see Pearl (2009) and Spirtes, Glymour, and Scheines (2000).
 :::
@@ -84,18 +154,146 @@ see Pearl (2009) and Spirtes, Glymour, and Scheines (2000).
 
 ### Directed Acyclic Graphs and the Causal Markov Assumption
 
-- **Directed**: each edge has a direction ($L \to A$ means $L$ may cause $A$, not the reverse).
-- **Acyclic**: no variable causes itself, directly or through other variables.
+::: {#def-markov-dag}
+## Markov Property
+
+The joint distribution of the variables on a DAG $G$ is **Markov with respect to $G$** if,
+conditional on its parents, each variable is independent of its non-descendants (@def-dag-relatives).
+:::
+
+::: {#exm-markov-chain}
+## The Markov Property for a Chain
+
+Take the DAG $V_1 \to V_2 \to V_3$.
+$V_1$ has no non-descendants,
+and the only non-descendant of $V_2$ is its parent $V_1$,
+so these two variables add no requirement.
+The non-descendants of $V_3$ are $V_1$ and its parent $V_2$,
+so the Markov property requires exactly $V_3 \ind V_1 \mid V_2$.
+:::
+
+---
 
 ::: {#def-causal-markov}
 ## Causal Markov Assumption
 
-Conditional on its direct causes (parents),
-any variable on a causal DAG is independent of any variable for which it is not a cause
-(its non-descendants) [@hernan2020causal, pp. 76-77].
+The **causal Markov assumption** is that the joint distribution of the variables on a causal DAG (@def-causal-dag) is Markov with respect to that DAG (@def-markov-dag):
+conditional on its direct causes (its parents),
+each variable is independent of every variable that it does not cause (its non-descendants)
+[@hernan2020causal, pp. 76-77].
 :::
 
-A consequence: **all common causes of any pair of variables on the graph must also be on the graph**, even if unmeasured.
+::: {#exm-causal-markov-lighter}
+## Lighters and Lung Cancer
+
+Suppose smoking $L$ causes both carrying a lighter $A$ and lung cancer $Y$,
+and carrying a lighter does not cause lung cancer,
+so the causal DAG is $A \leftarrow L \to Y$.
+$Y$ is a non-descendant of $A$, whose only parent is $L$,
+so the causal Markov assumption gives $A \ind Y \mid L$:
+among people with the same smoking status, carrying a lighter tells us nothing more about lung cancer.
+:::
+
+::: {#rem-common-causes-on-graph}
+## Why Every Common Cause Must Be on the Graph
+
+Condition 3 of @def-causal-dag is needed for the causal Markov assumption to be credible.
+In @exm-causal-markov-lighter, leave smoking $L$ off the graph.
+$A$ and $Y$ then have no parents and no arrow between them,
+so the Markov property would require $A \ind Y$.
+But carrying a lighter and lung cancer share the cause smoking,
+so they are generically (for all but special parameter values) associated,
+and the distribution is then not Markov with respect to the graph without $L$.
+:::
+
+---
+
+::: {#prp-markov-factorization}
+## Markov Factorization
+
+Let $G$ be a DAG with nodes $V = (V_1, \ldots, V_M)$,
+numbered so that no node is an ancestor of a node with a smaller number
+(such a numbering exists because $G$ has no cycles).
+Suppose $V$ is discrete with probability mass function $f$,
+and $f(v) > 0$ for every $v$ in the product of the variables' ranges.
+Write $PA_j$ for the parents of $V_j$ and $pa_j$ for their values in $v$.
+Then the distribution of $V$ is Markov with respect to $G$ (@def-markov-dag) if and only if, for every $v$,
+
+$$
+f(v) = \prod_{j=1}^{M} f(v_j \mid pa_j).
+$$ {#eq-markov-factorization}
+:::
+
+::: {.proof}
+Suppose first that the distribution is Markov with respect to $G$.
+By the chain rule, $f(v) = \prod_{j=1}^{M} f(v_j \mid v_1, \ldots, v_{j-1})$.
+A descendant of $V_j$ has $V_j$ as an ancestor, so it has a larger number than $V_j$;
+hence $V_1, \ldots, V_{j-1}$ are all non-descendants of $V_j$.
+They include every parent of $V_j$, because a parent is an ancestor and so has a smaller number.
+The Markov property then gives $f(v_j \mid v_1, \ldots, v_{j-1}) = f(v_j \mid pa_j)$,
+which is @eq-markov-factorization.
+
+Conversely, suppose @eq-markov-factorization holds, and fix $j$.
+Let $D$ be the set of descendants of $V_j$ and $N$ its set of non-descendants.
+No variable in $N$ has a parent in $D$ or equal to $V_j$, since it would then be a descendant of $V_j$.
+Sum @eq-markov-factorization over the values of the variables in $D$, one at a time,
+starting with the one with the largest number.
+Each variable summed out at that point has all its children in $D$ with larger numbers, already summed out,
+so it appears only in its own factor, which sums to 1.
+What remains is
+
+$$
+f(v_j, n) = f(v_j \mid pa_j) \prod_{k : V_k \in N} f(v_k \mid pa_k),
+$$
+
+where $n$ is the value of $N$ in $v$ and the product does not involve $v_j$.
+Summing over $v_j$ gives $f(n) = \prod_{k : V_k \in N} f(v_k \mid pa_k)$,
+so $f(v_j \mid n) = f(v_j \mid pa_j)$.
+The parents of $V_j$ are in $N$, so this conditional distribution depends on $n$ only through $pa_j$:
+$V_j$ is independent of its non-descendants given its parents.
+:::
+
+::: {#exm-markov-factorization}
+## Markov Factorization Implies an Independence
+
+Take the lighter DAG $A \leftarrow L \to Y$ of @exm-causal-markov-lighter.
+The parents are: none for $L$; $L$ for $A$; $L$ for $Y$.
+Start from the chain rule, which holds for any distribution, and apply @prp-markov-factorization:
+
+$$
+\begin{aligned}
+f(l, a, y)
+  &= f(l)\, f(a \mid l)\, f(y \mid l, a)
+  && \text{(chain rule)} \\
+  &= f(l)\, f(a \mid l)\, f(y \mid l)
+  && \text{(the only parent of } Y \text{ is } L\text{)}.
+\end{aligned}
+$$
+
+Dividing both sides by $f(l)$:
+
+$$
+\begin{aligned}
+f(a, y \mid l)
+  &= \frac{f(l, a, y)}{f(l)}
+  && \text{(definition of conditional probability)} \\
+  &= f(a \mid l)\, f(y \mid l)
+  && \text{(substitute the factorization)},
+\end{aligned}
+$$
+
+so $A \ind Y \mid L$: the missing arrow from $A$ to $Y$ implies a conditional independence.
+:::
+
+::: {.callout-note title="Technical Point 6.1: Causal DAGs, Formally"}
+The book's Technical Point 6.1 states formally the definitions above:
+DAGs, parents, descendants, and ancestors (@def-dag, @def-dag-relatives),
+causal DAGs (@def-causal-dag),
+the Markov property and its factorization (@def-markov-dag, @prp-markov-factorization),
+and the causal Markov assumption (@def-causal-markov).
+A causal DAG on its own makes no claim about the distribution of the data;
+the causal Markov assumption is what links the two [@hernan2020causal, Technical Point 6.1, p. 76].
+:::
 
 ---
 
@@ -114,10 +312,17 @@ draw_dag('dag {
 }')
 ```
 
+::: {#exm-randomized-dags}
+## Randomized Experiments as Causal DAGs
+
 - If transplant is randomized with a probability that depends on severity $L$,
-  $L$ is a common cause of $A$ and $Y$ and must appear: @fig-dag-6-1 (conditionally randomized experiment).
-- If everyone has the same probability of transplant, $L$ is not a common cause and can be omitted: @fig-dag-6-2 (marginally randomized experiment).
-- @fig-dag-6-1 can also depict an observational study in which the only parent of $A$ is $L$, with no other causes of $Y$ affecting $A$.
+  then $L$ is a common cause of $A$ and $Y$ and must appear (condition 3 of @def-causal-dag):
+  @fig-dag-6-1 depicts this conditionally randomized experiment.
+- If everyone has the same probability of transplant, $L$ is not a common cause and can be omitted:
+  @fig-dag-6-2 depicts this marginally randomized experiment.
+- @fig-dag-6-1 can also depict an observational study in which the only parent of $A$ is $L$,
+  so that no other cause of $Y$ affects $A$.
+:::
 
 ::: {.notes}
 Chapter 7 shows that being willing to draw @fig-dag-6-1 for an observational study
@@ -127,71 +332,13 @@ is the graphical translation of conditional exchangeability $Y^a \ind A \mid L$ 
 
 ---
 
-::: {.callout-note title="Technical Point 6.1: Causal DAGs, Formally"}
-For a DAG $G$ with nodes $V = (V_1, \ldots, V_M)$,
-ordered so that $V_m$ is not an ancestor of $V_j$ when $m > j$:
-
-- $PA_m$, the **parents** of $V_m$, are the nodes with an arrow into $V_m$;
-- $V_m$ is a **descendant** of $V_j$ (and $V_j$ an **ancestor** of $V_m$) if one can reach $V_m$ from $V_j$ by following arrows.
-
-The distribution of $V$ is **Markov** with respect to $G$ if each $V_j$ is independent of its non-descendants given its parents,
-which is equivalent to the **Markov factorization**
-
-$$
-f(v) = \prod_{j=1}^{M} f(v_j \mid pa_j).
-$$
-
-::: {.notes}
-A **causal DAG** is a DAG in which [@hernan2020causal, Technical Point 6.1, p. 76]:
-
-1. the lack of an arrow from $V_j$ to $V_m$ means no direct causal effect of $V_j$ on $V_m$ relative to the other variables on the graph;
-2. all common causes, even unmeasured, of any pair of variables on the graph are on the graph;
-3. any variable is a cause of its descendants.
-
-The causal Markov assumption links the causal DAG to the data:
-it says the distribution is Markov with respect to the causal DAG.
-:::
-:::
-
-::: {#exm-markov-factorization}
-## Markov Factorization Implies an Independence
-
-Take the DAG $A \leftarrow L \to Y$ (@fig-dag-6-3).
-The parents are: none for $L$; $L$ for $A$; $L$ for $Y$.
-Start from the chain rule, which holds for any distribution, and apply the Markov factorization:
-
-$$
-\begin{aligned}
-f(l, a, y)
-  &= f(l)\, f(a \mid l)\, f(y \mid l, a)
-  && \text{(chain rule)} \\
-  &= f(l)\, f(a \mid l)\, f(y \mid l)
-  && \text{(the only parent of } Y \text{ is } L\text{)}.
-\end{aligned}
-$$
-
-Dividing both sides by $f(l)$:
-
-$$
-\begin{aligned}
-f(a, y \mid l)
-  &= \frac{f(l, a, y)}{f(l)}
-  && \text{(definition of conditional density)} \\
-  &= f(a \mid l)\, f(y \mid l)
-  && \text{(substitute the factorization)},
-\end{aligned}
-$$
-
-so $A \ind Y \mid L$: the missing arrow from $A$ to $Y$ implies a conditional independence.
-:::
-
 ### Graphs and Counterfactuals
 
-Each causal DAG has an **underlying counterfactual model** (Technical Points 6.2 and 6.3).
+Each causal DAG has an underlying counterfactual model (Technical Points 6.2 and 6.3 below).
 That model justifies the intuitive graphical rules in this chapter,
 but conventional diagrams do not show the counterfactual variables.
 
-**Single World Intervention Graphs (SWIGs)** (Richardson and Robins 2013) put counterfactuals on the graph;
+Single World Intervention Graphs (SWIGs) (Richardson and Robins 2013) put counterfactuals on the graph;
 they are introduced in Chapter 7.
 
 ::: {.notes}
@@ -204,51 +351,118 @@ The book's treatment is informal, aiming at conceptual insight rather than rigor
 ---
 
 ::: {.callout-note title="Technical Point 6.2: Nonparametric Structural Equation Models"}
-A **nonparametric structural equation model (NPSEM)** for a DAG with ordered nodes $V_1, \ldots, V_M$ assumes
-unobserved errors $\epsilon_m$ and unknown deterministic functions $f_m$ such that
+In the book, every causal DAG stands for a counterfactual model.
+The basic one is defined next.
+Robins (1986) introduced it as a finest causally interpreted structural tree graph (FCISTG) "as detailed as the data",
+and Pearl (2009) showed how to represent it with a DAG.
+For exposition the book assumes that every variable can be intervened on,
+although its statistical methods do not require this [@hernan2020causal, Technical Point 6.2, p. 77].
+:::
 
-- $V_1 = f_1(\epsilon_1)$;
-- the one-step-ahead counterfactual $V_m^{pa_m}$, the value of $V_m$ when its parents are set to $pa_m$, equals $f_m(pa_m, \epsilon_m)$.
+::: {#def-npsem}
+## Nonparametric Structural Equation Model
 
-Only the parents of $V_m$ have a direct effect on it.
-Every variable can be intervened on,
-and all factual and counterfactual values are obtained recursively.
+Let $G$ be a DAG with nodes $V_1, \ldots, V_M$, numbered as in @prp-markov-factorization.
+A **nonparametric structural equation model (NPSEM)** represented by $G$ assumes that there are unobserved random variables (errors) $\epsilon_1, \ldots, \epsilon_M$
+and unknown deterministic functions $f_1, \ldots, f_M$ such that,
+for each $m$ and each value $pa_m$ of the parents of $V_m$,
+the **one-step-ahead counterfactual** $V_m^{pa_m}$, the value $V_m$ would take if its parents were set to $pa_m$,
+equals $f_m(pa_m, \epsilon_m)$.
+For a node $V_m$ with no parents, such as $V_1$, this reads $V_m = f_m(\epsilon_m)$.
+
+Counterfactuals are assumed to exist for interventions on every variable,
+and every factual and counterfactual value is obtained by applying these equations recursively in the numbered order.
 :::
 
 ::: {#exm-npsem-6-1}
 ## The NPSEM for Book Figure 6.1
 
-The structural equations are $L = f_L(\epsilon_L)$, $A = f_A(L, \epsilon_A)$, $Y = f_Y(L, A, \epsilon_Y)$.
+For @fig-dag-6-1 the structural equations (@def-npsem) are $L = f_L(\epsilon_L)$, $A = f_A(L, \epsilon_A)$, $Y = f_Y(L, A, \epsilon_Y)$.
 Setting $A$ to $a$ leaves $L$ unchanged, because $L$ is not a descendant of $A$,
 so the counterfactual outcome is obtained by substituting $a$ for $A$:
 $Y^a = f_Y(L, a, \epsilon_Y)$.
 :::
 
-::: {.notes}
-Robins (1986) introduced this model as a finest causally interpreted structural tree graph (FCISTG) "as detailed as the data";
-Pearl (2009) showed how to represent it with a DAG [@hernan2020causal, Technical Point 6.2, p. 77].
-For exposition the book assumes every variable can be intervened on,
-although its statistical methods do not require this.
-:::
+---
 
 ::: {.callout-note title="Technical Point 6.3: Which Independences?"}
-An FCISTG alone does not imply the causal Markov assumption;
-independence assumptions must be added.
+An FCISTG alone does not imply the causal Markov assumption (@def-causal-markov):
+assumptions about the joint distribution of the errors, or of the counterfactuals, must be added.
+Two such models are defined next [@hernan2020causal, Technical Point 6.3, p. 78].
+:::
 
-| Model | Assumption | Fig. 6.2 implies |
-|---|---|---|
-| NPSEM-IE (Pearl) | all errors $\epsilon_m$ mutually independent | full exchangeability $(Y^{a=0}, Y^{a=1}) \ind A$ |
-| FFRCISTG (Robins 1986) | one-step-ahead counterfactuals jointly independent | marginal exchangeability $Y^a \ind A$ for each $a$ |
+::: {#def-npsem-ie}
+## NPSEM with Independent Errors
 
-Both imply the causal Markov assumption.
-An NPSEM-IE is an FFRCISTG, not vice versa.
-**Unless stated otherwise, the book's causal DAGs represent an FFRCISTG.**
+An **NPSEM-IE** is an NPSEM (@def-npsem) whose errors $\epsilon_1, \ldots, \epsilon_M$ are mutually independent.
+This is the model that Pearl usually assumes.
+:::
+
+::: {#def-ffrcistg}
+## FFRCISTG
+
+A **finest fully randomized causally interpreted structured tree graph (FFRCISTG)** is an FCISTG,
+that is, a model as in @def-npsem,
+in which, for every value $v = (v_1, \ldots, v_M)$ of the nodes,
+the one-step-ahead counterfactuals $V_1^{pa_1}, \ldots, V_M^{pa_M}$,
+with each $pa_m$ read off from $v$,
+are mutually independent (Robins 1986).
+:::
+
+::: {#exm-fig-6-2-two-models}
+## Two Models for Book Figure 6.2
+
+For @fig-dag-6-2 the structural equations (@def-npsem) are $A = f_A(\epsilon_A)$ and $Y^a = f_Y(a, \epsilon_Y)$.
+
+- As an NPSEM-IE (@def-npsem-ie), $\epsilon_A \ind \epsilon_Y$.
+  Then $A$, a function of $\epsilon_A$, is independent of $(Y^{a=0}, Y^{a=1})$, a function of $\epsilon_Y$:
+  full exchangeability $(Y^{a=0}, Y^{a=1}) \ind A$ holds.
+- As an FFRCISTG (@def-ffrcistg), the one-step-ahead counterfactuals for $v = (a, y)$ are $A$ and $Y^a$,
+  so the model gives $Y^a \ind A$ for each $a$ separately:
+  marginal exchangeability, which says nothing about $A$ and the pair $(Y^{a=0}, Y^{a=1})$ jointly.
+:::
+
+---
+
+::: {#prp-npsem-ie-ffrcistg}
+## Every NPSEM-IE Is an FFRCISTG, Not Conversely
+
+Every NPSEM-IE (@def-npsem-ie) is an FFRCISTG (@def-ffrcistg).
+The converse fails: some models that satisfy the FFRCISTG condition are not NPSEM-IE models.
+:::
+
+::: {.proof}
+Fix $v$.
+In an NPSEM-IE, each one-step-ahead counterfactual $V_m^{pa_m} = f_m(pa_m, \epsilon_m)$, with $pa_m$ fixed by $v$, is a function of $\epsilon_m$ alone.
+Functions of mutually independent random variables are mutually independent,
+so these counterfactuals are mutually independent, as an FFRCISTG requires.
+
+For the converse, take @fig-dag-6-2 with $Y^{a=0}$ and $Y^{a=1}$ independent fair coin flips,
+and let $A = 1$ if exactly one of them equals 1 and $A = 0$ otherwise.
+Setting $\epsilon_Y = (Y^{a=0}, Y^{a=1})$ and $\epsilon_A = A$ gives an NPSEM.
+For each $a$, whatever the value of $Y^a$, the other, independent fair coin makes $A$ equal 1 with probability $1/2$,
+so $A \ind Y^a$ and the model is an FFRCISTG.
+But $A$ is a function of $(Y^{a=0}, Y^{a=1})$ and is not constant, so full exchangeability fails.
+By @exm-fig-6-2-two-models, no NPSEM-IE for @fig-dag-6-2 gives this joint distribution of $(A, Y^{a=0}, Y^{a=1})$.
+:::
+
+::: {#prp-ffrcistg-markov}
+## Counterfactual Models Imply the Causal Markov Assumption
+
+If the counterfactuals for a causal DAG $G$ follow an FFRCISTG (@def-ffrcistg),
+and so in particular if they follow an NPSEM-IE (@prp-npsem-ie-ffrcistg),
+then the joint distribution of the factual variables is Markov with respect to $G$ (@def-markov-dag).
+Robins (1986) proved this [@hernan2020causal, Technical Point 6.3, p. 78].
+:::
+
+::: {.callout-note title="The Default Counterfactual Model"}
+Unless stated otherwise, a causal DAG in the book, and in these notes, represents an FFRCISTG (@def-ffrcistg)
+[@hernan2020causal, Technical Point 6.3, p. 78].
+:::
 
 ::: {.notes}
-Source: @hernan2020causal [Technical Point 6.3, p. 78].
 Robins and Richardson (2010) showed that Robins's original formulation is equivalent to the joint-independence assumption for a positive distribution,
 and that an NPSEM-IE makes many more independence assumptions than an FFRCISTG.
-:::
 :::
 
 ## 6.2 Causal Diagrams and Marginal Independence (pp. 77-79)
@@ -287,11 +501,17 @@ draw_dag('dag {
 }')
 ```
 
+::: {#tbl-marginal-examples}
+
 | Figure | Structure | Example | $A$ and $Y$ |
 |---|---|---|---|
 | @fig-dag-6-2 | $A \to Y$ | aspirin prevents heart disease (randomized) | associated |
 | @fig-dag-6-3 | $A \leftarrow L \to Y$ | lighter, smoking, lung cancer | associated (no effect of $A$) |
 | @fig-dag-6-4 | $A \to L \leftarrow Y$ | haplotype, heart disease, smoking | independent |
+
+Marginal association between $A$ and $Y$ in three causal DAGs.
+"Associated" holds generically (for all but special parameter values).
+:::
 
 ---
 
@@ -306,8 +526,18 @@ otherwise it is **noncausal**
 [@hernan2020causal, p. 78, margin note].
 :::
 
-Picture paths as pipes through which **association** flows.
+::: {#exm-paths-6-1}
+## Paths in Book Figure 6.1
+
+In @fig-dag-6-1 there are two paths between $A$ and $Y$:
+$A \to Y$, which is causal,
+and $A \leftarrow L \to Y$, which is noncausal because its two arrows point in different directions.
+:::
+
+Picture paths as pipes through which association flows.
 Association is symmetric, so it flows regardless of the direction of the arrows.
+
+---
 
 ::: {#def-collider}
 ## Collider
@@ -316,19 +546,36 @@ A variable on a path is a **collider** on that path if two arrowheads on the pat
 as $L$ does on $A \to L \leftarrow Y$.
 :::
 
+::: {#exm-collider-6-1}
+## Being a Collider Depends on the Path
+
+In @fig-dag-6-1, $Y$ is a collider on the path $A \to Y \leftarrow L$ between $A$ and $L$.
+On the path $L \to A \to Y$ between $L$ and $Y$, by contrast,
+$A$ is not a collider: one arrow on the path enters it and the other leaves it.
+:::
+
 ---
 
 ### The Three Examples
+
+::: {#exm-three-marginal-examples}
+## Three Marginal Associations
 
 - @fig-dag-6-2: causation implies association; in an ideal randomized experiment
   $\Pr[Y^{a=1}=1] \neq \Pr[Y^{a=0}=1]$ if and only if $\Pr[Y=1 \mid A=1] \neq \Pr[Y=1 \mid A=0]$.
 - @fig-dag-6-3: learning that Hera carries a lighter makes it likelier she smokes, hence likelier she gets lung cancer;
   association flows through the common cause $L$, though $A$ has no effect on $Y$.
 - @fig-dag-6-4: learning that Apollo lacks the haplotype says nothing about his smoking;
-  a collider **blocks** the flow of association, so $A \ind Y$.
+  the collider $L$ blocks the flow of association, so $A \ind Y$.
+:::
 
-**Summary**: two variables are marginally associated if one causes the other or if they share a common cause;
-otherwise they are marginally independent.
+::: {#rem-marginal-association}
+## Marginal Association in a Causal DAG
+
+Two variables on a causal DAG are generically (for all but special parameter values) marginally associated
+if one causes the other or if they share a common cause.
+Otherwise, under the causal Markov assumption (@def-causal-markov), they are marginally independent.
+:::
 
 ::: {.notes}
 In @fig-dag-6-3, an investigator who concludes from the association that carrying a lighter causes lung cancer makes a mistake:
@@ -340,7 +587,10 @@ In @fig-dag-6-4, that both $A$ and $Y$ cause heart disease $L$ is irrelevant to 
 
 ---
 
-A square box around a node means we condition on it (e.g., restrict to one of its levels).
+::: {.callout-note title="Notation: A Box Means Conditioning"}
+A square box around a node means that the analysis conditions on that variable,
+for example by restricting to one of its levels.
+:::
 
 ```{r}
 #| label: fig-dag-6-5
@@ -357,11 +607,19 @@ draw_dag('dag {
 }', conditioned = "B")
 ```
 
+::: {#exm-conditioning-three-structures}
+## Conditioning in Three Structures
+
 | Structure | Conditioning on | Path | $A$, $Y$ given the conditioning variable |
 |---|---|---|---|
 | $A \to B \to Y$ (Fig. 6.5) | mediator $B$ | blocked | independent: $A \ind Y \mid B$ |
 | $A \leftarrow L \to Y$ (Fig. 6.6) | common cause $L$ | blocked | independent: $A \ind Y \mid L$ |
-| $A \to L \leftarrow Y$ (Fig. 6.7) | collider $L$ | **opened** | associated |
+| $A \to L \leftarrow Y$ (Fig. 6.7) | collider $L$ | **opened** | generically associated |
+
+The two independences follow from the causal Markov assumption (@def-causal-markov).
+The association in the collider row holds generically (for all but special parameter values),
+in at least one level of $L$.
+:::
 
 ::: {.notes}
 - **Mediator** [@hernan2020causal, p. 80]: among those with low platelet aggregation ($B=0$),
@@ -379,12 +637,22 @@ draw_dag('dag {
 
 ### Conditioning on a Collider Opens the Path
 
-In @fig-dag-6-4, restrict to people with heart disease ($L=1$, book Figure 6.7).
-Among them, someone without the haplotype is more likely to have the other cause, smoking:
-$A$ and $Y$ are **inversely associated** given $L=1$.
+::: {#exm-collider-heart-disease}
+## Haplotype and Smoking Among People with Heart Disease
 
-In the extreme, if $A$ and $Y$ were the only causes of $L$,
-then among those with $L=1$ the absence of one would perfectly predict the presence of the other.
+In @fig-dag-6-4, restrict to people with heart disease ($L=1$, book Figure 6.7).
+Intuitively, among them someone without the haplotype is more likely to have the other cause, smoking,
+which would make $A$ and $Y$ inversely associated given $L=1$.
+In the extreme case where $L = 1$ exactly when $A = 1$ or $Y = 1$,
+among those with $L=1$ the absence of one cause guarantees the presence of the other.
+:::
+
+::: {.callout-warning title="The Diagram Does Not Fix the Sign"}
+The diagram alone implies only that, generically (for all but special parameter values),
+$A$ and $Y$ are associated in at least one level of $L$.
+The sign of that association, and whether it appears in the level $L = 1$ in particular,
+depend on how $A$ and $Y$ act together on $L$ (Chapter 8).
+:::
 
 ::: {.notes}
 Intuition from the book [@hernan2020causal, p. 81]:
@@ -414,12 +682,21 @@ draw_dag('dag {
 }', conditioned = "C")
 ```
 
-Conditioning on $C$, a variable affected by the collider $L$, also opens $A \to L \leftarrow Y$.
-The path stays blocked only if we condition on neither $L$ nor $C$.
+::: {#exm-descendant-of-collider}
+## Conditioning on Diuretic Use
+
+In @fig-dag-6-8, diuretic use $C$ is affected by the collider heart disease $L$.
+Conditioning on $C$ also opens the path $A \to L \leftarrow Y$,
+so haplotype and smoking are generically (for all but special parameter values) associated in at least one level of $C$.
+The path stays blocked when we condition on neither $L$ nor $C$.
+:::
 
 ---
 
 ### Three Structural Sources of Association
+
+::: {#rem-structural-sources-association}
+## Three Structural Sources of Association
 
 Two variables can be associated because
 
@@ -427,11 +704,12 @@ Two variables can be associated because
 2. they share a common cause;
 3. they share a common effect and the analysis is restricted to a level of that effect (or of its descendants).
 
-A fourth, nonstructural source is **chance** (random variability), which shrinks as the study population grows.
+A fourth, nonstructural source is chance (random variability), which shrinks as the study population grows.
 Until Chapter 10 the book assumes a very large population, so all associations discussed are structural.
+:::
 
 ::: {.notes}
-The heuristic arguments of this section are formalized by **d-separation** (Pearl 1995);
+The heuristic arguments of this section are formalized by d-separation (Pearl 1995);
 Fine Point 6.1 lists the rules and Fine Point 6.2 introduces faithfulness [@hernan2020causal, p. 81].
 :::
 
@@ -440,31 +718,90 @@ Fine Point 6.1 lists the rules and Fine Point 6.2 introduces faithfulness [@hern
 ---
 
 ::: {.callout-note title="Fine Point 6.1: D-Separation"}
-A path is **blocked** if and only if
+The graphical rules of Sections 6.2 and 6.3, for a path (@def-path) between two variables, are:
 
-- it contains a **non-collider** that has been conditioned on, or
-- it contains a **collider** that has not been conditioned on and has no descendant that has been conditioned on.
+1. with nothing conditioned on, a path is blocked exactly when it contains a collider (@def-collider);
+2. a path that contains a conditioned-on non-collider is blocked;
+3. a conditioned-on collider does not block a path;
+4. a collider with a conditioned-on descendant does not block a path.
 
-Otherwise it is **open**.
-Two variables are **d-separated** if all paths between them are blocked;
-otherwise they are **d-connected**.
-Two sets are d-separated if each variable in one is d-separated from every variable in the other.
+The two definitions below summarize these rules [@hernan2020causal, Fine Point 6.1, p. 82].
+:::
+
+::: {#def-blocked-path}
+## Blocked and Open Paths
+
+Given a set $\mathcal{C}$ of conditioned-on variables, a path is **blocked** if and only if
+
+- it contains a non-collider that is in $\mathcal{C}$, or
+- it contains a collider that is not in $\mathcal{C}$ and has no descendant in $\mathcal{C}$.
+
+Otherwise the path is **open**.
+:::
+
+::: {#def-d-separation}
+## D-Separation
+
+Two variables are **d-separated** given a set $\mathcal{C}$ of other variables ($\mathcal{C}$ may be empty)
+if every path between them is blocked given $\mathcal{C}$ (@def-blocked-path);
+otherwise they are **d-connected** given $\mathcal{C}$.
+Two disjoint sets of variables are d-separated given $\mathcal{C}$ if each variable in one is d-separated from every variable in the other.
 :::
 
 ::: {#exm-d-separation}
-## D-Separation in Book Figures 6.1 and 6.4
+## D-Separation in Book Figures 6.1, 6.4, and 6.8
 
-- @fig-dag-6-1, $A$ and $L$: the path $L \to A$ is open, so they are d-connected,
+- @fig-dag-6-1, $A$ and $L$, given nothing: the path $L \to A$ is open, so they are d-connected,
   even though the other path $A \to Y \leftarrow L$ is blocked by the collider $Y$.
-- @fig-dag-6-4, $A$ and $Y$: the only path is blocked by the collider $L$, so they are d-separated.
+- @fig-dag-6-4, $A$ and $Y$, given nothing: the only path is blocked by the collider $L$, so they are d-separated.
+- @fig-dag-6-8, $A$ and $Y$, given $\{C\}$: the collider $L$ has the descendant $C$ in the conditioning set,
+  so the only path is open and they are d-connected.
 :::
+
+---
 
 ### From D-Separation to Independence
 
-- **Pearl (1988)**: under the causal Markov assumption, if $\mathcal{A}$ is d-separated from $\mathcal{B}$ given $\mathcal{C}$,
-  then $\mathcal{A}$ is statistically independent of $\mathcal{B}$ given $\mathcal{C}$ (disjoint sets of variables).
-- **Faithfulness** is the separate assumption that the converse holds:
-  independence implies d-separation.
+::: {#thm-d-separation}
+## D-Separation Implies Independence
+
+Let $\mathcal{A}$, $\mathcal{B}$, $\mathcal{C}$ be disjoint sets of variables on a causal DAG,
+and suppose the causal Markov assumption (@def-causal-markov) holds.
+If $\mathcal{A}$ and $\mathcal{B}$ are d-separated given $\mathcal{C}$ (@def-d-separation),
+then $\mathcal{A} \ind \mathcal{B} \mid \mathcal{C}$.
+Pearl (1988) proved this [@hernan2020causal, Fine Point 6.1, p. 82].
+:::
+
+::: {#exm-d-separation-independence}
+## Reading an Independence off Book Figure 6.5
+
+In @fig-dag-6-5, the only path between $A$ and $Y$ is $A \to B \to Y$,
+and it contains the conditioned-on non-collider $B$.
+So $A$ and $Y$ are d-separated given $\{B\}$,
+and @thm-d-separation gives $A \ind Y \mid B$,
+the conclusion reached informally in Section 6.3.
+:::
+
+---
+
+::: {#def-faithfulness}
+## Faithfulness
+
+The joint distribution of the variables on a causal DAG is **faithful** to the DAG if,
+for all disjoint sets $\mathcal{A}$, $\mathcal{B}$, $\mathcal{C}$ of its variables ($\mathcal{C}$ possibly empty),
+$\mathcal{A} \ind \mathcal{B} \mid \mathcal{C}$ implies that $\mathcal{A}$ and $\mathcal{B}$ are d-separated given $\mathcal{C}$:
+the converse of @thm-d-separation.
+The **faithfulness assumption** is that this holds
+[@hernan2020causal, Fine Point 6.2, p. 83].
+:::
+
+::: {#exm-faithfulness-collider}
+## Faithfulness and a Conditioned-On Collider
+
+In @fig-dag-6-4 with $L$ conditioned on (book Figure 6.7), $A$ and $Y$ are d-connected given $\{L\}$.
+Under faithfulness, then, $A$ and $Y$ are not independent given $L$:
+they are associated in at least one level of $L$.
+:::
 
 ::: {.notes}
 "d-" stands for directional.
@@ -478,7 +815,7 @@ An equivalent set of graphical rules, **moralization**, was developed by Lauritz
 An arrow $A \to Y$ means $A$ affects $Y$ for at least one individual,
 yet the average causal effect and the association can still both be null,
 when effects in different individuals cancel exactly.
-Such exact cancellation is rare, so the book assumes faithfulness:
+Such exact cancellation is rare, so the book assumes faithfulness (@def-faithfulness):
 lack of d-separation can almost always be equated with a non-zero association.
 :::
 
@@ -489,26 +826,36 @@ In the book's Table 4.1, transplant increases the risk of death in women and dec
 each half of the population, and the effects cancel exactly:
 $\Pr[Y^{a=1}=1] = \Pr[Y^{a=0}=1]$.
 @fig-dag-6-2 is still the correct diagram, because $A$ affects every individual's $Y$,
-but the expected association is absent: the distribution is **not faithful** to the DAG
+but the expected association is absent: the distribution is not faithful to the DAG (@def-faithfulness)
 [@hernan2020causal, Fine Point 6.2, p. 83].
 :::
 
-::: {.notes}
-Faithfulness can be violated **by design**.
-In a matched study (book Section 4.5, Figure 6.9), selection $S$ depends on both $A$ and $L$,
-and the analysis is restricted to $S=1$.
-D-separation predicts $L$ and $A$ associated given $S$ (open paths $L \to A$ and $L \to S \leftarrow A$),
-but matching makes them unassociated:
-the association created through $L \to S \leftarrow A$ exactly cancels the one through $L \to A$.
+::: {#exm-matching-unfaithful}
+## Matching Builds In a Cancellation
 
+Take a matched study (book Section 4.5, Figure 6.9).
+The matching factor $L$ affects treatment $A$,
+and whether an individual enters the matched sample, $S = 1$, depends on both $A$ and $L$.
+Conditioning on $S$ leaves two open paths between $L$ and $A$, the arrow $L \to A$ and $L \to S \leftarrow A$,
+so d-separation does not predict independence of $L$ and $A$ given $\{S\}$.
+But matching is designed to give the treated and the untreated in the sample the same distribution of $L$,
+so among those with $S = 1$ the two variables are independent:
+the two paths carry associations that cancel exactly.
+Faithfulness (@def-faithfulness) rules out such exact cancellations,
+so matching produces an unfaithful distribution on purpose [@hernan2020causal, Fine Point 6.2, p. 83].
+:::
+
+::: {.notes}
 Faithfulness may also fail when variables are linked by deterministic arrows:
 two variables can then be independent even though some paths between them are open.
 :::
 
+---
+
 ### Graphs, Do-Calculus, and Notation
 
 Standardization and IP weighting (Chapter 2) can also be derived from causal graph theory,
-as part of what is sometimes called the **do-calculus** (reviewed in Pearl 2009).
+as part of what is sometimes called the do-calculus (reviewed in Pearl 2009).
 So using counterfactuals in Chapters 1-5 privileged a notation, not an approach.
 
 Whatever the notation, causal inference via standardization or IP weighting requires
@@ -520,6 +867,9 @@ exchangeability is translated into graphs in Section 6.5 and Chapters 7-8.
 
 ### Positivity and Consistency in the Graph
 
+::: {#rem-positivity-consistency-graph}
+## Where Positivity and Consistency Sit in a Graph
+
 - **Positivity** concerns arrows **into** treatment nodes.
   Causal graphs generally cannot encode its violations, except special cases,
   e.g., $A$ a deterministic function of a pretreatment $L$ (drawn as a bold $L \to A$ arrow).
@@ -530,6 +880,7 @@ exchangeability is translated into graphs in Section 6.5 and Chapters 7-8.
 
 In the book's diagrams, positivity is implicit unless stated
 and consistency is embedded in the notation.
+:::
 
 ::: {.notes}
 Treatment nodes thus have a special status [@hernan2020causal, pp. 83-84].
@@ -544,11 +895,13 @@ The causal trees of Chapter 2 and the sufficient-cause "pies" of Chapter 5 also 
 
 ### Treatment Nodes Need Well-Defined Interventions
 
-Diagrams read as NPSEMs with independent errors seem to give all variables equal status,
+::: {.callout-warning title="Not Every Node Can Be a Treatment"}
+Diagrams read as NPSEMs with independent errors (@def-npsem-ie) seem to give all variables equal status,
 which can mislead when some nodes correspond to ill-defined interventions.
 
 - A node for "obesity" may be acceptable as an outcome $Y$ or a covariate $L$.
 - It is generally **not** acceptable as a treatment $A$ (Chapter 3).
+:::
 
 ::: {.notes}
 Pearl (2018, 2019) has proposed a concept of causation based on variables that "listen to others",
@@ -578,34 +931,54 @@ draw_dag('dag {
 }')
 ```
 
-When there are several ways to intervene on $A$ and some of them affect $Y$ directly,
-"the effect of $A$ on $Y$" is unclear:
-losing weight by caloric restriction, by exercise, or by genetic manipulation would lead to different mortality.
+::: {#exm-weight-loss-interventions}
+## Many Ways to Lose Weight
+
+In @fig-dag-6-10 there are several ways to intervene on weight loss $A$,
+and some of them, through exercise $L$ or genetic traits $U$, also affect mortality $Y$ directly.
+Losing weight by caloric restriction, by exercise, or by genetic manipulation would then lead to different mortality,
+so "the effect of $A$ on $Y$" is unclear.
+:::
+
+::: {.callout-tip title="Name the Intervention"}
 Being explicit about the intervention is a step toward a well-defined effect,
 relevant data, and the right adjustment variables.
+:::
 
 ---
 
-::: {.callout-note title="Fine Point 6.3: Discovery of Causal Structure"}
-**Discovery** is learning parts of the causal structure from data.
-It sometimes works if we assume faithfulness, but often it does not:
-a strong association between $B$ and $C$ fits $B \to C$, $C \to B$, a shared unmeasured cause,
-a conditioned-on common effect, and combinations.
+::: {#def-causal-discovery}
+## Causal Discovery
+
+**Causal discovery** is learning parts of the causal structure, such as which arrows are absent from the causal DAG,
+by analyzing data rather than from expert knowledge [@hernan2020causal, Fine Point 6.3, p. 85].
 :::
 
 ::: {#exm-discovery}
-## Learning $Z \to A \to Y$ [@hernan2020causal, Fine Point 6.3, p. 85]
+## Learning $Z \to A \to Y$
 
-Suppose $Z$ precedes $A$, which precedes $Y$, and with infinite data
-all three are marginally associated and the only conditional independence is $Z \ind Y \mid A$.
-Under faithfulness the only consistent causal DAGs are $Z \to A \to Y$,
+Suppose $Z$ precedes $A$, which precedes $Y$,
+and assume faithfulness (@def-faithfulness).
+With infinite data, suppose all three variables are marginally associated
+and the only conditional independence is $Z \ind Y \mid A$.
+Then the only causal DAGs compatible with the data are $Z \to A \to Y$,
 possibly with a common cause of $Z$ and $A$ in addition to, or instead of, $Z \to A$.
-Then there is no unmeasured common cause of $A$ and $Y$,
-and the average causal effect is identified by $\E{Y \mid A=1} - \E{Y \mid A=0}$.
+So there is no unmeasured common cause of $A$ and $Y$,
+and, if $Y^a$ is well defined and consistency and positivity hold,
+the average causal effect is identified by $\E{Y \mid A=1} - \E{Y \mid A=0}$
+[@hernan2020causal, Fine Point 6.3, p. 85].
+:::
+
+::: {.callout-note title="Fine Point 6.3: Discovery of Causal Structure"}
+Discovery (@def-causal-discovery) sometimes works if we assume faithfulness,
+so that independences in the data imply missing arrows,
+but often it does not:
+a strong association between $B$ and $C$ fits $B \to C$, $C \to B$, a shared unmeasured cause,
+a conditioned-on common effect, and combinations of these.
 :::
 
 ::: {.notes}
-Why: a direct arrow $Z \to Y$, a common cause of $Z$ and $Y$, or an unmeasured common cause of $A$ and $Y$
+Why the learned DAG in @exm-discovery: a direct arrow $Z \to Y$, a common cause of $Z$ and $Y$, or an unmeasured common cause of $A$ and $Y$
 would each make $Z$ and $Y$ dependent given $A$ (assuming faithfulness);
 the marginal association of $A$ and $Y$ then requires an arrow $A \to Y$.
 If an unmeasured common cause of $A$ and $Y$ existed, no conditional independence would be found,
@@ -626,32 +999,78 @@ Informally: any structural association between treatment and outcome that does n
 [@hernan2020causal, p. 85].
 :::
 
-- **Unconditional bias**: $\Pr[Y^{a=1}=1] - \Pr[Y^{a=0}=1] \neq \Pr[Y=1 \mid A=1] - \Pr[Y=1 \mid A=0]$,
-  the case when $Y^a \ind A$ fails.
-- **Conditional bias**: $\Pr[Y^{a=1}=1 \mid L=l] - \Pr[Y^{a=0}=1 \mid L=l] \neq \Pr[Y=1 \mid L=l, A=1] - \Pr[Y=1 \mid L=l, A=0]$
-  for at least one $l$, generally the case when $Y^a \ind A \mid L=l$ fails for some $a$ and $l$.
+::: {#exm-systematic-bias-lighter}
+## Lighters and Lung Cancer Again
+
+In @fig-dag-6-3, carrying a lighter $A$ has no effect on lung cancer $Y$,
+yet the two are generically (for all but special parameter values) associated through smoking $L$.
+That association is structural: it does not shrink as the sample grows.
+So even infinite data on $A$ and $Y$ alone cannot reveal that the effect is null:
+an analysis that ignores $L$ has systematic bias.
+:::
 
 ::: {.notes}
 With systematic bias no estimator can be consistent (see Chapter 1 for consistent estimators).
-Absence of unconditional bias means the association measure in the population is a consistent estimate of the corresponding effect measure.
 In this chapter "bias" means systematic bias, because the sample size is assumed infinite.
+:::
+
+---
+
+::: {#def-unconditional-conditional-bias}
+## Unconditional and Conditional Bias
+
+For a dichotomous treatment $A$, a dichotomous outcome $Y$, and a covariate $L$:
+
+- there is **unconditional bias** when
+  $\Pr[Y^{a=1}=1] - \Pr[Y^{a=0}=1] \neq \Pr[Y=1 \mid A=1] - \Pr[Y=1 \mid A=0]$;
+- there is **conditional bias** given $L$ when
+  $\Pr[Y^{a=1}=1 \mid L=l] - \Pr[Y^{a=0}=1 \mid L=l] \neq \Pr[Y=1 \mid L=l, A=1] - \Pr[Y=1 \mid L=l, A=0]$
+  for at least one $l$.
+:::
+
+Under consistency and positivity, unconditional exchangeability $Y^a \ind A$ rules out unconditional bias,
+and conditional exchangeability $Y^a \ind A \mid L$ rules out conditional bias.
+When exchangeability fails, bias is generically present.
+Absence of unconditional bias means the association measure in the population is a consistent estimate of the corresponding effect measure.
+
+::: {#exm-table-3-1-bias}
+## Unconditional but No Conditional Bias in Table 3.1
+
+In the book's Table 3.1, assume, as in Chapter 3, consistency, positivity, and conditional exchangeability given $L$.
+Within each level of $L$ the observed risks are equal in the treated and the untreated
+(1/4 versus 1/4 when $L=0$, 2/3 versus 2/3 when $L=1$),
+so the conditional causal risk differences are 0 and there is no conditional bias.
+The causal risk difference is also 0,
+but the associational risk difference is $7/13 - 3/7 \approx 0.11$:
+there is unconditional bias.
 :::
 
 ---
 
 ### Bias Under the Null
 
-Lack of exchangeability causes bias **even when treatment has no effect**: **bias under the null**.
+::: {#def-bias-under-null}
+## Bias Under the Null
+
+There is **bias under the null** when treatment has no causal effect on the outcome
+and yet, in the population, treatment and outcome are associated.
+Lack of exchangeability causes bias under the null.
+:::
 
 ::: {#exm-bias-under-null}
-## Table 3.1
+## Bias Under the Null in Table 3.1
 
-In the book's observational study of Table 3.1 the causal risk ratio was 1,
+In the book's observational study of Table 3.1 (@exm-table-3-1-bias), the causal risk ratio was 1,
 whereas the associational risk ratio was 1.26 [@hernan2020causal, p. 86].
 :::
 
-Any structure that causes bias under the null also causes bias under the alternative (a non-null effect);
+::: {#rem-bias-null-alternative}
+## Under the Null and Under the Alternative
+
+Any causal structure that causes bias under the null also causes bias under the alternative,
+that is, when treatment does have a non-null effect;
 the converse is false.
+:::
 
 ::: {.notes}
 For example, conditioning on some variables may cause selection bias under the alternative but not under the null
@@ -663,12 +1082,18 @@ see also Chapter 18) [@hernan2020causal, p. 86, margin note].
 
 ### Two Structures That Break Exchangeability
 
-1. **Common causes** of treatment and outcome: what many epidemiologists call **confounding** (Chapter 7).
-2. **Conditioning on common effects**: what many epidemiologists call **selection bias under the null** (Chapter 8).
+::: {#rem-sources-systematic-bias}
+## Sources of Systematic Bias
 
-A third source is **measurement bias** (information bias), from mismeasured treatment, outcome, or covariates;
+Lack of exchangeability has two causal structures:
+
+1. common causes of treatment and outcome: what many epidemiologists call confounding (Chapter 7);
+2. conditioning on common effects: what many epidemiologists call selection bias under the null (Chapter 8).
+
+A third source of systematic bias is measurement bias (information bias), from mismeasured treatment, outcome, or covariates;
 some types also cause bias under the null (Chapter 9).
-Random variability is a separate, nonstructural source (Chapter 10).
+Random variability is a separate, nonstructural source of error (Chapter 10).
+:::
 
 ::: {.notes}
 All three biases can arise in observational studies **and** in randomized experiments.
@@ -699,45 +1124,70 @@ draw_dag('dag {
 }')
 ```
 
-Transplant $A$ is randomized, so association is causation;
-investigators stratify by quality of care $V$ and find additive effect modification.
+::: {#exm-quality-of-care}
+## Transplant and Quality of Care
+
+In @fig-dag-6-12, transplant $A$ is randomized, so association is causation.
+Investigators stratify by quality of care $V$ and find effect modification by $V$ on the additive scale.
+:::
 
 ---
 
 ### Two Caveats
 
+::: {.callout-warning title="What the Diagram Does Not Say About Effect Modification"}
 1. @fig-dag-6-12 would be valid **without** $V$, since $V$ is not a common cause of $A$ and $Y$;
    $V$ appears only because the question refers to it.
    Variables on the path from $V$ to $Y$, such as therapy complications $N$ (book Figure 6.13), could also be effect modifiers.
 2. @fig-dag-6-12 does **not** show whether, or how, $V$ modifies the effect of $A$.
    It cannot distinguish:
    - effects in the same direction in both strata of $V$;
-   - effects in opposite directions (**qualitative** effect modification);
+   - effects in opposite directions (qualitative effect modification);
    - an effect in one stratum only (e.g., $A$ kills only those with $V=0$).
+:::
 
 ---
 
 ### Surrogate Effect Modifiers
 
-A **surrogate effect modifier** is associated with the causal effect modifier $V$ but does not affect $Y$.
-The association can come from any structure:
+::: {#def-surrogate-effect-modifier}
+## Causal and Surrogate Effect Modifiers
+
+A **causal effect modifier** is a variable that modifies the effect of treatment on the outcome
+([Chapter 4](04-effect-modification.qmd)) and itself affects the outcome.
+A **surrogate effect modifier** is a variable that is associated with a causal effect modifier but does not itself affect the outcome
+[@hernan2020causal, p. 88].
+:::
+
+::: {#exm-surrogate-modifiers}
+## Three Surrogates for Quality of Care
+
+In the study of @exm-quality-of-care, an analysis stratified by a surrogate of quality of care $V$, but not by $V$ itself,
+will generally detect effect modification by the surrogate.
+The association between surrogate and $V$ can come from any structure:
 
 | Book figure | Surrogate | Structure linking it to $V$ |
 |---|---|---|
 | 6.14 | cost of treatment $S$ | cause and effect: $V \to S$ |
 | 6.15 | passport nationality $P$ | common cause: residence $U$ affects $V$ and $P$ |
 | 6.16 | bottled mineral water $W$ | conditioning on a common effect: $V$ and $W$ affect cost $S$, analysis restricted to $S=0$ |
+:::
+
+::: {.callout-warning title="A Surrogate Is Not a Lever"}
+Reading surrogate effect modification causally misleads.
+"Cost modifies the effect of transplant" could suggest raising prices without raising the quality of care
+[@hernan2020causal, p. 88].
+:::
 
 ::: {.notes}
 Causal and surrogate effect modifiers are often indistinguishable in practice,
 so "effect modification" covers both (Section 4.2);
 some prefer the neutral term "heterogeneity of causal effects".
-Reading "cost modifies the effect of transplant" causally could suggest raising prices without raising quality
-[@hernan2020causal, p. 88].
 
-Intuition for the mineral-water example (book margin note, p. 88):
-low-cost hospitals that buy mineral water must spend less on care that lowers mortality,
-so among low-cost hospitals, mineral water use is inversely associated with quality of care.
+Why the mineral-water example works (book margin note, p. 88):
+a hospital can keep its total cost low while paying for bottled water only by economizing elsewhere,
+including on the care that reduces deaths.
+Among low-cost hospitals, then, bottled water tends to go with lower quality of care.
 VanderWeele and Robins (2007b) give a finer classification of effect modification via causal diagrams.
 :::
 
@@ -745,10 +1195,14 @@ VanderWeele and Robins (2007b) give a finer classification of effect modificatio
 
 ### Interaction in Causal Diagrams
 
+::: {#rem-diagrams-interaction}
+## Diagrams and Interaction
+
 Causal diagrams are agnostic about interaction between two treatments $A$ and $E$.
 They can encode it if augmented with nodes for sufficient-component causes (Chapter 5),
 with deterministic arrows from the treatments to those nodes;
 the book develops such diagrams in Chapter 8.
+:::
 
 ---
 
@@ -756,28 +1210,28 @@ the book develops such diagrams in Chapter 8.
 Consider drug $Z$, systolic blood pressure $A$ (a state, not directly manipulable), and stroke $Y$.
 If (i) $Z$ is associated with $A$ and $Y$, (ii) $A$ and $Y$ are associated, and (iii) $Z \ind Y \mid A$,
 then under faithfulness the only causal DAG has $A \to Y$, no $Z \to Y$, and no unmeasured common cause of $A$ and $Y$ or of $Z$ and $Y$
-(the discovery argument of Fine Point 6.3).
+(the discovery argument of @exm-discovery).
 
-- If $Y^a$ is well defined, $Y^a \ind A$ holds and $\E{Y \mid A=1} - \E{Y \mid A=0}$ is the average causal effect.
+- If $Y^a$ is well defined and consistency and positivity hold, $Y^a \ind A$ holds and $\E{Y \mid A=1} - \E{Y \mid A=0}$ is the average causal effect.
 - An investigator who doubted that $Y^a$ was well defined might take (i)-(iii) as empirical evidence that it is.
+:::
 
 ::: {.notes}
-Usually unmeasured common causes $U_3$ of $A$ and $Y$ remain;
-then $Z$ and $Y$ are associated given the collider $A$, (iii) fails,
-and the data give no support for $Y^a$ being well defined [@hernan2020causal, Fine Point 6.4, p. 89].
+In practice $A$ and $Y$ usually share unmeasured causes.
+Then $A$ is a collider between $Z$ and those causes, conditioning on it links $Z$ to $Y$, and (iii) fails,
+so the data say nothing about whether $Y^a$ is well defined [@hernan2020causal, Fine Point 6.4, p. 89].
 
-The book's remedy is a four-arm factorial **dose-finding** trial:
-randomize the drug ($Z=1$ or $Z=2$) and the target blood-pressure reduction ($A=a_1$ or $A=a_2$),
-and increase each individual's dose $D$ until the assigned reduction is reached and maintained.
-The achieved $A$ is then a deterministic function of the assigned value, so nothing else has an arrow into $A$ (book Figure 6.18).
-If $Y$ is independent of $D$ given $A$ and $\E{Y \mid A=a_1} \neq \E{Y \mid A=a_2}$,
-then under faithfulness (and assuming $Y^{d,a}$ and $Y^a$ are well defined)
-$D$ has no direct effect on $Y$ outside $A$,
-and $\E{Y^{a_1} - Y^{a_2}}$ is identified by $\E{Y \mid A=a_1} - \E{Y \mid A=a_2}$,
-even with unknown common causes of $A$ and $Y$.
-In a standard trial (book Figure 6.17), by contrast, $Y$ and $Z$ are associated given $A$,
-so a direct effect of $Z$ on $Y$ cannot be ruled out.
-:::
+The book gets around this with a dose-finding trial that randomizes two things:
+which drug an individual gets ($Z$),
+and which of two blood-pressure reductions ($a_1$ or $a_2$) the dose $D$ is titrated to reach and hold.
+Blood pressure $A$ is then fixed by the randomized target, so no unmeasured cause can point into it (book Figure 6.18).
+If, in addition, $Y \ind D \mid A$ and $\E{Y \mid A=a_1} \neq \E{Y \mid A=a_2}$,
+then, assuming faithfulness and that $Y^{d,a}$ and $Y^a$ are well defined,
+the dose affects $Y$ only through $A$,
+and $\E{Y \mid A=a_1} - \E{Y \mid A=a_2}$ identifies $\E{Y^{a_1} - Y^{a_2}}$,
+whatever unmeasured causes $A$ and $Y$ would otherwise share.
+Without titration (book Figure 6.17), $Z$ and $Y$ stay associated given $A$,
+and a direct effect of $Z$ on $Y$ cannot be excluded.
 :::
 
 ## Summary
@@ -787,7 +1241,7 @@ so a direct effect of $Z$ on $Y$ cannot be ruled out.
 - A **causal DAG** encodes qualitative causal knowledge:
   an arrow means a direct effect for at least one individual;
   a missing arrow means none for anyone;
-  all common causes of variables on the graph must be on the graph (causal Markov assumption).
+  all common causes of variables on the graph must be on the graph (needed for the causal Markov assumption).
 - Each causal DAG represents a counterfactual model (by default an FFRCISTG).
 - Association flows along open paths:
   marginally, causal chains and common causes transmit association, colliders block it;
