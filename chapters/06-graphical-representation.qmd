@@ -197,7 +197,7 @@ among people with the same smoking status, carrying a lighter tells us nothing m
 ::: {#rem-common-causes-on-graph}
 ## Why Every Common Cause Must Be on the Graph
 
-Condition 3 of @def-causal-dag is what makes the causal Markov assumption credible.
+Condition 3 of @def-causal-dag is needed for the causal Markov assumption to be credible.
 In @exm-causal-markov-lighter, leave smoking $L$ off the graph.
 $A$ and $Y$ then have no parents and no arrow between them,
 so the Markov property would require $A \ind Y$.
@@ -368,7 +368,7 @@ and unknown deterministic functions $f_1, \ldots, f_M$ such that,
 for each $m$ and each value $pa_m$ of the parents of $V_m$,
 the **one-step-ahead counterfactual** $V_m^{pa_m}$, the value $V_m$ would take if its parents were set to $pa_m$,
 equals $f_m(pa_m, \epsilon_m)$.
-For a node with no parents, such as $V_1$, this reads $V_m = f_m(\epsilon_m)$.
+For a node $V_m$ with no parents, such as $V_1$, this reads $V_m = f_m(\epsilon_m)$.
 
 Counterfactuals are assumed to exist for interventions on every variable,
 and every factual and counterfactual value is obtained by applying these equations recursively in the numbered order.
@@ -616,8 +616,9 @@ draw_dag('dag {
 | $A \leftarrow L \to Y$ (Fig. 6.6) | common cause $L$ | blocked | independent: $A \ind Y \mid L$ |
 | $A \to L \leftarrow Y$ (Fig. 6.7) | collider $L$ | **opened** | generically associated |
 
-The two independences follow from the causal Markov assumption (@def-causal-markov);
-"generically" means for all but special parameter values.
+The two independences follow from the causal Markov assumption (@def-causal-markov).
+The association in the collider row holds generically (for all but special parameter values),
+in at least one level of $L$.
 :::
 
 ::: {.notes}
@@ -686,7 +687,7 @@ draw_dag('dag {
 
 In @fig-dag-6-8, diuretic use $C$ is affected by the collider heart disease $L$.
 Conditioning on $C$ also opens the path $A \to L \leftarrow Y$,
-so haplotype and smoking are generically (for all but special parameter values) associated within levels of $C$.
+so haplotype and smoking are generically (for all but special parameter values) associated in at least one level of $C$.
 The path stays blocked when we condition on neither $L$ nor $C$.
 :::
 
@@ -832,15 +833,16 @@ but the expected association is absent: the distribution is not faithful to the 
 ::: {#exm-matching-unfaithful}
 ## Matching Builds In a Cancellation
 
-In a matched study (book Section 4.5, Figure 6.9), the matching factor $L$ affects treatment $A$,
-selection $S$ depends on both $A$ and $L$,
-and the analysis is restricted to the matched individuals ($S=1$).
-Given $S$, the paths $L \to A$ and $L \to S \leftarrow A$ are both open, so $L$ and $A$ are d-connected given $\{S\}$.
-Yet matching makes the distribution of $L$ the same in the treated and the untreated,
-so $L$ and $A$ are independent among the matched:
-the association created through $L \to S \leftarrow A$ exactly offsets the one through $L \to A$.
-This is the kind of exact cancellation that faithfulness rules out,
-which is why the book says that matching leads to unfaithfulness [@hernan2020causal, Fine Point 6.2, p. 83].
+Take a matched study (book Section 4.5, Figure 6.9).
+The matching factor $L$ affects treatment $A$,
+and whether an individual enters the matched sample, $S = 1$, depends on both $A$ and $L$.
+Conditioning on $S$ leaves two open paths between $L$ and $A$, the arrow $L \to A$ and $L \to S \leftarrow A$,
+so d-separation does not predict independence of $L$ and $A$ given $\{S\}$.
+But matching is designed to give the treated and the untreated in the sample the same distribution of $L$,
+so among those with $S = 1$ the two variables are independent:
+the two paths carry associations that cancel exactly.
+Faithfulness (@def-faithfulness) rules out such exact cancellations,
+so matching produces an unfaithful distribution on purpose [@hernan2020causal, Fine Point 6.2, p. 83].
 :::
 
 ::: {.notes}
@@ -962,7 +964,7 @@ and the only conditional independence is $Z \ind Y \mid A$.
 Then the only causal DAGs compatible with the data are $Z \to A \to Y$,
 possibly with a common cause of $Z$ and $A$ in addition to, or instead of, $Z \to A$.
 So there is no unmeasured common cause of $A$ and $Y$,
-and, if $Y^a$ is well defined and positivity holds,
+and, if $Y^a$ is well defined and consistency and positivity hold,
 the average causal effect is identified by $\E{Y \mid A=1} - \E{Y \mid A=0}$
 [@hernan2020causal, Fine Point 6.3, p. 85].
 :::
@@ -1182,9 +1184,10 @@ Causal and surrogate effect modifiers are often indistinguishable in practice,
 so "effect modification" covers both (Section 4.2);
 some prefer the neutral term "heterogeneity of causal effects".
 
-Intuition for the mineral-water example (book margin note, p. 88):
-low-cost hospitals that buy mineral water must spend less on care that lowers mortality,
-so among low-cost hospitals, mineral water use is inversely associated with quality of care.
+Why the mineral-water example works (book margin note, p. 88):
+a hospital can keep its total cost low while paying for bottled water only by economizing elsewhere,
+including on the care that reduces deaths.
+Among low-cost hospitals, then, bottled water tends to go with lower quality of care.
 VanderWeele and Robins (2007b) give a finer classification of effect modification via causal diagrams.
 :::
 
@@ -1209,26 +1212,26 @@ If (i) $Z$ is associated with $A$ and $Y$, (ii) $A$ and $Y$ are associated, and 
 then under faithfulness the only causal DAG has $A \to Y$, no $Z \to Y$, and no unmeasured common cause of $A$ and $Y$ or of $Z$ and $Y$
 (the discovery argument of @exm-discovery).
 
-- If $Y^a$ is well defined and positivity holds, $Y^a \ind A$ holds and $\E{Y \mid A=1} - \E{Y \mid A=0}$ is the average causal effect.
+- If $Y^a$ is well defined and consistency and positivity hold, $Y^a \ind A$ holds and $\E{Y \mid A=1} - \E{Y \mid A=0}$ is the average causal effect.
 - An investigator who doubted that $Y^a$ was well defined might take (i)-(iii) as empirical evidence that it is.
+:::
 
 ::: {.notes}
-Usually unmeasured common causes $U_3$ of $A$ and $Y$ remain;
-then $Z$ and $Y$ are associated given the collider $A$, (iii) fails,
-and the data give no support for $Y^a$ being well defined [@hernan2020causal, Fine Point 6.4, p. 89].
+In practice $A$ and $Y$ usually share unmeasured causes.
+Then $A$ is a collider between $Z$ and those causes, conditioning on it links $Z$ to $Y$, and (iii) fails,
+so the data say nothing about whether $Y^a$ is well defined [@hernan2020causal, Fine Point 6.4, p. 89].
 
-The book's remedy is a four-arm factorial **dose-finding** trial:
-randomize the drug ($Z=1$ or $Z=2$) and the target blood-pressure reduction ($A=a_1$ or $A=a_2$),
-and increase each individual's dose $D$ until the assigned reduction is reached and maintained.
-The achieved $A$ is then a deterministic function of the assigned value, so nothing else has an arrow into $A$ (book Figure 6.18).
-If $Y$ is independent of $D$ given $A$ and $\E{Y \mid A=a_1} \neq \E{Y \mid A=a_2}$,
-then under faithfulness (and assuming $Y^{d,a}$ and $Y^a$ are well defined)
-$D$ has no direct effect on $Y$ outside $A$,
-and $\E{Y^{a_1} - Y^{a_2}}$ is identified by $\E{Y \mid A=a_1} - \E{Y \mid A=a_2}$,
-even with unknown common causes of $A$ and $Y$.
-In a standard trial (book Figure 6.17), by contrast, $Y$ and $Z$ are associated given $A$,
-so a direct effect of $Z$ on $Y$ cannot be ruled out.
-:::
+The book gets around this with a dose-finding trial that randomizes two things:
+which drug an individual gets ($Z$),
+and which of two blood-pressure reductions ($a_1$ or $a_2$) the dose $D$ is titrated to reach and hold.
+Blood pressure $A$ is then fixed by the randomized target, so no unmeasured cause can point into it (book Figure 6.18).
+If, in addition, $Y \ind D \mid A$ and $\E{Y \mid A=a_1} \neq \E{Y \mid A=a_2}$,
+then, assuming faithfulness and that $Y^{d,a}$ and $Y^a$ are well defined,
+the dose affects $Y$ only through $A$,
+and $\E{Y \mid A=a_1} - \E{Y \mid A=a_2}$ identifies $\E{Y^{a_1} - Y^{a_2}}$,
+whatever unmeasured causes $A$ and $Y$ would otherwise share.
+Without titration (book Figure 6.17), $Z$ and $Y$ stay associated given $A$,
+and a direct effect of $Z$ on $Y$ cannot be excluded.
 :::
 
 ## Summary
@@ -1238,7 +1241,7 @@ so a direct effect of $Z$ on $Y$ cannot be ruled out.
 - A **causal DAG** encodes qualitative causal knowledge:
   an arrow means a direct effect for at least one individual;
   a missing arrow means none for anyone;
-  all common causes of variables on the graph must be on the graph (causal Markov assumption).
+  all common causes of variables on the graph must be on the graph (needed for the causal Markov assumption).
 - Each causal DAG represents a counterfactual model (by default an FFRCISTG).
 - Association flows along open paths:
   marginally, causal chains and common causes transmit association, colliders block it;
