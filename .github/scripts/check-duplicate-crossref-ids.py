@@ -21,7 +21,7 @@ PREFIXES = "def|thm|lem|prp|cor|exm|exr|alg|rem|cnj|prf|sol|fig|tbl|eq|sec|lst"
 ATTR_ID = re.compile(r"\{[^{}]*?#((?:%s)-[A-Za-z0-9_-]+)" % PREFIXES)
 CHUNK_ID = re.compile(r"^#\|\s*label:\s*((?:%s)-[A-Za-z0-9_-]+)" % PREFIXES)
 FENCE = re.compile(r"^\s*(`{3,}|~{3,})(.*)$")
-INLINE_CODE = re.compile(r"`[^`]*`")
+INLINE_CODE = re.compile(r"(`+)(.+?)\1")
 
 
 def strip_comments(line, in_comment):
@@ -68,7 +68,7 @@ def ids_in(path):
             fence = (
                 match.group(1)[0],
                 len(match.group(1)),
-                match.group(2).lstrip().startswith("{"),
+                re.match(r"\{[A-Za-z]", match.group(2).lstrip()) is not None,
             )
             continue
         text, in_comment = strip_comments(line, in_comment)
