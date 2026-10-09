@@ -24,7 +24,7 @@ This chapter explains why one kind of study, the randomized experiment, can answ
 A study is an **experiment** if the investigator, not the subjects or anyone else, assigns the action of interest:
 the investigator decides who gets it.
 An experiment is **randomized** if a chance mechanism, such as a coin flip, makes those assignments,
-and **nonrandomized** if a fixed rule makes them, for example a rule based on each subject's characteristics [@hernan2020causal, p. 13].
+and **nonrandomized** if no chance mechanism makes them, for example when a fixed rule based on each subject's characteristics does [@hernan2020causal, p. 13].
 :::
 
 ::: {#exm-looking-up}
@@ -405,7 +405,8 @@ Even if we knew that it failed, that would not prove the study was not randomize
 
 ::: {.callout-note title="Population Effects Only"}
 This chapter targets population (average) causal effects,
-because effects in single individuals are generally not identified.
+because effects in single individuals generally cannot be computed from the observed data
+(they are not [identified](01-introduction.qmd), in the sense made precise in Section 2.3).
 Crossover experiments, next, are a possible exception under strong conditions [@hernan2020causal, p. 16].
 :::
 
@@ -437,7 +438,7 @@ That conclusion holds only under the strong conditions stated next.
 ---
 
 ::: {#prp-crossover-identification}
-## When a crossover experiment identifies an individual effect (Fine Point 2.1)
+## When a crossover experiment reveals an individual effect (Fine Point 2.1)
 
 Consider a two-period crossover experiment (@def-crossover-experiment) with dichotomous treatments $A_{it} \in \set{0, 1}$, deterministic counterfactual outcomes, and consistency.
 Write $Y_{it}^{a_t}$ for individual $i$'s outcome at $t$ under treatment $a_t$ at $t$,
@@ -449,7 +450,7 @@ and suppose that
 
 If $A_{i0} = 0$ and $A_{i1} = 1$, then $Y_{i1} - Y_{i0} = \alpha_i$;
 if $A_{i0} = 1$ and $A_{i1} = 0$, then $Y_{i0} - Y_{i1} = \alpha_i$.
-So the observed change identifies the individual causal effect $\alpha_i$ [@hernan2020causal, p. 16].
+So the observed change equals the individual causal effect $\alpha_i$ [@hernan2020causal, p. 16].
 :::
 
 ::: {.proof}
@@ -608,7 +609,9 @@ Had the investigators transplanted everyone in critical condition, $\Pr[A = 0 \m
 ::: {#prp-randomization-exchangeability}
 ## What each design guarantees
 
-Let $A$ be a dichotomous treatment and $L$ a variable measured before treatment.
+Let $A$ be a dichotomous treatment,
+$Y$ an outcome with counterfactual outcomes $Y^{a=0}$ and $Y^{a=1}$ (dichotomous wherever @def-exchangeability is invoked),
+and $L$ a variable measured before treatment.
 Suppose treatment is assigned by a random device so that, in a near-infinite population,
 $0 < \Pr[A = 1 \mid L = l] < 1$ for every level $l$ of $L$, and
 $$
@@ -635,7 +638,8 @@ then $A$ is independent of $(L, Y^{a=0}, Y^{a=1})$ jointly, and in particular of
 ::: {#def-mcar-mar}
 ## Missing completely at random and missing at random
 
-With a dichotomous treatment $A$, one counterfactual outcome is missing for everyone:
+Let $A$ be a dichotomous treatment, $Y$ an outcome with counterfactual outcomes $Y^{a=0}$ and $Y^{a=1}$, and $L$ a variable measured before treatment.
+One counterfactual outcome is missing for everyone:
 $Y^{a=0}$ if $A = 1$, and $Y^{a=1}$ if $A = 0$.
 Take the full data to be $(L, Y^{a=0}, Y^{a=1})$, of which $(L, Y^a)$ is observed when $A = a$.
 The counterfactual outcomes are
@@ -752,7 +756,7 @@ and the treated and the untreated are exchangeable.
 - $L = 1$: 6 of the 9 treated died and 2 of the 3 untreated died (Artemis and Apollo),
   so $\Pr[Y = 1 \mid L = 1, A = 1] = 6/9 = 2/3$ and $\Pr[Y = 1 \mid L = 1, A = 0] = 2/3$.
 
-Design 2 gives conditional exchangeability (@exm-conditional-exchangeability-design-2) and positivity (@exm-positivity-design-2).
+Design 2 gives conditional exchangeability (@exm-conditional-exchangeability-design-2, @prp-randomization-exchangeability) and positivity (@exm-positivity-design-2).
 Assuming consistency as well, @prp-stratum-association-causation turns these into stratum-specific causal risk ratios (@def-stratification-ch2):
 $(1/4)/(1/4) = 1$ when $L = 0$
 and $(2/3)/(2/3) = 1$ when $L = 1$.
@@ -810,7 +814,8 @@ From @exm-stratification-table-2-2:
 | $L = 0$ (8 individuals) | $\Pr[Y = 1 \mid L = 0, A = 1] = 1/4$ | $\Pr[Y = 1 \mid L = 0, A = 0] = 1/4$ |
 | $L = 1$ (12 individuals) | $\Pr[Y = 1 \mid L = 1, A = 1] = 6/9 = 2/3$ | $\Pr[Y = 1 \mid L = 1, A = 0] = 2/3$ |
 
-By @prp-stratum-association-causation, each observed stratum risk equals the corresponding counterfactual risk,
+Under design 2 (conditional exchangeability by @prp-randomization-exchangeability, and positivity by @exm-positivity-design-2) and consistency,
+@prp-stratum-association-causation says that each observed stratum risk equals the corresponding counterfactual risk,
 e.g. $\Pr[Y = 1 \mid L = 0, A = 1] = \Pr[Y^{a=1} = 1 \mid L = 0]$.
 The risk if all 20 had been treated should then be an average of $1/4$ (in $L = 0$) and $2/3$ (in $L = 1$),
 weighted by the size of each stratum.
@@ -907,7 +912,7 @@ For a dichotomous outcome, each mean is a risk.
 
 In the conditionally randomized experiment of Table 2.2,
 the conditions of @prp-standardization-identifies hold:
-conditional exchangeability by design (@exm-conditional-exchangeability-design-2),
+conditional exchangeability by design (@exm-conditional-exchangeability-design-2, @prp-randomization-exchangeability),
 positivity by @exm-positivity-design-2,
 and consistency by assumption.
 So the standardized risks of @exm-standardization-table-2-2 are the counterfactual risks:
@@ -1135,7 +1140,7 @@ Then the IP weighted mean equals the counterfactual mean:
 $$
 \E{\frac{\indicp{A = a} Y}{f[A \mid L]}} = \E{Y^a}.
 $$ {#eq-ipw-identifies}
-So, by @prp-pseudo-population-ch2, for a dichotomous treatment and outcome,
+So, by @prp-pseudo-population-ch2, for a dichotomous treatment and outcome with $\Pr[Y^{a=0} = 1] > 0$,
 comparing the risks of treated and untreated members of the pseudo-population gives the causal risk ratio of the original population [@hernan2020causal, pp. 22, 25].
 :::
 
