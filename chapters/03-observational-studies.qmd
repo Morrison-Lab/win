@@ -98,7 +98,8 @@ Sections 3.2 to 3.5 take them one at a time and define each formally.
 
 ::: {.callout-important title="Data Alone Are Not Enough"}
 An ideal randomized experiment secures the identifiability conditions (@def-identifiability-conditions) through its design.
-An observational study cannot; there, they are *assumptions* brought to the data from outside.
+An observational study cannot do so,
+and there the conditions are *assumptions* brought to the data from outside.
 A causal conclusion from observational data is only as good as the data **and** those assumptions together.
 :::
 
@@ -207,12 +208,12 @@ It is **nonidentifiable** if more than one value remains possible [@hernan2020ca
 ## Identifiability in Table 3.1
 
 If [Table 3.1](#tbl-table-3-1) came from a conditionally randomized experiment, $Y^a \ind A \mid L$ holds by design and the causal risk ratio of 1 is identified with no further assumptions.
-If it came from an observational study, the risk ratio equals 1 only if we add the *identifying assumption* $Y^a \ind A \mid L$, which is external to the data.
+If it came from an observational study, we can conclude that the causal risk ratio is 1 only by adding the *identifying assumption* $Y^a \ind A \mid L$, which is external to the data.
 Without it, the same data leave the causal risk ratio undetermined (@def-identifiability):
 
-- it is below 1 when the treated carry more of the remaining risk factors (those besides $L$);
-- it is above 1 when the untreated carry more of them;
-- it is 1 when the remaining risk factors are balanced within levels of $L$, i.e., when $Y^a \ind A \mid L$.
+- it can be below 1, if the treated carry more of the other predictors of death besides $L$;
+- it can be above 1, if the untreated carry more of them;
+- it can be 1, if those other predictors are balanced within levels of $L$, i.e., if $Y^a \ind A \mid L$.
 :::
 
 ::: {.callout-note title="Fine Point 3.1: Identifiability of causal effects"}
@@ -273,7 +274,8 @@ In [Table 3.1](#tbl-table-3-1), 69% of the treated ($9/13$) but only 43% of the 
 Because $L$ is a risk factor (@exm-table-3-1-risk-factor), the treated had a worse prognosis on average.
 
 To make this concrete, suppose, as in Chapter 2, that the data come from a conditionally randomized experiment,
-so that consistency, $Y^a \ind A \mid L$, and positivity hold (positivity is checked for these data in Section 3.3).
+so that consistency, $Y^a \ind A \mid L$, and positivity hold
+(positivity holds here because $\Pr[A = 1 \mid L = 1] = 0.75$ and $\Pr[A = 1 \mid L = 0] = 0.50$).
 Then the risk the treated would have had without treatment is
 
 $$
@@ -321,7 +323,8 @@ and, together with consistency and positivity (which holds here, since $\Pr[A = 
 
 ::: {.notes}
 Chapter 7 calls such outcome predictors *confounders*.
-Nothing in the data can show whether $L$ is the only imbalanced outcome predictor; an observational analysis has to assume it.
+Nothing in the data can show whether $L$ is the only imbalanced outcome predictor,
+so an observational analysis has to assume it.
 :::
 
 ### Not every imbalanced variable must be in $L$
@@ -424,7 +427,7 @@ Let $A$ be a treatment and $L$ the covariates used to achieve conditional exchan
 $$\Pr[A = a \mid L = l] > 0 \quad \text{for all values } l \text{ with } \Pr[L = l] \neq 0 \text{ in the population of interest,}$$
 
 for every treatment value $a$ involved in the causal contrast.
-Positivity is sometimes called the **experimental treatment assumption**.
+Positivity is sometimes called the **experimental treatment assumption** [@hernan2020causal, p. 32].
 :::
 
 ::: {#exm-table-3-1-positivity}
@@ -476,7 +479,7 @@ In [Table 3.1](#tbl-table-3-1) there are treated and untreated individuals in bo
 The standardized mean $\sum_l \E{Y \mid A = a, L = l} \Pr[L = l]$ is defined only if $\E{Y \mid A = a, L = l}$ is defined for every $l$ with $\Pr[L = l] \neq 0$, i.e., only under positivity;
 otherwise it is undefined.
 
-For IP weighting, write $f[a \mid L] \eqdef \Pr[A = a \mid L]$.
+For IP weighting, write $f[a \mid L] \eqdef \Pr[A = a \mid L]$, and $f[A \mid L]$ for its value at each individual's own treatment $A$.
 The version $\E{\frac{I(A = a) Y}{f[a \mid L]}}$ is undefined without positivity (it involves $0/0$).
 The version $\E{\frac{I(A = a) Y}{f[A \mid L]}}$ is always defined, because $f[A \mid L]$ is never 0, but without positivity it no longer equals the counterfactual mean.
 :::
@@ -625,8 +628,8 @@ But the two counterfactuals, and hence the two causal effects, will likely diffe
 ::: {#def-pragmatic-trial-ch3}
 ## Pragmatic trial
 
-A **pragmatic trial** is a trial meant to estimate the effects of treatment strategies as they would play out in routine care.
-Its protocol can fix the initial assignment and leave later components of care to take whatever values they take in routine practice.
+As used in this chapter, a **pragmatic trial** is a randomized trial whose investigators deliberately leave the components of care after assignment unspecified,
+so that those components take the values they would take in routine practice.
 Trial 2 of @exm-two-transplant-trials is a pragmatic trial;
 Trial 1 is not, because its protocol also fixes $a_1$, $a_2$, and $a_3$.
 :::
@@ -915,6 +918,7 @@ Keep the ambrosia data (@exm-attributable-fraction), with exchangeability of amb
 These choices agree with the counterfactual risks used before, $\Pr[Y^{a=1} = 1] = (7 + 7)/20 = 0.7$ and $\Pr[Y^{a=0} = 1] = (1 + 1)/20 = 0.1$,
 and keep exchangeability: $Y^{a=1}$ is 1 for 7 of 10 in each group, and $Y^{a=0}$ is 1 for 1 of 10 in each group.
 
+Here we count an ambrosia eater's case as caused by ambrosia when that person would have stayed well without it ($Y^{a=0} = 0$).
 Each of the 7 cases among ambrosia eaters would not have occurred without ambrosia, so ambrosia caused all 7;
 the single case among nectar drinkers did not involve ambrosia.
 In this scenario, then, the etiologic fraction (@def-etiologic-fraction) is $7/8 = 0.875$.
