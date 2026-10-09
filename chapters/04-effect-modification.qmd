@@ -102,7 +102,7 @@ Only variables $V$ not affected by treatment $A$ are considered as effect modifi
 ::: {#def-qualitative-effect-modification}
 ## Qualitative Effect Modification
 
-Let $V$ be binary and let $\RD_v \eqdef \E{Y^{a=1} - Y^{a=0} \mid V = v}$ be the average causal effect on the additive scale in stratum $V = v$.
+Let $V$ be binary with $\Pr[V = v] > 0$ for $v = 0, 1$, and let $\RD_v \eqdef \E{Y^{a=1} - Y^{a=0} \mid V = v}$ be the average causal effect on the additive scale in stratum $V = v$.
 We call $V$ a **qualitative** effect modifier if the two stratum-specific effects point in **opposite directions**:
 either $\RD_1 > 0 > \RD_0$ or $\RD_1 < 0 < \RD_0$.
 :::
@@ -129,7 +129,7 @@ Section 6.6 gives a structural classification of effect modifiers.
 ::: {#prp-qualitative-both-scales}
 ## Opposite Directions Show Up on Both Scales
 
-Let $V$ be binary,
+Let $V$ be binary with $\Pr[V = v] > 0$ for $v = 0, 1$,
 let $\RD_v \eqdef \E{Y^{a=1} - Y^{a=0} \mid V = v}$ be the average causal effect on the additive scale in stratum $V = v$,
 let $p_v \eqdef \E{Y^{a=0} \mid V = v}$ be the counterfactual mean under no treatment in stratum $V = v$, with $p_v > 0$ for $v = 0, 1$,
 and let $\RR_v \eqdef \E{Y^{a=1} \mid V = v} / p_v$ be the causal risk ratio in stratum $V = v$.
@@ -206,7 +206,7 @@ Suppose that
 
 - treatment is assigned independently of the counterfactual outcomes and of $V$: $(Y^{a=0}, Y^{a=1}, V) \ind A$;
 - consistency holds: $Y = Y^a$ for individuals with $A = a$;
-- $\Pr[A = a, V = v] > 0$ for $a = 0, 1$.
+- $\Pr[A = a, V = v] > 0$ for $a = 0, 1$ and every $v$ with $\Pr[V = v] > 0$.
 
 Then $\Pr[Y = 1 \mid A = a, V = v] = \Pr[Y^a = 1 \mid V = v]$ for each $a$ and $v$,
 so the associational risk difference in stratum $V = v$ equals the causal risk difference in that stratum.
@@ -259,6 +259,7 @@ Nationality $V$: 20 Greeks ($V = 1$, data in Table 3.1) and 20 Romans ($V = 0$, 
 ## The Effect in All 40 Greeks and Romans
 
 Randomization depended only on $L$, so $Y^a \ind A \mid L$ holds in the combined population, and every stratum of $L$ has treated and untreated individuals.
+Under consistency, standardization then gives the counterfactual risks.
 Pooling Greeks and Romans, 16 individuals have $L = 0$ and 24 have $L = 1$, so $\Pr[L = 0] = 0.4$ and $\Pr[L = 1] = 0.6$.
 The stratum-specific risks are $\Pr[Y = 1 \mid A = 1, L = 0] = 3/8$, $\Pr[Y = 1 \mid A = 1, L = 1] = 12/18 = 2/3$, $\Pr[Y = 1 \mid A = 0, L = 0] = 2/8$, and $\Pr[Y = 1 \mid A = 0, L = 1] = 3/6$.
 Standardizing by $L$,
@@ -284,7 +285,7 @@ The book states these two risks without the intermediate steps.
 
 ---
 
-To compute $\Pr[Y^{a} = 1 \mid V = v]$ in each stratum, use two stages.
+To compute $\Pr[Y^{a} = 1 \mid V = v]$ in each stratum, stratify first and adjust second.
 
 ::: {#alg-stratify-then-standardize}
 ## Stratify by the Modifier, Then Adjust for the Confounders
@@ -369,8 +370,8 @@ Chapter 5's **interaction** does attribute a causal role to the variables involv
 
 ::: {.callout-note title="Fine Point 4.1: Effect in the Treated"}
 The individuals who actually received treatment form one subset of special interest.
-The definition that follows gives the average causal effect in the treated and in the untreated,
-and the remark after it explains when the effect in the treated differs from the population effect
+@def-effect-in-treated gives the average causal effect in the treated and in the untreated,
+and @rem-treatment-group-as-marker explains when the effect in the treated differs from the population effect
 [@hernan2020causal, p. 50].
 :::
 
@@ -381,8 +382,8 @@ Let $A$ and $Y$ be dichotomous, with $\Pr[A = 1] > 0$.
 Among the treated, the **causal risk difference in the treated** contrasts $\Pr[Y^{a=1} = 1 \mid A = 1]$ with $\Pr[Y^{a=0} = 1 \mid A = 1]$ by subtraction,
 and the **causal risk ratio in the treated** contrasts them by division:
 $\Pr[Y^{a=1} = 1 \mid A = 1] / \Pr[Y^{a=0} = 1 \mid A = 1]$.
-The latter is also called the **standardized morbidity ratio** (SMR).
-Replacing $A = 1$ by $A = 0$ in the conditioning event (with $\Pr[A = 0] > 0$) gives the causal risk difference and ratio **in the untreated** (book Figure 4.1).
+The latter, defined when $\Pr[Y^{a=0} = 1 \mid A = 1] > 0$, is also called the **standardized morbidity ratio** (SMR).
+Replacing $A = 1$ by $A = 0$ in the conditioning event (with $\Pr[A = 0] > 0$, and a positive denominator for the ratio) gives the causal risk difference and ratio **in the untreated** (book Figure 4.1).
 :::
 
 Under consistency, $\Pr[Y^{a=1} = 1 \mid A = 1] = \Pr[Y = 1 \mid A = 1]$,
@@ -454,8 +455,8 @@ The book cites Hernán and VanderWeele (2011), Pearl and Bareinboim (2014), and 
 
 ::: {.callout-note title="Fine Point 4.2: Transportability"}
 Whether an effect carries over from a study population to a target population depends on features of both.
-The remark that follows lists the features whose similarity can justify transporting an effect,
-and the one after it shows how stratum-specific effects can be reweighted to a target population, and why that may still fall short
+@rem-transportability-requirements lists the features whose similarity can justify transporting an effect,
+and @rem-transport-by-reweighting shows how stratum-specific effects can be reweighted to a target population, and why that may still fall short
 [@hernan2020causal, p. 54].
 Methods for transporting effects are discussed by Westreich et al. (2017), Rudolph and van der Laan (2017), and Dahabreh et al. (2020b).
 :::
@@ -474,7 +475,7 @@ An average causal effect (@def-transportability) may be transported from a study
 ## Reweighting Strata to a Target Population
 
 Let $S$ index strata defined by measured effect modifiers (e.g., Roman women, Greek women, Roman men, Greek men),
-let $\Pr^*$ denote probabilities in the target population,
+let $\Pr$ and $\Pr^*$ denote probabilities in the study and the target population,
 and let $q_s \eqdef \Pr^*[S = s]$.
 Suppose every stratum with $q_s > 0$ is also present in the study population,
 and, for each $a$ and $s$, the stratum-specific counterfactual risk in the target population equals the one computed in the study population:
@@ -485,15 +486,15 @@ $$
 \Pr^*[Y^a = 1] = \sum_s \Pr[Y^a = 1 \mid S = s]\, q_s,
 $$ {#eq-transport-reweighting}
 
-and the target causal risk difference and risk ratio follow by contrasting these risks for $a = 1$ and $a = 0$.
-That condition can fail because of unmeasured effect modifiers, different interference patterns, or different versions of treatment,
+and the target causal risk difference and risk ratio (when $\Pr^*[Y^{a=0} = 1] > 0$) follow by contrasting these risks for $a = 1$ and $a = 0$.
+The assumption that the stratum-specific risks carry over can fail because of unmeasured effect modifiers, different interference patterns, or different versions of treatment,
 so the reweighted value need not equal the true effect in the target population.
 :::
 
 ::: {.callout-note title="Technical Point 4.1: Computing the Effect in the Treated"}
 Effects among the treated, or among the untreated, need a weaker exchangeability condition than the population effect.
-The definition that follows names that condition,
-and the proposition after it shows how standardization and IP weighting compute the needed counterfactual means;
+@def-partial-exchangeability names that condition,
+and @prp-effect-in-treated-identification shows how standardization and IP weighting compute the needed counterfactual means;
 Sato and Matsuyama (2003) derived the IP weighting equality for dichotomous $A$.
 Miettinen (1972) and Greenland and Rothman (2008) discuss standardized risk ratios,
 and Hernán and Robins (2006a) give further details
@@ -503,6 +504,7 @@ and Hernán and Robins (2006a) give further details
 ::: {#def-partial-exchangeability}
 ## Partial Exchangeability
 
+Let $L$ be a set of measured pre-treatment covariates.
 For a treatment level $a$, **partial exchangeability** is $Y^a \ind A \mid L$ for that one level,
 whereas the population effect uses conditional exchangeability for both $a = 0$ and $a = 1$.
 The effect in the treated (@def-effect-in-treated) uses partial exchangeability for $a = 0$,
@@ -513,7 +515,7 @@ For the effect in the treated, for example, it does not matter whether the untre
 ::: {#prp-effect-in-treated-identification}
 ## Identifying Counterfactual Means in a Treatment Group
 
-Let $a, a' \in \{0, 1\}$ with $\Pr[A = a'] > 0$.
+Let $L$ be a set of measured pre-treatment covariates, and let $a, a' \in \{0, 1\}$ with $\Pr[A = a'] > 0$.
 Assume consistency, partial exchangeability $Y^a \ind A \mid L$ for this $a$ (@def-partial-exchangeability),
 and positivity $f(a \mid L = l) \eqdef \Pr[A = a \mid L = l] > 0$ for every $l$ with $\Pr[L = l] > 0$.
 Then $\E{Y^a \mid A = a'}$ equals both the standardized mean
@@ -579,7 +581,7 @@ whatever the risk ratio in that stratum is.
 ::: {#prp-em-at-least-one-scale}
 ## Modification on at Least One Scale
 
-Let $V$ be binary, and let $p_v \eqdef \Pr[Y^{a=0} = 1 \mid V = v] > 0$,
+Let $V$ be binary with $\Pr[V = v] > 0$ for $v = 0, 1$, and let $p_v \eqdef \Pr[Y^{a=0} = 1 \mid V = v] > 0$,
 $\RD_v \eqdef \Pr[Y^{a=1} = 1 \mid V = v] - p_v$,
 and $\RR_v \eqdef \Pr[Y^{a=1} = 1 \mid V = v] / p_v$ for $v = 0, 1$.
 If $\RD_v \neq 0$ for at least one $v$ and $p_1 \neq p_0$,
@@ -594,7 +596,8 @@ By the definitions, $\Pr[Y^{a=1} = 1 \mid V = v] = p_v + d$, so $\RR_v = 1 + d /
 Because $d \neq 0$ and $p_1 \neq p_0$, $d / p_1 \neq d / p_0$, so $\RR_1 \neq \RR_0$: there is multiplicative modification.
 :::
 
-In @exm-multiplicative-not-additive, $d = 0.1$, $p_1 = 0.8$, and $p_0 = 0.1$, so $\RR_1 = 1.125$ and $\RR_0 = 2$.
+In @exm-multiplicative-not-additive, both strata have causal risk difference $0.1$, while $\Pr[Y^{a=0} = 1 \mid V = 1] = 0.8$ and $\Pr[Y^{a=0} = 1 \mid V = 0] = 0.1$,
+so the risk ratios are $1 + 0.1/0.8 = 1.125$ and $1 + 0.1/0.1 = 2$, as @prp-em-at-least-one-scale predicts.
 
 ::: {.callout-tip title="Report the Counterfactual Risks"}
 Reporting both counterfactual risks, $\Pr[Y^{a=1} = 1 \mid V = v]$ and $\Pr[Y^{a=0} = 1 \mid V = v]$, for every stratum tells the reader more than reporting only their difference or ratio:
@@ -649,6 +652,7 @@ Under $Y^a \ind A \mid L$, each is the causal risk ratio in its stratum, because
 ::: {#def-conditional-marginal-effect-measure}
 ## Effect Measures Within Strata and in the Whole Population
 
+Let $L$ be a pre-treatment variable.
 A **conditional** effect measure contrasts counterfactual outcomes within the subset of the population with $L = l$,
 e.g., the conditional causal risk ratio $\Pr[Y^{a=1} = 1 \mid L = l] / \Pr[Y^{a=0} = 1 \mid L = l]$.
 A **marginal** (unconditional) effect measure contrasts them in the whole population,
@@ -670,7 +674,7 @@ Stratifying by $V$ and then standardizing or IP weighting for $L$ handles exchan
 ::: {.callout-warning title="More Pitfalls of Stratification as Adjustment"}
 - Some effect measures, such as the odds ratio, are **noncollapsible**:
   their population value need not be a weighted average of their stratum-specific values (Fine Point 4.3).
-- With time-varying treatments, stratifying on time-varying $L$ affected by prior treatment is inappropriate adjustment (Part III):
+- With time-varying treatments, when exchangeability requires adjusting for time-varying $L$ affected by prior treatment, stratifying on $L$ is inappropriate adjustment (Part III):
   stratum-specific measures may then lack a causal interpretation even under exchangeability, positivity, and well-defined interventions (Robins 1986, 1987;
   Chapter 20).
 - Stratification requires **positivity** as well as exchangeability: no effect can be computed in a stratum $L = l$ containing only treated or only untreated individuals.
@@ -683,6 +687,7 @@ Stratifying by $V$ and then standardizing or IP weighting for $L$ handles exchan
 ::: {#def-restriction}
 ## Restricting the Analysis to Some Strata
 
+Let $L$ be a set of measured pre-treatment covariates.
 **Restriction** computes the effect of $A$ on $Y$ only in some strata of $L$, for example only in $L = 1$.
 Stratification is restriction applied to each of several mutually exclusive subsets that together cover the population,
 with conditional exchangeability required in each.
@@ -697,7 +702,7 @@ When positivity fails in some strata, restriction limits the inference to the st
 ::: {#def-matching}
 ## Matching
 
-**Matching** selects individuals so that, among those selected, the variables $L$ (the **matching factors**) are distributed identically in the treated and the untreated.
+**Matching** selects individuals so that, among those selected, a set of measured pre-treatment variables $L$ (the **matching factors**) is distributed identically in the treated and the untreated.
 
 - In one-to-one matching, each individual in a reference group (e.g., the untreated) is paired with an individual of the other treatment group who has the same value of $L$, forming **matched pairs**;
   one-to-many matching forms **matched sets**.
@@ -865,7 +870,7 @@ In Table 4.3, $w(0) = (1/4)(0.4)/0.5 = 0.2 < 1/3$, and indeed $2(0.2) + 0.5(0.8)
 ::: {#rem-well-characterized-target-population}
 ## A Second Prerequisite for Causal Inference
 
-Chapter 3 required a well-defined intervention before a causal question can be answered.
+Chapter 3 required the causal effect of interest to be well defined before it can be estimated.
 A **well-characterized target population** is a second requirement of that kind:
 the population, or subset, to which the effect refers must be stated.
 Experiments that compare interventions in a population meeting a priori eligibility criteria have both automatically;
@@ -904,9 +909,9 @@ Finally, stratification yields average effects in subsets, not individual effect
 ::: {.callout-note title="Technical Point 4.2: Pooling of Stratum-Specific Effect Measures"}
 Until Chapter 10, the book works with whole populations and so talks of computing, not estimating, effects.
 With samples, stratum-specific estimates are variable, and pooling them is a common response.
-The definition that follows describes pooling,
-the example after it pools the Table 4.3 risk ratios,
-and the warning after that explains when the pooled value is hard to interpret.
+@def-pooled-effect-measure describes pooling,
+@exm-mantel-haenszel-table-4-3 pools the Table 4.3 risk ratios,
+and the warning after that example explains when the pooled value is hard to interpret.
 Greenland and Rothman (2008) review common methods for stratified analysis
 [@hernan2020causal, p. 57].
 :::
@@ -949,22 +954,24 @@ The finer the stratification, the harder it is to tell sampling variability from
 ::: {.callout-note title="Fine Point 4.3: Collapsibility and the Odds Ratio"}
 A desirable property of an effect measure is that its population value is a weighted average of its stratum-specific values,
 and so lies within their range.
-The definition that follows names that property,
-and the example after it uses the data in Table 4.4 to show that the odds ratio lacks it
+@def-collapsible-effect-measure names that property,
+and @exm-odds-ratio-noncollapsible uses the data in Table 4.4 to show that the odds ratio can lack it
 [@hernan2020causal, p. 60].
 :::
 
 ::: {#def-collapsible-effect-measure}
 ## Collapsible Effect Measure
 
-An effect measure is **collapsible** over a variable $V$ when, for every distribution of the data, its value in the population is a weighted average of its values in the strata of $V$,
-with nonnegative weights that sum to 1.
-It is **noncollapsible** otherwise.
+In a given population, an effect measure is **collapsible** over a variable $V$ when its value in the whole population is a weighted average of its values in the strata of $V$,
+with nonnegative weights that sum to 1,
+so that the population value lies within the range of the stratum-specific values.
+It is **noncollapsible** in that population otherwise.
 :::
 
-In follow-up studies the risk difference and the risk ratio are collapsible
-(the first display in the proof of @prp-marginal-rr-condition writes the marginal risk ratio as such an average),
-but the odds ratio (and the rarely used odds difference) is not (Greenland 1987).
+In follow-up studies with $V$ not affected by treatment, the risk difference and the risk ratio are collapsible.
+The causal risk difference is the average of the stratum-specific ones with weights $\Pr[V = v]$.
+When $\Pr[Y^{a=0} = 1 \mid V = v] > 0$ in every stratum, the causal risk ratio is the average of the stratum-specific ones with weights $\Pr[Y^{a=0} = 1 \mid V = v] \Pr[V = v] / \Pr[Y^{a=0} = 1]$.
+The odds ratio (and the rarely used odds difference) is not collapsible in general (Greenland 1987).
 
 **Table 4.4**: effect of moving to high altitude $A$ (top of Mount Olympus) on depression $Y$;
 $V = 1$ for women.
