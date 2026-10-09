@@ -32,6 +32,8 @@ jobs:
       # and skip the expensive steps when it does not.
       - name: Detect site-relevant changes
         id: filter
+        # Not needed on close: the preview is removed regardless, and the head commit may be gone.
+        if: github.event.action != 'closed'
         env:
           BASE_SHA: ${{ github.event.pull_request.base.sha }}
           HEAD_SHA: ${{ github.event.pull_request.head.sha }}
