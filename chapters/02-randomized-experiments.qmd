@@ -14,12 +14,40 @@ format:
 
 Does your looking up at the sky make other pedestrians look up too?
 The question has the parts of any causal question: an action (your looking up), an outcome (others looking up), and a population (say, residents of Madrid in 2019).
-A natural design: flip a coin each time someone approaches, look up on heads and straight ahead on tails, repeat a few thousand times, and compare the proportions of pedestrians who look up within 10 seconds.
-Suppose 55% looked up when you did and 1% when you did not.
+This chapter explains why one kind of study, the randomized experiment, can answer such questions convincingly.
 
-That design is a **randomized experiment**: an *experiment* because the investigator carries out the action, and *randomized* because a random device (the coin) decides whom to act on.
-A nonrandomized experiment, e.g. looking up only when a man approaches, would be much less convincing: critics could say that men and women differ in how often they look up, so the comparison is between "noncomparable" groups.
-This chapter explains why randomization supports convincing causal inferences.
+::: {#def-randomized-experiment}
+## Experiment and randomized experiment
+
+A study is an **experiment** if the investigator carries out the action of interest,
+deciding which study subjects receive it.
+An experiment is **randomized** if those decisions are made by a random device, such as a coin flip,
+and **nonrandomized** if they follow a deterministic rule, such as one based on the subjects' characteristics [@hernan2020causal, p. 13].
+:::
+
+::: {#exm-looking-up}
+## Looking up at the sky
+
+Stand on a sidewalk and flip a coin each time a pedestrian approaches:
+on heads, look up;
+on tails, look straight ahead.
+After a few thousand repetitions,
+compare the proportions of pedestrians who looked up within 10 seconds under each action.
+This is a randomized experiment (@def-randomized-experiment):
+you carry out the action, and the coin decides whom you act on.
+Suppose 55% looked up when you did and 1% when you did not.
+:::
+
+::: {#exm-looking-up-nonrandomized}
+## A nonrandomized version
+
+Now look up whenever a man approaches and straight ahead whenever a woman does.
+This is still an experiment, but a nonrandomized one (@def-randomized-experiment):
+sex, not a coin, decides the action.
+Critics could object that men and women may differ in how often they look up after someone else does,
+so the study compares "noncomparable" groups,
+and its result would be much less convincing [@hernan2020causal, p. 13].
+:::
 
 ::: {.notes}
 This chapter is based on @hernan2020causal [Chapter 2, pp. 13-25].
@@ -70,42 +98,86 @@ Neyman (1923) applied counterfactual theory to the estimation of causal effects 
 
 ### An Ideal Randomized Experiment
 
-Take the near-infinite population drawn as a diamond in Figure 1.1.
-For each individual, flip a coin with probability of heads below 50%:
+::: {#def-ideal-randomized-experiment}
+## Ideal randomized experiment
+
+An **ideal randomized experiment** is a randomized experiment (@def-randomized-experiment) that also has
+
+- no loss to follow-up;
+- full adherence to the assigned treatment for the whole study;
+- a single version of treatment;
+- double-blind assignment (Chapter 9) [@hernan2020causal, p. 14].
+:::
+
+::: {#exm-diamond-experiment}
+## A coin for every individual
+
+Take the near-infinite population drawn as a diamond in Figure 1.1,
+and flip a coin for each individual, with probability of heads below 50%:
 
 - tails: white group, given the treatment ($A = 1$);
 - heads: grey group, given placebo ($A = 0$).
 
-Five days later: $\Pr[Y = 1 \mid A = 1] = 0.3$ and $\Pr[Y = 1 \mid A = 0] = 0.6$, so the associational risk ratio is $0.3/0.6 = 0.5$ and the associational risk difference is $0.3 - 0.6 = -0.3$.
+Suppose the experiment is otherwise ideal (@def-ideal-randomized-experiment).
+Five days later, $\Pr[Y = 1 \mid A = 1] = 0.3$ and $\Pr[Y = 1 \mid A = 0] = 0.6$,
+so the associational risk ratio is $0.3/0.6 = 0.5$
+and the associational risk difference is $0.3 - 0.6 = -0.3$.
+:::
 
 ::: {.notes}
-"Ideal" means: no loss to follow-up, full adherence to the assigned treatment for the duration of the study, a single version of treatment, and double-blind assignment (Chapter 9).
 Ideal experiments are unrealistic, but useful for introducing key concepts;
 later chapters treat more realistic ones [@hernan2020causal, p. 14].
 :::
 
 ### Exchangeability
 
-Suppose the assistants mistakenly treated the grey group instead of the white group.
-Our conclusions would not change: the risk in the treated (now grey) would still be expected to be 0.3 and in the untreated 0.6.
-When group membership is randomized, *which* group got the treatment is irrelevant.
-The groups are **exchangeable**.
+When a coin decides who is treated, it should not matter *which* of the two groups the coin sends to treatment.
+The property behind this intuition is exchangeability.
 
 ::: {#def-exchangeability}
 ## Exchangeability
 
-The treated and the untreated are **exchangeable** if the risk under each potential treatment value $a$ is the same in both groups:
+Let $A$ be a dichotomous treatment, with $0 < \Pr[A = 1] < 1$,
+and $Y$ a dichotomous outcome with counterfactual outcomes $Y^a$ for $a = 0, 1$ ([Chapter 1](01-introduction.qmd)).
+The treated and the untreated are **exchangeable** if, for each treatment value $a$, the risk under $a$ is the same in both groups:
 $$
 \Pr[Y^a = 1 \mid A = 1] = \Pr[Y^a = 1 \mid A = 0] \quad \text{for } a = 0 \text{ and } a = 1.
-$$
-Equivalently, the counterfactual outcome is independent of the actual treatment: $Y^a \ind A$ for all $a$.
+$$ {#eq-exchangeability}
+Equivalently, the counterfactual outcome is independent of the actual treatment: $Y^a \ind A$ for all $a$ [@hernan2020causal, p. 14].
 :::
 
-If a conditional risk is the same in every treatment group, it equals the marginal risk:
+::: {#exm-swapped-groups}
+## Swapping the groups
+
+In @exm-diamond-experiment, suppose the assistants misread the instructions and treated the grey group instead of the white one.
+Because the coin formed the groups,
+neither group is expected to be at higher risk than the other under either treatment value.
+So the risk in the treated (now the grey group) would still be expected to be 0.3,
+and the risk in the untreated 0.6.
+Which group was treated does not matter:
+the white and grey groups are exchangeable (@def-exchangeability).
+:::
+
+---
+
+::: {#prp-exchangeability-marginal}
+## Under exchangeability, treatment does not predict the counterfactual outcome
+
+Let $A$ and $Y$ be dichotomous, with $0 < \Pr[A = 1] < 1$.
+If the treated and the untreated are exchangeable (@def-exchangeability), then, for $a = 0, 1$,
 $$
 \Pr[Y^a = 1 \mid A = 1] = \Pr[Y^a = 1 \mid A = 0] = \Pr[Y^a = 1].
 $$
-So the actual treatment $A$ does not predict the counterfactual outcome $Y^a$.
+That is, the actual treatment $A$ does not predict the counterfactual outcome $Y^a$ [@hernan2020causal, p. 14].
+:::
+
+::: {.proof}
+By the law of total probability,
+$\Pr[Y^a = 1] = \Pr[Y^a = 1 \mid A = 1] \Pr[A = 1] + \Pr[Y^a = 1 \mid A = 0] \Pr[A = 0]$.
+Under exchangeability the two conditional risks have a common value $p$,
+so $\Pr[Y^a = 1] = p \paren{\Pr[A = 1] + \Pr[A = 0]} = p$.
+:::
+
 Randomization is valued because it is expected to produce exchangeability.
 
 ::: {.notes}
@@ -114,98 +186,271 @@ When the treated and the untreated are exchangeable, treatment is sometimes call
 
 ### In Ideal Randomized Experiments, Association Is Causation
 
-The risk under treatment in the white (treated) group is not counterfactual at all, because that group *was* treated.
-Hence
-\begin{align}
-\Pr[Y^{a=1} = 1] &= \Pr[Y^{a=1} = 1 \mid A = 1] && \text{(exchangeability)} \\
-&= \Pr[Y = 1 \mid A = 1] && \text{(consistency: } Y = Y^{a=1} \text{ when } A = 1\text{)} \\
-&= 0.3 .
-\end{align}
-The same steps with $a = 0$ give $\Pr[Y^{a=0} = 1] = \Pr[Y = 1 \mid A = 0] = 0.6$.
-The causal risk ratio is $0.3/0.6 = 0.5$ and the causal risk difference is $0.3 - 0.6 = -0.3$, the same as the associational measures.
+::: {#prp-association-is-causation}
+## Association is causation under exchangeability
 
-::: {.notes}
-Another way to see why randomization gives $Y^a \ind A$: like one's genetic make-up, $Y^a$ can be thought of as a fixed characteristic that exists before treatment is randomly assigned, since it encodes what one's outcome would be under $a$ whatever treatment is later received.
-A randomized $A$ is independent of both one's genes and $Y^a$.
-The difference is that $Y^a$ can only be learned after treatment, and only if $A = a$ [@hernan2020causal, p. 15].
+Let $A$ and $Y$ be dichotomous, with $0 < \Pr[A = 1] < 1$.
+Suppose that [consistency](01-introduction.qmd#def-consistency-ch1) holds ($Y = Y^A$)
+and that the treated and the untreated are exchangeable (@def-exchangeability).
+Then, for $a = 0, 1$,
+$$
+\Pr[Y^a = 1] = \Pr[Y = 1 \mid A = a].
+$$ {#eq-association-causation}
+So the causal risk difference $\Pr[Y^{a=1} = 1] - \Pr[Y^{a=0} = 1]$ equals the associational risk difference $\Pr[Y = 1 \mid A = 1] - \Pr[Y = 1 \mid A = 0]$,
+and, when $\Pr[Y = 1 \mid A = 0] > 0$, the causal risk ratio equals the associational risk ratio [@hernan2020causal, pp. 14-15].
 :::
 
-::: {.callout-note title="Technical Point 2.1: Full Exchangeability and Mean Exchangeability"}
-Let $\mathcal{A} = \{a, a', a'', \ldots\}$ be the set of treatment values in the population and $Y^{\mathcal{A}} = \{Y^a, Y^{a'}, Y^{a''}, \ldots\}$ the set of all counterfactual outcomes.
-Randomization makes $Y^{\mathcal{A}} \ind A$, **full exchangeability** (for a dichotomous treatment, $\{Y^{a=1}, Y^{a=0}\} \ind A$).
-Full exchangeability implies, but is not implied by, $Y^a \ind A$ for each $a$.
+::: {.proof}
+The first step below is @prp-exchangeability-marginal;
+the second is consistency, since $Y = Y^a$ for everyone with $A = a$.
+$$
+\begin{aligned}
+\Pr[Y^a = 1] &= \Pr[Y^a = 1 \mid A = a] \\
+&= \Pr[Y = 1 \mid A = a].
+\end{aligned}
+$$
+:::
 
-**Mean exchangeability** is $\E{Y^a \mid A = a'} = \E{Y^a}$ for all $a, a'$.
-For a dichotomous outcome it is the same as exchangeability;
-for a continuous outcome, exchangeability implies mean exchangeability but not conversely (e.g., the variance of $Y^a$ may depend on treatment).
+::: {#exm-diamond-causal}
+## Causal effects in the coin-flip experiment
 
-Mean exchangeability is all that is needed for $\E{Y^a} = \E{Y \mid A = a}$:
-\begin{align}
+In @exm-diamond-experiment the white group was actually treated,
+so its risk under treatment is not counterfactual at all.
+By @prp-association-is-causation,
+$\Pr[Y^{a=1} = 1] = \Pr[Y = 1 \mid A = 1] = 0.3$
+and $\Pr[Y^{a=0} = 1] = \Pr[Y = 1 \mid A = 0] = 0.6$.
+The causal risk ratio is $0.3/0.6 = 0.5$ and the causal risk difference is $0.3 - 0.6 = -0.3$,
+the same as the associational measures.
+:::
+
+---
+
+::: {#rem-counterfactual-baseline}
+## Counterfactual outcomes as baseline traits
+
+Here is a second way to see why randomization gives $Y^a \ind A$.
+Like a person's genes, $Y^a$ can be treated as a fixed trait that already exists when treatment is assigned:
+it records what the outcome would be under $a$, whatever treatment comes later.
+A coin flip is independent of every trait a person already has, including genes and $Y^a$.
+Unlike genes, though, $Y^a$ can only be learned after treatment,
+and only for those whose treatment $A$ equals $a$ [@hernan2020causal, p. 15].
+:::
+
+### Full and Mean Exchangeability
+
+::: {#def-full-exchangeability}
+## Full exchangeability (Technical Point 2.1)
+
+Let $\mathcal{A} = \set{a, a', a'', \ldots}$ be the set of treatment values present in the population
+and $Y^{\mathcal{A}} = \set{Y^a, Y^{a'}, Y^{a''}, \ldots}$ the set of all counterfactual outcomes.
+There is **full exchangeability** if $Y^{\mathcal{A}} \ind A$,
+that is, if the counterfactual outcomes are jointly independent of the treatment.
+For a dichotomous treatment, $\mathcal{A} = \set{0, 1}$ and full exchangeability is $\set{Y^{a=1}, Y^{a=0}} \ind A$ [@hernan2020causal, p. 15].
+:::
+
+::: {#exm-exchangeable-not-fully}
+## Exchangeable but not fully exchangeable
+
+Take a population with four equally common kinds of individuals, written as pairs $(Y^{a=0}, Y^{a=1})$:
+the treated are of kinds $(0, 0)$ and $(1, 1)$,
+and the untreated are of kinds $(0, 1)$ and $(1, 0)$.
+In each treatment group, half have $Y^{a=0} = 1$ and half have $Y^{a=1} = 1$,
+so the groups are exchangeable (@def-exchangeability).
+But the treated are exactly the individuals whom treatment would not affect,
+and the untreated exactly those whom it would,
+so the pair $\set{Y^{a=1}, Y^{a=0}}$ depends on $A$,
+and full exchangeability (@def-full-exchangeability) fails.
+:::
+
+::: {#prp-full-implies-exchangeability}
+## Full exchangeability implies exchangeability (Technical Point 2.1)
+
+For a dichotomous treatment and outcome,
+full exchangeability (@def-full-exchangeability) implies exchangeability, $Y^a \ind A$ for each $a$ (@def-exchangeability).
+The converse is false [@hernan2020causal, p. 15].
+:::
+
+::: {.proof}
+If the whole set $Y^{\mathcal{A}}$ is independent of $A$,
+so is each of its members $Y^a$.
+@exm-exchangeable-not-fully is a population in which the converse fails.
+:::
+
+A coin flip assigns $A$ independently of everything that exists before assignment, including the whole set $Y^{\mathcal{A}}$,
+so randomization produces full exchangeability.
+
+---
+
+::: {#def-mean-exchangeability}
+## Mean exchangeability (Technical Point 2.1)
+
+For a treatment $A$ and an outcome $Y$ with finite counterfactual means $\E{Y^a}$,
+there is **mean exchangeability** if $\E{Y^a \mid A = a'} = \E{Y^a}$
+for all treatment values $a$ and $a'$ present in the population [@hernan2020causal, p. 15].
+:::
+
+::: {#exm-mean-not-exchangeable}
+## Equal means, unequal spreads
+
+For a dichotomous outcome, $\E{Y^a \mid A = a'} = \Pr[Y^a = 1 \mid A = a']$,
+so by @prp-exchangeability-marginal mean exchangeability says the same as exchangeability (@def-exchangeability).
+For a continuous outcome the two can differ.
+Suppose that, under each treatment value $a$, systolic blood pressure $Y^a$ has mean 130 mmHg in both the treated and the untreated,
+but a standard deviation of 10 mmHg in the treated and 20 mmHg in the untreated.
+Mean exchangeability (@def-mean-exchangeability) holds,
+yet $Y^a$ is not independent of $A$, because its spread depends on $A$.
+:::
+
+::: {#prp-mean-exchangeability-suffices}
+## Mean exchangeability suffices (Technical Point 2.1)
+
+Let $a$ be a treatment value with $\Pr[A = a] > 0$, and let $\E{Y^a}$ be finite.
+If consistency ($Y = Y^A$) and mean exchangeability (@def-mean-exchangeability) hold, then
+$$
+\E{Y^a} = \E{Y \mid A = a}.
+$$ {#eq-mean-exchangeability-suffices}
+Exchangeability $Y^a \ind A$, and hence full exchangeability, implies mean exchangeability,
+so either one can take its place here [@hernan2020causal, p. 15].
+:::
+
+::: {.proof}
+$$
+\begin{aligned}
 \E{Y \mid A = a} &= \E{Y^a \mid A = a} && \text{(consistency)} \\
 &= \E{Y^a} && \text{(mean exchangeability)}.
-\end{align}
-[@hernan2020causal, p. 15]
+\end{aligned}
+$$
+If $Y^a \ind A$, then $\E{Y^a \mid A = a'} = \E{Y^a}$ for every $a'$ with $\Pr[A = a'] > 0$,
+which is mean exchangeability.
 :::
 
 ### Caution: $Y^a \ind A$ Is Not $Y \ind A$
 
-- $Y^a \ind A$ (exchangeability): the treated and the untreated would have had the same risk had they received the same treatment level.
-- $Y \ind A$: no association between observed treatment and observed outcome.
+::: {#prp-exchangeability-association}
+## Under exchangeability, association signals an average effect
 
-In a randomized experiment with exchangeability and a causal effect, $Y \ind A$ fails: treatment is associated with the observed outcome.
+Under the conditions of @prp-association-is-causation
+(dichotomous $A$ and $Y$, $0 < \Pr[A = 1] < 1$, consistency, and exchangeability),
+treatment and outcome are [independent](01-introduction.qmd#def-independence), $Y \ind A$,
+if and only if there is no [average causal effect](01-introduction.qmd#def-average-causal-effect),
+that is, if and only if $\Pr[Y^{a=1} = 1] = \Pr[Y^{a=0} = 1]$.
+:::
 
-::: {.notes}
-Why: if $Y^{a=1} \neq Y^{a=0}$ for some individuals, then $Y = Y^A$ is the counterfactual evaluated at the observed $A$, which depends on $A$, so $Y$ is not independent of $A$ [@hernan2020causal, p. 15].
+::: {.proof}
+By @eq-association-causation,
+$\Pr[Y = 1 \mid A = 1] - \Pr[Y = 1 \mid A = 0] = \Pr[Y^{a=1} = 1] - \Pr[Y^{a=0} = 1]$.
+$Y \ind A$ means that the left side is 0, and no average causal effect means that the right side is 0.
+:::
+
+::: {.callout-warning title="Exchangeability Is Not Independence of Treatment and Outcome"}
+- $Y^a \ind A$ (exchangeability) says that the treated and the untreated would have had the same risk had they all received the same treatment level.
+- $Y \ind A$ says that observed treatment and observed outcome are not associated.
+
+In a randomized experiment in which treatment has an average causal effect,
+exchangeability holds but $Y \ind A$ fails (@prp-exchangeability-association).
+An effect in some individuals is not enough to create an association:
+if the individual effects cancel out on average, as in Table 1.1, exchangeability gives $Y \ind A$ [@hernan2020causal, p. 15].
 :::
 
 ### Does Exchangeability Hold in Table 2.1?
 
-Check $Y^a \ind A$ for $a = 0$, pretending we can see Table 1.1.
-Among the 13 treated, $Y^{a=0} = 1$ for Poseidon, Ares, Athena, Persephone, Hermes, Hebe, and Dionysus;
-among the 7 untreated, for Kronos, Artemis, and Apollo:
+::: {#exm-table-2-1-exchangeability}
+## Exchangeability fails in Table 2.1
+
+Check $Y^a \ind A$ for $a = 0$, pretending we can see the counterfactual outcomes of Table 1.1.
+Among the 13 treated, $Y^{a=0} = 1$ for 7: Poseidon, Ares, Athena, Persephone, Hermes, Hebe, and Dionysus;
+among the 7 untreated, for 3: Kronos, Artemis, and Apollo:
 $$
 \Pr[Y^{a=0} = 1 \mid A = 1] = \frac{7}{13} \approx 0.54 \;>\; \frac{3}{7} \approx 0.43 = \Pr[Y^{a=0} = 1 \mid A = 0].
 $$
-The treated have a worse prognosis than the untreated: **exchangeability does not hold** (it also fails for $a = 1$: $7/13$ in the treated vs. $3/7$ in the untreated, the latter from Rheia, Artemis, and Leto).
-
-::: {.notes}
-In the real world we only have Table 2.1, so we usually cannot check exchangeability.
-Even if we knew it failed, we could not conclude that the study was not randomized, for two reasons:
-
-1. 20 people are too few;
-   sampling variability could explain almost anything (Chapter 10).
-   Until then, each individual stands for 1 billion identical ones.
-2. A study can be randomized and still lack exchangeability in infinite samples, if investigators used more than one coin.
-   Section 2.2 describes such experiments [@hernan2020causal, p. 16].
-
-Our discussion concerns population (average) causal effects;
-individual effects cannot generally be identified (but see Fine Point 2.1).
+The treated have a worse prognosis than the untreated,
+so exchangeability (@def-exchangeability) does not hold.
+It fails for $a = 1$ too:
+$\Pr[Y^{a=1} = 1 \mid A = 1] = 7/13$,
+whereas $\Pr[Y^{a=1} = 1 \mid A = 0] = 3/7$ (Rheia, Artemis, and Leto) [@hernan2020causal, p. 16].
 :::
 
-::: {.callout-note title="Fine Point 2.1: Crossover Experiments"}
-Suppose Zeus calls a lightning strike ($a = 1$) yesterday and his blood pressure rises;
-today he refrains ($a = 0$) and it does not.
-Having seen "both" outcomes, can we conclude that lightning-bolt use affects his blood pressure?
-Only under strong assumptions.
+::: {.callout-warning title="Exchangeability Usually Cannot Be Checked"}
+In practice we have only the observed data of Table 2.1, not the counterfactual outcomes of Table 1.1,
+so we usually cannot tell whether exchangeability holds.
+Even if we knew that it failed, that would not prove the study was not randomized:
 
-In a crossover experiment, individual $i$ receives treatment $A_{it}$ in periods $t = 0, 1$.
-Let $Y_{i1}^{a_0, a_1}$ be the outcome at $t = 1$ under $a_0$ at $t = 0$ and $a_1$ at $t = 1$, and $Y_{i0}^{a_0}$ the outcome at $t = 0$.
-The individual effect $Y_{it}^{a_t = 1} - Y_{it}^{a_t = 0}$ is identified if:
+1. Twenty people are too few;
+   sampling variability could explain almost anything (Chapter 10).
+   Until then, each individual stands for 1 billion identical ones.
+2. A study can be randomized and still lack exchangeability in an infinite population,
+   if the investigators used more than one coin (Section 2.2) [@hernan2020causal, p. 16].
+:::
 
-- (i) no carryover effect: $Y_{i1}^{a_0, a_1} = Y_{i1}^{a_1}$;
-- (ii) the individual effect does not depend on time: $Y_{it}^{a_t = 1} - Y_{it}^{a_t = 0} = \alpha_i$ for $t = 0, 1$;
-- (iii) the outcome under no treatment does not depend on time: $Y_{it}^{a_t = 0} = \beta_i$ for $t = 0, 1$.
+::: {.callout-note title="Population Effects Only"}
+This chapter is about population (average) causal effects,
+because individual causal effects cannot generally be identified.
+Crossover experiments, next, are a possible exception under strong conditions [@hernan2020causal, p. 16].
+:::
 
-If $A_{i1} = 1$ and $A_{i0} = 0$, then
-\begin{align}
-Y_{i1} - Y_{i0} &= Y_{i1}^{a_1 = 1} - Y_{i0}^{a_0 = 0} && \text{(consistency and (i))} \\
-&= \paren{Y_{i1}^{a_1 = 1} - Y_{i1}^{a_1 = 0}} + \paren{Y_{i1}^{a_1 = 0} - Y_{i0}^{a_0 = 0}} && \text{(add and subtract } Y_{i1}^{a_1 = 0}\text{)} \\
-&= \alpha_i + (\beta_i - \beta_i) && \text{(by (ii) and (iii))} \\
+### Crossover Experiments
+
+::: {#def-crossover-experiment}
+## Crossover experiment (Fine Point 2.1)
+
+In a **crossover experiment**, each individual $i$ is observed in two or more periods, say $t = 0$ and $t = 1$,
+and receives a treatment value $A_{it}$ in each period,
+so that the individual's outcome is observed under different treatment values in sequence.
+For two periods, write $Y_{i0}^{a_0}$ for $i$'s counterfactual outcome at $t = 0$ under treatment $a_0$ at $t = 0$,
+and $Y_{i1}^{a_0, a_1}$ for the counterfactual outcome at $t = 1$ under $a_0$ at $t = 0$ and $a_1$ at $t = 1$ [@hernan2020causal, p. 16].
+:::
+
+::: {#exm-zeus-lightning}
+## Zeus's lightning bolt
+
+Zeus agrees to use his lightning bolt only when we ask him to.
+Yesterday we asked him to call a lightning strike ($a = 1$), and afterwards his blood pressure rose;
+today we asked him to refrain ($a = 0$), and it did not.
+This is a crossover experiment (@def-crossover-experiment) with one individual and two periods.
+It is tempting to say that we have seen both of Zeus's counterfactual outcomes,
+$Y^{a=1} = 1$ and $Y^{a=0} = 0$,
+and therefore an individual causal effect.
+That conclusion holds only under the strong conditions stated next.
+:::
+
+---
+
+::: {#prp-crossover-identification}
+## When a crossover experiment identifies an individual effect (Fine Point 2.1)
+
+Consider a two-period crossover experiment (@def-crossover-experiment) with deterministic counterfactual outcomes and consistency.
+Write $Y_{it}^{a_t}$ for individual $i$'s outcome at $t$ under treatment $a_t$ at $t$,
+and suppose that
+
+- (i) there is no carryover effect of treatment: $Y_{i1}^{a_0, a_1} = Y_{i1}^{a_1}$ for all $a_0, a_1$;
+- (ii) the individual causal effect does not change over time: $Y_{it}^{a_t = 1} - Y_{it}^{a_t = 0} = \alpha_i$ for $t = 0, 1$;
+- (iii) the outcome under no treatment does not change over time: $Y_{it}^{a_t = 0} = \beta_i$ for $t = 0, 1$.
+
+If $A_{i0} = 0$ and $A_{i1} = 1$, then $Y_{i1} - Y_{i0} = \alpha_i$;
+if $A_{i0} = 1$ and $A_{i1} = 0$, then $Y_{i0} - Y_{i1} = \alpha_i$.
+So the observed change identifies the individual causal effect $\alpha_i$ [@hernan2020causal, p. 16].
+:::
+
+::: {.proof}
+Suppose $A_{i0} = 0$ and $A_{i1} = 1$.
+By consistency, $Y_{i0} = Y_{i0}^{a_0 = 0}$ and $Y_{i1} = Y_{i1}^{a_0 = 0, a_1 = 1}$,
+which equals $Y_{i1}^{a_1 = 1}$ by (i).
+Adding and subtracting $Y_{i1}^{a_1 = 0}$, and then using (ii) and (iii),
+$$
+\begin{aligned}
+Y_{i1} - Y_{i0} &= \paren{Y_{i1}^{a_1 = 1} - Y_{i1}^{a_1 = 0}} + \paren{Y_{i1}^{a_1 = 0} - Y_{i0}^{a_0 = 0}} \\
+&= \alpha_i + (\beta_i - \beta_i) \\
 &= \alpha_i .
-\end{align}
-Symmetrically, if $A_{i1} = 0$ and $A_{i0} = 1$, then $Y_{i0} - Y_{i1} = \alpha_i$.
+\end{aligned}
+$$
+If instead $A_{i0} = 1$ and $A_{i1} = 0$, the same steps with the periods swapped give
+$Y_{i0} - Y_{i1} = \paren{Y_{i0}^{a_0 = 1} - Y_{i0}^{a_0 = 0}} + \paren{Y_{i0}^{a_0 = 0} - Y_{i1}^{a_1 = 0}} = \alpha_i + (\beta_i - \beta_i) = \alpha_i$.
+:::
 
-Condition (i) requires an outcome with abrupt onset that fully resolves by the next period, so crossover designs cannot study an irreversible action (heart transplant) on an irreversible outcome (death) [@hernan2020causal, p. 16].
+::: {.callout-warning title="Crossover Designs Need Effects That Wear Off"}
+Condition (i) of @prp-crossover-identification requires an outcome that appears abruptly and resolves completely before the next period.
+So a crossover design cannot study the effect of an irreversible action, such as a heart transplant,
+on an irreversible outcome, such as death [@hernan2020causal, p. 16].
 :::
 
 ## 2.2 Conditional Randomization (pp. 17-18)
@@ -242,78 +487,243 @@ Table 2.2 adds a prognostic factor $L$ (1 if in critical condition, 0 otherwise)
 
 :::
 
-Two mutually exclusive designs could have produced these data:
+::: {#def-marginal-conditional-randomization}
+## Marginally and conditionally randomized experiments
 
-- **Design 1**: randomly select 65% of everyone for a transplant (one loaded coin, $\Pr[\text{tails}] = 0.65$);
-  this would explain 13 of 20 treated.
-- **Design 2**: transplant a random 75% of those in critical condition ($L = 1$) and 50% of those in noncritical condition ($L = 0$) (two coins);
-  this would explain 9 of 12 and 4 of 8 treated.
+Consider a randomized experiment (@def-randomized-experiment) with a dichotomous treatment $A$
+and a variable $L$ measured before treatment is assigned.
+The experiment is **marginally randomized** if it uses a single randomization probability $\Pr[A = 1]$, the same for everyone.
+It is **conditionally randomized** if the randomization probability $\Pr[A = 1 \mid L = l]$ depends on the value $l$ of $L$,
+for example with a different coin for each level of $L$ [@hernan2020causal, p. 17].
+:::
 
-Design 1 is a **marginally randomized experiment** (one unconditional randomization probability for all).
-Design 2 is a **conditionally randomized experiment** (randomization probabilities depend on $L$).
+::: {#exm-two-designs}
+## Two designs for Table 2.2
+
+Two mutually exclusive designs could each explain the treatment counts in Table 2.2:
+
+- **Design 1** (marginally randomized): one loaded coin, with probability 0.65 of treatment, for all 20 individuals;
+  it would explain why 13 of the 20 were treated.
+- **Design 2** (conditionally randomized): a coin with probability 0.75 of treatment for those in critical condition ($L = 1$)
+  and one with probability 0.5 for those in noncritical condition ($L = 0$);
+  it would explain why 9 of the 12 with $L = 1$ and 4 of the 8 with $L = 0$ were treated [@hernan2020causal, p. 17].
+:::
 
 ### Which Design Produced Table 2.2?
 
-A marginally randomized experiment is expected to give exchangeability, $Y^a \ind A$.
-A conditionally randomized one generally does not, because each treatment group may have a different share of individuals with a bad prognosis.
+As in Section 2.1, a marginally randomized experiment is expected to give exchangeability, $Y^a \ind A$.
+A conditionally randomized one generally does not,
+because each treatment group may, by design, have a different share of individuals with a bad prognosis.
 
-In Table 2.2:
+::: {#exm-which-design}
+## Table 2.2 came from design 2
 
-- critical among the treated: $9/13 \approx 69\%$;
-- critical among the untreated: $3/7 \approx 43\%$.
-
-The treated would have had a higher risk than the untreated had they remained untreated: $A$ predicts $Y^{a=0}$, so $Y^a \ind A$ fails.
-Since the study was randomized, it must have been randomized conditional on $L$ (design 2).
+In Table 2.2, 9 of the 13 treated ($\approx 69\%$) but only 3 of the 7 untreated ($\approx 43\%$) were in critical condition.
+Since critical condition signals a bad prognosis,
+the treated would have had a higher risk than the untreated had they remained untreated:
+$A$ predicts $Y^{a=0}$, and exchangeability (@def-exchangeability) fails.
+The study was randomized,
+so it must have been randomized conditional on $L$:
+design 2 of @exm-two-designs [@hernan2020causal, p. 17].
+:::
 
 ### Conditional Exchangeability
 
-A conditionally randomized experiment is two marginally randomized experiments, one in $L = 1$ and one in $L = 0$.
-Within each stratum, the treated and the untreated are exchangeable:
-$$
-\Pr[Y^a = 1 \mid A = 1, L = 1] = \Pr[Y^a = 1 \mid A = 0, L = 1], \quad \text{i.e. } Y^a \ind A \mid L = 1,
-$$
-and likewise $Y^a \ind A \mid L = 0$.
+A conditionally randomized experiment is two marginally randomized experiments,
+one among those with $L = 1$ and one among those with $L = 0$.
+Within each stratum, the treated and the untreated should therefore be exchangeable.
 
 ::: {#def-conditional-exchangeability}
 ## Conditional exchangeability
 
-$Y^a \ind A \mid L$ for all $a$: within every level $l$ of $L$, the counterfactual outcome is independent of the actual treatment, $Y^a \ind A \mid L = l$.
+Let $A$ be a treatment with finitely many values,
+$Y$ an outcome with counterfactual outcomes $Y^a$,
+and $L$ a variable measured before treatment,
+with $\Pr[A = a \mid L = l] > 0$ for every $a$ and every $l$ with $\Pr[L = l] > 0$.
+The treated and the untreated are **exchangeable within level $l$ of $L$**, written $Y^a \ind A \mid L = l$,
+if $Y^a$ and $A$ are independent given $L = l$.
+For a dichotomous treatment and outcome this means
+$$
+\Pr[Y^a = 1 \mid A = 1, L = l] = \Pr[Y^a = 1 \mid A = 0, L = l].
+$$ {#eq-conditional-exchangeability}
+**Conditional exchangeability**, $Y^a \ind A \mid L$, holds if this is true for every treatment value $a$ and every level $l$ of $L$ [@hernan2020causal, p. 18].
 :::
 
-- Marginal randomization (design 1) produces both marginal and conditional exchangeability.
-- Conditional randomization (design 2) produces only conditional exchangeability.
+::: {#exm-conditional-exchangeability-design-2}
+## Conditional exchangeability in design 2
+
+In design 2 of @exm-two-designs, everyone in critical condition ($L = 1$) gets the same coin, with probability 0.75 of treatment,
+so within $L = 1$ the experiment is marginally randomized, and $Y^a \ind A \mid L = 1$.
+Likewise the coin with probability 0.5 gives $Y^a \ind A \mid L = 0$.
+So conditional exchangeability (@def-conditional-exchangeability) holds,
+even though @exm-which-design showed that exchangeability fails in the population as a whole.
+:::
+
+---
+
+::: {#prp-randomization-exchangeability}
+## What each design guarantees
+
+Let $A$ be a dichotomous treatment and $L$ a variable measured before treatment.
+Suppose treatment is assigned by a random device so that, in a near-infinite population,
+$0 < \Pr[A = 1 \mid L = l] < 1$ for every level $l$ of $L$, and
+$$
+\Pr[A = 1 \mid L, Y^{a=0}, Y^{a=1}] = \Pr[A = 1 \mid L].
+$$ {#eq-conditional-randomization}
+
+1. Conditional exchangeability holds: $Y^a \ind A \mid L$ for $a = 0, 1$ (@def-conditional-exchangeability).
+2. If, in addition, $\Pr[A = 1 \mid L]$ is the same for every level of $L$ (marginal randomization),
+   then exchangeability also holds: $Y^a \ind A$ for $a = 0, 1$ (@def-exchangeability) [@hernan2020causal, p. 18].
+:::
+
+::: {.proof}
+For a dichotomous $A$, @eq-conditional-randomization says that $A$ is independent of the pair $(Y^{a=0}, Y^{a=1})$ given $L$,
+so it is independent of each member of the pair given $L$: $Y^a \ind A \mid L$.
+If moreover $\Pr[A = 1 \mid L, Y^{a=0}, Y^{a=1}]$ equals one constant $p$,
+then $A$ is independent of $(L, Y^{a=0}, Y^{a=1})$ jointly, and in particular of $Y^a$.
+:::
+
+- Marginal randomization (design 1) produces both exchangeability and conditional exchangeability.
+- Conditional randomization (design 2) produces conditional exchangeability, but not, in general, exchangeability (@exm-which-design).
+
+### A Missing-Data View
+
+::: {#def-mcar-mar}
+## Missing completely at random and missing at random
+
+With a dichotomous treatment $A$, one counterfactual outcome is missing for everyone:
+$Y^{a=0}$ if $A = 1$, and $Y^{a=1}$ if $A = 0$.
+Take the full data to be $(L, Y^{a=0}, Y^{a=1})$, of which $(L, Y^a)$ is observed when $A = a$.
+The counterfactual outcomes are
+
+- **missing completely at random** (MCAR) if $\Pr[A = a \mid L, Y^{a=1}, Y^{a=0}] = \Pr[A = a]$ for $a = 0, 1$;
+- **missing at random** (MAR) if, for $a = 0, 1$, $\Pr[A = a \mid L, Y^{a=1}, Y^{a=0}]$ depends only on $(L, Y^a)$, the data that would be observed if $A = a$;
+- **missing not at random** (MNAR) if they are not MAR [@hernan2020causal, p. 18].
+:::
+
+::: {#exm-mcar-mar-designs}
+## The two designs as missing-data mechanisms
+
+In design 1 of @exm-two-designs, $\Pr[A = 1 \mid L, Y^{a=1}, Y^{a=0}] = 0.65$ whatever the full data,
+so the counterfactual outcomes are MCAR (@def-mcar-mar).
+In design 2, $\Pr[A = 1 \mid L, Y^{a=1}, Y^{a=0}]$ is 0.75 if $L = 1$ and 0.5 if $L = 0$,
+so it depends on $L$ alone, and the counterfactual outcomes are MAR but not MCAR.
+:::
+
+::: {#prp-mar-conditional-randomization}
+## MAR is conditional randomization
+
+Let $A$ be dichotomous, and suppose that for every level $l$ of $L$,
+each of the four combinations of $(Y^{a=0}, Y^{a=1})$ has positive probability given $L = l$.
+Then the counterfactual outcomes are MAR (@def-mcar-mar) if and only if @eq-conditional-randomization holds,
+that is, $\Pr[A = a \mid L, Y^{a=1}, Y^{a=0}] = \Pr[A = a \mid L]$ for $a = 0, 1$ [@hernan2020causal, p. 18].
+:::
+
+::: {.proof}
+If @eq-conditional-randomization holds, $\Pr[A = a \mid L, Y^{a=1}, Y^{a=0}]$ depends on $L$ alone, so MAR holds.
+Conversely, let $g(l, y_0, y_1) = \Pr[A = 1 \mid L = l, Y^{a=0} = y_0, Y^{a=1} = y_1]$.
+Under MAR with $a = 1$, $g$ does not depend on $y_0$.
+Under MAR with $a = 0$, $1 - g$, and hence $g$, does not depend on $y_1$.
+With all four combinations of $(y_0, y_1)$ possible given $L = l$,
+$g(l, y_0, y_1) = g(l, y_0', y_1) = g(l, y_0', y_1')$ for all of them,
+so $g$ depends on $l$ alone and therefore equals $\Pr[A = 1 \mid L = l]$.
+:::
+
+::: {#exm-mar-without-support}
+## MAR without conditional randomization
+
+The condition on $(Y^{a=0}, Y^{a=1})$ in @prp-mar-conditional-randomization cannot simply be dropped.
+Suppose the sharp causal null holds, so that $Y^{a=0} = Y^{a=1}$ for everyone,
+and suppose the probability of treatment is 0.8 for those with $Y^{a=0} = Y^{a=1} = 1$ and 0.2 for the others,
+whatever their $L$.
+This probability is a function of $Y^{a=1}$ alone and also of $Y^{a=0}$ alone,
+so the counterfactual outcomes are MAR (@def-mcar-mar),
+yet $A$ depends on $Y^a$ given $L$, so conditional exchangeability fails.
+Here only two of the four combinations of $(Y^{a=0}, Y^{a=1})$ occur.
+:::
 
 ::: {.notes}
-Missing-data view [@hernan2020causal, p. 18]: if $A = 1$, $Y^{a=0}$ is missing;
-if $A = 0$, $Y^{a=1}$ is missing.
-
-- **Missing completely at random** (MCAR): $\Pr[A = a \mid L, Y^{a=1}, Y^{a=0}] = \Pr[A = a]$, which holds in a marginally randomized experiment.
-- **Missing at random** (MAR): the probability of $A = a$ given the full data $(L, Y^{a=1}, Y^{a=0})$ depends only on the data that would be observed, $(L, Y^a)$, if $A = a$.
-  MAR implies $\Pr[A = a \mid L, Y^{a=1}, Y^{a=0}] = \Pr[A = a \mid L]$, which holds in a conditionally randomized experiment: $\Pr[A = 1 \mid L, Y^{a=1}, Y^{a=0}]$ cannot depend on $Y^{a=0}$, and $\Pr[A = 0 \mid \cdot] = 1 - \Pr[A = 1 \mid \cdot]$ cannot depend on $Y^{a=1}$.
-
-The terms MCAR, MAR, and MNAR (missing not at random) were introduced by Rubin (1976) and Marini, Olsen, and Rubin (1980).
+The terms MCAR, MAR, and MNAR (missing not at random) were introduced by Rubin (1976) and Marini, Olsen, and Rubin (1980) [@hernan2020causal, p. 18].
 :::
 
 ### Two Targets
 
-If Table 2.2 had come from a marginally randomized experiment, the causal risk ratio would simply be the associational one:
+::: {#exm-design-1-analysis}
+## If Table 2.2 had come from design 1
+
+Had the data of Table 2.2 come from a marginally randomized experiment,
+exchangeability would hold,
+and by @prp-association-is-causation the causal risk ratio would be the associational one:
 $$
 \frac{\Pr[Y = 1 \mid A = 1]}{\Pr[Y = 1 \mid A = 0]} = \frac{7/13}{3/7} = \frac{49}{39} \approx 1.26 .
 $$
-Under conditional randomization we have two options:
+Table 2.2 came from design 2 (@exm-which-design), so this calculation does not apply [@hernan2020causal, p. 19].
+:::
 
-1. **Stratification**: within each stratum association is causation, so the stratum-specific causal risk ratio $\Pr[Y^{a=1} = 1 \mid L = l] / \Pr[Y^{a=0} = 1 \mid L = l]$ equals the stratum-specific associational risk ratio $\Pr[Y = 1 \mid L = l, A = 1] / \Pr[Y = 1 \mid L = l, A = 0]$.
-   If these differ across $L$, there is **effect modification** by $L$ (treatment effect heterogeneity), the topic of Chapter 4.
-2. **The average causal effect in the entire population**, $\Pr[Y^{a=1} = 1] / \Pr[Y^{a=0} = 1]$, e.g. when $L$ will not be available for future patients, so treatment decisions cannot depend on it.
+Under conditional randomization there are two targets.
+
+::: {#def-stratification-ch2}
+## Stratification
+
+Let $L$ be a variable measured before treatment.
+**Stratification** computes causal effects separately within each level (stratum) $l$ of $L$,
+for example the stratum-specific causal risk ratio
+$$
+\frac{\Pr[Y^{a=1} = 1 \mid L = l]}{\Pr[Y^{a=0} = 1 \mid L = l]}
+$$
+[@hernan2020causal, p. 19].
+:::
+
+Within the stratum $L = l$, conditional exchangeability (@def-conditional-exchangeability) is exchangeability,
+so @prp-association-is-causation applied to that stratum gives $\Pr[Y^a = 1 \mid L = l] = \Pr[Y = 1 \mid L = l, A = a]$:
+the stratum-specific causal risk ratio equals the stratum-specific associational risk ratio
+$\Pr[Y = 1 \mid L = l, A = 1] / \Pr[Y = 1 \mid L = l, A = 0]$.
+
+::: {#exm-stratification-table-2-2}
+## Stratum-specific effects in Table 2.2
+
+- $L = 0$: 1 of the 4 treated died (Zeus) and 1 of the 4 untreated died (Kronos),
+  so $\Pr[Y = 1 \mid L = 0, A = 1] = \Pr[Y = 1 \mid L = 0, A = 0] = 1/4$.
+- $L = 1$: 6 of the 9 treated died and 2 of the 3 untreated died (Artemis and Apollo),
+  so $\Pr[Y = 1 \mid L = 1, A = 1] = 6/9 = 2/3$ and $\Pr[Y = 1 \mid L = 1, A = 0] = 2/3$.
+
+Under conditional exchangeability (@exm-conditional-exchangeability-design-2), stratification (@def-stratification-ch2) gives a causal risk ratio of $(1/4)/(1/4) = 1$ when $L = 0$
+and $(2/3)/(2/3) = 1$ when $L = 1$.
+:::
+
+The two targets are then:
+
+1. **The stratum-specific causal effects**, by stratification.
+   If they differ across levels of $L$, there is [effect modification](04-effect-modification.qmd#def-effect-modification) by $L$ (treatment effect heterogeneity), the topic of Chapter 4.
+2. **The average causal effect in the entire population**, $\Pr[Y^{a=1} = 1] / \Pr[Y^{a=0} = 1]$,
+   for example when $L$ will not be available for future patients, so treatment decisions cannot depend on it.
+   Until Chapter 4, this is our target;
    Sections 2.3 and 2.4 show two ways to compute it.
 
-::: {.callout-note title="Fine Point 2.2: Risk Periods"}
-A risk is the proportion developing the outcome during a specified period (e.g., 5-day mortality);
-the book often states the period once and then omits it.
+### Risk Periods
 
-Why the period matters: in a randomized trial of antibiotics for elderly people with plague, one investigator reports a causal risk ratio of 0.05 and another a ratio of 1.
-Both are right: the first used 1-year risks, the second 100-year risks, which are 1 under either treatment.
-A treatment "having a causal effect on mortality" means death is delayed, not prevented [@hernan2020causal, p. 19].
+::: {#def-risk-period}
+## Risk and risk period (Fine Point 2.2)
+
+A **risk** is the proportion of individuals who develop the outcome during a specified period, the **risk period**.
+For example, the 5-day mortality risk in the treated, $\Pr[Y = 1 \mid A = 1]$, is the proportion of treated individuals who died during the first 5 days of follow-up.
+The book often states the period when a risk is first defined and omits it afterwards [@hernan2020causal, p. 19].
+:::
+
+::: {#exm-plague-antibiotics}
+## One trial, two risk ratios
+
+In a randomized trial of antibiotics for elderly people with plague,
+one investigator reports a causal risk ratio of 0.05 for death, and another reports 1.
+Both are right:
+the first compared 1-year risks (@def-risk-period),
+the second 100-year risks, which are 1 under either treatment.
+A treatment "having a causal effect on mortality" means that death is delayed, not prevented [@hernan2020causal, p. 19].
+:::
+
+::: {.callout-tip title="Name the Risk Period"}
+When you report a risk or a risk ratio, say over what period it was measured,
+as @exm-plague-antibiotics shows the same data can give very different numbers.
 :::
 
 ## 2.3 Standardization (pp. 19-20)
@@ -324,7 +734,7 @@ In our conditionally randomized study, hearts were assigned with probability 50%
 
 ### Stratum-Specific Risks
 
-From Table 2.2:
+From @exm-stratification-table-2-2:
 
 | | $A = 1$ | $A = 0$ |
 |---|---|---|
@@ -332,52 +742,109 @@ From Table 2.2:
 | $L = 1$ (12 individuals) | $\Pr[Y = 1 \mid L = 1, A = 1] = 6/9 = 2/3$ | $\Pr[Y = 1 \mid L = 1, A = 0] = 2/3$ |
 
 Because of conditional exchangeability, each observed stratum risk equals the corresponding counterfactual risk, e.g. $\Pr[Y = 1 \mid L = 0, A = 1] = \Pr[Y^{a=1} = 1 \mid L = 0]$.
-
-### Weighting by Stratum Size
-
-The risk if all 20 had been treated is a weighted average of $1/4$ (in $L = 0$) and $2/3$ (in $L = 1$), with weights $\Pr[L = 0] = 8/20 = 0.4$ and $\Pr[L = 1] = 12/20 = 0.6$:
-\begin{align}
-\Pr[Y^{a=1} = 1] &= \tfrac{1}{4} \times 0.4 + \tfrac{2}{3} \times 0.6 = 0.1 + 0.4 = 0.5, \\
-\Pr[Y^{a=0} = 1] &= \tfrac{1}{4} \times 0.4 + \tfrac{2}{3} \times 0.6 = 0.1 + 0.4 = 0.5 .
-\end{align}
-The causal risk ratio is $0.5/0.5 = 1$.
+The risk if all 20 had been treated is then an average of $1/4$ (in $L = 0$) and $2/3$ (in $L = 1$),
+weighted by the size of each stratum.
 
 ### The General Formula
 
-\begin{align}
-\Pr[Y^a = 1] &= \sum_l \Pr[Y^a = 1 \mid L = l] \Pr[L = l] && \text{(law of total probability)} \\
-&= \sum_l \Pr[Y = 1 \mid L = l, A = a] \Pr[L = l] && \text{(conditional exchangeability, consistency)}
-\end{align}
-The left side is an unobserved counterfactual risk;
-the right side uses only observed quantities ($L$, $A$, $Y$).
+::: {#prp-standardization-identifies}
+## Identification by standardization
+
+Let $A$ and $L$ be discrete, with $L$ measured before treatment,
+and let $Y$ be an outcome with finite counterfactual means $\E{Y^a}$.
+Suppose that
+
+- consistency holds ($Y = Y^A$);
+- conditional exchangeability holds, $Y^a \ind A \mid L$ (@def-conditional-exchangeability);
+- $\Pr[A = a \mid L = l] > 0$ for every $l$ with $\Pr[L = l] > 0$.
+
+Then
+$$
+\E{Y^a} = \sum_l \E{Y \mid L = l, A = a} \Pr[L = l],
+$$ {#eq-standardization-identifies}
+and, for a dichotomous outcome, $\Pr[Y^a = 1] = \sum_l \Pr[Y = 1 \mid L = l, A = a] \Pr[L = l]$ [@hernan2020causal, pp. 19-20, 25].
+:::
+
+::: {.proof}
+The sums are over the values $l$ with $\Pr[L = l] > 0$.
+$$
+\begin{aligned}
+\E{Y^a} &= \sum_l \E{Y^a \mid L = l} \Pr[L = l] && \text{(law of total expectation)} \\
+&= \sum_l \E{Y^a \mid A = a, L = l} \Pr[L = l] && \text{(conditional exchangeability, positivity)} \\
+&= \sum_l \E{Y \mid A = a, L = l} \Pr[L = l] && \text{(consistency)}.
+\end{aligned}
+$$
+For a dichotomous outcome, each mean is a risk.
+:::
+
+The left side of @eq-standardization-identifies is an unobserved counterfactual mean;
+the right side uses only the observed $L$, $A$, and $Y$.
 
 ::: {#def-identification}
 ## Identification
 
-A counterfactual quantity is **identified** (identifiable) if it can be expressed as a function of the distribution of the observed data;
-otherwise it is unidentified.
+A counterfactual quantity, such as $\Pr[Y^a = 1]$, is **identified** (identifiable) if it can be written as a function of the distribution of the observed data, such as the joint distribution of $(L, A, Y)$;
+otherwise it is **unidentified** [@hernan2020causal, p. 20].
 :::
+
+::: {#exm-identified-table-2-2}
+## The counterfactual risks in Table 2.2 are identified
+
+In the conditionally randomized experiment of Table 2.2,
+the conditions of @prp-standardization-identifies hold:
+conditional exchangeability by design (@exm-conditional-exchangeability-design-2),
+positivity because both coins have probabilities strictly between 0 and 1,
+and consistency by assumption.
+So $\Pr[Y^{a=1} = 1] = \sum_l \Pr[Y = 1 \mid L = l, A = 1] \Pr[L = l]$,
+which uses only the observed data:
+$\Pr[Y^{a=1} = 1]$ is identified (@def-identification), and so is $\Pr[Y^{a=0} = 1]$.
+:::
+
+---
 
 ::: {#def-standardization}
 ## Standardization
 
-The **standardized mean** of $Y$ for treatment level $a$, using the population as the standard, is
+Let $A$ be a treatment, $Y$ an outcome, and $L$ a discrete variable,
+with $\Pr[A = a \mid L = l] > 0$ for every $l$ with $\Pr[L = l] > 0$.
+The **standardized mean** of $Y$ for treatment level $a$, with the whole population as the standard, is
 $$
-\sum_l \E{Y \mid L = l, A = a} \times \Pr[L = l].
-$$
-Under conditional exchangeability it equals the counterfactual mean $\E{Y^a}$, i.e. the mean that would have been observed had everyone in the population received $a$.
+\sum_l \E{Y \mid L = l, A = a} \Pr[L = l],
+$$ {#eq-standardized-mean}
+the average of the stratum-specific means among those with $A = a$, weighted by the distribution of $L$ in the population.
+For a dichotomous outcome it is the **standardized risk** $\sum_l \Pr[Y = 1 \mid L = l, A = a] \Pr[L = l]$.
+Computing causal effects this way is called **standardization** [@hernan2020causal, p. 20].
 :::
 
-So the causal risk ratio can be computed by standardization as
+By @prp-standardization-identifies, under consistency and conditional exchangeability
+the standardized mean for level $a$ equals $\E{Y^a}$,
+the mean that would have been observed had everyone in the population received $a$.
+
+::: {#exm-standardization-table-2-2}
+## Standardization in Table 2.2
+
+The stratum weights are $\Pr[L = 0] = 8/20 = 0.4$ and $\Pr[L = 1] = 12/20 = 0.6$.
+With the stratum risks of @exm-stratification-table-2-2, the standardized risks (@def-standardization) are
+$$
+\begin{aligned}
+\Pr[Y^{a=1} = 1] &= \tfrac{1}{4} \times 0.4 + \tfrac{2}{3} \times 0.6 = 0.1 + 0.4 = 0.5, \\
+\Pr[Y^{a=0} = 1] &= \tfrac{1}{4} \times 0.4 + \tfrac{2}{3} \times 0.6 = 0.1 + 0.4 = 0.5 .
+\end{aligned}
+$$
+The causal risk ratio is $0.5/0.5 = 1$,
+not the 1.26 of @exm-design-1-analysis [@hernan2020causal, p. 19].
+:::
+
+In general, under the conditions of @prp-standardization-identifies, the causal risk ratio is the ratio of the standardized risks:
 $$
 \frac{\Pr[Y^{a=1} = 1]}{\Pr[Y^{a=0} = 1]} = \frac{\sum_l \Pr[Y = 1 \mid L = l, A = 1] \Pr[L = l]}{\sum_l \Pr[Y = 1 \mid L = l, A = 0] \Pr[L = l]} .
-$$
+$$ {#eq-standardized-risk-ratio}
 
 ## 2.4 Inverse Probability Weighting (pp. 20-25)
 
 ---
 
-The same causal risk ratio can be computed by **inverse probability (IP) weighting**.
+The same causal risk ratio can be computed a second way, by reweighting the individuals.
 
 ### The Tree (Figure 2.1)
 
@@ -393,7 +860,10 @@ Figure 2.1 is a fully randomized causally interpreted structured tree graph, or 
 The book asks whether this wins "the prize for the worst acronym ever" [@hernan2020causal, p. 20].
 :::
 
-### Everybody Untreated
+### Simulating Everybody Untreated and Everybody Treated
+
+::: {#exm-everybody-untreated}
+## Everybody untreated (Figure 2.2)
 
 - $L = 0$: 1 of the 4 untreated died.
   Had all 8 been untreated (twice as many), 2 would have died.
@@ -401,116 +871,246 @@ The book asks whether this wins "the prize for the worst acronym ever" [@hernan2
   Had all 12 been untreated ($12 = 3 \times 4$), $2 \times 4 = 8$ would have died.
 
 So $\Pr[Y^{a=0} = 1] = (2 + 8)/(8 + 12) = 10/20 = 0.5$.
-This relies on exchangeability within each stratum: the treated, had they been untreated, would have had the same risk as the untreated in their stratum.
+This relies on exchangeability within each stratum (@def-conditional-exchangeability):
+the treated, had they been untreated, would have had the same risk as the untreated in their stratum [@hernan2020causal, pp. 21-22].
+:::
 
-### Everybody Treated
+::: {#exm-everybody-treated}
+## Everybody treated (Figure 2.2)
 
-- $L = 0$: 1 of the 4 treated died; scaled to 8: 2 deaths.
+- $L = 0$: 1 of the 4 treated died;
+  scaled up to all 8: 2 deaths.
 - $L = 1$: 6 of the 9 treated died;
-  scaled to 12 (a factor $12/9 = 4/3$): $6 \times 4/3 = 8$ deaths.
+  scaled up to all 12 (a factor $12/9 = 4/3$): $6 \times 4/3 = 8$ deaths.
 
-So $\Pr[Y^{a=1} = 1] = (2 + 8)/20 = 0.5$, and the causal risk ratio is $0.5/0.5 = 1$, as with standardization.
+So $\Pr[Y^{a=1} = 1] = (2 + 8)/20 = 0.5$,
+and with @exm-everybody-untreated the causal risk ratio is $0.5/0.5 = 1$,
+as with standardization (@exm-standardization-table-2-2) [@hernan2020causal, p. 22].
+:::
 
-### The Pseudo-Population
+### IP Weights and the Pseudo-Population
 
-The two simulated trees (Figure 2.2: everybody untreated;
-everybody treated) pooled together form a **pseudo-population** twice the size of the original, in which every individual appears once treated and once untreated (Figure 2.3).
-
-In the pseudo-population, $L$ is independent of $A$, so under $Y^a \ind A \mid L$ in the original population the treated and untreated are unconditionally exchangeable.
-Hence the associational risk ratio in the pseudo-population equals the causal risk ratio in both the pseudo-population and the original population.
-
-### IP Weights
-
-Each individual is weighted by the inverse of the probability of receiving the treatment they actually received:
-
-| Group | $\Pr[A = a \mid L]$ | Weight | Count | Pseudo-population size |
-|---|---|---|---|---|
-| $L = 0$, $A = 0$ | 0.5 | $1/0.5 = 2$ | 4 | 8 |
-| $L = 0$, $A = 1$ | 0.5 | $1/0.5 = 2$ | 4 | 8 |
-| $L = 1$, $A = 0$ | 0.25 | $1/0.25 = 4$ | 3 | 12 |
-| $L = 1$, $A = 1$ | 0.75 | $1/0.75 \approx 1.33$ | 9 | 12 |
+Both simulations scaled each group up by the inverse of the probability that its members received the treatment they did.
 
 ::: {#def-ip-weights}
 ## IP weights
 
+Let $A$ and $L$ be discrete, and let $f[a \mid l] = \Pr[A = a \mid L = l]$ be the conditional probability of treatment value $a$ given $L = l$,
+assumed positive for every value $a$ of $A$ and every $l$ with $\Pr[L = l] > 0$.
+The **inverse probability (IP) weight** of an individual is
 $$
 W^A = \frac{1}{f[A \mid L]},
+$$ {#eq-ip-weights}
+the inverse of the probability of receiving the treatment value the individual actually received, given the individual's own $L$.
+So a treated individual with $L = l$ gets $1/\Pr[A = 1 \mid L = l]$,
+and an untreated one with $L = l'$ gets $1/\Pr[A = 0 \mid L = l']$ [@hernan2020causal, pp. 22-23].
+:::
+
+::: {#exm-ip-weights-table-2-2}
+## IP weights in Table 2.2
+
+From the tree of Figure 2.1, the IP weights (@def-ip-weights) and the size of each group after weighting are
+
+- $L = 0$, $A = 0$: weight $1/0.5 = 2$, so the 4 individuals count as 8;
+- $L = 0$, $A = 1$: weight $1/0.5 = 2$, so the 4 individuals count as 8;
+- $L = 1$, $A = 0$: weight $1/0.25 = 4$, so the 3 individuals count as 12;
+- $L = 1$, $A = 1$: weight $1/0.75 \approx 1.33$, so the 9 individuals count as 12.
+:::
+
+::: {#def-pseudo-population-ch2}
+## Pseudo-population
+
+The **pseudo-population** created by the IP weights $W^A$ (@def-ip-weights) is the hypothetical population in which each individual of the original population is counted $W^A$ times.
+Its expectations are IP weighted averages:
+for any function $g$, $\Expfc{ps}{g(L, A, Y)} = \E{W^A g(L, A, Y)} / \E{W^A}$ [@hernan2020causal, pp. 22-23].
+:::
+
+::: {#exm-pseudo-population-table-2-2}
+## The pseudo-population of Table 2.2 (Figure 2.3)
+
+Weighting as in @exm-ip-weights-table-2-2 gives a pseudo-population (@def-pseudo-population-ch2) of 40,
+twice the original 20:
+8 treated and 8 untreated with $L = 0$, and 12 treated and 12 untreated with $L = 1$.
+It pools the two simulated trees of @exm-everybody-untreated and @exm-everybody-treated,
+so every stratum of the original population appears once in full as treated and once in full as untreated.
+Half of each stratum is treated, so $L$ and $A$ are independent in the pseudo-population [@hernan2020causal, p. 22].
+:::
+
+---
+
+::: {#def-ip-weighted-mean}
+## IP weighted mean
+
+Under the conditions of @def-ip-weights, the **IP weighted mean** of $Y$ for treatment level $a$ is
 $$
-where $f[a \mid l] = \Pr[A = a \mid L = l]$ for discrete $A$ and $L$.
-A treated individual with $L = l$ gets $1/\Pr[A = 1 \mid L = l]$;
-an untreated one with $L = l'$ gets $1/\Pr[A = 0 \mid L = l']$.
+\E{\frac{\indicp{A = a} Y}{f[A \mid L]}},
+$$ {#eq-ip-weighted-mean}
+where the indicator $\indicp{A = a}$ is 1 if $A = a$ and 0 otherwise [@hernan2020causal, p. 25].
+:::
+
+::: {#exm-ip-weighted-mean-table-2-2}
+## IP weighted risks in Table 2.2
+
+For a dichotomous outcome the IP weighted mean (@def-ip-weighted-mean) is a risk.
+In Table 2.2, with the weights of @exm-ip-weights-table-2-2,
+only the deaths among those with $A = a$ contribute to the average over the 20 individuals:
+
+- $a = 0$: 1 death with weight 2 and 2 deaths with weight 4, so the IP weighted risk is $(1 \times 2 + 2 \times 4)/20 = 0.5$;
+- $a = 1$: 1 death with weight 2 and 6 deaths with weight $4/3$, so the IP weighted risk is $(1 \times 2 + 6 \times 4/3)/20 = 0.5$.
+
+These are the risks found in @exm-everybody-untreated and @exm-everybody-treated.
+:::
+
+::: {#prp-pseudo-population-ch2}
+## Properties of the pseudo-population (Technical Point 2.2)
+
+Let $A$ take $k$ values, and assume the conditions of @def-ip-weights.
+In the pseudo-population (@def-pseudo-population-ch2):
+
+1. $L$ and $A$ are independent, $L$ has the same distribution as in the original population, and each treatment value has probability $1/k$;
+2. the mean outcome among those with $A = a$ is the IP weighted mean (@def-ip-weighted-mean):
+
+$$
+\Expfc{ps}{Y \mid A = a} = \E{\frac{\indicp{A = a} Y}{f[A \mid L]}}
+$$ {#eq-pseudo-population-mean}
+[@hernan2020causal, pp. 22-23].
+:::
+
+::: {.proof}
+For 1, the weighted size of the group with $A = a$ and $L = l$ is
+$\E{W^A \indicp{A = a, L = l}} = \Pr[A = a, L = l] / \Pr[A = a \mid L = l] = \Pr[L = l]$.
+Summing over the $k$ values of $a$ and the values of $l$ gives a total size $\E{W^A} = k$.
+So $\Pr_{ps}[A = a, L = l] = \Pr[L = l] \times (1/k)$, a product of a function of $l$ and a function of $a$,
+which gives independence with the stated margins.
+
+For 2,
+$$
+\begin{aligned}
+\Expfc{ps}{Y \mid A = a} &= \frac{\Expfc{ps}{Y \indicp{A = a}}}{\Expfc{ps}{\indicp{A = a}}} && \text{(laws of probability)} \\
+&= \frac{\E{W^A Y \indicp{A = a}}}{\E{W^A \indicp{A = a}}} && \text{(definition of } \Expfc{ps}{\cdot}\text{)} \\
+&= \frac{\E{Y \indicp{A = a} / f[a \mid L]}}{\E{\indicp{A = a} / f[a \mid L]}} && \text{(} f[A \mid L] = f[a \mid L] \text{ when } A = a\text{)} \\
+&= \E{\frac{Y \indicp{A = a}}{f[a \mid L]}} && \text{(denominator is 1)},
+\end{aligned}
+$$
+because $\E{\indicp{A = a} / f[a \mid L] \mid L} = f[a \mid L] / f[a \mid L] = 1$.
+The last expression equals @eq-ip-weighted-mean, again because $f[A \mid L] = f[a \mid L]$ whenever $\indicp{A = a} \neq 0$.
+:::
+
+::: {#rem-ip-weight-notation}
+## Why the notation $f[A \mid L]$ (Technical Point 2.2)
+
+The denominator of an individual's weight is the conditional probability of treatment evaluated at the individual's own values of $A$ and $L$.
+Writing it as $f[A \mid L]$, the function $f[a \mid l]$ evaluated at the random arguments $A$ and $L$,
+gives one formula for everyone.
+Writing $\Pr[A = A \mid L = L]$ instead would not work: that expression is always 1.
+For a continuous $A$, $f$ would be a conditional probability density function [@hernan2020causal, p. 23].
+:::
+
+::: {.callout-tip title="Read an IP Weight as a Head Count"}
+An individual with weight $W^A = 4$ counts as 4 members of the pseudo-population:
+the individual,
+plus 3 stand-ins for members of the same stratum of $L$ who actually received the other treatment.
+Conditional exchangeability is what lets the stand-ins borrow this individual's risk under the treatment the individual received.
 :::
 
 ::: {.notes}
 IP weighted estimators were proposed by Horvitz and Thompson (1952) for surveys in which subjects are sampled with unequal probabilities (see Technical Point 12.1) [@hernan2020causal, p. 22].
 :::
 
-::: {.callout-note title="Technical Point 2.2: Formal Definition of IP Weights"}
-The weight's denominator is the conditional density of $A$ given $L$ evaluated at the individual's own values, i.e. at the random arguments $A$ and $L$: $f[A \mid L]$.
-This notation is needed because $\Pr[A = A \mid L = L]$ is tautologically 1.
-In a conditionally randomized experiment, $f[a \mid l] > 0$ for all $l$ with $\Pr[L = l] > 0$.
-
-The mean outcome in the pseudo-population equals the IP weighted mean in the population.
-With $I(A = a) = 1$ if $A = a$ and 0 otherwise:
-\begin{align}
-\Expfc{ps}{Y \mid A = a} &= \frac{\Expfc{ps}{Y\, I(A = a)}}{\Expfc{ps}{I(A = a)}} && \text{(laws of probability)} \\
-&= \frac{\E{W^A Y\, I(A = a)}}{\E{I(A = a)\, W^A}} && \text{(definition of } \text{E}_{ps}\text{)} \\
-&= \frac{\E{Y\, I(A = a) / \Pr[A = a \mid L]}}{\E{I(A = a) / \Pr[A = a \mid L]}} && \text{(} I(A = a)/f[A \mid L] = I(A = a)/f[a \mid L]\text{)} \\
-&= \E{\frac{Y\, I(A = a)}{\Pr[A = a \mid L]}} && \text{(} \E{I(A = a)/\Pr[A = a \mid L] \mid L} = 1\text{)}.
-\end{align}
-[@hernan2020causal, p. 23]
-:::
-
 ### Standardization and IP Weighting Are Equivalent
 
-Both gave a causal risk ratio of 1 here, and this is no coincidence (Technical Point 2.3).
-Both build a counterfactual tree in which everyone receives $a$, from different pieces:
+::: {#prp-ipw-equals-standardization}
+## IP weighting equals standardization (Technical Point 2.3)
 
-- **IP weighting** uses $\Pr[A = a \mid L = l]$;
-- **standardization** uses $\Pr[L = l]$ and $\Pr[Y = 1 \mid A = a, L = l]$.
+Let $A$ be discrete with finitely many values and $L$ discrete,
+and assume positivity: $f[a \mid l] > 0$ for every $l$ with $\Pr[L = l] > 0$,
+which conditionally randomized experiments guarantee.
+Then the IP weighted mean (@def-ip-weighted-mean) equals the standardized mean (@def-standardization):
+$$
+\E{\frac{\indicp{A = a} Y}{f[A \mid L]}} = \sum_l \E{Y \mid A = a, L = l} \Pr[L = l].
+$$ {#eq-ipw-equals-standardization}
+No counterfactuals are involved [@hernan2020causal, p. 25].
+:::
 
-Because both simulate what would have happened had $L$ not been used to decide the probability of treatment, we say these methods **adjust for** $L$.
-"Controlling for" $L$ is a slight abuse of language: this analytic control is quite different from the physical control of a randomized experiment.
+::: {.proof}
+Only individuals with $A = a$ contribute to the left side, and for them $f[A \mid L] = f[a \mid L]$.
+Conditioning on $L$,
+$$
+\begin{aligned}
+\E{\frac{\indicp{A = a} Y}{f[A \mid L]}}
+&= \sum_l \frac{1}{f[a \mid l]} \E{Y \mid A = a, L = l} f[a \mid l] \Pr[L = l] \\
+&= \sum_l \E{Y \mid A = a, L = l} \Pr[L = l],
+\end{aligned}
+$$
+cancelling $f[a \mid l]$.
+For a continuous $L$, replace the sum by an integral.
+:::
 
-::: {.callout-note title="Technical Point 2.3: Equivalence of IP Weighting and Standardization"}
-Let $A$ be discrete with finitely many values and assume **positivity**: $f[a \mid l] > 0$ for all $l$ with $\Pr[L = l] > 0$ (guaranteed in conditionally randomized experiments).
-Define
+::: {#prp-ipw-identifies}
+## IP weighting identifies the counterfactual mean (Technical Point 2.3)
 
-- the standardized mean $\sum_l \E{Y \mid A = a, L = l} \Pr[L = l]$;
-- the IP weighted mean $\E{\frac{I(A = a)\, Y}{f[A \mid L]}}$.
+Under the conditions of @prp-ipw-equals-standardization,
+suppose also consistency ($Y = Y^A$) and conditional exchangeability ($Y^a \ind A \mid L$, @def-conditional-exchangeability).
+Then the IP weighted mean equals the counterfactual mean:
+$$
+\E{\frac{\indicp{A = a} Y}{f[A \mid L]}} = \E{Y^a}.
+$$ {#eq-ipw-identifies}
+So, by @prp-pseudo-population-ch2, the associational risk ratio in the pseudo-population equals the causal risk ratio in the original population [@hernan2020causal, pp. 22, 25].
+:::
 
-**They are equal** (no counterfactuals needed):
-\begin{align}
-\E{\frac{I(A = a)\, Y}{f[A \mid L]}}
-&= \sum_l \frac{1}{f[a \mid l]} \E{Y \mid A = a, L = l} f[a \mid l] \Pr[L = l] && \text{(only } A = a \text{ contributes)} \\
-&= \sum_l \E{Y \mid A = a, L = l} \Pr[L = l] && \text{(cancel } f[a \mid l]\text{)}.
-\end{align}
-For continuous $L$, replace the sum by an integral.
-
-**Under conditional exchangeability, both equal $\E{Y^a}$.**
-Standardized mean:
-\begin{align}
-\E{Y^a} &= \sum_l \E{Y^a \mid L = l} \Pr[L = l] && \text{(law of total expectation)} \\
-&= \sum_l \E{Y^a \mid A = a, L = l} \Pr[L = l] && \text{(conditional exchangeability, positivity)} \\
-&= \sum_l \E{Y \mid A = a, L = l} \Pr[L = l] && \text{(consistency)}.
-\end{align}
-IP weighted mean:
-\begin{align}
-\E{\frac{I(A = a)}{f[A \mid L]} Y}
-&= \E{\frac{I(A = a)}{f[a \mid L]} Y^a} && \text{(consistency)} \\
-&= \E{\E{\frac{I(A = a)}{f[a \mid L]} Y^a \;\middle|\; L}} && \text{(law of total expectation; } f[a \mid L] > 0\text{)} \\
-&= \E{\E{\frac{I(A = a)}{f[a \mid L]} \;\middle|\; L} \E{Y^a \mid L}} && \text{(conditional exchangeability)} \\
-&= \E{\E{Y^a \mid L}} && \text{(} \E{I(A = a)/f[a \mid L] \mid L} = 1\text{)} \\
+::: {.proof}
+This follows from @prp-ipw-equals-standardization and @prp-standardization-identifies.
+A direct proof:
+$$
+\begin{aligned}
+\E{\frac{\indicp{A = a}}{f[A \mid L]} Y}
+&= \E{\frac{\indicp{A = a}}{f[a \mid L]} Y^a} && \text{(consistency)} \\
+&= \E{\E{\frac{\indicp{A = a}}{f[a \mid L]} Y^a \;\middle|\; L}} && \text{(law of total expectation)} \\
+&= \E{\E{\frac{\indicp{A = a}}{f[a \mid L]} \;\middle|\; L} \E{Y^a \mid L}} && \text{(conditional exchangeability)} \\
+&= \E{\E{Y^a \mid L}} && \text{(the inner mean is 1)} \\
 &= \E{Y^a} .
-\end{align}
+\end{aligned}
+$$
+Positivity keeps $f[a \mid L]$ away from 0, so every step is defined.
+:::
 
-With a **continuous** treatment the IP weighted mean is no longer equal to the standardized mean and is biased for $\E{Y^a}$ even under exchangeability: with $f$ a density, $\E{I(A = a)/f(a \mid l) \mid L = l} = 0$, not 1;
-with $f$ a probability, $f(a \mid L = l) = 0$ with probability 1 and positivity fails.
-Section 12.4 generalizes IP weighting to continuous treatments;
-Technical Point 3.1 shows the results fail without positivity even for discrete $A$ [@hernan2020causal, p. 25].
+::: {#exm-two-methods-table-2-2}
+## Two methods, one answer in Table 2.2
+
+Standardization (@exm-standardization-table-2-2) and IP weighting (@exm-ip-weighted-mean-table-2-2) both give $\Pr[Y^{a=1} = 1] = \Pr[Y^{a=0} = 1] = 0.5$ in Table 2.2,
+and so a causal risk ratio of 1.
+By @prp-ipw-equals-standardization this is no coincidence [@hernan2020causal, p. 23].
+:::
+
+::: {#rem-two-ingredients}
+## Two recipes for the same counterfactual tree
+
+Both methods build a counterfactual tree in which everyone receives $a$, from different pieces:
+
+- **IP weighting** uses the treatment probabilities $\Pr[A = a \mid L = l]$;
+- **standardization** uses $\Pr[L = l]$ and the outcome risks $\Pr[Y = 1 \mid A = a, L = l]$ [@hernan2020causal, p. 23].
+:::
+
+::: {.callout-warning title="Analytic Control Is Not Physical Control"}
+Because both methods simulate what would have happened had $L$ not been used to decide the probability of treatment,
+we say that they **adjust for** $L$.
+Saying that they "control for" $L$ is a slight abuse of language:
+this analytic control is quite different from the physical control of a randomized experiment [@hernan2020causal, p. 23].
+:::
+
+::: {.callout-warning title="Continuous Treatments Break the Equivalence"}
+With a continuous treatment, the IP weighted mean no longer equals the standardized mean,
+and it is biased for $\E{Y^a}$ even under exchangeability.
+If $f$ is a density, $\E{\indicp{A = a} / f(a \mid l) \mid L = l}$ is 0, not 1;
+if $f$ is a probability, $f(a \mid L = l) = 0$ with probability 1, so positivity fails.
+Section 12.4 generalizes IP weighting to continuous treatments,
+and Technical Point 3.1 shows that the results above fail without positivity even for a discrete $A$ [@hernan2020causal, p. 25].
 :::
 
 ### Why Not Finish the Book Here?
+
+::: {#rem-limits-of-experiments}
+## Why not always run a randomized experiment?
 
 An ideal randomized experiment plus standardization or IP weighting gives average causal effects.
 But randomized experiments are often unethical, impractical, or untimely.
@@ -520,18 +1120,21 @@ For the heart transplant study:
 - **feasibility**: double blinding is impossible, people assigned to medical treatment may not forgo a transplant, and compatible hearts may not be available;
 - **timeliness**: the study would take years, and decisions must be made in the meantime.
 
-Frequently an observational study is the least bad option (Chapter 3).
+Frequently an observational study is the least bad option (Chapter 3) [@hernan2020causal, pp. 23-24].
+:::
 
 ## Summary
 
 ---
 
-1. **Randomization** makes missing counterfactuals missing by chance and is expected to produce exchangeability, $Y^a \ind A$;
-   in an ideal randomized experiment, association is causation.
-2. $Y^a \ind A$ (exchangeability) is different from $Y \ind A$ (no association).
-3. **Conditional randomization** (randomization probabilities depending on $L$) produces only conditional exchangeability, $Y^a \ind A \mid L$.
-4. Under conditional exchangeability, the population causal effect is identified by **standardization**, $\sum_l \E{Y \mid L = l, A = a} \Pr[L = l]$, or equivalently by **IP weighting** with $W^A = 1/f[A \mid L]$, which creates a pseudo-population in which $L$ and $A$ are independent.
-5. In Table 2.2 both methods give a causal risk ratio of 1, whereas the crude associational risk ratio is 1.26.
+1. **Randomization** makes missing counterfactuals missing by chance and is expected to produce exchangeability, $Y^a \ind A$ (@def-exchangeability);
+   in an ideal randomized experiment, association is causation (@prp-association-is-causation).
+2. $Y^a \ind A$ (exchangeability) is different from $Y \ind A$ (no association; @prp-exchangeability-association).
+3. **Conditional randomization** (randomization probabilities depending on $L$) produces only conditional exchangeability, $Y^a \ind A \mid L$ (@def-conditional-exchangeability, @prp-randomization-exchangeability).
+4. Under conditional exchangeability, the population causal effect is identified by **standardization**, $\sum_l \E{Y \mid L = l, A = a} \Pr[L = l]$ (@prp-standardization-identifies),
+   or equivalently by **IP weighting** with $W^A = 1/f[A \mid L]$ (@prp-ipw-identifies),
+   which creates a pseudo-population in which $L$ and $A$ are independent (@prp-pseudo-population-ch2).
+5. In Table 2.2 both methods give a causal risk ratio of 1 (@exm-two-methods-table-2-2), whereas the crude associational risk ratio is 1.26.
 
 ## References
 
