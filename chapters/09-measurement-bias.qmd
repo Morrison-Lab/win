@@ -17,8 +17,8 @@ format:
 
 Suppose a randomized experiment of whether one's looking up makes other pedestrians look up finds only a weak association.
 Randomization rules out confounding, and every pedestrian's response was recorded, so there is no selection bias.
-But the collaborator who recorded the responses missed half of the instances in which a pedestrian looked up,
-writing them down as "did not look up",
+But the collaborator in charge of the records caught only half of the pedestrians who did look up,
+writing the rest down as "did not look up",
 so even a strong effect would appear diluted.
 :::
 
@@ -52,12 +52,14 @@ Measurement error of a discrete variable is called **misclassification**.
 ::: {#exm-drug-records}
 ## Drug Use Abstracted From Medical Records
 
-In the cholesterol-drug study, suppose drug use is abstracted from medical records.
-The measured treatment $A^*$ can differ from the true treatment $A$ (actual use of the drug) in several ways:
+In the cholesterol-drug study, treat drug use as binary:
+$A = 1$ if the individual actually used the drug and $A = 0$ otherwise.
+Suppose $A^*$ is abstracted from medical records, so $A^* = 1$ if the record shows the drug was prescribed.
+$A^*$ can differ from $A$ in several ways:
 
 - the abstractor makes a transcription error;
 - the physician forgets to record the prescription;
-- the patient never takes the prescribed drug.
+- the record shows a prescription that the patient never takes.
 
 Because $A$ is binary, each of these errors is a misclassification (@def-measurement-error).
 :::
@@ -79,7 +81,8 @@ The factors in $U_A$ determine the magnitude and direction of the measurement er
 ## Why Draw the Error Node
 
 In Figure 9.1, the node $U_A$ is not needed for reading off independencies:
-it is not a common cause of two other nodes, and nothing is conditioned on it.
+it is not a common cause of two other nodes,
+and nothing is conditioned on it.
 The book draws it anyway, so that the sources of measurement error are visible
 and the diagram can be compared with the later ones in which these sources are shared or affected by other variables [@hernan2020causal, p. 126].
 :::
@@ -114,19 +117,23 @@ which equals $\Pr[Y^a = 1]$ by exchangeability.
 Taking the ratio for $a = 1$ and $a = 0$ gives @eq-true-rr-causal.
 :::
 
-In practice only $A^*$ and $Y^*$ are available, and in general
+In practice only $A^*$ and $Y^*$ are available, and the measured risk ratio
 
 $$
-\frac{\Pr[Y^* = 1 \mid A^* = 1]}{\Pr[Y^* = 1 \mid A^* = 0]} \neq \frac{\Pr[Y^{a=1} = 1]}{\Pr[Y^{a=0} = 1]}
-$$ {#eq-measured-rr-not-causal}
+\frac{\Pr[Y^* = 1 \mid A^* = 1]}{\Pr[Y^* = 1 \mid A^* = 0]}
+$$ {#eq-measured-rr}
+
+need not equal the causal risk ratio on the right of @eq-true-rr-causal.
 
 ::: {#def-measurement-bias}
 ## Measurement Bias (Information Bias)
 
-Let $A^*$ and $Y^*$ be the measured versions of a treatment $A$ and an outcome $Y$ (@def-measurement-error).
-There is **measurement bias**, or **information bias**, when the association between $A^*$ and $Y^*$
-differs from the causal effect of the true treatment $A$ on the true outcome $Y$ because of measurement error,
-as in @eq-measured-rr-not-causal.
+Suppose an analysis aims at the causal effect of a treatment $A$ on an outcome $Y$
+but uses measured versions (@def-measurement-error) of some of its variables:
+the treatment, the outcome, or covariates such as confounders.
+There is **measurement bias**, or **information bias**, when the resulting measure of association
+differs from the causal effect of $A$ on $Y$ because of measurement error,
+for example when @eq-measured-rr differs from the causal risk ratio.
 :::
 
 ::: {#exm-measurement-bias-figure-9-2}
@@ -177,11 +184,18 @@ An error that is not nondifferential is **differential**.
 ## Error Types in the Pedestrian Experiment
 
 In @exm-looking-up-misrecorded the treatment is recorded perfectly, so $e_A = 0$ for everyone.
-A constant error is independent of anything,
+A constant error is independent of every other variable,
 so $e_A$ and $e_Y$ are independent (@def-independent-measurement-errors)
 and $e_A$ is nondifferential (@def-nondifferential-measurement-error).
-If the recorder misses a look-up equally often whether or not the investigator looked up,
-then $e_Y$ is nondifferential too.
+
+Now suppose the recorder catches each look-up with probability one half, whatever the investigator did,
+and never records a look-up that did not happen.
+Then $e_Y = -1$ exactly when a pedestrian looked up and the recorder missed it, and $e_Y = 0$ otherwise,
+so $\Pr[e_Y = -1 \mid A = a] = \frac{1}{2} \Pr[Y = 1 \mid A = a]$.
+If looking up has an effect, this probability differs between $a = 0$ and $a = 1$,
+and $e_Y$ is **differential** in the sense of @def-nondifferential-measurement-error,
+even though the recorder's lapses have nothing to do with treatment.
+This example is ours, not the book's.
 :::
 
 ## 9.2 The Structure of Measurement Error (pp. 126-128)
@@ -211,10 +225,13 @@ The measurement errors are
 
 @def-error-structure-graphical classifies the error **nodes** $U_A$ and $U_Y$,
 while @def-independent-measurement-errors and @def-nondifferential-measurement-error classify the error **variables** $e_A$ and $e_Y$.
-The two agree when each error depends only on its own error node, that is, $e_A$ is a function of $U_A$ alone and $e_Y$ of $U_Y$ alone.
-They can disagree otherwise.
-For example, under misclassification of a binary $A$ the error $e_A = A^* - A$ is a function of $A$ itself,
-so in Figure 9.2 it can be associated with $Y$ (through $A \rightarrow Y$) even though $U_A$ is not.
+If $e_A$ is a function of $U_A$ alone and $e_Y$ a function of $U_Y$ alone,
+then, under the causal Markov condition, graphical independence implies independence of $e_A$ and $e_Y$,
+and graphical nondifferentiality implies nondifferentiality of the error variables.
+Otherwise the two classifications can disagree.
+Under misclassification of a binary variable, the error $e_Y = Y^* - Y$ depends on $Y$ as well as on $U_Y$,
+so in Figure 9.2 it can be associated with $A$ (through $A \rightarrow Y$) even though $U_Y$ is not,
+as @exm-pedestrian-error-types showed.
 This remark is ours, not the book's.
 :::
 
@@ -268,7 +285,7 @@ giving the same structure $Y \rightarrow U_A$ as recall bias.
 ## Drug Levels Measured After Liver Toxicity
 
 Suppose blood levels of the drug serve as $A^*$, but they are measured after liver toxicity $Y$ has developed.
-Liver toxicity affects how the drug is cleared and therefore its blood levels,
+Liver toxicity itself alters the drug levels found in the blood,
 so the measured treatment depends on the outcome: reverse causation bias (@def-reverse-causation-bias).
 :::
 
@@ -297,7 +314,8 @@ Figures 9.6 and 9.7 combine these settings, giving errors that are both dependen
 
 The structure of the error in @tbl-error-types determines which correction methods apply;
 there is a large literature for independent nondifferential error.
-Correction methods generally combine modeling assumptions with **validation samples**, subsets in which key variables are measured with little or no error.
+Correction methods generally combine modeling assumptions with **validation samples**,
+subsets of the data where the key variables are measured accurately.
 The book does not cover them;
 its point is that measuring variables, like selecting individuals, can introduce bias,
 so realistic causal diagrams must represent confounding, selection, and measurement simultaneously [@hernan2020causal, p. 128].
@@ -310,8 +328,8 @@ the most effective defense against measurement bias is to improve how the variab
 
 ::: {.callout-note title="Fine Point 9.1: The Strength and Direction of Measurement Bias"}
 Measurement error generally causes bias, but there is one notable exception and no general rule for the direction.
-The boxes that follow give the exception, the direction and magnitude of the bias,
-and a worked example with the pedestrian experiment [@hernan2020causal, p. 128].
+The boxes that follow give the exception and the direction and magnitude of the bias [@hernan2020causal, p. 128].
+A worked example with the pedestrian experiment, which is ours, follows them.
 :::
 
 ::: {#prp-null-preserved}
@@ -320,7 +338,8 @@ and a worked example with the pedestrian experiment [@hernan2020causal, p. 128].
 Suppose the causal DAG is Figure 9.2 without the arrow $A \rightarrow Y$,
 so that its only arrows are $A \rightarrow A^* \leftarrow U_A$ and $Y \rightarrow Y^* \leftarrow U_Y$,
 and suppose the joint distribution satisfies the causal Markov condition with respect to this DAG.
-Then $A^* \ind Y^*$ and $A \ind Y$: both the true and the measured associations are null.
+Then $A^* \ind Y^*$ and $A \ind Y$:
+the true and the measured associations are both null.
 :::
 
 ::: {.proof}
@@ -338,9 +357,10 @@ Causal diagrams encode no quantitative information, so they cannot describe the 
 :::
 
 ::: {.callout-warning title="Nondifferential Error Can Reverse a Trend"}
-"Nondifferential error biases toward the null" is not a safe rule.
-Even with independent nondifferential error, the $A^*$-$Y^*$ and $A$-$Y$ trends can go in **opposite directions** for ordinal (non-dichotomous) or continuous treatments,
-which happens when the conditional mean of $A^*$ given $A$ is a nonmonotonic function of $A$
+A common rule of thumb, that nondifferential error only biases toward the null, is not safe (this framing is ours).
+Even with independent nondifferential error and non-extreme bias,
+the $A^*$-$Y^*$ and $A$-$Y$ trends can go in **opposite directions** for ordinal (non-dichotomous) or continuous treatments.
+This reversal occurs when $\E{A^* \mid A}$ does not move monotonically with $A$
 (Dosemeci, Wacholder, and Lubin 1990; Weinberg, Umbach, and Greenland 1994).
 VanderWeele and Hernán (2009) give a more general framework based on signed causal diagrams [@hernan2020causal, p. 128].
 :::
@@ -386,8 +406,10 @@ so the causal risk difference is $0.6 - 0.2 = 0.4$ and the causal risk ratio is 
 The recorder misses half of the look-ups and never records a look-up that did not happen,
 in both groups: sensitivity $s = 0.5$, perfect specificity.
 By @prp-perfect-specificity the recorded risks are $0.3$ and $0.1$,
-so the measured risk difference is $0.2$, half the true one, while the measured risk ratio is still $3$.
-The "dilution" in @exm-looking-up-misrecorded is real on the additive scale but absent on the ratio scale.
+so the measured risk difference is $0.2$, half the true one,
+while the measured risk ratio is still $3$.
+So the "dilution" in @exm-looking-up-misrecorded is real on the additive scale but absent on the ratio scale.
+These numbers and this conclusion are ours, not the book's.
 :::
 
 ## 9.3 Mismeasured Confounders and Colliders (pp. 128-130)
@@ -402,7 +424,8 @@ Mismeasured confounders can cause bias even when treatment and outcome are perfe
 In Figure 9.8, $A$ is drug use, $Y$ liver disease, and $L$ history of hepatitis:
 people with prior hepatitis are less likely to be prescribed the drug and more likely to develop liver disease,
 so there is confounding through $A \leftarrow L \rightarrow Y$.
-With $L$ perfectly measured, standardization or IP weighting by $L$ recovers the causal risk ratio.
+With $L$ perfectly measured, $L$ blocks that path,
+so under consistency and positivity, standardization or IP weighting by $L$ recovers the causal risk ratio.
 
 If hepatitis history is instead ascertained by questionnaire, some participants misreport it,
 and investigators have only the mismeasured $L^*$.
@@ -427,8 +450,7 @@ so again there is measurement bias.
 Figure 9.8 is equivalent to Figure 7.8: one can view $L$ as unmeasured and $L^*$ as a surrogate confounder
 ([Fine Point 7.3](07-confounding.qmd)).
 Whether one calls the problem bias from a mismeasured confounder or unmeasured confounding makes no difference in practice [@hernan2020causal, p. 129].
-In some settings, however, mismeasured variables are enough to adjust for confounding,
-as Fine Point 9.2 below shows.
+In some settings, however, mismeasured variables are enough to adjust for confounding.
 :::
 
 ### Apparent Effect Modification
@@ -448,15 +470,16 @@ In the setting of @exm-hepatitis, suppose the sharp null hypothesis holds (treat
 Then:
 
 - in the stratum $L^* = 1$, everyone has $L = 1$, so there is no confounding by $L$ and no $A$-$Y$ association;
-- in the stratum $L^* = 0$, individuals with $L = 1$ and $L = 0$ are mixed, so there is uncontrolled confounding by $L$ and a non-null $A$-$Y$ association.
+- in the stratum $L^* = 0$, individuals with $L = 1$ and $L = 0$ are mixed,
+  so there is uncontrolled confounding by $L$ and, in general, a non-null $A$-$Y$ association.
 
 Reading both stratum-specific associations as effects, investigators would conclude that $L^*$ modifies the effect of $A$, although there is no effect at all [@hernan2020causal, p. 129].
 :::
 
 ::: {.callout-warning title="Measurement Error Can Masquerade as Effect Modification"}
 When a confounder is measured more accurately in some strata than in others,
-stratum-specific associations differ because residual confounding differs,
-not because the effect does.
+stratum-specific associations can differ because residual confounding differs,
+even when the effect is the same in every stratum.
 :::
 
 ### Mismeasured Colliders
@@ -469,11 +492,12 @@ not because the effect does.
 A collider can be mismeasured too.
 In Figure 9.10 (equivalent to Figure 8.2) the arrows are $A \rightarrow Y$, $A \rightarrow C \leftarrow Y$, and $C \rightarrow C^*$.
 Conditioning on the mismeasured $C^*$ generally introduces selection bias,
-because $C^*$ is a descendant of the collider $C$ and therefore a common effect of $A$ and $Y$.
+since $C^*$ descends from the collider $C$,
+which makes it a common effect of $A$ and $Y$ as well.
 :::
 
 ::: {.callout-note title="Fine Point 9.2: When Mismeasured Confounders Are Not a Problem"}
-In many medical settings, error in a measured confounder does no harm,
+Error in a measured confounder often does no harm in clinical settings,
 because treatment decisions were themselves based on the measured value.
 The boxes that follow give two examples and the general principle [@hernan2020causal, p. 130].
 :::
@@ -524,22 +548,24 @@ Earlier diagrams assumed that every variable on the diagram is measured without 
 This is unrealistic.
 As this chapter showed, measurement error can
 
-- create a noncausal association between $A^*$ and $Y^*$ even when $A$ has no effect on $Y$ and there is no confounding or selection bias, and
+- create a noncausal association between $A^*$ and $Y^*$ even when $A$ has no effect on $Y$ and there is no confounding or selection bias,
+  provided the errors are dependent or differential (compare @prp-null-preserved), and
 - prevent a measured confounder $L^*$ from blocking a backdoor path that the true $L$ would block (@exm-hepatitis).
 :::
 
 Should every diagram then show both true and measured values of every variable?
-Often the measurement error is judged or known to be too small to matter, and a simpler diagram is preferable.
+Often the measurement error is believed, or known, to be negligible,
+and then a simpler diagram is preferable.
 
 ::: {.callout-tip title="A Two-Step Approach"}
-If confounding and selection bias exist under perfect measurement, they will typically exist under measurement error too
+Confounding and selection bias that are present when every variable is measured perfectly typically persist under measurement error
 (with exceptions, as in @exm-figure-9-12).
 So first draw diagrams without measurement error to study confounding and selection bias,
 then add measurement error as an extra layer.
 Throughout the book, whenever the focus is confounding or selection, the distinction between true and measured values is omitted [@hernan2020causal, pp. 130-131].
 :::
 
-The second assumption, which is fundamental to any causal diagram, is the subject of Section 9.5.
+The next section turns to the second assumption, which is fundamental to any causal diagram.
 
 ## 9.5 Many Proposed Causal Diagrams Include Noncausal Arrows (pp. 131-133)
 
@@ -549,7 +575,7 @@ The second assumption, which is fundamental to any causal diagram, is the subjec
 ## Obesity, Antiviral Treatment, and COVID-19 Death
 
 Let $A$ be antiviral treatment for COVID-19, $Y$ death, and $L$ obesity (body mass index above 30), all binary.
-Obese patients are more likely to be treated and to die without treatment,
+Obese patients are more likely to be treated, and more likely to be hospitalized if untreated,
 so experts draw Figure 9.13 (equal to Figure 7.1): $L \rightarrow A$, $L \rightarrow Y$, $A \rightarrow Y$.
 Assume treatment depends only on $L$ and on physician preference, and that there is no measurement error.
 :::
@@ -564,7 +590,7 @@ Assume treatment depends only on $L$ and on physician preference, and that there
   ([ENDE](03-observational-studies.qmd#def-ende))
   can change $L$ while having no direct effect on $Y$.
   Few experts would grant that such an intervention exists for obesity and mortality,
-  so the arrow $L \rightarrow Y$ cannot be assumed to be well defined [@hernan2020causal, p. 131].
+  so we cannot take the arrow $L \rightarrow Y$ to be well defined [@hernan2020causal, p. 131].
 :::
 
 ::: {#def-causal-dag-strict}
@@ -597,7 +623,7 @@ So Figure 9.13, given what is known today, is a "noncausal" diagram (@def-causal
 :::
 
 ::: {.callout-note title="Fine Point 9.3: Whether Interventions Are Well-Defined Depends on the Outcome of Interest"}
-If we know how to intervene on $L$ to study its effect on $A$, why not use the same intervention for $Y$?
+If we know an intervention on $L$ that changes $A$, why can the same intervention not be used to learn about $Y$?
 The example below resolves this apparent contradiction [@hernan2020causal, p. 132].
 :::
 
@@ -623,7 +649,8 @@ In this sense the counterfactuals $A^l$ are well defined, while $Y^l$ are not [@
 Experts who want a causal DAG that still accounts for the fact that obese patients die more often
 can instead propose Figure 9.14, which has the same structure as Figure 7.2.
 It adds a hidden node $H$ that causes both $L$ and $Y$;
-$H$ may contain unmeasured, possibly unknown, factors (genetic factors, metabolic factors related to body fat, microbiota, and others not yet discovered).
+$H$ may contain unmeasured, possibly unknown, factors,
+for example genes, the metabolism of body fat, the microbiota, and factors not yet discovered.
 Figure 9.14 has
 
 $$
@@ -639,7 +666,7 @@ with no arrow $H \rightarrow A$, which is reasonable if obesity $L$ is the only 
 The new arrows $H \rightarrow L$ and $H \rightarrow Y$ of @exm-hidden-factors-obesity are causal exactly when the counterfactuals $L^h$ and $Y^h$ are well defined.
 That holds if the experts are willing to assume either
 
-- that $H$ corresponds to a well-defined intervention, or
+- that $H$ is itself a well-defined intervention, or
 - that some well-defined ENDE intervention on $H$ exists whose only route to $L$ and $Y$ runs through $H$.
 
 The precise intervention on $H$ is unknown, but current knowledge does not exclude it,
@@ -654,7 +681,9 @@ The remarks below describe that reading and the difficulties Richardson and Robi
 ::: {#rem-statistical-dag}
 ## A Purely Statistical Reading of a DAG
 
-Consider an FFRCISTG model in which only $A$ has well-defined interventions (counterfactuals $(M^a, Y^a)$)
+Take a DAG such as Figure 7.14 (the front door graph), with treatment $A$, mediator $M$, and outcome $Y$,
+and represent it as a finest fully randomized causally interpreted structured tree graph (FFRCISTG) model (Chapter 6)
+in which interventions are well defined for $A$ alone, whose counterfactuals are $(M^a, Y^a)$,
 and the joint distribution factors according to the DAG.
 Its arrows need not be causal;
 they only encode, via d-separation, conditional independencies on the DAG and the associated SWIG.
@@ -665,9 +694,9 @@ Under this reading, the arrow $L \rightarrow Y$ in Figure 9.13 need not be remov
 ## Difficulties With the Statistical Reading
 
 Richardson and Robins (2013) raised serious objections to @rem-statistical-dag:
-if arrows are not causal, there is no reason to expect the distribution to factor according to any incomplete DAG,
+if arrows are not causal, nothing makes the distribution factor according to any incomplete DAG,
 and with unmeasured variables some of the implied independencies cannot even be checked.
-For example, the front door graph (Figure 7.14) implies $Y \ind A \mid M, U$,
+For example, Figure 7.14, the front door graph, implies $Y \ind A \mid M, U$,
 and it is hard to see a reason for postulating this other than believing every arrow is causal.
 
 Alternatively, noncausal arrows can be read as a response by researchers skeptical that the counterfactuals $Y^m$ exist:
@@ -676,7 +705,7 @@ and if it fails, the claim that $M$-counterfactuals exist is falsified together 
 :::
 
 ::: {.callout-note title="Fine Point 9.5: A Connection to the Front Door Formula"}
-Figure 9.14 is the front door diagram of Figure 7.14 with $L \rightarrow A$ in place of $A \rightarrow M$,
+Replacing $A \rightarrow M$ in the front door diagram of Figure 7.14 by $L \rightarrow A$ gives Figure 9.14,
 so the front door formula identifies the effect of obesity on death through treatment.
 The proposition below states this, and the remark after it shows what changes when a direct arrow is added [@hernan2020causal, p. 134].
 :::
@@ -684,7 +713,9 @@ The proposition below states this, and the remark after it shows what changes wh
 ::: {#prp-front-door-obesity}
 ## The Front Door Formula in Figure 9.14
 
-Suppose Figure 9.14 (@eq-figure-9-14) is the causal DAG, with $H$ unmeasured and $L$ and $A$ discrete.
+Suppose Figure 9.14 (@eq-figure-9-14) is the causal DAG in the sense of @def-causal-dag-strict,
+so that the counterfactuals $Y^l$ and $Y^a$ are well defined,
+with $H$ unmeasured, $L$ and $A$ discrete, and $Y$ binary (so $\E{Y^l} = \Pr[Y^l = 1]$).
 Assume consistency and $\Pr[A = a, L = l'] > 0$ for every $a$ and $l'$.
 Then, for every $l$,
 
@@ -706,7 +737,8 @@ which gives @eq-front-door-obesity.
 Suppose a researcher adds a direct arrow $L \rightarrow Y$ to Figure 9.14,
 for example because patients with high $L$ receive ancillary care (such as dietary advice) that is not in the records.
 Then $Y^l - Y^{l'}$ becomes the total effect along both $L \rightarrow Y$ and $L \rightarrow A \rightarrow Y$,
-and $\E{Y^l}$ is no longer identified: @prp-front-door-obesity fails.
+and $\E{Y^l}$ is no longer identified,
+because the hypothesis of @prp-front-door-obesity (Figure 9.14 as the causal DAG) no longer holds.
 The effect along $L \rightarrow A \rightarrow Y$ alone remains identified by the front door formula, which the book proves in Chapter 23 [@hernan2020causal, p. 134].
 :::
 
@@ -717,7 +749,7 @@ The effect along $L \rightarrow A \rightarrow Y$ alone remains identified by the
 **Sometimes it does not.**
 
 ::: {#prp-adjust-l-both-dags}
-## Adjusting for Obesity Works Under Either Diagram
+## Adjusting for Obesity in Figure 9.14
 
 Suppose the causal Figure 9.14 (@eq-figure-9-14) is the true causal DAG, with $L$ discrete.
 Assume consistency and $\Pr[A = a \mid L = l] > 0$ for every $l$ with $\Pr[L = l] > 0$.
@@ -726,8 +758,6 @@ Then
 $$
 \E{Y^a} = \sum_l \E{Y \mid A = a, L = l} \Pr[L = l]
 $$ {#eq-adjust-l-both-dags}
-
-This is the same standardization formula that an analyst would obtain by reading the "noncausal" Figure 9.13 as if it were causal.
 :::
 
 ::: {.proof}
@@ -736,18 +766,20 @@ $L$ is a non-collider on it, so conditioning on $L$ blocks it, and $L$ is not a 
 So $\{L\}$ satisfies the backdoor criterion ([Section 7.2](07-confounding.qmd#def-backdoor-criterion-ch7)),
 which implies $Y^a \ind A \mid L$.
 The standardization theorem ([Chapter 7](07-confounding.qmd#thm-standardization-ch7)) then gives @eq-adjust-l-both-dags.
-In Figure 9.13 the only backdoor path is $A \leftarrow L \rightarrow Y$, which $L$ also blocks,
-so the same argument, applied to Figure 9.13 read causally, gives the same formula.
 :::
 
-@prp-adjust-l-both-dags is expected, because in neither DAG do unmeasured variables have arrows into $A$
+An analyst who reads the "noncausal" Figure 9.13 as if it were causal reaches the same formula:
+its only backdoor path, $A \leftarrow L \rightarrow Y$, is also blocked by $L$.
+So Figure 9.13 guides the analysis correctly, even though one of its arrows has no causal meaning.
+
+This agreement is expected, because in neither DAG do unmeasured variables have arrows into $A$
 (compare @rem-decision-maker-information).
 
 ::: {#rem-hidden-variables-missing}
 ## Many Published DAGs Omit Their Hidden Variables
 
 Many DAGs in the health and social sciences are noncausal because they omit the hidden variables $H$ that would make them causal;
-including a variable without well-defined interventions for its effect on its descendants effectively declares the DAG noncausal.
+a node whose effects on its descendants have no well-defined intervention makes the whole DAG noncausal.
 The identifying formula may still coincide with that from the causal DAG, as in @prp-adjust-l-both-dags.
 :::
 
@@ -768,7 +800,7 @@ Suppose instead that $L$ is a surrogate for hidden factors $H$ for which well-de
 $U \rightarrow H$, $U \rightarrow A$, $H \rightarrow L$, $H \rightarrow Y$, and $A \rightarrow Y$.
 The backdoor path is now $A \leftarrow U \rightarrow H \rightarrow Y$, and $L$ is not on it, so $L$ does not block it.
 Investigators unaware that $L$ is only a surrogate confounder would wrongly conclude that adjusting for $L$ suffices,
-as in @exm-figure-9-9 [@hernan2020causal, p. 134].
+the same trap as with the mismeasured confounder of @exm-hepatitis [@hernan2020causal, p. 134].
 :::
 
 ::: {.callout-warning title="Noncausal Arrows Give False Confidence"}
@@ -804,19 +836,26 @@ Investigators who want the effect of $A$ on $Y$ draw Figure 9.17,
 with arrows $U \rightarrow A$, $U \rightarrow L$, $A \rightarrow L$, $L \rightarrow Y$, and $A \rightarrow Y$,
 from the temporal order of the variables and two facts:
 the measured $L$ is associated with $Y$, and known but unmeasured factors $U$ affect $A$ and are associated with $L$.
-If Figure 9.17 were the true causal diagram, the effect would not be identifiable, because $L$ is a descendant of $A$ ([Fine Point 7.4](07-confounding.qmd)).
+If Figure 9.17 were the true causal diagram, the effect would not be identifiable,
+because $L$ is a descendant of $A$ ([Fine Point 7.4](07-confounding.qmd)).
 
-There is no well-defined intervention on $L$ for $Y$, so they add a hidden $H \rightarrow Y$ with $L$ as a surrogate of $H$, and redirect the arrows from $U$ and $A$ into $L$ toward $H$ (Figure 9.18).
-Now the backdoor path $A \leftarrow U \rightarrow H \rightarrow Y$ cannot be blocked by any measured variable, so the effect is not identifiable.
-Even if $L$ were a deterministic function of $H$, conditioning on $L$ would not block paths through $H$, because $H$ is not a function of $L$.
+There is no well-defined intervention on $L$ for $Y$,
+so they add a hidden $H \rightarrow Y$ with $L$ as a surrogate of $H$,
+and redirect the arrows from $U$ and $A$ into $L$ toward $H$ (Figure 9.18).
+Now no measured variable can block the backdoor path $A \leftarrow U \rightarrow H \rightarrow Y$,
+so the effect is not identifiable.
+An $L$ fully determined by $H$ would not help either:
+$H$ is richer than $L$, so knowing $L$ does not fix $H$,
+and conditioning on $L$ leaves paths through $H$ open.
 :::
 
 ::: {#exm-figure-9-19}
 ## A Hidden Variable That Should Not Inherit Every Arrow
 
 Letting $H$ inherit all arrows into $L$ is not always warranted.
-If $U$ affects $L$ directly rather than $H$ (Figure 9.19, with arrows $U \rightarrow A$, $U \rightarrow L$, $A \rightarrow H$, $H \rightarrow L$, $H \rightarrow Y$, and $A \rightarrow Y$),
-the only backdoor path, $A \leftarrow U \rightarrow L \leftarrow H \rightarrow Y$, is blocked by the collider $L$,
+Suppose $U$ affects $L$ directly rather than $H$,
+as in Figure 9.19, with arrows $U \rightarrow A$, $U \rightarrow L$, $A \rightarrow H$, $H \rightarrow L$, $H \rightarrow Y$, and $A \rightarrow Y$.
+Then the only backdoor path, $A \leftarrow U \rightarrow L \leftarrow H \rightarrow Y$, is blocked by the collider $L$,
 so the effect is identifiable without adjustment.
 Example: $U$ is a physician's decision to order a diagnostic test, $L$ the test result, and $H$ the biological determinants of the result [@hernan2020causal, p. 136].
 :::
