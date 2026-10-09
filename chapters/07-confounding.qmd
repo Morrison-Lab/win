@@ -85,14 +85,13 @@ In Figure 7.1 there are two sources of association between $A$ and $Y$:
 - the path $A \leftarrow L \rightarrow Y$ through the common cause $L$.
 
 The second path enters $A$ through an arrow pointing into $A$.
-Such paths have a name.
-(Paths, causal paths and colliders are defined in [Chapter 6](06-graphical-representation.qmd#def-path).)
+([Paths and causal paths](06-graphical-representation.qmd#def-path) and [colliders](06-graphical-representation.qmd#def-collider) are defined in Chapter 6.)
 
 ::: {#def-backdoor-path-ch7}
 ## Backdoor Path
 
-In a causal DAG, a **backdoor path** is a noncausal path between treatment and outcome that remains even if all arrows pointing from treatment to other variables (the descendants of treatment) are removed.
-That is, the path has an arrow pointing into treatment [@hernan2020causal, p. 91].
+In a causal DAG, a **backdoor path** between treatment $A$ and outcome $Y$ is a noncausal path between them that would survive the deletion of every arrow out of $A$.
+Equivalently, it begins with an arrow into $A$ [@hernan2020causal, p. 91].
 :::
 
 ::: {#exm-backdoor-path-7-1}
@@ -114,19 +113,24 @@ The common cause $L$ adds a second source of association.
 ## Confounding
 
 Let $A$ be a treatment and $Y$ an outcome in a causal DAG.
-**Confounding** for the effect of $A$ on $Y$ is the bias that results from common causes of $A$ and $Y$,
-which open backdoor paths (@def-backdoor-path-ch7) between them.
-Here *bias* means [systematic bias](06-graphical-representation.qmd#def-systematic-bias):
-the association between $A$ and $Y$ differs from their causal effect even in an infinitely large population.
-There is **no confounding** when $A$ and $Y$ share no common cause, measured or unmeasured.
+There is **confounding** for the effect of $A$ on $Y$ when $A$ and $Y$ share a common cause, measured or unmeasured;
+each common cause opens a backdoor path (@def-backdoor-path-ch7) between them.
+The word also names the bias this structure produces:
+the part of the association between $A$ and $Y$ that does not come from the effect of $A$ on $Y$,
+a form of [systematic bias](06-graphical-representation.qmd#def-systematic-bias).
+There is **no confounding** when $A$ and $Y$ share no common cause.
 :::
 
 ::: {#exm-confounding-7-1}
 ## Confounding in Figure 7.1
 
 In Figure 7.1, $L$ causes both $A$ and $Y$.
-Suppose that, for the sake of illustration, $L$ raises both the chance of treatment and the risk of the outcome, and $A$ has no effect on $Y$.
-Then the treated have more individuals with $L = 1$ than the untreated, and so a higher risk,
+For illustration, let $L$ be binary,
+let $\Pr[A = 1 \mid L = 1] > \Pr[A = 1 \mid L = 0]$ and $\Pr[Y = 1 \mid L = 1] > \Pr[Y = 1 \mid L = 0]$,
+and let $A$ have no effect on $Y$,
+so that within each level of $L$ the treated and the untreated have the same risk.
+Then the treated include a larger share of individuals with $L = 1$ than the untreated do,
+so their risk is higher,
 and the associational risk ratio exceeds the causal risk ratio of 1.
 The gap between them is confounding.
 :::
@@ -172,7 +176,7 @@ draw_dag(dag_7_2, unmeasured = "U", title = "Figure 7.2") +
   weather $U$ affects levels of particulate matter $A$ and of other pollutants $L$ that cause coronary heart disease $Y$.
 
 In every item a variable ($L$ or $U$) causes both treatment and outcome,
-so each is confounding in the sense of @def-confounding.
+so each is an instance of confounding in the sense of @def-confounding.
 :::
 
 ::: {.notes}
@@ -193,10 +197,10 @@ This chapter keeps $U$ on the graph, in gray.
 ::: {#rem-common-cause-associations-real}
 ## Associations from Common Causes Are Real
 
-Early statistical writers, Yule (1903) for discrete variables and Pearson et al. (1899) for continuous ones,
-called associations produced by common causes "fictitious", "illusory", "apparent", or "spurious" [@hernan2020causal, p. 92].
-Such associations are real:
-they would replicate in any large sample from the same population.
+Early statistical accounts of confounding dismissed the associations it produces:
+Yule (1903), writing about discrete variables, called them "fictitious", "illusory", and "apparent",
+and Pearson et al. (1899), writing about continuous ones, called them "spurious" [@hernan2020causal, p. 92].
+Yet such associations are genuine features of the population.
 What they cannot be is an estimate of the effect of treatment.
 :::
 
@@ -208,7 +212,7 @@ Unless stated otherwise, this chapter assumes that
 - there are no selection nodes, so the study sample represents the target population;
 - there is no random variability (the population is infinitely large).
 
-Chapters 8, 9, and 10 relax these assumptions in turn [@hernan2020causal, pp. 92-93].
+Chapters 8, 9, and 10 relax the last three assumptions in turn [@hernan2020causal, pp. 92-93].
 :::
 
 ::: {.notes}
@@ -267,11 +271,11 @@ If 30% of the treated and 40% of the untreated die,
 ::: {#prp-conditional-identification-ch7}
 ## Stratum-Specific Identification Under Conditional Exchangeability
 
-Let $A$ be a treatment, $Y$ an outcome, and $L$ a discrete set of covariates.
-Fix a treatment value $a$, and assume conditional exchangeability $Y^a \ind A \mid L$,
+Let $A$ be a binary treatment, $Y$ an outcome, and $L$ a discrete set of covariates.
+For $a = 0, 1$, assume conditional exchangeability $Y^a \ind A \mid L$,
 positivity $\Pr[A = a \mid L = l] > 0$ for every $l$ with $\Pr[L = l] > 0$,
-and consistency.
-Then, for every such $l$,
+and consistency ($Y = Y^a$ whenever $A = a$).
+Then, for $a = 0, 1$ and every such $l$,
 
 $$
 \E{Y^a \mid L = l} = \E{Y \mid L = l, A = a}
@@ -293,7 +297,11 @@ so the conditional effects $\E{Y^{a=1} \mid L = l} - \E{Y^{a=0} \mid L = l}$ are
 ::: {#thm-standardization-ch7}
 ## Standardization Under Conditional Exchangeability
 
-Under conditional exchangeability $Y^a \ind A \mid L$, positivity, and consistency,
+Let $L$ be a discrete set of covariates and fix a treatment value $a$.
+Assume conditional exchangeability $Y^a \ind A \mid L$,
+positivity $\Pr[A = a \mid L = l] > 0$ for every $l$ with $\Pr[L = l] > 0$,
+and consistency ($Y = Y^a$ whenever $A = a$).
+Then, with the sum over the $l$ with $\Pr[L = l] > 0$,
 
 $$\E{Y^a} = \sum_l \E{Y \mid L = l, A = a} \Pr[L = l]$$
 :::
@@ -307,8 +315,7 @@ $$\E{Y^a} = \sum_l \E{Y \mid L = l, A = a} \Pr[L = l]$$
 && \text{(@prp-conditional-identification-ch7)}
 \end{align}
 
-Here $L$ is discrete, the sums run over the $l$ with $\Pr[L = l] > 0$,
-and positivity, $\Pr[A = a \mid L = l] > 0$ for each such $l$, ensures that the conditional means are defined.
+Positivity makes every conditional mean in the sums well defined.
 :::
 
 ### Supplement: A Numerical Example
@@ -319,7 +326,7 @@ and positivity, $\Pr[A = a \mid L = l] > 0$ for each such $l$, ensures that the 
 ## Standardization Removes a Confounded Difference
 
 This hypothetical example is not from the book.
-Twenty individuals receive a drug $A$ or not;
+Twenty individuals each either receive a drug ($A = 1$) or do not ($A = 0$);
 $L = 1$ indicates a high-risk group;
 $Y = 1$ indicates death.
 
@@ -394,7 +401,7 @@ interpreted as an FFRCISTG model ([Chapter 6](06-graphical-representation.qmd#gr
 Hence, under faithfulness, $Y^a \ind A \mid L$ holds **if and only if** $L$ satisfies the backdoor criterion [@hernan2020causal, pp. 93-94].
 :::
 
-Section 7.5 gives a short graphical argument for @thm-backdoor-exchangeability-ch7 once SWIGs are defined.
+The proof is deferred: Section 7.5 sketches a graphical argument for @thm-backdoor-exchangeability-ch7 once SWIGs are defined.
 Checking every subset of measured non-descendants of $A$ against the criterion therefore tells us whether any of them achieves conditional exchangeability.
 
 ::: {.callout-note title="Technical Point 7.1: Does Conditional Exchangeability Imply the Backdoor Criterion?"}
@@ -432,14 +439,28 @@ The set $\{L\}$ fails the backdoor criterion, because $L$ is a descendant of $A$
    This is a marginally randomized experiment;
    under faithfulness, marginal exchangeability is equivalent to no common causes of treatment and outcome.
 2. **Common causes, but a set $L$ of measured non-descendants of $A$ blocks all backdoor paths** (e.g., Figure 7.1):
-   there is confounding, but no confounding is left once $L$ is adjusted for.
+   there is confounding, but adjusting for $L$ removes the bias it causes.
    This is a conditionally randomized experiment, with an arrow $L \rightarrow A$ by design.
 :::
 
 ::: {#def-sufficient-set}
 ## Sufficient Set for Confounding Adjustment
 
-A set $L$ of measured non-descendants of $A$ is a **sufficient set for confounding adjustment** when conditioning on $L$ blocks all backdoor paths, that is, when the treated and the untreated are exchangeable within levels of $L$.
+A set $L$ of measured non-descendants of $A$ is a **sufficient set for confounding adjustment** when conditioning on $L$ blocks all backdoor paths,
+that is, when the treated and the untreated are exchangeable within levels of $L$.
+:::
+
+::: {#exm-heart-transplant-sufficient-set}
+## The Heart Transplant Study
+
+The heart transplant study of Chapter 2 was conditionally randomized given severe heart disease $L$,
+which affects both transplant $A$ and death $Y$.
+Severe heart disease was more common among the treated,
+so had they gone without a transplant they would still have died more often than the untreated did:
+the two groups are not marginally exchangeable.
+Because treatment was randomized within levels of $L$, they are exchangeable within those levels,
+and $\{L\}$ is a sufficient set.
+This second setting of @rem-backdoor-two-settings is also what investigators hope for in observational studies that measure many variables $L$.
 :::
 
 ::: {#def-no-unmeasured-confounding}
@@ -447,23 +468,21 @@ A set $L$ of measured non-descendants of $A$ is a **sufficient set for confoundi
 
 There is **no unmeasured confounding** (given $L$) when the measured variables include a sufficient set $L$ for confounding adjustment (@def-sufficient-set),
 so that no backdoor path needs an unmeasured variable to be blocked.
-There may still be confounding:
-the point is that $L$ is enough to remove it.
+There may still be confounding (a common cause of $A$ and $Y$ may exist);
+the point is that $L$ is enough to block every backdoor path.
 :::
 
-::: {#exm-heart-transplant-sufficient-set}
-## The Heart Transplant Study
+::: {#exm-no-unmeasured-confounding-7-2}
+## No Unmeasured Confounding in Figure 7.2
 
-In the heart transplant study of Chapter 2, the treated had a higher frequency of severe heart disease $L$, a common cause of transplant $A$ and death $Y$.
-Had the treated not received a transplant, their risk of death would have exceeded the risk of the untreated,
-so the two groups are not marginally exchangeable.
-Within levels of $L$ they are exchangeable:
-$\{L\}$ is a sufficient set, and there is no unmeasured confounding given $L$.
-This second setting of @rem-backdoor-two-settings is also what investigators hope for in observational studies that measure many variables $L$.
+In Figure 7.2 the common cause $U$ of $A$ and $Y$ is unmeasured,
+but the measured $L$ blocks the only backdoor path, $A \leftarrow L \leftarrow U \rightarrow Y$, and is not a descendant of $A$.
+So $\{L\}$ is a sufficient set and there is no unmeasured confounding given $L$,
+even though there is confounding and $U$ was never recorded.
 :::
 
 ::: {.callout-warning title="The Backdoor Criterion Is Silent on Size and Sign"}
-The criterion says whether bias is present, not how large it is or which way it goes.
+The criterion says whether an open backdoor path exists, not how much bias it causes or which way the bias goes.
 An open backdoor path may carry only a weak association,
 and two strong open paths may push the estimate in opposite directions and partly cancel.
 Unmeasured confounding comes in degrees,
@@ -513,9 +532,11 @@ draw_dag(dag_7_4, unmeasured = c("U1", "U2"), title = "Figure 7.4") +
 ::: {#exm-figure-7-4-no-confounding}
 ## No Confounding in Figure 7.4
 
-In Figure 7.4 $A$ and $Y$ share no common cause, so there is **no confounding**:
-the backdoor path $A \leftarrow U_2 \rightarrow L \leftarrow U_1 \rightarrow Y$ is blocked by the collider $L$,
-and, by @prp-marginal-identification-ch7, $\Pr[Y^a = 1] = \Pr[Y = 1 \mid A = a]$.
+In Figure 7.4 $A$ and $Y$ share no common cause, so there is **no confounding**.
+The only backdoor path, $A \leftarrow U_2 \rightarrow L \leftarrow U_1 \rightarrow Y$, is blocked by the unconditioned collider $L$,
+so the empty set satisfies the backdoor criterion
+and @thm-backdoor-exchangeability-ch7 gives $Y^a \ind A$.
+With positivity and consistency, @prp-marginal-identification-ch7 then gives $\Pr[Y^a = 1] = \Pr[Y = 1 \mid A = a]$.
 :::
 
 ::: {#exm-pap-smear}
@@ -539,8 +560,9 @@ so adjusting for $L$ (by stratification or by standardization over $L$) **create
 ## M-bias
 
 **M-bias** is the bias that arises from conditioning on a variable $L$ that is a common effect of two variables $U_1$ and $U_2$,
-where $U_2$ is a cause of (or otherwise associated with) treatment and $U_1$ is a cause of (or otherwise associated with) the outcome,
-and $U_1$ and $U_2$ are marginally independent.
+where $U_2$ is a cause of treatment $A$, $U_1$ is a cause of the outcome $Y$,
+and $U_1$ and $U_2$ are marginally independent,
+so that, as in Figure 7.4, $A$ and $Y$ share no common cause.
 The book classifies it as a form of **selection bias**, the subject of Chapter 8 [@hernan2020causal, p. 97].
 :::
 
@@ -556,7 +578,7 @@ so the stratum-specific association mixes the causal effect with bias, even thou
 ::: {#rem-unconditional-without-conditional}
 ## Unconditional Without Conditional Exchangeability
 
-Figure 7.4 is the first example in which $Y^a \ind A$ holds but $Y^a \ind A \mid L$ does not.
+Figure 7.4 is the first example in which $Y^a \ind A$ holds but, under faithfulness, $Y^a \ind A \mid L$ does not.
 The average causal effect is identified by @prp-marginal-identification-ch7,
 but the effects within levels of $L$ generally are not,
 and standardizing over $L$ gives a biased estimate of $\Pr[Y^a = 1]$.
@@ -584,7 +606,8 @@ Figure 7.5 adds the arrow $L \rightarrow A$, which creates the open backdoor pat
 - Conditioning on $L$ blocks $A \leftarrow L \leftarrow U_1 \rightarrow Y$,
 - but opens $A \leftarrow U_2 \rightarrow L \leftarrow U_1 \rightarrow Y$, on which $L$ is a collider.
 
-So neither the empty set nor $\{L\}$ satisfies the backdoor criterion:
+So neither the empty set nor $\{L\}$ satisfies the backdoor criterion,
+and, by @thm-backdoor-exchangeability-ch7 under faithfulness,
 there is neither unconditional exchangeability nor conditional exchangeability given $L$.
 :::
 
@@ -623,8 +646,7 @@ Let $L$, $A$, and $Y$ be binary and related as in Figure 7.1.
 A **signed causal diagram** labels the arrow $L \rightarrow A$ with $+$ when $L = 1$ makes $A = 1$ more likely on average than $L = 0$ does,
 and with $-$ when it makes $A = 1$ less likely,
 and signs the arrow $L \rightarrow Y$ in the same way.
-The confounding is **positive** if the two signs agree and **negative** if they differ.
-In this simple setting, positive confounding biases the unadjusted estimate upward and negative confounding biases it downward.
+The confounding is called **positive** if the two signs agree and **negative** if they differ.
 :::
 
 ::: {#exm-signed-smoking-transplant}
@@ -632,23 +654,34 @@ In this simple setting, positive confounding biases the unadjusted estimate upwa
 
 Suppose a study of heart transplant $A$ on death $Y$ finds a risk ratio of 0.6, and a critic suspects confounding by smoking $L$.
 Smokers are less likely to receive a transplant ($L \rightarrow A$ is $-$) and more likely to die ($L \rightarrow Y$ is $+$),
-so by @def-signed-causal-diagram the confounding is negative and the unadjusted risk ratio is too low.
+so the confounding is negative in the sense of @def-signed-causal-diagram.
 Because the transplant group has fewer smokers, it would have lower mortality even if transplant did nothing,
 so adjusting for smoking moves the estimate upward (the book's illustration: from 0.6 to 0.7).
 Failing to adjust exaggerates the apparent benefit.
 :::
 
+::: {#rem-sign-rule}
+## The Sign Rule
+
+Let $L$, $A$, and $Y$ be binary and related as in Figure 7.1, with $L$ the only common cause of $A$ and $Y$,
+and call the bias the unadjusted risk ratio minus the risk ratio standardized over $L$.
+The book's rule of thumb is that positive confounding biases the unadjusted estimate upward and negative confounding biases it downward [@hernan2020causal, p. 96].
+In @exm-signed-smoking-transplant the confounding is negative,
+and indeed the unadjusted 0.6 lies below the adjusted 0.7.
+:::
+
 ::: {.callout-warning title="The Sign Rule Can Fail"}
-The sign rule of @def-signed-causal-diagram may fail in more complex diagrams or with non-dichotomous variables (VanderWeele, Hernán, and Robins 2008).
+The rule of @rem-sign-rule may fail in more complex diagrams or with non-dichotomous variables (VanderWeele, Hernán, and Robins 2008).
 :::
 
 ::: {#rem-confounding-magnitude}
 ## The Magnitude of Confounding Bias
 
-A large confounding bias needs both a strong association between confounder and treatment and a strong association between confounder and outcome (conditional on treatment);
-for a discrete confounder, the bias also depends on how common it is.
-When the confounders are unknown, sensitivity analyses repeat the analysis under a range of assumed bias sizes,
-which turns educated guesses into a plausible range for the bias [@hernan2020causal, p. 96].
+A common cause $L$ produces a large confounding bias only if it is strongly associated with treatment
+and strongly associated with the outcome (conditional on treatment);
+for a discrete $L$, the bias also depends on how common it is.
+When the common causes are unknown, sensitivity analyses repeat the analysis under a range of assumed bias sizes,
+which organizes educated guesses about how large the bias could plausibly be [@hernan2020causal, p. 96].
 :::
 
 ### Confounders and Non-confounders
@@ -701,11 +734,13 @@ Equivalently, confounding is any systematic bias that randomized assignment of $
 ::: {#exm-confounding-backdoor-figure-7-4}
 ## Figure 7.4 Under the Two Definitions
 
-In Figure 7.4, the bias from adjusting for $L$ is selection bias under @def-confounding but confounding under @def-confounding-backdoor.
+In Figure 7.4, the bias from adjusting for $L$ is not confounding under @def-confounding
+(the book calls it selection bias, as in @def-m-bias-ch7)
+but is confounding under @def-confounding-backdoor.
 Randomizing $A$ would remove it:
-random assignment rules out an unmeasured common cause $U_2$ of $A$ and $L$,
-so conditioning on $L$ would no longer open a backdoor path.
-Every other bias in Figures 7.1-7.5 gets the same label under both definitions.
+with $A$ assigned by a coin, the arrow $U_2 \rightarrow A$ disappears,
+so stratifying on $L$ leaves every path from $A$ to $Y$ other than $A \rightarrow Y$ closed.
+The common-cause bias of Figures 7.1-7.3 is confounding under both definitions.
 :::
 
 ::: {#rem-two-definitions-taste}
@@ -790,8 +825,8 @@ Definitions of confounding based on change in estimates were abandoned long ago 
 :::
 
 ::: {.notes}
-Technically, investigators do not need full structural knowledge;
-they only need to know a set of variables that guarantees conditional exchangeability.
+Strictly speaking, investigators do not need the whole causal structure;
+it is enough to know some set of variables that delivers conditional exchangeability.
 :::
 
 ### Confounding Is Absolute; Confounder Is Relative
@@ -805,7 +840,8 @@ The structural approach first identifies the sources of confounding (the common 
 Whether a variable belongs to a sufficient set depends on the other variables in it.
 In Figures 7.2 and 7.3, $L$ is needed only because $U$ is unmeasured;
 given $U$, $L$ would not be a confounder.
-Given a causal DAG, **confounding is an absolute concept, whereas confounder is a relative one** [@hernan2020causal, p. 100].
+So, for a given causal DAG, whether there is confounding is a fixed fact,
+while whether a variable is a confounder depends on what else is adjusted for [@hernan2020causal, p. 100].
 :::
 
 ::: {#rem-structural-approach-advantages-ch7}
@@ -845,9 +881,10 @@ The boxes that follow name such variables and give an example [@hernan2020causal
 ::: {#def-surrogate-confounder}
 ## Surrogate Confounder
 
-A **surrogate confounder** is a measured variable $L$ that lies on no backdoor path from $A$ to $Y$
-but is associated with an unmeasured confounder $U$,
-so that adjusting for $L$ can reduce, though never completely remove, the confounding by $U$.
+A **surrogate confounder** is a measured non-descendant $L$ of $A$ that lies on no backdoor path from $A$ to $Y$
+but is a proxy for (for example, an effect of) an unmeasured common cause $U$ of $A$ and $Y$, as in Figure 7.8.
+Adjusting for $L$ typically reduces the confounding by $U$,
+but because $L$ blocks no backdoor path it generally cannot remove all of it.
 :::
 
 ::: {#exm-income-ses}
@@ -857,7 +894,8 @@ In Figure 7.8 the unmeasured $U$ (e.g., socioeconomic status) confounds the effe
 and the measured $L$ (e.g., income) is a proxy for $U$.
 $L$ is not on a backdoor path, but adjusting for it may remove some of the confounding by $U$;
 if $L$ were perfectly correlated with $U$, conditioning on $L$ would be the same as conditioning on $U$.
-If $L$ is a binary, nondifferentially misclassified version of $U$, conditioning on $L$ partially blocks $A \leftarrow U \rightarrow Y$ under some weak conditions
+If $L$ is a binary, nondifferentially misclassified version of $U$,
+conditioning on $L$ partially blocks $A \leftarrow U \rightarrow Y$ under some weak conditions
 (Greenland 1980; Ogburn and VanderWeele 2012).
 So one typically prefers to adjust for $L$.
 :::
@@ -869,7 +907,7 @@ One strategy against unmeasured confounding is to measure and adjust for as many
 ---
 
 ::: {.callout-note title="Technical Point 7.2: Fixing the Traditional Definition of Confounder"}
-The traditional definition (@def-traditional-confounder) rests on two incorrect statistical criteria (conditions 1 and 2) and one incorrect causal criterion (condition 3).
+In the traditional definition (@def-traditional-confounder), conditions 1 and 2 are statistical and condition 3 is causal, and all three are wrong.
 The boxes that follow replace them,
 following Robins (1997, Theorem 4.3) and Greenland, Pearl, and Robins (1999),
 show what the replacement buys,
@@ -881,7 +919,8 @@ and apply it to Figure 7.4 [@hernan2020causal, p. 101].
 
 Let $L$ (measured) and $U$ (possibly unmeasured) be sets of non-descendants of $A$
 with conditional exchangeability $Y^a \ind A \mid L, U$.
-$U$ is a **non-confounder given data on $L$** if $U$ can be split into disjoint subsets $U_1$ and $U_2$ ($U = U_1 \cup U_2$, $U_1 \cap U_2 = \emptyset$) such that
+$U$ is a **non-confounder given data on $L$** if $U$ can be split into disjoint subsets $U_1$ and $U_2$
+($U = U_1 \cup U_2$, $U_1 \cap U_2 = \emptyset$) such that
 
 1. $U_1$ and $A$ are not associated within strata of $L$: $U_1 \ind A \mid L$, and
 2. $U_2$ and $Y$ are not associated within joint strata of $A$, $L$, and $U_1$: $U_2 \ind Y \mid A, L, U_1$.
@@ -892,7 +931,8 @@ $U_1$ and $U_2$ may be associated with each other.
 ::: {#prp-nonconfounder-given-data}
 ## Adjusting for L Alone Suffices
 
-Let $L$ and $U$ be discrete, and suppose $U$ is a non-confounder given data on $L$ (@def-nonconfounder-given-data).
+Let $L$ and $U$ be discrete sets of non-descendants of $A$ with $Y^a \ind A \mid L, U$,
+and suppose $U$ is a non-confounder given data on $L$ (@def-nonconfounder-given-data), with split $U = U_1 \cup U_2$.
 Fix a treatment value $a$ and assume consistency and positivity, $\Pr[A = a \mid L = l, U = u] > 0$ for every $(l, u)$ with $\Pr[L = l, U = u] > 0$.
 Then, for every $l$ with $\Pr[L = l] > 0$,
 
@@ -934,14 +974,22 @@ averaging over $\Pr[L = l]$ gives the formula for $\E{Y^a}$.
 ::: {#exm-nonconfounder-figure-7-4}
 ## No Confounding in Figure 7.4, Without the Backdoor Criterion
 
-In Figure 7.4 take $L = \emptyset$ (adjust for nothing) and $U = \{U_1, U_2\}$, so that $Y^a \ind A \mid U_1, U_2$.
+In Figure 7.4 take $L = \emptyset$ (adjust for nothing) and $U = \{U_1, U_2\}$.
+The set $\{U_1, U_2\}$ blocks the only backdoor path at $U_2$ and contains no descendant of $A$,
+so @thm-backdoor-exchangeability-ch7 gives $Y^a \ind A \mid U_1, U_2$.
+Assume consistency and $\Pr[A = a \mid U_1, U_2] > 0$.
+The two conditions of @def-nonconfounder-given-data hold, with the subsets named as in the figure:
 
-1. $U_1 \ind A$: the only path from $U_1$ to $A$ runs through the collider $L$, which is not conditioned on.
-2. $U_2 \ind Y \mid A, U_1$: the path $U_2 \rightarrow A \rightarrow Y$ is blocked by conditioning on $A$, and $U_2 \rightarrow L \leftarrow U_1 \rightarrow Y$ is blocked by $L$ and by $U_1$.
+1. $U_1 \ind A$:
+   the two paths between them, $U_1 \rightarrow L \leftarrow U_2 \rightarrow A$ and $U_1 \rightarrow Y \leftarrow A$,
+   each pass through a collider ($L$ or $Y$) that is not conditioned on.
+2. $U_2 \ind Y \mid A, U_1$:
+   the path $U_2 \rightarrow A \rightarrow Y$ is blocked by conditioning on $A$,
+   and $U_2 \rightarrow L \leftarrow U_1 \rightarrow Y$ is blocked by the unconditioned collider $L$ and by $U_1$.
 
-So $\{U_1, U_2\}$ is a non-confounder given no data, and by @prp-nonconfounder-given-data $\E{Y^a} = \E{Y \mid A = a}$:
+Both independence statements are read off the DAG by d-separation, which implies independence under the causal Markov assumption.
+So $\{U_1, U_2\}$ is a non-confounder given no data, and @prp-nonconfounder-given-data gives $\E{Y^a} = \E{Y \mid A = a}$:
 there is no confounding, as found with the backdoor criterion in @exm-figure-7-4-no-confounding.
-Here both independence statements are read off the DAG by d-separation, which implies independence under the causal Markov assumption.
 :::
 
 ## 7.5 Single-World Intervention Graphs (pp. 101-102)
@@ -982,10 +1030,16 @@ It is obtained from a causal DAG as follows:
 ## Sketch of a proof of @thm-backdoor-exchangeability-ch7
 
 On the SWIG, $Y^a$ is d-separated from $A$ given $L$ if and only if $L$ is a non-descendant of $A$ that blocks all backdoor paths from $A$ to $Y$ [@hernan2020causal, p. 102]:
-the natural value $A$ keeps only the arrows into treatment, so every path between $A$ and $Y^a$ starts with an arrow into $A$, as a backdoor path does,
+the natural value $A$ keeps only the arrows into treatment,
+so every path between $A$ and $Y^a$ starts with an arrow into $A$, as a backdoor path does,
 and a descendant of $A$ appears on the SWIG only as a counterfactual, so the factual variable cannot be in the conditioning set.
-Under an FFRCISTG model, d-separation on the SWIG implies $Y^a \ind A \mid L$ (part 1);
-under faithfulness, lack of d-separation implies dependence (part 2).
+Under an FFRCISTG model, d-separation on the SWIG implies $Y^a \ind A \mid L$, which gives part 1.
+For part 2, if some backdoor path stays open given a set $L$ of non-descendants,
+then $Y^a$ and $A$ are not d-separated given $L$ on the SWIG, and faithfulness turns that into dependence.
+If $L$ contains a descendant of $A$, the SWIG does not display the independence,
+and under an FFRCISTG model an independence the SWIG does not display cannot be assumed to hold;
+Fine Point 7.4 gives a case in which it fails.
+This is a sketch, not a full proof.
 :::
 
 ::: {.callout-note title="Notation: Arrows Out of the Intervention Node"}
@@ -1027,19 +1081,19 @@ Assume conditional exchangeability given $L$.
 Earlier chapters handled confounding by disease severity $L$ in the heart transplant study both ways:
 with g-methods (standardization in Section 2.4 and IP weighting in Section 2.5)
 and with conventional methods (stratification in Section 4.4 and matching in Section 4.5).
-Part II covers their model-based extensions:
-the parametric g-formula, IP weighting of marginal structural models, and g-estimation of structural nested models,
-and, on the conventional side, outcome regression.
+Part II extends both kinds with models:
+the g-methods to the parametric g-formula, marginal structural models, and structural nested models,
+and the conventional methods to outcome regression.
 :::
 
 ::: {#rem-deleting-vs-conditioning}
 ## "Deleting" an Arrow Versus Conditioning
 
-Standardization and IP weighting simulate the $A$-$Y$ association in the population if the backdoor paths through $L$ did not exist;
+Standardization and IP weighting reproduce the $A$-$Y$ association that the population would show if no backdoor path ran through $L$;
 IP weighting, for example, creates a pseudo-population in which $A$ is independent of $L$, "deleting" the arrow $L \rightarrow A$.
 Stratification does not delete that arrow but computes the effect in a subset, represented by a selection box.
 Part III explains why deleting the arrow is advantageous with time-varying treatments,
-why g-estimation is the only generally valid stratification-based method,
+why, among stratification-based methods, only g-estimation remains valid in general,
 and why conventional stratification-based methods can cause selection bias with time-varying confounders (Chapter 20).
 :::
 
@@ -1060,10 +1114,12 @@ and the remark after it shows that timing alone does not matter [@hernan2020caus
 ## A Descendant That Blocks Every Backdoor Path (Figure 7.11)
 
 Figure 7.11 (not drawn here) has arrows $U \rightarrow A$, $U \rightarrow L$, $A \rightarrow L$, and $L \rightarrow Y$, with $U$ unmeasured.
-$L$ is a descendant of $A$ that blocks the only backdoor path, $A \leftarrow U \rightarrow L \rightarrow Y$, and the effect of $A$ on $Y$ is entirely through $L$.
+$L$ is a descendant of $A$ that blocks the only backdoor path, $A \leftarrow U \rightarrow L \rightarrow Y$,
+and the effect of $A$ on $Y$ is entirely through $L$.
 Conditioning on $L$ opens no collider path, but it blocks the causal pathway, so adjusting for $L$ does not remove bias.
 Hence conditional exchangeability $Y^a \ind A \mid L$ must fail.
-On the SWIG (Figure 7.12: $U \rightarrow A$, $U \rightarrow L^a$, $a \rightarrow L^a \rightarrow Y^a$) $L$ is replaced by the counterfactual $L^a$, and we can read off $Y^a \ind A \mid L^a$ but not $Y^a \ind A \mid L$, since $L$ is not on the graph.
+On the SWIG (Figure 7.12: $U \rightarrow A$, $U \rightarrow L^a$, $a \rightarrow L^a \rightarrow Y^a$) $L$ is replaced by the counterfactual $L^a$,
+and we can read off $Y^a \ind A \mid L^a$ but not $Y^a \ind A \mid L$, since $L$ is not on the graph.
 (Under an FFRCISTG model, an independence that cannot be read off the SWIG cannot be assumed to hold.)
 :::
 
@@ -1071,7 +1127,8 @@ On the SWIG (Figure 7.12: $U \rightarrow A$, $U \rightarrow L^a$, $a \rightarrow
 ## Topology, Not Timing
 
 The problem in @exm-descendant-blocks-backdoor is that $L$ is a **descendant** of $A$, not that $L$ occurs **after** $A$.
-Without the arrow $A \rightarrow L$, $L$ would be a non-descendant that blocks all backdoor paths, and adjusting for it would remove all bias even if $L$ were measured after $A$.
+Without the arrow $A \rightarrow L$, $L$ would be a non-descendant that blocks all backdoor paths,
+and adjusting for it would remove all bias even if $L$ were measured after $A$.
 What matters is the topology of the causal diagram, not the time order of the nodes.
 :::
 
@@ -1152,7 +1209,8 @@ and point to a more general approach [@hernan2020causal, p. 106].
 ::: {#def-negative-outcome-control}
 ## Negative Outcome Control
 
-A **negative outcome control** for the effect of $A$ on $Y$ is a variable $C$ that $A$ cannot cause but that shares the unmeasured causes $U$ of $A$ and $Y$ (Figure 7.13).
+A **negative outcome control** for the effect of $A$ on $Y$ is a variable $C$ that $A$ cannot cause
+but that shares the unmeasured causes $U$ of $A$ and $Y$ (Figure 7.13).
 The outcome measured just before treatment is the usual example.
 Because $A$ has no effect on $C$, $\E{C \mid A = 1} - \E{C \mid A = 0}$ measures the additive confounding for the effect of $A$ on $C$.
 :::
@@ -1160,7 +1218,8 @@ Because $A$ has no effect on $C$, $\E{C \mid A = 1} - \E{C \mid A = 0}$ measures
 ::: {#def-additive-equi-confounding}
 ## Additive Equi-confounding
 
-A binary treatment $A$, outcome $Y$, and negative outcome control $C$ satisfy **additive equi-confounding** if the additive confounding for $Y$ under no treatment equals the additive confounding for $C$:
+A binary treatment $A$, outcome $Y$, and negative outcome control $C$ satisfy **additive equi-confounding** if the additive confounding for $Y$ under no treatment
+equals the additive confounding for $C$:
 
 $$
 \E{Y^0 \mid A = 1} - \E{Y^0 \mid A = 0} = \E{C \mid A = 1} - \E{C \mid A = 0}
@@ -1202,7 +1261,12 @@ The condition $0 < \Pr[A = 1] < 1$ makes every conditional mean well defined.
 
 Suppose unmeasured $U$ (e.g., history of heart disease) confounds the effect of aspirin $A$ on blood pressure $Y$,
 and we also measured blood pressure just before treatment, $C$, a negative outcome control (Figure 7.13).
-@eq-difference-in-differences subtracts the treated-untreated difference in $C$ (pure confounding) from the treated-untreated difference in $Y$ (effect plus confounding).
+Under additive equi-confounding, @eq-difference-in-differences subtracts the treated-untreated difference in $C$
+(which is pure confounding, because $A$ cannot affect $C$)
+from the treated-untreated difference in $Y$ (effect plus confounding).
+With hypothetical numbers: if the treated have mean blood pressure 3 mmHg higher than the untreated after treatment ($\E{Y \mid A = 1} - \E{Y \mid A = 0} = 3$)
+and 5 mmHg higher before it ($\E{C \mid A = 1} - \E{C \mid A = 0} = 5$),
+then $\ATT = 3 - 5 = -2$ mmHg.
 The arrow $C \rightarrow Y$ is not necessary for $C$ to be a negative outcome control.
 :::
 
@@ -1214,6 +1278,7 @@ Angrist and Krueger 1999) is a somewhat restrictive use of negative outcome cont
 it needs $Y$ and $C$ on the same scale and additive equi-confounding;
 Sofer et al. (2016) describe more general methods.
 
+A **negative treatment control** is, analogously, a variable $Z$ that shares the unmeasured causes $U$ but has no effect on $Y$.
 With both a negative outcome control $C$ and a negative treatment control $Z$,
 the effect can be identified nonparametrically despite unmeasured $U$ under additional assumptions;
 for discrete $U$, $C$, $Z$ with $C$ and $Z$ having at least as many levels as $U$, identification holds quite generally (Miao et al. 2018).
@@ -1253,7 +1318,8 @@ $$ {#eq-front-door}
 3. $\Pr[Y^a = 1 \mid M^a = m] = \Pr[Y^m = 1]$, because
    (i) $Y^a = Y^m$ when $M^a = m$ ($A$ affects $Y$ only through $M$), and
    (ii) $Y^m \ind M^a$ by d-separation on the SWIG for the joint intervention setting $M$ to $m$ and $A$ to $a$.
-4. $\Pr[Y^m = 1] = \sum_{a'} \Pr[Y = 1 \mid M = m, A = a'] \Pr[A = a']$, by conditional exchangeability $Y^m \ind M \mid A$ on the SWIG intervening on $M$ alone, positivity, and consistency (standardization over $A$).
+4. $\Pr[Y^m = 1] = \sum_{a'} \Pr[Y = 1 \mid M = m, A = a'] \Pr[A = a']$, by conditional exchangeability $Y^m \ind M \mid A$ on the SWIG intervening on $M$ alone,
+   positivity, and consistency (standardization over $A$).
 5. Substituting steps 2-4 into step 1 gives @eq-front-door.
 
 This proof requires well-defined counterfactuals $Y^m$;
