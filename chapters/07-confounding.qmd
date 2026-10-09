@@ -117,7 +117,7 @@ Let $A$ be a treatment and $Y$ an outcome in a causal DAG.
 **Confounding** is present for the effect of $A$ on $Y$ when $A$ and $Y$ share a common cause, measured or unmeasured;
 each common cause opens a backdoor path (@def-backdoor-path-ch7) between them.
 The word also names the bias this structure produces:
-the part of the association between $A$ and $Y$ that does not come from the effect of $A$ on $Y$,
+the part of the association between $A$ and $Y$ that flows through the open backdoor paths created by their common causes,
 a form of [systematic bias](06-graphical-representation.qmd#def-systematic-bias).
 There is **no confounding** when $A$ and $Y$ share no common cause.
 :::
@@ -127,7 +127,8 @@ There is **no confounding** when $A$ and $Y$ share no common cause.
 
 In Figure 7.1, $L$ causes both $A$ and $Y$.
 For illustration, let $L$ be binary,
-let $\Pr[A = 1 \mid L = 1] > \Pr[A = 1 \mid L = 0]$ and $\Pr[Y = 1 \mid L = 1] > \Pr[Y = 1 \mid L = 0]$,
+let $\Pr[A = 1 \mid L = 1] > \Pr[A = 1 \mid L = 0]$
+and $\Pr[Y = 1 \mid L = 1] > \Pr[Y = 1 \mid L = 0]$,
 and let $A$ have no effect on $Y$,
 so that within each level of $L$ the treated and the untreated have the same risk.
 Then the treated include a larger share of individuals with $L = 1$ than the untreated do,
@@ -272,17 +273,18 @@ If 30% of the treated and 40% of the untreated die,
 ::: {#prp-conditional-identification-ch7}
 ## Stratum-Specific Identification Under Conditional Exchangeability
 
-Let $A$ be a binary treatment, $Y$ an outcome, and $L$ a discrete set of covariates.
-For $a = 0, 1$, assume conditional exchangeability $Y^a \ind A \mid L$,
+Let $A$ be a treatment, $Y$ an outcome, and $L$ a discrete set of covariates.
+Fix a treatment value $a$ and assume, for this $a$, conditional exchangeability $Y^a \ind A \mid L$,
 positivity $\Pr[A = a \mid L = l] > 0$ for every $l$ with $\Pr[L = l] > 0$,
 and consistency ($Y = Y^a$ whenever $A = a$).
-Then, for $a = 0, 1$ and every such $l$,
+Then, for every such $l$,
 
 $$
 \E{Y^a \mid L = l} = \E{Y \mid L = l, A = a}
 $$ {#eq-conditional-identification-ch7}
 
-so the conditional effects $\E{Y^{a=1} \mid L = l} - \E{Y^{a=0} \mid L = l}$ are identified by stratification.
+If the assumptions hold for both $a = 0$ and $a = 1$,
+the conditional effects $\E{Y^{a=1} \mid L = l} - \E{Y^{a=0} \mid L = l}$ are therefore identified by stratification.
 :::
 
 ::: {.proof}
@@ -397,7 +399,7 @@ In Figure 7.1 the only backdoor path is $A \leftarrow L \rightarrow Y$.
 ::: {#thm-backdoor-exchangeability-ch7}
 ## Backdoor Criterion and Conditional Exchangeability
 
-Let $\mathcal{G}$ be a causal DAG for treatment $A$, outcome $Y$, and covariates $L$,
+Let $\mathcal{G}$ be a causal DAG that contains treatment $A$, outcome $Y$, a set of covariates $L$, and possibly other (measured or unmeasured) variables,
 interpreted as an FFRCISTG model ([Chapter 6](06-graphical-representation.qmd#graphs-and-counterfactuals)).
 
 1. If $L$ satisfies the backdoor criterion (@def-backdoor-criterion-ch7), then $Y^a \ind A \mid L$ for every $a$.
@@ -459,9 +461,10 @@ that is, when the treated and the untreated are exchangeable within levels of $L
 ::: {#exm-heart-transplant-sufficient-set}
 ## The Heart Transplant Study
 
-The heart transplant study of Chapter 2 was conditionally randomized given severe heart disease $L$,
+The heart transplant study of Chapter 2 was conditionally randomized given a prognostic factor $L$
+(called critical condition in Chapter 2 and severe heart disease in the book),
 which affects both transplant $A$ and death $Y$.
-Severe heart disease was more common among the treated,
+Critical condition was more common among the treated,
 so had they gone without a transplant they would still have died more often than the untreated did:
 the two groups are not marginally exchangeable.
 Because treatment was randomized within levels of $L$, they are exchangeable within those levels,
@@ -567,8 +570,8 @@ so adjusting for $L$ (by stratification or by standardization over $L$) **create
 
 **M-bias** is the bias that arises from conditioning on a variable $L$ that is a common effect of two variables $U_1$ and $U_2$,
 where $U_2$ is a cause of treatment $A$, $U_1$ is a cause of the outcome $Y$,
-and $U_1$ and $U_2$ are marginally independent,
-so that, as in Figure 7.4, $A$ and $Y$ share no common cause.
+$U_1$ and $U_2$ are marginally independent,
+and $A$ and $Y$ share no common cause (as in Figure 7.4).
 The book classifies it as a form of **selection bias**, the subject of Chapter 8 [@hernan2020causal, p. 97].
 :::
 
@@ -586,8 +589,8 @@ so the stratum-specific association mixes the causal effect with bias, even thou
 
 In Figure 7.4, $Y^a \ind A$ holds but, under faithfulness, $Y^a \ind A \mid L$ does not.
 The average causal effect is identified by @prp-marginal-identification-ch7,
-but the effects within levels of $L$ are not identified by adjusting for $L$,
-and standardizing over $L$ gives a biased estimate of $\Pr[Y^a = 1]$.
+but the effects within levels of $L$ are generally not identified by adjusting for $L$,
+and standardizing over $L$ generally gives a biased estimate of $\Pr[Y^a = 1]$.
 :::
 
 ::: {.notes}
@@ -822,7 +825,7 @@ A variable is a **confounder** under the traditional approach if it
 
 Replacing condition 2 of @def-traditional-confounder by the structural condition "it is a cause of the outcome" fixes Figure 7.4,
 but then $L$ in Figure 7.2 would no longer count as a confounder, although it must be adjusted for.
-Technical Point 7.2 gives a repair that works.
+Technical Point 7.2 gives a replacement that handles Figures 7.4 and 7.7.
 :::
 
 ::: {.callout-warning title="Associations Cannot Define Confounding"}
@@ -937,6 +940,26 @@ $U$ is a **non-confounder given data on $L$** if $U$ can be split into disjoint 
 $U_1$ and $U_2$ may be associated with each other.
 :::
 
+::: {#exm-nonconfounder-figure-7-4}
+## Figure 7.4 via the Non-confounder Condition
+
+In Figure 7.4 take $L = \emptyset$ (adjust for nothing) and $U = \{U_1, U_2\}$.
+The set $\{U_1, U_2\}$ blocks the only backdoor path at $U_2$ and contains no descendant of $A$,
+so @thm-backdoor-exchangeability-ch7 gives $Y^a \ind A \mid U_1, U_2$, the premise of @def-nonconfounder-given-data.
+Assume consistency and $\Pr[A = a \mid U_1, U_2] > 0$.
+The two conditions of @def-nonconfounder-given-data hold, with the subsets named as in the figure:
+
+1. $U_1 \ind A$:
+   the two paths between them, $U_1 \rightarrow L \leftarrow U_2 \rightarrow A$ and $U_1 \rightarrow Y \leftarrow A$,
+   each pass through a collider ($L$ or $Y$) that is not conditioned on.
+2. $U_2 \ind Y \mid A, U_1$:
+   the path $U_2 \rightarrow A \rightarrow Y$ is blocked by conditioning on $A$,
+   and $U_2 \rightarrow L \leftarrow U_1 \rightarrow Y$ is blocked by the unconditioned collider $L$ and by $U_1$.
+
+Both independence statements are read off the DAG by d-separation, which implies independence under the causal Markov assumption.
+So $\{U_1, U_2\}$ is a non-confounder given data on $L = \emptyset$.
+:::
+
 ::: {#prp-nonconfounder-given-data}
 ## Adjusting for L Alone Suffices
 
@@ -980,26 +1003,8 @@ The two right-hand sides agree, which proves @eq-nonconfounder-given-data;
 averaging over $\Pr[L = l]$ gives the formula for $\E{Y^a}$.
 :::
 
-::: {#exm-nonconfounder-figure-7-4}
-## Figure 7.4 via the Non-confounder Condition
-
-In Figure 7.4 take $L = \emptyset$ (adjust for nothing) and $U = \{U_1, U_2\}$.
-The set $\{U_1, U_2\}$ blocks the only backdoor path at $U_2$ and contains no descendant of $A$,
-so @thm-backdoor-exchangeability-ch7 gives $Y^a \ind A \mid U_1, U_2$, the premise of @def-nonconfounder-given-data.
-Assume consistency and $\Pr[A = a \mid U_1, U_2] > 0$.
-The two conditions of @def-nonconfounder-given-data hold, with the subsets named as in the figure:
-
-1. $U_1 \ind A$:
-   the two paths between them, $U_1 \rightarrow L \leftarrow U_2 \rightarrow A$ and $U_1 \rightarrow Y \leftarrow A$,
-   each pass through a collider ($L$ or $Y$) that is not conditioned on.
-2. $U_2 \ind Y \mid A, U_1$:
-   the path $U_2 \rightarrow A \rightarrow Y$ is blocked by conditioning on $A$,
-   and $U_2 \rightarrow L \leftarrow U_1 \rightarrow Y$ is blocked by the unconditioned collider $L$ and by $U_1$.
-
-Both independence statements are read off the DAG by d-separation, which implies independence under the causal Markov assumption.
-So $\{U_1, U_2\}$ is a non-confounder given data on $L = \emptyset$, and @prp-nonconfounder-given-data gives $\E{Y^a} = \E{Y \mid A = a}$:
-there is no confounding, as found with the backdoor criterion in @exm-figure-7-4-no-confounding.
-:::
+Applied to @exm-nonconfounder-figure-7-4, @prp-nonconfounder-given-data gives $\E{Y^a} = \E{Y \mid A = a}$:
+there is no confounding in Figure 7.4, as the backdoor criterion showed in @exm-figure-7-4-no-confounding.
 
 ## 7.5 Single-World Intervention Graphs (pp. 101-102)
 
@@ -1088,8 +1093,8 @@ Assume conditional exchangeability given $L$.
 ## Both Kinds of Method in the Heart Transplant Study
 
 Earlier chapters handled confounding by disease severity $L$ in the heart transplant study both ways:
-with g-methods (standardization in Section 2.4 and IP weighting in Section 2.5)
-and with conventional methods (stratification in Section 4.4 and matching in Section 4.5).
+with g-methods ([standardization](02-randomized-experiments.qmd#def-standardization) and [IP weighting](02-randomized-experiments.qmd#def-ip-weights) in Chapter 2)
+and with conventional methods ([stratification](04-effect-modification.qmd#stratification-as-a-form-of-adjustment-pp.-53-55) and [matching](04-effect-modification.qmd#matching-as-another-form-of-adjustment-pp.-55-56) in Chapter 4).
 Part II extends both kinds with models:
 the g-methods to the parametric g-formula, marginal structural models, and structural nested models,
 and the conventional methods to outcome regression.
@@ -1129,7 +1134,9 @@ Conditioning on $L$ opens no path between $A$ and $Y$ through a collider, but it
 Because $Y$ depends on $A$ and $U$ only through $L$, $Y \ind A \mid L$,
 so the standardized risk $\sum_l \Pr[Y = 1 \mid A = a, L = l] \Pr[L = l]$ is the same for $a = 0$ and $a = 1$:
 adjusting for $L$ shows no effect however large the true effect is.
-Hence, whenever $A$ has an effect on $Y$, conditional exchangeability $Y^a \ind A \mid L$ fails.
+If $Y^a \ind A \mid L$ held, then with positivity and consistency standardization would recover $\E{Y^a}$ (@thm-standardization-ch7),
+so $\E{Y^{a=1}}$ and $\E{Y^{a=0}}$ would be equal.
+Hence, whenever $\E{Y^{a=1}} \neq \E{Y^{a=0}}$ (and positivity holds), conditional exchangeability $Y^a \ind A \mid L$ fails.
 On the SWIG (Figure 7.12: $U \rightarrow A$, $U \rightarrow L^a$, $a \rightarrow L^a \rightarrow Y^a$) $L$ is replaced by the counterfactual $L^a$,
 and we can read off $Y^a \ind A \mid L^a$ but not $Y^a \ind A \mid L$, since $L$ is not on the graph.
 (Under an FFRCISTG model, an independence that cannot be read off the SWIG cannot be assumed to hold.)
@@ -1227,6 +1234,15 @@ The outcome measured just before treatment is the usual example.
 Because $A$ has no effect on $C$, $\E{C \mid A = 1} - \E{C \mid A = 0}$ measures the additive confounding for the effect of $A$ on $C$.
 :::
 
+::: {#exm-aspirin-blood-pressure}
+## Aspirin and Blood Pressure
+
+Suppose unmeasured $U$ (e.g., history of heart disease) confounds the effect of aspirin $A$ on blood pressure $Y$,
+and we also measured blood pressure just before treatment, $C$ (Figure 7.13).
+Aspirin taken later cannot change an earlier reading, so $C$ is a negative outcome control.
+The arrow $C \rightarrow Y$ is not necessary for $C$ to be a negative outcome control.
+:::
+
 ::: {#def-additive-equi-confounding}
 ## Additive Equi-confounding
 
@@ -1236,6 +1252,14 @@ equals the additive confounding for $C$:
 $$
 \E{Y^0 \mid A = 1} - \E{Y^0 \mid A = 0} = \E{C \mid A = 1} - \E{C \mid A = 0}
 $$ {#eq-additive-equi-confounding}
+:::
+
+::: {#exm-equi-confounding-aspirin}
+## Equi-confounding in the Aspirin Example
+
+In @exm-aspirin-blood-pressure, suppose (hypothetically) that before treatment the eventual aspirin users had mean blood pressure 5 mmHg higher than the non-users.
+Additive equi-confounding says that, had nobody taken aspirin,
+the users' mean blood pressure afterwards would also have been 5 mmHg higher than the non-users'.
 :::
 
 ::: {#prp-difference-in-differences}
@@ -1268,18 +1292,13 @@ $$ {#eq-difference-in-differences}
 The condition $0 < \Pr[A = 1] < 1$ makes every conditional mean well defined.
 :::
 
-::: {#exm-aspirin-blood-pressure}
-## Aspirin and Blood Pressure
+::: {#exm-did-aspirin}
+## Difference-in-Differences for Aspirin
 
-Suppose unmeasured $U$ (e.g., history of heart disease) confounds the effect of aspirin $A$ on blood pressure $Y$,
-and we also measured blood pressure just before treatment, $C$, a negative outcome control (Figure 7.13).
-Under additive equi-confounding, @eq-difference-in-differences subtracts the treated-untreated difference in $C$
-(which is pure confounding, because $A$ cannot affect $C$)
-from the treated-untreated difference in $Y$ (effect plus confounding).
-With hypothetical numbers: if the treated have mean blood pressure 3 mmHg higher than the untreated after treatment ($\E{Y \mid A = 1} - \E{Y \mid A = 0} = 3$)
-and 5 mmHg higher before it ($\E{C \mid A = 1} - \E{C \mid A = 0} = 5$),
-then $\ATT = 3 - 5 = -2$ mmHg.
-The arrow $C \rightarrow Y$ is not necessary for $C$ to be a negative outcome control.
+Continue @exm-equi-confounding-aspirin, with $\E{C \mid A = 1} - \E{C \mid A = 0} = 5$ mmHg (pure confounding, because $A$ cannot affect $C$).
+If after treatment the users' mean blood pressure is 3 mmHg higher than the non-users' ($\E{Y \mid A = 1} - \E{Y \mid A = 0} = 3$, effect plus confounding),
+then @eq-difference-in-differences gives $\ATT = 3 - 5 = -2$ mmHg:
+among users, aspirin lowered mean blood pressure by 2 mmHg.
 :::
 
 ::: {#rem-proximal-inference}
@@ -1291,8 +1310,8 @@ it needs $Y$ and $C$ on the same scale and additive equi-confounding;
 Sofer et al. (2016) describe more general methods.
 
 A **negative treatment control** is, analogously, a variable $Z$ that shares the unmeasured causes $U$ but has no effect on $Y$.
-With both a negative outcome control $C$ and a negative treatment control $Z$,
-the effect can be identified nonparametrically despite unmeasured $U$ under additional assumptions;
+Given a negative outcome control $C$ and a negative treatment control $Z$ together,
+additional assumptions allow nonparametric identification of the effect even though $U$ is unmeasured;
 for discrete $U$, $C$, $Z$ with $C$ and $Z$ having at least as many levels as $U$, identification holds quite generally (Miao et al. 2018).
 This is **proximal causal inference** (Cui et al. 2024);
 Figure 7.15 (not drawn here) is an example [@hernan2020causal, p. 106].
