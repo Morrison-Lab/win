@@ -578,6 +578,30 @@ so the plug-in estimate stays in $[0, 1]$;
 the estimator in the main text is an instance of this construction.
 :::
 
+::: {.callout-note title="Technical Point 21.5: A Plug-In K+2 Robust Estimator"}
+With a binary $Y$, the sample average of $\hat{U}_{TR}$ from Technical Point 21.4 can fall outside $[0, 1]$.
+The ICE estimator, the sample average of $\hat{b}_0(L_0)$, cannot,
+as long as both outcome regressions are logistic:
+it is a **plug-in** estimator.
+To make it triply robust as well,
+fit the outcome models so that both correction terms of $\hat{U}_{TR}$ have sample mean exactly 0;
+the average of $\hat{U}_{TR}$ then coincides with the average of $\hat{b}_0(L_0)$.
+
+- Fit the logistic model for $\hat{b}_1(L_0, L_1)$ by maximum likelihood among individuals with $A_0 = A_1 = 1$,
+  adding the single covariate $A_0 A_1 / (\hat{\pi}_0 \hat{\pi}_1)$ with its own coefficient.
+  The score equation for that coefficient is
+  $\sum_i \frac{A_{0i} A_{1i}}{\hat{\pi}_{0i} \hat{\pi}_{1i}} \paren{Y_i - \hat{b}_1(L_{0i}, L_{1i})} = 0$,
+  which is the first correction term
+  (individuals outside the fitting sample contribute 0 because $A_0 A_1 = 0$).
+- Fit the logistic model for $\hat{b}_0(L_0)$ among individuals with $A_0 = 1$,
+  with response $\hat{b}_1(L_0, L_1)$ and the extra covariate $A_0 / \hat{\pi}_0$;
+  the same argument makes the second correction term sum to 0.
+
+The doubly robust estimator of @alg-dr-time-varying, which uses the time-varying weight as a covariate,
+is an instance of this plug-in estimator
+[@hernan2020causal, p. 289].
+:::
+
 ::: {.notes}
 
 ::: {.callout-warning title="Fact-Check: A Term in the Book's First Display of the Estimator"}
@@ -742,8 +766,17 @@ Sequential exchangeability then says $H_k(\psi)$ is independent of $A_k$ given t
 
 ---
 
+:::: {.callout-note title="Fine Point 21.3: G-Estimation with a Saturated Structural Nested Model"}
+With a saturated SNMM, g-estimation needs no search:
+at the true $\psi$, sequential exchangeability forces the mean of $H_k(\psi)$
+to agree between those treated and those untreated at time $k$
+within every stratum of the past.
+Each such equality is one linear equation in the parameters,
+and solving them from the last time point backwards recovers $\psi$
+[@hernan2020causal, p. 293].
+
 ::: {#exm-g-estimation-saturated}
-## G-Estimation in the Sequentially Randomized Experiment (Fine Point 21.3)
+## G-Estimation in the Sequentially Randomized Experiment
 
 **Time 1.**
 Within each stratum of $(A_0, L_1)$, the mean of $H_1(\psi)$ must not depend on $A_1$.
@@ -779,6 +812,7 @@ All parameters are 0, so $\E{Y^g} = 60$ under every static or dynamic strategy $
 in agreement with the g-formula and IP weighting
 [@hernan2020causal, pp. 292-293].
 :::
+::::
 
 ### General Structural Nested Mean Models
 
@@ -885,6 +919,53 @@ A grid search is impractical beyond about two dimensions
 but for an SNMM linear in $\beta$ the estimating equation has a closed-form solution
 (Technical Point 21.8, which also gives a $2^{K+1}$ multiply robust version)
 [@hernan2020causal, pp. 295-296].
+:::
+:::
+
+::: {.callout-note title="Technical Point 21.8: A Closed Form Estimator for Linear Structural Nested Mean Models"}
+Suppose the blip is linear in $\beta$,
+$\gamma_k(\bar{a}_{k-1}, \bar{l}_k, \beta) = \tp{\beta} R_k$,
+where $R_k = r_k(\bar{L}_k, \bar{A}_{k-1})$ is a vector of known functions,
+and the treatment model is $\logit \Pr[A_k = 1 \mid \bar{L}_k, \bar{A}_{k-1}] = \tp{\alpha} W_k$.
+Then $H_k(\beta) = Y - \tp{\beta} S_k$ with $S_k \eqdef \sum_{j=k}^{K} A_j R_j$,
+so the g-estimating equation
+
+$$\sum_{i=1}^{N} \sum_{k=0}^{K} X_{i,k}(\hat{\alpha})\, Q_{i,k}\, \paren{Y_i - \tp{S_{i,k}} \beta} = 0,
+\qquad X_{i,k}(\hat{\alpha}) \eqdef A_{i,k} - \expit\paren{\tp{\hat{\alpha}} W_{i,k}},$$
+
+is linear in $\beta$ and, when the matrix below is invertible, has the explicit solution
+
+$$\hb = \paren{\sum_{i=1}^{N} \sum_{k=0}^{K} X_{i,k}(\hat{\alpha})\, Q_{i,k}\, \tp{S_{i,k}}}^{-1}
+\sum_{i=1}^{N} \sum_{k=0}^{K} Y_i\, X_{i,k}(\hat{\alpha})\, Q_{i,k}.$$
+
+Here $Q_{i,k} = q_k(\bar{L}_{i,k}, \bar{A}_{i,k-1})$ has the dimension of $\beta$;
+its choice changes the efficiency of $\hb$ but not its consistency
+(Robins 1994 gives the optimal choice).
+
+A **multiply robust** version adds a working model $\tp{\varsigma} D_k$, with $D_k = d_k(\bar{L}_k, \bar{A}_{k-1})$,
+for $\E{H_k(\beta) \mid \bar{L}_k, \bar{A}_{k-1}} = \E{Y^{\bar{A}_{k-1}, \underline{0}_k} \mid \bar{L}_k, \bar{A}_{k-1}}$,
+and solves jointly for $(\tilde{\beta}, \tilde{\varsigma})$
+
+$$\sum_{i,k} X_{i,k}(\hat{\alpha})\, Q_{i,k}\, \paren{H_{i,k}(\beta) - \tp{\varsigma} D_{i,k}} = 0,
+\qquad
+\sum_{i,k} D_{i,k}\, \paren{H_{i,k}(\beta) - \tp{\varsigma} D_{i,k}} = 0,$$
+
+which are again linear, so the solution is in closed form.
+$\tilde{\beta}$ is consistent and asymptotically normal if, at each $k$,
+either the working outcome model or the treatment model is correct,
+which makes it $2^{K+1}$ multiply robust
+[@hernan2020causal, p. 296].
+:::
+
+::: {.notes}
+
+::: {.callout-warning title="Fact-Check: The Book's Closed-Form Display"}
+*Fact-check note*: the book's display [@hernan2020causal, p. 296] multiplies by $A_{i,k}$ outside the sum
+and defines $S_{i,k}$ as a sum of $R_{i,j}$ without the treatment indicators $A_{i,j}$.
+Since $H_k(\beta) = Y - \sum_{j \ge k} A_j \gamma_j$ (@def-candidate-counterfactuals-snmm),
+substituting the linear blip gives $\tp{\beta} \sum_{j \ge k} A_j R_j$,
+which is the form used above;
+the two agree when $K = 0$ but not in general.
 :::
 :::
 
@@ -1120,7 +1201,7 @@ which we can never know for certain in an observational study.
 ---
 
 ::: {#exm-front-door-big-g}
-## The Front Door Formula from the Big G-Formula (Technical Point 21.11)
+## The Front Door Formula from the Big G-Formula
 
 Under Figure 7.14 ($A \to M \to Y$, with $U$ a common cause of $A$ and $Y$),
 the big g-formula for $\Pr[Y^a = y]$ is
@@ -1147,17 +1228,69 @@ This proof does not require that counterfactuals $Y^m$ exist
 [@hernan2020causal, p. 301].
 :::
 
-::: {.notes}
+---
 
-::: {#rem-front-door-other-proofs}
-## Other proofs of the front door formula
+::: {.callout-note title="Technical Point 21.11: A Big G-Formula Proof of the Front Door Formula"}
+Technical Point 7.4 derived the front door formula using counterfactuals $Y^m$.
+Starting instead from the big g-formula,
+the conditional independencies of Figure 7.14 alone reduce it to observed data
+(@exm-front-door-big-g),
+so the front door formula holds even if no well-defined $Y^m$ exists.
 
-Technical Point 21.11 also gives a coupling argument,
-and Technical Point 21.12 a proof based on a SWIG property (Shpitser et al. 2022):
-if a fixed treatment node $a_m$ is d-separated from $B^a$ given $C^a$ on the SWIG,
-then $\Pr[B^a = b \mid C^a = c]$ does not depend on $a_m$
-[@hernan2020causal, pp. 301-302].
+A second route, also free of $Y^m$, is a **coupling** argument.
+Even if everyone agrees that $Y^m$ is not well defined,
+any law of the observed data that factorizes according to Figure 7.14
+can be generated by some FFRCISTG model (Technical Point 6.2)
+that is "as detailed as the data" in the sense of Robins and Richardson (2010),
+and such a model formally includes a variable $Y^m$.
+Within that model, Technical Point 7.4 shows that the two formulas coincide.
+A factorizing law for which they differed
+could therefore not be generated by any such model,
+so no such distribution exists
+[@hernan2020causal, p. 301].
 :::
+
+---
+
+::: {.callout-note title="Technical Point 21.12: A Front Door Formula Proof Using d-Separation of Treatment Nodes on SWIGs"}
+**A SWIG property** (Shpitser et al. 2022).
+Let $G(a)$ be the SWIG for strategy $a$,
+assume only treatment counterfactuals are well defined,
+and let $B^a$ and $C^a$ be disjoint sets of random (not fixed) observed nodes of $G(a)$,
+such as $Y^a$, $M^a$, or the natural value of treatment $A$.
+If, in $G(a)$, $B^a$ and the fixed node $a_m$ are d-separated given $C^a$,
+then $\Pr[B^a = b \mid C^a = c]$ does not depend on $a_m$.
+This compares distributions from different single worlds;
+it is not a cross-world statement.
+
+**Front door example.**
+In the SWIG for Figure 7.14, let $C^a = (M^a, A)$ and $B^a = Y^a$.
+The only path from the fixed node $a$ to $Y^a$ passes through the non-collider $M^a$, which is conditioned on,
+so $\E{Y^a \mid M^a, A} = \E{Y^{a'} \mid M^{a'}, A}$ for all $a, a'$.
+
+**Proof of the front door formula.**
+Following Technical Point 7.4, it remains to show $\E{Y^a \mid M^a = m} = \sum_{a'} \E{Y \mid M = m, A = a'} \Pr[A = a']$:
+
+$$
+\begin{aligned}
+\E{Y^a \mid M^a = m}
+&= \sum_{a'} \E{Y^a \mid M^a = m, A = a'} \Pr[A = a' \mid M^a = m] \\
+&= \sum_{a'} \E{Y^a \mid M^a = m, A = a'} \Pr[A = a'] \\
+&= \sum_{a'} \E{Y^{a'} \mid M^{a'} = m, A = a'} \Pr[A = a'] \\
+&= \sum_{a'} \E{Y \mid M = m, A = a'} \Pr[A = a'].
+\end{aligned}
+$$
+
+The four equalities use, in turn,
+the law of total expectation,
+the d-separation of $M^a$ from $A$ in the SWIG,
+the SWIG property just shown,
+and consistency.
+
+So $\E{Y^a \mid M^a}$ is the same for every $a$,
+yet it generally differs from $\E{Y \mid M} = \sum_{a'} \E{Y \mid M, A = a'} \Pr[A = a' \mid M]$,
+because the factual $M = M^A$, unlike $M^a$, is associated with $A$
+[@hernan2020causal, p. 302].
 :::
 
 ## Summary
