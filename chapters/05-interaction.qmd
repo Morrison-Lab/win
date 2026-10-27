@@ -14,7 +14,8 @@ format:
 
 Chapter 4 introduced effect modification: the effect of a single treatment $A$ varying across levels of another variable $V$.
 Many causal questions, however, concern two or more treatments applied together.
-If the causal effect of one treatment depends on the value we set for the other, the two treatments **interact**.
+Roughly, two treatments interact if the causal effect of one depends on the value we set for the other;
+Section 5.1 makes this precise.
 
 This chapter defines interaction between two treatments in two frameworks:
 
@@ -23,12 +24,6 @@ This chapter defines interaction between two treatments in two frameworks:
 
 ::: {.notes}
 This chapter is based on @hernan2020causal [Chapter 5, pp. 61-74].
-
-The book motivates the chapter with the "looking up" experiment from Chapter 1:
-suppose we randomize not only whether you look up at the sky
-but also whether you stand in the street dressed or naked.
-If the effect of looking up differs between the dressed and naked conditions,
-the two treatments interact.
 When joint interventions are feasible, knowing about interaction tells us which combination of interventions works best.
 :::
 
@@ -38,38 +33,101 @@ When joint interventions are feasible, knowing about interaction tells us which 
 
 ### Joint Interventions
 
-Extend the heart transplant example with a second treatment:
-
-- $A$: heart transplant ($A=1$) or not ($A=0$);
-- $E$: multivitamin complex ($E=1$) or no vitamins ($E=0$).
-
-Each individual now has four counterfactual outcomes,
-$Y^{a=1,e=1}$, $Y^{a=1,e=0}$, $Y^{a=0,e=1}$, and $Y^{a=0,e=0}$.
-
 ::: {#def-joint-intervention}
 ## Joint Intervention and Joint Counterfactual
 
-A **joint intervention** sets two or more treatments at once.
-The counterfactual outcome $Y^{a,e}$ is the outcome that would have been observed
-had we intervened to set $A$ to $a$ and $E$ to $e$.
+A **joint intervention** fixes the values of several treatments simultaneously.
+For two treatments $A$ and $E$,
+an individual's **joint counterfactual outcome** $Y^{a,e}$ is their outcome in the hypothetical world where $A$ is fixed at $a$ and $E$ at $e$.
+:::
+
+::: {#exm-transplant-vitamins-joint}
+## Transplant and Vitamins: Four Joint Counterfactuals
+
+Extend the heart transplant example with a second treatment,
+assigned before the first:
+
+- $E$: multivitamin complex ($E=1$) or no vitamins ($E=0$);
+- $A$: heart transplant ($A=1$) or not ($A=0$).
+
+A joint intervention on $A$ and $E$ assigns everyone to one of four treatment combinations,
+so each individual has four joint counterfactual outcomes:
+$Y^{a=1,e=1}$, $Y^{a=1,e=0}$, $Y^{a=0,e=1}$, and $Y^{a=0,e=0}$.
+:::
+
+---
+
+### Recursive Substitution
+
+::: {#rem-recursive-substitution}
+## Recursive Substitution
+
+Suppose $E$ is not affected by $A$ (for example, because $E$ is assigned before $A$),
+and that intervening to set $E$ to the value it would have taken anyway does not change the outcome.
+Then an intervention on $A$ alone leaves each individual's $E$ at its actual value,
+so the counterfactual $Y^a$ equals the joint counterfactual evaluated at that value:
+
+$$
+Y^a = Y^{a,E}.
+$$
+
+Combining this with consistency for $A$ ($Y = Y^A$) gives
+$Y = Y^A = Y^{A,E}$:
+consistency is the special case of the same substitution in which $a$ is also the actual value $A$.
+:::
+
+::: {#exm-recursive-substitution-vitamins}
+## Recursive Substitution for a Vitamin Taker
+
+In @exm-transplant-vitamins-joint, vitamins are assigned before transplant, so transplant cannot affect them.
+For an individual who actually took vitamins ($E=1$),
+@rem-recursive-substitution gives $Y^{a=1} = Y^{a=1,e=1}$:
+their outcome had they been transplanted equals their outcome had they been transplanted and given vitamins.
+For an individual who took no vitamins,
+$Y^{a=1} = Y^{a=1,e=0}$ instead.
 :::
 
 ::: {.notes}
-**Recursive substitution** [@hernan2020causal, p. 61, margin note].
-The counterfactual $Y^a$ under an intervention on $A$ alone
-is the joint counterfactual $Y^{a,e}$ evaluated at the value $e$ that $E$ actually takes:
-$Y^a = Y^{a,E}$.
-Consistency is a special case of the same substitution:
-the observed outcome is $Y = Y^A = Y^{A,E}$.
+Source: @hernan2020causal [p. 61, margin note], which also points to Technical Point 6.2.
+If $A$ could affect $E$, intervening on $A$ alone would also change $E$,
+and the substitution would need the counterfactual value of $E$ under $a$ rather than its actual value.
 :::
 
 ---
 
 ### Interaction in the Counterfactual Framework
 
+::: {#def-interaction}
+## Interaction Between Two Treatments
+
+Let $E$ be a dichotomous treatment.
+Treatments $A$ and $E$ **interact** for an outcome $Y$ if
+the effect of $A$ on $Y$ when we also fix $E$ at 1
+is not the same as the effect of $A$ on $Y$ when we also fix $E$ at 0.
+The definition is completed by choosing an effect measure to compare the two effects,
+such as the causal risk difference,
+and whether, and how, the two effects differ can depend on that choice.
+:::
+
+::: {#exm-looking-up-dressed}
+## Looking Up, Dressed or Naked [@hernan2020causal, p. 61]
+
+Chapter 2 asked whether your looking up at the sky makes other pedestrians look up too.
+Now randomize two treatments:
+whether you look up ($A$),
+and whether you are clothed or naked while you do it ($E$).
+If the effect of your looking up on other pedestrians when you are dressed
+differs from its effect when you are naked,
+then looking up and being dressed interact.
+:::
+
+---
+
 ::: {#def-interaction-additive}
 ## Interaction on the Additive Scale
 
+Let $A$ and $E$ be dichotomous treatments and $Y$ a dichotomous outcome,
+and write $p_{ae} \eqdef \Pr[Y^{a,e}=1]$ for the risk under the joint intervention that sets $A$ to $a$ and $E$ to $e$.
 There is **interaction between $A$ and $E$ on the additive scale** in the population if
 the causal risk difference for $A$ when everybody receives $E$
 differs from the causal risk difference for $A$ when nobody receives $E$:
@@ -77,8 +135,10 @@ differs from the causal risk difference for $A$ when nobody receives $E$:
 $$
 \Pr[Y^{a=1,e=1}=1] - \Pr[Y^{a=0,e=1}=1]
 \neq
-\Pr[Y^{a=1,e=0}=1] - \Pr[Y^{a=0,e=0}=1].
+\Pr[Y^{a=1,e=0}=1] - \Pr[Y^{a=0,e=0}=1],
 $$
+
+that is, $p_{11} - p_{01} \neq p_{10} - p_{00}$.
 :::
 
 ::: {#exm-transplant-vitamins}
@@ -86,8 +146,8 @@ $$
 
 Suppose the causal risk difference for transplant is
 
-- $0.1$ when everybody receives vitamins: $\Pr[Y^{a=1,e=1}=1] - \Pr[Y^{a=0,e=1}=1] = 0.1$;
-- $0.2$ when nobody receives vitamins: $\Pr[Y^{a=1,e=0}=1] - \Pr[Y^{a=0,e=0}=1] = 0.2$.
+- $0.1$ when everybody receives vitamins: $p_{11} - p_{01} = 0.1$;
+- $0.2$ when nobody receives vitamins: $p_{10} - p_{00} = 0.2$.
 
 Because $0.1 \neq 0.2$, transplant and vitamins interact on the additive scale.
 :::
@@ -96,69 +156,144 @@ Because $0.1 \neq 0.2$, transplant and vitamins interact on the additive scale.
 
 ### $A$ and $E$ Have Equal Status
 
-Write $p_{ae} \eqdef \Pr[Y^{a,e}=1]$.
-Moving terms across the inequality in @def-interaction-additive shows that
-the same condition can be stated with the roles of $A$ and $E$ swapped:
+::: {#prp-additive-interaction-symmetric}
+## Additive Interaction Is Symmetric in $A$ and $E$
+
+For dichotomous treatments $A$, $E$ and outcome $Y$, with $p_{ae} \eqdef \Pr[Y^{a,e}=1]$ (@def-interaction-additive),
+the causal risk difference for $A$ differs between $e = 1$ and $e = 0$
+if and only if
+the causal risk difference for $E$ differs between $a = 1$ and $a = 0$:
+
+$$
+p_{11} - p_{01} \neq p_{10} - p_{00}
+\iff
+p_{11} - p_{10} \neq p_{01} - p_{00}.
+$$
+
+Moreover, the two differences of risk differences are equal:
+$(p_{11} - p_{01}) - (p_{10} - p_{00}) = (p_{11} - p_{10}) - (p_{01} - p_{00})$.
+:::
+
+::: {.proof}
+Both differences of risk differences equal the same **interaction contrast**:
 
 $$
 \begin{aligned}
-p_{11} - p_{01} &\neq p_{10} - p_{00} \\
-p_{11} - p_{01} - p_{10} + p_{00} &\neq 0
-  && \text{(subtract } p_{10} - p_{00} \text{ from both sides)} \\
-p_{11} - p_{10} &\neq p_{01} - p_{00}
-  && \text{(add } p_{01} - p_{00} \text{ to both sides)}
+(p_{11} - p_{01}) - (p_{10} - p_{00})
+  &= p_{11} - p_{01} - p_{10} + p_{00} \\
+  &= (p_{11} - p_{10}) - (p_{01} - p_{00}).
 \end{aligned}
 $$
 
-The last line says that the causal risk difference for vitamins $E$
-differs between "everybody transplanted" and "nobody transplanted".
+So one is nonzero exactly when the other is.
+:::
 
-::: {.notes}
-In @exm-transplant-vitamins, the middle line gives
-$p_{11} - p_{01} - p_{10} + p_{00} = 0.1 - 0.2 = -0.1$,
-so the last line gives $p_{11} - p_{10} = (p_{01} - p_{00}) - 0.1$:
-the risk difference for vitamins is $0.1$ lower among the transplanted than among the untransplanted,
-which is the book's statement that the inequality for $A$ implies the corresponding inequality for $E$ [@hernan2020causal, p. 62].
+::: {#exm-vitamins-effect-by-transplant}
+## The Vitamin Effect Depends on Transplant
+
+In @exm-transplant-vitamins,
+$(p_{11} - p_{01}) - (p_{10} - p_{00}) = 0.1 - 0.2 = -0.1$.
+By @prp-additive-interaction-symmetric,
+$(p_{11} - p_{10}) - (p_{01} - p_{00}) = -0.1$ too:
+the causal risk difference for vitamins is $0.1$ lower had everybody been transplanted
+than had nobody been transplanted [@hernan2020causal, p. 62].
 :::
 
 ---
 
-::: {.callout-note title="Technical Point 5.1: Additive and Multiplicative Scales"}
-No interaction on the additive scale means
-the joint effect is the sum of the two separate effects:
+### Additive and Multiplicative Scales
+
+::: {#prp-additive-decomposition}
+## No Additive Interaction Means Additive Joint Effects (Technical Point 5.1)
+
+For dichotomous treatments $A$, $E$ and outcome $Y$, with $p_{ae} \eqdef \Pr[Y^{a,e}=1]$ (@def-interaction-additive),
+there is no interaction between $A$ and $E$ on the additive scale
+if and only if
+the joint effect of both treatments is the sum of the effect of $A$ alone and the effect of $E$ alone:
 
 $$
 p_{11} - p_{00} = (p_{10} - p_{00}) + (p_{01} - p_{00}).
 $$
+:::
 
-When the two sides differ, the interaction is
-
-- **superadditive** if the left side is greater ($>$);
-- **subadditive** if the left side is smaller ($<$).
-
-On the **multiplicative scale** (causal risk ratios), $A$ and $E$ interact if
+::: {.proof}
+Subtracting the right-hand side from the left-hand side gives
 
 $$
-\frac{p_{11}}{p_{00}} \neq \frac{p_{10}}{p_{00}} \times \frac{p_{01}}{p_{00}},
+\begin{aligned}
+(p_{11} - p_{00}) - \left[(p_{10} - p_{00}) + (p_{01} - p_{00})\right]
+  &= p_{11} - p_{10} - p_{01} + p_{00} \\
+  &= (p_{11} - p_{01}) - (p_{10} - p_{00}).
+\end{aligned}
 $$
 
-with **supermultiplicative** ($>$) and **submultiplicative** ($<$) interaction defined analogously.
-
-::: {.notes}
-The additive form follows from the definition in two steps [@hernan2020causal, Technical Point 5.1, p. 63].
-No interaction means $p_{11} - p_{01} = p_{10} - p_{00}$.
-Adding $p_{01}$ to both sides gives $p_{11} = p_{10} - p_{00} + p_{01}$.
-Subtracting $p_{00}$ from both sides gives
-$p_{11} - p_{00} = (p_{10} - p_{00}) + (p_{01} - p_{00})$,
-the displayed equality.
-
-Subtracting $(p_{10} - p_{00}) + (p_{01} - p_{00})$ from $p_{11} - p_{00}$ leaves $p_{11} - p_{10} - p_{01} + p_{00}$,
-so in @exm-transplant-vitamins (where that quantity is $-0.1$)
-the interaction is subadditive.
+The displayed equality holds exactly when this difference is zero,
+which is exactly when $p_{11} - p_{01} = p_{10} - p_{00}$, that is, when there is no additive interaction.
 :::
+
+::: {#def-superadditive}
+## Superadditive and Subadditive Interaction (Technical Point 5.1)
+
+For dichotomous treatments $A$, $E$ and outcome $Y$, with $p_{ae} \eqdef \Pr[Y^{a,e}=1]$ (@def-interaction-additive),
+additive interaction between $A$ and $E$ is
+
+- **superadditive** if $p_{11} - p_{00} > (p_{10} - p_{00}) + (p_{01} - p_{00})$;
+- **subadditive** if $p_{11} - p_{00} < (p_{10} - p_{00}) + (p_{01} - p_{00})$.
 :::
+
+::: {#exm-transplant-vitamins-subadditive}
+## Transplant and Vitamins Interact Subadditively
+
+In @exm-transplant-vitamins,
+the proof of @prp-additive-decomposition shows that
+$(p_{11} - p_{00}) - [(p_{10} - p_{00}) + (p_{01} - p_{00})] = (p_{11} - p_{01}) - (p_{10} - p_{00}) = -0.1 < 0$,
+so the interaction is subadditive.
+:::
+
+---
+
+::: {#def-interaction-multiplicative}
+## Interaction on the Multiplicative Scale (Technical Point 5.1)
+
+For dichotomous treatments $A$, $E$ and outcome $Y$, with $p_{ae} \eqdef \Pr[Y^{a,e}=1]$ (@def-interaction-additive) and $p_{00} > 0$,
+there is **interaction between $A$ and $E$ on the multiplicative scale** if
+the causal risk ratio for both treatments is not the product of the causal risk ratios for each alone:
+
+$$
+\frac{p_{11}}{p_{00}} \neq \frac{p_{10}}{p_{00}} \times \frac{p_{01}}{p_{00}}.
+$$
+
+The interaction is **supermultiplicative** if the left side is greater
+and **submultiplicative** if it is smaller.
+:::
+
+::: {#exm-scale-dependence}
+## Interaction on One Scale but Not the Other
+
+Suppose $p_{00} = 0.1$, $p_{10} = 0.2$, $p_{01} = 0.3$, and $p_{11} = 0.4$.
+On the additive scale,
+$p_{11} - p_{00} = 0.3$ and $(p_{10} - p_{00}) + (p_{01} - p_{00}) = 0.1 + 0.2 = 0.3$,
+so there is no additive interaction (@prp-additive-decomposition).
+On the multiplicative scale,
+$p_{11}/p_{00} = 4$ while $(p_{10}/p_{00}) \times (p_{01}/p_{00}) = 2 \times 3 = 6$,
+so the interaction is submultiplicative.
+:::
+
+::: {.callout-warning title="Name the Scale"}
+"$A$ and $E$ interact" is incomplete without a scale:
+as @exm-scale-dependence shows, the same four risks can show no interaction on one scale and interaction on another.
+:::
+
+---
 
 ### Interaction versus Effect Modification
+
+::: {.callout-note title="Recall: Effect Modification (Chapter 4)"}
+A variable $V$ that is not affected by $A$ modifies the effect of $A$ on $Y$ on the additive scale if
+$\E{Y^{a=1} - Y^{a=0} \mid V = 1} \neq \E{Y^{a=1} - Y^{a=0} \mid V = 0}$
+([Chapter 4](04-effect-modification.qmd#def-effect-modification)).
+The definition uses only the counterfactuals $Y^a$ for interventions on $A$.
+:::
 
 | | Effect modification by $V$ | Interaction between $A$ and $E$ |
 |---|---|---|
@@ -166,26 +301,104 @@ the interaction is subadditive.
 | Interventions | on $A$ only | joint, on $A$ and $E$ |
 | Status of the two variables | unequal: $V$ is not intervened on | equal |
 
-::: {.notes}
-Effect modification is about the causal effect of $A$ only.
+: Effect modification versus interaction {#tbl-interaction-vs-effect-modification}
+
+::: {#rem-interaction-vs-effect-modification}
+## Unequal versus Equal Status
+
+Effect modification concerns the causal effect of $A$ only.
 In Chapter 4, sex modified the effect of transplant,
 but the effect of sex on death was never considered,
 so $V$ and $A$ were not on an equal footing.
 Interaction concerns the joint causal effect of $A$ and $E$,
-and its two equivalent definitions treat $A$ and $E$ symmetrically [@hernan2020causal, p. 62].
+and @prp-additive-interaction-symmetric shows that its definition treats $A$ and $E$ symmetrically [@hernan2020causal, p. 62].
 :::
 
 ## 5.2 Identifying Interaction (pp. 62-64)
 
 ---
 
-Interaction concerns a joint effect, so identifying it requires
-exchangeability, positivity, and consistency for **both** treatments.
+### Identification for the Joint Treatment
+
+::: {#prp-identify-interaction-joint}
+## Identifying Interaction by Standardization
+
+Let $A$ and $E$ be dichotomous treatments, $Y$ a dichotomous outcome, and $L$ a discrete vector of measured covariates.
+Suppose that, for every $a, e \in \{0, 1\}$:
+
+1. **Conditional exchangeability for the joint treatment**: $Y^{a,e} \ind (A, E) \mid L$.
+2. **Positivity**: $\Pr[A = a, E = e \mid L = l] > 0$ for every $l$ with $\Pr[L = l] > 0$.
+3. **Consistency**: $Y = Y^{a,e}$ for every individual with $A = a$ and $E = e$.
+
+Then each joint counterfactual risk is identified by standardization,
+
+$$
+p_{ae} = \Pr[Y^{a,e} = 1] = \sum_l \Pr[Y = 1 \mid A = a, E = e, L = l] \Pr[L = l],
+$$
+
+so the contrasts in @def-interaction-additive and @def-interaction-multiplicative are identified too.
+:::
+
+::: {.proof}
+For each $a$ and $e$, summing over the $l$ with $\Pr[L = l] > 0$:
+
+$$
+\begin{aligned}
+\Pr[Y^{a,e} = 1]
+  &= \sum_l \Pr[Y^{a,e} = 1 \mid L = l] \Pr[L = l]
+  && \text{(law of total probability)} \\
+  &= \sum_l \Pr[Y^{a,e} = 1 \mid A = a, E = e, L = l] \Pr[L = l]
+  && \text{(exchangeability and positivity)} \\
+  &= \sum_l \Pr[Y = 1 \mid A = a, E = e, L = l] \Pr[L = l]
+  && \text{(consistency)}.
+\end{aligned}
+$$
+
+Positivity makes each conditional probability in the second and third lines well defined.
+:::
+
+::: {.callout-tip title="Treat the Pair as One Treatment"}
+@prp-identify-interaction-joint is the single-treatment result of earlier chapters
+applied to the combined treatment $AE$ with four levels (11, 01, 10, 00).
+Standardization or IP weighting for that four-level treatment estimates all four $p_{ae}$,
+and any interaction contrast is then a contrast of those four risks.
+:::
+
+::: {#rem-joint-conditions-sufficient}
+## Sufficient, Not Necessary
+
+The conditions of @prp-identify-interaction-joint are **sufficient** for identifying interaction.
+Part III of the book shows that they are not required once the two treatments are assigned at different times [@hernan2020causal, p. 64].
+After this chapter, most of Parts I and II return to a single treatment $A$.
+:::
+
+---
 
 ### When $E$ Is Randomized, Interaction Is Effect Modification by $E$
 
-If vitamins $E$ are randomly and unconditionally assigned,
-then for each $a$ and $e$
+::: {#prp-randomized-e-interaction-is-modification}
+## Randomized $E$: Interaction Equals Effect Modification by $E$
+
+Let $A$ and $E$ be dichotomous treatments and $Y$ a dichotomous outcome.
+Suppose that
+
+1. $E$ is randomly and unconditionally assigned, so that $Y^{a,e} \ind E$ for every $a$ and $e$,
+   and $\Pr[E = e] > 0$ for $e = 0, 1$;
+2. recursive substitution holds: $Y^a = Y^{a,E}$ (@rem-recursive-substitution).
+
+Then $\Pr[Y^{a,e} = 1] = \Pr[Y^a = 1 \mid E = e]$ for every $a$ and $e$.
+Hence there is interaction between $A$ and $E$ on the additive scale (@def-interaction-additive)
+if and only if $E$ modifies the effect of $A$ on the additive scale:
+
+$$
+\Pr[Y^{a=1}=1 \mid E=1] - \Pr[Y^{a=0}=1 \mid E=1]
+\neq
+\Pr[Y^{a=1}=1 \mid E=0] - \Pr[Y^{a=0}=1 \mid E=0].
+$$
+:::
+
+::: {.proof}
+For each $a$ and $e$:
 
 $$
 \begin{aligned}
@@ -193,78 +406,80 @@ $$
   &= \Pr[Y^{a,e}=1 \mid E=e]
   && \text{(exchangeability for } E\text{: } Y^{a,e} \ind E\text{)} \\
   &= \Pr[Y^{a,E}=1 \mid E=e]
-  && \text{(}Y^{a,e} = Y^{a,E}\text{ when } E=e\text{)} \\
+  && \text{(}Y^{a,E} \text{ is } Y^{a,e} \text{ for those with } E=e\text{)} \\
   &= \Pr[Y^{a}=1 \mid E=e]
   && \text{(recursive substitution, } Y^a = Y^{a,E}\text{)}.
 \end{aligned}
 $$
 
-Substituting into @def-interaction-additive,
-interaction on the additive scale becomes
-
-$$
-\Pr[Y^{a=1}=1 \mid E=1] - \Pr[Y^{a=0}=1 \mid E=1]
-\neq
-\Pr[Y^{a=1}=1 \mid E=0] - \Pr[Y^{a=0}=1 \mid E=0],
-$$
-
-which is the definition of additive effect modification of $A$ by $E$.
-
-::: {.notes}
-So when $E$ is randomized, interaction and effect modification coincide,
-and the Chapter 4 methods for detecting effect modification by $V$
-apply after replacing $V$ by $E$ [@hernan2020causal, pp. 62-63].
+Substituting these four equalities into the inequality of @def-interaction-additive gives the displayed inequality.
 :::
 
----
+::: {#exm-randomized-vitamins}
+## Randomized Vitamins
 
-### When $E$ Is Not Randomized
-
-We still need the four marginal risks $\Pr[Y^{a,e}=1]$.
-Under the usual identifying assumptions for **both** treatments,
-they can be computed by standardization or IP weighting over the measured covariates.
-
-Equivalently, treat $AE$ as **one treatment with four levels** (11, 01, 10, 00).
-Identifying interaction is then the familiar problem of identifying the effect of a single treatment,
-with more treatment values and more counterfactual outcomes.
-
-::: {.notes}
-@hernan2020causal [p. 64] states that exchangeability, positivity, and consistency for the joint treatment $(A, E)$
-are a **sufficient** condition for identifying interaction.
-Part III of the book shows the condition is not necessary when the two treatments occur at different times.
-After this chapter, most of Parts I and II return to a single treatment $A$.
+Suppose vitamins are randomly assigned, as in @prp-randomized-e-interaction-is-modification,
+and the risks are those of @exm-transplant-vitamins.
+Then among those who received vitamins,
+the causal risk difference for transplant is $\Pr[Y^{a=1}=1 \mid E=1] - \Pr[Y^{a=0}=1 \mid E=1] = p_{11} - p_{01} = 0.1$,
+and among those who did not, it is $p_{10} - p_{00} = 0.2$.
+So vitamins modify the effect of transplant,
+and the Chapter 4 methods for detecting effect modification by $V$ apply with $V$ replaced by $E$ [@hernan2020causal, pp. 62-63].
 :::
 
 ---
 
 ### Effect Modification Without Interaction
 
-If we are willing to assume exchangeability for $A$ but not for $E$
-(e.g., $A$ is randomized and we look at subgroups defined by $E$),
-we can assess **effect modification by $E$** but generally not **interaction between $A$ and $E$**:
-computing the effect of $A$ within strata of $E$ requires no assumptions about the effect of $E$.
+::: {#rem-effect-modification-without-interaction}
+## Effect Modification Needs Fewer Assumptions than Interaction
 
-- Chapter 4 wrote such variables as $V$ (no identifying assumptions made for them).
-- Nationality $V$ was a **surrogate** effect modifier: it does not act on $Y$, so it does not interact with $A$ ("no action, no interaction").
-- $V$ still modifies the effect of $A$ because it is correlated with a variable that does act on $Y$ and does interact with $A$.
+Suppose we are willing to assume exchangeability for $A$ within levels of $E$ ($Y^a \ind A \mid E$, with positivity in each stratum) but no identifying assumptions for $E$,
+for example when $A$ is randomized and we estimate its effect within subgroups defined by $E$.
+Then we can generally assess **effect modification by $E$** but not **interaction between $A$ and $E$**:
+the effect of $A$ within each stratum of $E$ needs no identifying assumptions about $E$,
+whereas the joint counterfactual risks $p_{ae}$ do.
+Chapter 4 wrote such variables as $V$, for which no identifying assumptions are made.
+:::
+
+::: {#exm-nationality-surrogate}
+## Nationality: Effect Modification Without Interaction
+
+In Chapter 4, nationality $V$ modified the effect of transplant $A$,
+but it was argued to be a **surrogate** effect modifier:
+a marker for a factor, such as quality of care, that does act on $Y$ and does interact with $A$.
+Nationality itself does not act on $Y$,
+so it does not interact with $A$ ("no action, no interaction").
+So the effect of $A$ can be modified by a variable that does not interact with $A$ [@hernan2020causal, p. 64].
+:::
 
 ::: {.notes}
-So there can be effect modification of $A$ by a variable without interaction between $A$ and that variable.
 The reverse, interaction between $A$ and $E$ without modification of the effect of $A$ by $E$,
-is logically possible but probably rare,
-because it requires dual effects of $A$ and exact cancellations
+can happen in principle but is presumably uncommon,
+since it needs $A$ to act in opposite directions with effects that cancel exactly
 [@hernan2020causal, p. 64, margin note citing VanderWeele 2009b].
-
-The results so far do not require deterministic counterfactuals.
-Section 5.3 does: from there on the chapter assumes deterministic counterfactuals
-and dichotomous treatments and outcome [@hernan2020causal, p. 64].
 :::
 
 ## 5.3 Counterfactual Response Types and Interaction (pp. 64-66)
 
 ---
 
+::: {.callout-important title="Assumptions for Sections 5.3 to 5.6"}
+None of the results so far requires deterministic counterfactual outcomes.
+From here to the end of the chapter, counterfactual outcomes are **deterministic**,
+and treatments and outcome are **dichotomous** [@hernan2020causal, p. 64].
+:::
+
 ### One Treatment: Four Response Types
+
+::: {#def-response-type}
+## Response Type
+
+With deterministic counterfactual outcomes,
+an individual's **response type** (or **response pattern**) is the list of their counterfactual outcomes under every value of the treatment:
+$(Y^{a=0}, Y^{a=1})$ for one dichotomous treatment $A$,
+and $(Y^{a=1,e=1}, Y^{a=0,e=1}, Y^{a=1,e=0}, Y^{a=0,e=0})$ for two dichotomous treatments $A$ and $E$.
+:::
 
 | Type | $Y^{a=0}$ | $Y^{a=1}$ | Zeus's family (Table 1.1) |
 |---|---|---|---|
@@ -275,8 +490,15 @@ and dichotomous treatments and outcome [@hernan2020causal, p. 64].
 
 : Response types for one dichotomous treatment [@hernan2020causal, Table 5.1, p. 64] {#tbl-response-types-one}
 
-::: {.notes}
-A combination of counterfactual responses is called a **response pattern** or **response type**.
+::: {#exm-zeus-response-types}
+## Response Types in Zeus's Family
+
+With one dichotomous treatment and a dichotomous outcome there are four response types,
+and all four occur in Zeus's family from Chapter 1 (@tbl-response-types-one):
+the **doomed** die whatever the treatment,
+the **helped** die only if untreated,
+the **hurt** die only if treated,
+and the **immune** survive whatever the treatment.
 :::
 
 ---
@@ -286,62 +508,150 @@ A combination of counterfactual responses is called a **response pattern** or **
 With two dichotomous treatments each individual has four counterfactual outcomes,
 so there are $2^4 = 16$ response types (Miettinen 1982).
 
-| Type | $Y^{1,1}$ | $Y^{0,1}$ | $Y^{1,0}$ | $Y^{0,0}$ |
-|---|---|---|---|---|
-| 1 | 1 | 1 | 1 | 1 |
-| 2 | 1 | 1 | 1 | 0 |
-| 3 | 1 | 1 | 0 | 1 |
-| 4 | 1 | 1 | 0 | 0 |
-| 5 | 1 | 0 | 1 | 1 |
-| 6 | 1 | 0 | 1 | 0 |
-| 7 | 1 | 0 | 0 | 1 |
-| 8 | 1 | 0 | 0 | 0 |
-| 9 | 0 | 1 | 1 | 1 |
-| 10 | 0 | 1 | 1 | 0 |
-| 11 | 0 | 1 | 0 | 1 |
-| 12 | 0 | 1 | 0 | 0 |
-| 13 | 0 | 0 | 1 | 1 |
-| 14 | 0 | 0 | 1 | 0 |
-| 15 | 0 | 0 | 0 | 1 |
-| 16 | 0 | 0 | 0 | 0 |
+::: {#def-individual-interaction-contrast}
+## Individual Interaction Contrast
+
+For an individual with deterministic counterfactual outcomes $Y^{a,e}$,
+the **individual interaction contrast** is
+
+$$
+c \eqdef Y^{a=1,e=1} - Y^{a=0,e=1} - Y^{a=1,e=0} + Y^{a=0,e=0},
+$$
+
+the individual's effect of $A$ when $E$ is set to 1 minus their effect of $A$ when $E$ is set to 0.
+It depends only on the response type.
+Because expectations are linear, its population mean is the interaction contrast of @prp-additive-interaction-symmetric:
+$\E{c} = p_{11} - p_{01} - p_{10} + p_{00}$.
+:::
+
+| Type | $Y^{1,1}$ | $Y^{0,1}$ | $Y^{1,0}$ | $Y^{0,0}$ | $c$ |
+|---|---|---|---|---|---|
+| 1 | 1 | 1 | 1 | 1 | 0 |
+| 2 | 1 | 1 | 1 | 0 | $-1$ |
+| 3 | 1 | 1 | 0 | 1 | 1 |
+| 4 | 1 | 1 | 0 | 0 | 0 |
+| 5 | 1 | 0 | 1 | 1 | 1 |
+| 6 | 1 | 0 | 1 | 0 | 0 |
+| 7 | 1 | 0 | 0 | 1 | 2 |
+| 8 | 1 | 0 | 0 | 0 | 1 |
+| 9 | 0 | 1 | 1 | 1 | $-1$ |
+| 10 | 0 | 1 | 1 | 0 | $-2$ |
+| 11 | 0 | 1 | 0 | 1 | 0 |
+| 12 | 0 | 1 | 0 | 0 | $-1$ |
+| 13 | 0 | 0 | 1 | 1 | 0 |
+| 14 | 0 | 0 | 1 | 0 | $-1$ |
+| 15 | 0 | 0 | 0 | 1 | 1 |
+| 16 | 0 | 0 | 0 | 0 | 0 |
 
 : Response types for two dichotomous treatments;
-superscripts are $(a, e)$ [@hernan2020causal, Table 5.2, p. 65] {#tbl-response-types-two}
+superscripts are $(a, e)$.
+The first five columns follow @hernan2020causal [Table 5.2, p. 65];
+the last adds the individual interaction contrast $c$ of @def-individual-interaction-contrast {#tbl-response-types-two}
+
+::: {#exm-individual-interaction-contrast}
+## Individual Contrasts of Types 7 and 8
+
+An individual with $(Y^{1,1}, Y^{0,1}, Y^{1,0}, Y^{0,0}) = (1, 0, 0, 1)$ (type 7 in @tbl-response-types-two)
+has $c = 1 - 0 - 0 + 1 = 2$:
+transplant kills them if they take vitamins and saves them if they do not.
+An individual with $(1, 0, 0, 0)$ (type 8) has $c = 1$:
+they die only if given both treatments.
+:::
 
 ---
 
 ### Types Without Interaction
 
-In six types the effect of each treatment does not depend on the other:
+::: {#exm-types-1-16}
+## Types 1 and 16: No Effect of Either Treatment
 
-- type 1 (dies under every joint treatment) and type 16 (survives under every joint treatment);
-- type 4: dies only if given vitamins ($E$ alone matters);
-- type 13: dies only if not given vitamins;
-- type 6: dies only if transplanted ($A$ alone matters);
-- type 11: dies only if not transplanted.
-
-If everyone has one of types 1, 4, 6, 11, 13, 16,
-there is no interaction between $A$ and $E$ on the additive scale.
-
-::: {.notes}
-If everyone were of type 1 or 16, the sharp causal null hypothesis would hold for the joint treatment $(A, E)$
+Type 1 dies under every joint treatment and type 16 survives under every joint treatment.
+If everyone were of type 1 or 16,
+the sharp causal null hypothesis would hold for the joint treatment $(A, E)$
 [@hernan2020causal, p. 65].
+:::
+
+::: {#prp-no-interaction-types}
+## Six Types Without Interaction
+
+Assume deterministic counterfactuals and dichotomous $A$, $E$, and $Y$.
+For individuals of types 1, 4, 6, 11, 13, and 16 in @tbl-response-types-two,
+the effect of each treatment does not depend on the other:
+
+- types 1 and 16: neither treatment has an effect;
+- type 4: dies only if given vitamins, and type 13: dies only if not given vitamins ($E$ alone matters);
+- type 6: dies only if transplanted, and type 11: dies only if not transplanted ($A$ alone matters).
+
+If everyone in the population has one of these six types,
+there is no interaction between $A$ and $E$ on the additive scale.
+:::
+
+::: {.proof}
+The last column of @tbl-response-types-two shows $c = 0$ for each of the six types,
+so $c = 0$ for every individual.
+By @def-individual-interaction-contrast,
+$p_{11} - p_{01} - p_{10} + p_{00} = \E{c} = 0$,
+which is no additive interaction (@prp-additive-interaction-symmetric).
 :::
 
 ---
 
 ### Additive Interaction Requires Interaction Types
 
-Additive interaction implies that some individuals belong to at least one of three classes
-(Greenland and Poole 1988), each invariant to recoding $A$ and $E$:
+::: {#def-interaction-classes}
+## Interaction Classes
 
-1. outcome under only **one** of the four joint treatments: types 8, 12, 14, 15;
-2. outcome under **two** joint treatments, with the effect of each treatment reversed across levels of the other: types 7, 10;
-3. outcome under **three** of the four joint treatments: types 2, 3, 5, 9.
+Greenland and Poole (1988) grouped the other ten response types of @tbl-response-types-two into three classes:
 
-No additive interaction implies either that nobody is in these classes
-or that equal deviations of opposite sign cancel exactly
-(e.g., equal proportions of types 7 and 10, or of types 8 and 12).
+1. outcome under exactly **one** of the four joint interventions: types 8, 12, 14, 15;
+2. outcome under exactly **two** joint interventions,
+   with the effect of each treatment reversed across levels of the other: types 7, 10;
+3. outcome under exactly **three** of them: types 2, 3, 5, 9.
+
+Unlike the 16 types, the three classes do not change when the labels 0 and 1 of $A$ or $E$ are swapped.
+:::
+
+::: {#exm-interaction-classes}
+## Classifying Types 7 and 8
+
+The type-8 individual of @exm-individual-interaction-contrast dies only under $(a, e) = (1, 1)$,
+so belongs to class 1.
+The type-7 individual dies under $(1, 1)$ and $(0, 0)$:
+transplant kills them with vitamins and saves them without,
+and vitamins kill them with transplant and save them without,
+so they belong to class 2.
+:::
+
+::: {#prp-additive-interaction-requires-classes}
+## Additive Interaction and the Interaction Classes
+
+Assume deterministic counterfactuals and dichotomous $A$, $E$, and $Y$,
+let $p_{ae} \eqdef \Pr[Y^{a,e}=1]$ be the population risk under the joint intervention $(a, e)$,
+and let $\pi_k$ be the proportion of the population with response type $k$ in @tbl-response-types-two.
+Then
+
+$$
+p_{11} - p_{01} - p_{10} + p_{00}
+= (\pi_3 + \pi_5 + \pi_8 + \pi_{15}) - (\pi_2 + \pi_9 + \pi_{12} + \pi_{14}) + 2 (\pi_7 - \pi_{10}).
+$$
+
+Consequently:
+
+- additive interaction implies that some individuals belong to at least one of the three classes of @def-interaction-classes;
+- no additive interaction implies that either nobody belongs to these classes
+  or the contributions of the types present cancel exactly
+  (for example, equal proportions of types 7 and 10, or of types 8 and 12).
+:::
+
+::: {.proof}
+By @def-individual-interaction-contrast,
+$p_{11} - p_{01} - p_{10} + p_{00} = \E{c} = \sum_{k=1}^{16} \pi_k c_k$,
+where $c_k$ is the value of $c$ for type $k$ in the last column of @tbl-response-types-two.
+Collecting the nonzero $c_k$ gives the display.
+The types with $c_k \neq 0$ are exactly the ten types of the three classes.
+If no one belongs to a class, every term is zero;
+so additive interaction requires some $\pi_k > 0$ in a class.
+:::
 
 ::: {#exm-cancellation}
 ## Cancellation of Interaction Types
@@ -364,61 +674,143 @@ so there is no interaction on the additive scale in the population,
 even though every type-8 and type-12 individual has an effect of $A$ that depends on $E$.
 :::
 
+::: {.callout-warning title="No Population Interaction Does Not Mean No Individual Interaction"}
+As @exm-cancellation shows,
+the absence of additive interaction in the population does not rule out individuals whose effect of $A$ depends on $E$.
+:::
+
 ::: {.notes}
 Miettinen's 16 types are not invariant to switching the labels "0" and "1";
 Greenland and Poole's three classes are [@hernan2020causal, p. 65, margin note].
 Greenland, Lash, and Rothman (2008) discuss such cancellations further.
 :::
 
+::: {#exr-population-contrast}
+## Computing a Population Interaction Contrast
+
+In a population, 30% are of type 2, 10% are of type 3, and the rest are of type 16.
+Is there additive interaction between $A$ and $E$, and if so, is it superadditive or subadditive?
+:::
+
+::: {.solution}
+By @prp-additive-interaction-requires-classes,
+$p_{11} - p_{01} - p_{10} + p_{00} = \pi_3 - \pi_2 = 0.1 - 0.3 = -0.2$.
+This is nonzero, so there is additive interaction.
+It is negative, so by the proof of @prp-additive-decomposition the interaction is subadditive (@def-superadditive).
+:::
+
 ---
 
-::: {.callout-note title="Technical Point 5.2: Monotonicity"}
-For one treatment, $Y^{a=0} > Y^{a=1}$ only for the "helped".
-If nobody is helped, every individual has $Y^{a=1} \geq Y^{a=0}$,
-and the causal effect of $A$ on $Y$ is **monotonic**.
+### Monotonicity
 
-For two treatments, the effects of $A$ and $E$ are monotonic
-if every $Y^{a,e}$ is nondecreasing in both $a$ and $e$, i.e., nobody has
+::: {#def-monotonic-effects}
+## Monotonic Effects (Technical Point 5.2)
+
+For one dichotomous treatment $A$,
+the causal effect of $A$ on $Y$ is **monotonic** if $Y^{a=1} \geq Y^{a=0}$ for every individual,
+that is, if nobody is helped by treatment.
+
+For two dichotomous treatments $A$ and $E$,
+the causal effects of $A$ and $E$ on $Y$ are **monotonic** if
+every individual's $Y^{a,e}$ is nondecreasing in both $a$ and $e$.
+Equivalently, nobody has
 
 - $Y^{a=1,e=1}=0$ and $Y^{a=0,e=1}=1$;
 - $Y^{a=1,e=1}=0$ and $Y^{a=1,e=0}=1$;
 - $Y^{a=1,e=0}=0$ and $Y^{a=0,e=0}=1$;
 - $Y^{a=0,e=1}=0$ and $Y^{a=0,e=0}=1$.
+:::
+
+::: {#exm-monotonic-types}
+## Which Types Are Monotonic?
+
+In Zeus's family (@tbl-response-types-one), six individuals are helped by transplant,
+so the effect of transplant is not monotonic there.
+For two treatments,
+checking each row of @tbl-response-types-two against the four forbidden pairs
+leaves only types 1, 2, 4, 6, 8, and 16:
+monotonic effects mean that everyone has one of these six types.
+:::
 
 ::: {.notes}
 Source: @hernan2020causal [Technical Point 5.2, p. 66].
 :::
+
+---
+
+### Detecting Synergistic Types
+
+::: {#prp-detect-types-7-8}
+## Conditions for Types 7 and 8 to Exist (Fine Point 5.1)
+
+Assume deterministic counterfactuals and dichotomous $A$, $E$, and $Y$,
+with $p_{ae} \eqdef \Pr[Y^{a,e}=1]$ (@def-interaction-additive).
+
+1. If $p_{11} - p_{01} - p_{10} > 0$,
+   then some individuals have $Y^{a=1,e=1}=1$ and $Y^{a=0,e=1}=Y^{a=1,e=0}=0$
+   (types 7 or 8 in @tbl-response-types-two).
+2. If, in addition, the effects of $A$ and $E$ are monotonic (@def-monotonic-effects),
+   then superadditive interaction, $p_{11} - p_{01} > p_{10} - p_{00}$, implies that some individuals are of type 8.
 :::
 
-::: {.callout-note title="Fine Point 5.1: Detecting Synergistic Types"}
-Do individuals exist who develop the outcome under both treatments but under neither alone,
-i.e., with $Y^{a=1,e=1}=1$ and $Y^{a=0,e=1}=Y^{a=1,e=0}=0$ (types 7 and 8)?
-A **sufficient** condition (VanderWeele and Robins 2007a, 2008) is
+::: {.proof}
+For part 1,
+an individual with $Y^{a=1,e=1}=1$ either has $Y^{a=0,e=1}=1$, or has $Y^{a=1,e=0}=1$, or is of type 7 or 8.
+So
 
 $$
-p_{11} - p_{01} - p_{10} > 0,
-\quad\text{equivalently}\quad
-p_{11} - p_{01} > p_{10}.
+\begin{aligned}
+p_{11}
+  &\leq \Pr[Y^{a=0,e=1}=1] + \Pr[Y^{a=1,e=0}=1] + \Pr[\text{type 7 or 8}] \\
+  &= p_{01} + p_{10} + \Pr[\text{type 7 or 8}],
+\end{aligned}
 $$
 
-If the effects are monotonic, a weaker sufficient condition is superadditive interaction:
+and $p_{11} - p_{01} - p_{10} > 0$ forces $\Pr[\text{type 7 or 8}] > 0$.
 
-$$
-p_{11} - p_{01} > p_{10} - p_{00},
-$$
+For part 2,
+under monotonicity only types 1, 2, 4, 6, 8, and 16 occur (@exm-monotonic-types),
+and their contrasts in @tbl-response-types-two give
+$p_{11} - p_{01} - p_{10} + p_{00} = \pi_8 - \pi_2$
+(@prp-additive-interaction-requires-classes).
+Superadditive interaction makes this positive (proof of @prp-additive-decomposition),
+so $\pi_8 > \pi_2 \geq 0$.
+:::
 
-which then implies type 8 exists (monotonicity rules out type 7).
+::: {#exm-detect-types-7-8}
+## Checking for Types 7 and 8 in a Trial
+
+Suppose a randomized experiment on both $A$ and $E$, in which the conditions of @prp-identify-interaction-joint hold,
+gives $p_{11} = 0.5$, $p_{01} = 0.2$, and $p_{10} = 0.1$.
+Then $p_{11} - p_{01} - p_{10} = 0.2 > 0$,
+so by @prp-detect-types-7-8 some individuals would die if given both treatments but not if given either one alone.
+:::
+
+::: {.callout-warning title="Sufficient, Not Necessary"}
+Both conditions in @prp-detect-types-7-8 are sufficient but not necessary.
+The first is so strong that it can fail in most populations in which types 7 or 8 exist [@hernan2020causal, Fine Point 5.1, p. 67].
+:::
 
 ::: {.notes}
-All three risks can be computed in a randomized experiment on $A$ and $E$,
-so the existence of types 7 and 8 can be checked empirically [@hernan2020causal, Fine Point 5.1, p. 67].
-Because the first condition is sufficient but not necessary, it can fail even when types 7 and 8 exist,
-and it is strong enough to miss most such cases.
+VanderWeele and Robins (2007a, 2008) developed this theory of sufficient cause interaction for two and three treatments.
 The monotonic-case result was reported by Greenland and Rothman and appears in Greenland, Lash, and Rothman (2008).
-
-In genetics, the existence of type-8 individuals is called **compositional epistasis**;
-VanderWeele (2010a) reviews tests for it.
 :::
+
+::: {#exr-monotonic-synergy}
+## The Weaker Condition Under Monotonicity
+
+Suppose the effects of $A$ and $E$ are monotonic and
+$p_{00} = 0.1$, $p_{10} = 0.2$, $p_{01} = 0.3$, and $p_{11} = 0.45$.
+Does part 1 of @prp-detect-types-7-8 apply?
+Does part 2?
+:::
+
+::: {.solution}
+Part 1 does not apply: $p_{11} - p_{01} - p_{10} = 0.45 - 0.3 - 0.2 = -0.05$, which is not positive.
+Part 2 does: $p_{11} - p_{01} = 0.15 > 0.1 = p_{10} - p_{00}$,
+so the interaction is superadditive,
+and under monotonicity some individuals are of type 8.
+In fact $\pi_8 - \pi_2 = 0.45 - 0.3 - 0.2 + 0.1 = 0.05$, so at least 5% are of type 8.
 :::
 
 ## 5.4 Sufficient Causes (pp. 66-69)
@@ -426,50 +818,128 @@ VanderWeele (2010a) reviews tests for it.
 ---
 
 The variety of response types shows that $A$ is not the only determinant of $Y$.
-The sufficient-component-cause framework represents the other determinants as **background factors**.
+The sufficient-component-cause framework represents the other determinants explicitly.
+
+::: {#def-background-factor}
+## Background Factor
+
+In the sufficient-component-cause framework,
+a **background factor** is a dichotomous variable $U$, other than the treatments, that helps determine the outcome.
+By definition, background factors cannot be intervened on and are not affected by treatment
+[@hernan2020causal, p. 67, margin note].
+:::
+
+::: {#exm-background-factor-allergy}
+## Allergy to Anesthesia
+
+In an oversimplified version of the heart transplant example,
+suppose the only way a transplant can cause death is through allergy to anesthesia.
+The indicator $U_1$ of allergy to anesthesia is a background factor:
+we cannot intervene on it,
+and transplant does not change it.
+:::
 
 ::: {#def-sufficient-cause}
 ## Minimal Sufficient Cause
 
-A **sufficient cause** of $Y$ is a set of conditions that together inevitably produce $Y$.
-It is **minimal** if it contains the smallest set of background factors that,
-with the treatment component, suffices.
-Its elements are its **component causes**;
-"sufficient-component causes" refers to both.
+A **sufficient cause** of an outcome is a collection of conditions,
+on the treatments and the background factors,
+such that anyone meeting all of them develops the outcome.
+It is **minimal** if no proper subset of its conditions is itself sufficient.
+Its conditions are its **component causes**;
+"sufficient-component causes" refers to the sufficient causes and their components together.
 :::
 
-::: {.notes}
-By definition, the dichotomous background factors $U$ cannot be intervened on
-and cannot be affected by treatment $A$ [@hernan2020causal, p. 67, margin note].
+::: {#exm-three-sufficient-causes}
+## Three Sufficient Causes for One Treatment [@hernan2020causal, pp. 66-67]
+
+Continue @exm-background-factor-allergy.
+Suppose also that the only way going without a transplant can cause death is through an ejection fraction below 20% ($U_2 = 1$),
+and that, apart from these two routes, the only cause of death is pancreatic cancer at study start ($U_0 = 1$), which kills whatever the treatment.
+Then death has three minimal sufficient causes:
+
+- $A=1$ together with $U_1=1$;
+- $A=0$ together with $U_2=1$;
+- $U_0=1$, with no treatment component.
 :::
 
----
-
-### One Treatment: Three Sufficient Causes
-
-In the oversimplified heart transplant example [@hernan2020causal, pp. 66-67]:
-
-| Sufficient cause | Treatment component | Background factor (example) |
+| Sufficient cause | Treatment component | Background factor |
 |---|---|---|
 | $A=1$ with $U_1=1$ | transplant | allergy to anesthesia |
 | $A=0$ with $U_2=1$ | no transplant | ejection fraction below 20% |
 | $U_0=1$ | none | pancreatic cancer at study start |
+
+: The three sufficient causes of death in @exm-three-sufficient-causes {#tbl-sufficient-causes-one}
 
 Figure 5.1 of the book draws each sufficient cause as a circle ("causal pie")
 divided into its components.
 
 ---
 
+::: {.callout-note title="Fine Point 5.2: From Response Types to Component Causes"}
+In @exm-three-sufficient-causes, each combination of background factors determines one response type:
+
+| Type | $Y^{a=0}$ | $Y^{a=1}$ | Component causes |
+|---|---|---|---|
+| Doomed | 1 | 1 | $U_0=1$ or $\{U_1=1$ and $U_2=1\}$ |
+| Helped | 1 | 0 | $U_0=0$, $U_1=0$, $U_2=1$ |
+| Hurt | 0 | 1 | $U_0=0$, $U_1=1$, $U_2=0$ |
+| Immune | 0 | 0 | $U_0=0$, $U_1=0$, $U_2=0$ |
+
+: Mapping between response types and sufficient-component causes for one treatment [@hernan2020causal, Fine Point 5.2, p. 70] {#tbl-types-components}
+
+Each combination of component causes gives exactly one response type,
+but a response type can arise from several combinations
+(e.g., "doomed" arises from any combination with $U_0=1$, or with $U_1=1$ and $U_2=1$).
+:::
+
+::: {#rem-exchangeability-component-causes}
+## Exchangeability in Terms of Component Causes
+
+In the setting of @exm-three-sufficient-causes,
+exchangeability $Y^a \ind A$ for a dichotomous treatment and outcome means
+$\Pr[Y^{a=1}=1 \mid A=1] = \Pr[Y^{a=1}=1 \mid A=0]$ and
+$\Pr[Y^{a=0}=1 \mid A=1] = \Pr[Y^{a=0}=1 \mid A=0]$.
+By @tbl-types-components,
+
+- those with $Y^{a=1}=1$ are the doomed and the hurt, that is, those with $U_0=1$ or $U_1=1$;
+- those with $Y^{a=0}=1$ are the doomed and the helped, that is, those with $U_0=1$ or $U_2=1$.
+
+So exchangeability holds exactly when
+$\Pr[U_0=1 \text{ or } U_1=1 \mid A=1] = \Pr[U_0=1 \text{ or } U_1=1 \mid A=0]$
+and
+$\Pr[U_0=1 \text{ or } U_2=1 \mid A=1] = \Pr[U_0=1 \text{ or } U_2=1 \mid A=0]$
+[@hernan2020causal, Fine Point 5.2, p. 70].
+:::
+
+::: {.notes}
+See Greenland and Brumback (2002), Flanders (2006), and VanderWeele and Hernán (2006).
+VanderWeele and Robins (2008) generalized some results to two or more treatments.
+:::
+
+---
+
 ### Effect Size Depends on Background Factors
 
-Compare two populations, identical except that $U_1=1$ (allergy) has prevalence
+::: {#exm-allergy-prevalence}
+## Prevalence of Allergy and the Size of the Effect
+
+Take the sufficient causes of @exm-three-sufficient-causes,
+and compare two populations that have the same joint distribution of $U_0$ and $U_2$,
+with $\Pr[U_0 = 0] > 0$,
+but in which allergy to anesthesia ($U_1=1$) has prevalence
 
 - 1% in the first;
 - 10% in the second.
 
-Randomize half of each population to $A=1$.
-The average causal effect of transplant on death is greater in the second population,
-because the sufficient cause "$A=1$ plus $U_1=1$" is ten times more common there.
+In each population, let $U_1$ be independent of $(U_0, U_2)$.
+Since $Y^{a=1}=1$ exactly when $U_0=1$ or $U_1=1$,
+the risk had everyone been transplanted is $\Pr[Y^{a=1}=1] = \Pr[U_0=1] + \Pr[U_0=0]\Pr[U_1=1]$,
+while $\Pr[Y^{a=0}=1] = \Pr[U_0=1 \text{ or } U_2=1]$ is the same in both populations.
+So the causal risk difference is larger in the second population by $0.09 \Pr[U_0=0]$:
+the sufficient cause "$A=1$ plus $U_1=1$" is ten times more common there.
+A randomized experiment in each population, assigning half to $A=1$, would estimate this larger effect.
+:::
 
 ::: {.notes}
 This is the Chapter 4 point that the magnitude of a causal effect depends on the distribution of effect modifiers,
@@ -480,8 +950,11 @@ made visible with sufficient-component causes [@hernan2020causal, p. 68].
 
 ### Two Treatments: Nine Sufficient Causes
 
-With treatments $A$ and $E$ there are 9 possible sufficient causes (Greenland and Poole 1988),
-with treatment components
+::: {#rem-nine-sufficient-causes}
+## Nine Possible Sufficient Causes for Two Treatments
+
+With dichotomous treatments $A$ and $E$, there are 9 possible sufficient causes (Greenland and Poole 1988).
+Their treatment components are
 
 1. $A=1$ only;
 2. $A=0$ only;
@@ -493,14 +966,19 @@ with treatment components
 8. $A=0$ and $E=0$;
 9. neither $A$ nor $E$.
 
-Each also contains background factors from $U_1, \ldots, U_8$ and $U_0$ (Figure 5.2 of the book).
+Each also contains background factors, from $U_1, \ldots, U_8$ and $U_0$ (Figure 5.2 of the book).
+:::
 
-::: {.notes}
-Not all 9 need exist.
-If vitamins $E=1$ never kill anyone, whatever $A$ is,
-then the 3 sufficient causes with component $E=1$ are absent;
-their existence would mean some individuals (e.g., those with $U_3=1$)
-would be killed by vitamins, i.e., saved by withholding them
+::: {#exm-absent-sufficient-causes}
+## Sufficient Causes That Are Absent
+
+Not all 9 sufficient causes need be present.
+If vitamins ($E=1$) never kill anyone, whatever $A$ is,
+then the 3 sufficient causes with component $E=1$ are absent,
+in the sense that none of them is ever anyone's only route to death.
+If one were, the individuals completing it (e.g., those whose only background factor is $U_3=1$)
+would be killed by vitamins,
+that is, saved by withholding them
 [@hernan2020causal, p. 69].
 :::
 
@@ -511,14 +989,15 @@ would be killed by vitamins, i.e., saved by withholding them
 The counterfactual definition of interaction (@def-interaction-additive) is a contrast of counterfactual risks.
 It can be identified in an ideal randomized experiment on $A$ and $E$
 without any knowledge of the mechanisms by which the treatments act.
-
 A second concept of interaction refers to mechanisms directly.
 
 ::: {#def-sufficient-cause-interaction}
 ## Sufficient Cause Interaction
 
-"A sufficient cause interaction between $A$ and $E$ exists in the population if
-$A$ and $E$ occur together in a sufficient cause" [@hernan2020causal, p. 69].
+There is a **sufficient cause interaction** between treatments $A$ and $E$ in a population
+if some sufficient cause (@def-sufficient-cause) has a component involving $A$ and a component involving $E$,
+and at least one individual has all of its background-factor components,
+so that it would be completed under some joint intervention on $A$ and $E$.
 :::
 
 ::: {#exm-sufficient-cause-interaction}
@@ -535,11 +1014,27 @@ a sufficient cause interaction between $A$ and $E$ is present [@hernan2020causal
 
 ### Synergism and Antagonism
 
-- **Synergism**: $A=1$ and $E=1$ are components of the same sufficient cause.
-- **Antagonism**: $A=1$ and $E=0$ (or $A=0$ and $E=1$) are components of the same sufficient cause.
+::: {#def-synergism-antagonism}
+## Synergism and Antagonism
+
+A sufficient cause interaction between $A$ and $E$ is
+
+- **synergism** if $A=1$ and $E=1$ are components of the same sufficient cause;
+- **antagonism** if $A=1$ and $E=0$, or $A=0$ and $E=1$, are components of the same sufficient cause.
 
 Antagonism between $A$ and $E$ can be viewed as synergism between $A$ and "no $E$"
 (or between "no $A$" and $E$).
+:::
+
+::: {#exm-synergism-antagonism}
+## Synergism and Antagonism Between Transplant and Vitamins
+
+The sufficient cause of @exm-sufficient-cause-interaction, with components $A=1$, $E=1$, and $U_5=1$,
+is a synergism between transplant and vitamins.
+If, instead, some individuals died only when transplanted without vitamins,
+a sufficient cause with components $A=1$ and $E=0$ would be present:
+an antagonism between transplant and vitamins.
+:::
 
 ::: {.notes}
 Rothman (1976) described synergism and antagonism within the sufficient-component-cause framework
@@ -550,9 +1045,36 @@ Rothman (1976) described synergism and antagonism within the sufficient-componen
 
 ### Detecting Synergism Without Knowing the Mechanisms
 
-Sufficient cause interaction is defined through mechanisms,
-yet sometimes it can be detected with no knowledge of them:
-if the inequalities of Fine Point 5.1 hold, synergism between $A$ and $E$ exists.
+::: {#prp-detect-synergism}
+## Detecting Synergism from Counterfactual Risks
+
+Assume deterministic counterfactuals and dichotomous $A$, $E$, and $Y$,
+and suppose the outcome is generated by sufficient causes:
+for every individual and every joint treatment $(a, e)$,
+$Y^{a,e} = 1$ if and only if at least one sufficient cause is completed under $(a, e)$.
+If either condition of @prp-detect-types-7-8 holds
+(the second one together with monotonic effects),
+then there is synergism between $A$ and $E$ (@def-synergism-antagonism).
+:::
+
+::: {.proof}
+By @prp-detect-types-7-8, some individual has $Y^{a=1,e=1}=1$ and $Y^{a=0,e=1}=Y^{a=1,e=0}=0$.
+Under $(a, e) = (1, 1)$, some sufficient cause is completed for this individual.
+That sufficient cause cannot contain $A=0$ or $E=0$, because those components are absent under $(1, 1)$.
+It cannot lack a component involving $A$,
+because it would then also be completed under $(0, 1)$, giving $Y^{a=0,e=1}=1$.
+It cannot lack a component involving $E$,
+because it would then also be completed under $(1, 0)$, giving $Y^{a=1,e=0}=1$.
+So it contains both $A=1$ and $E=1$, which is synergism.
+:::
+
+::: {#exm-detect-synergism}
+## Synergism in a Trial
+
+In @exm-detect-types-7-8, $p_{11} - p_{01} - p_{10} = 0.2 > 0$.
+By @prp-detect-synergism, there is synergism between $A$ and $E$,
+even though nothing is known about the background factors involved.
+:::
 
 ::: {.notes}
 This is not surprising, for two reasons [@hernan2020causal, p. 71]:
@@ -563,53 +1085,33 @@ so they can fail even when synergism exists.
 
 ---
 
-::: {.callout-note title="Fine Point 5.2: From Response Types to Component Causes"}
-| Type | $Y^{a=0}$ | $Y^{a=1}$ | Component causes |
-|---|---|---|---|
-| Doomed | 1 | 1 | $U_0=1$ or $\{U_1=1$ and $U_2=1\}$ |
-| Helped | 1 | 0 | $U_0=0$, $U_1=0$, $U_2=1$ |
-| Hurt | 0 | 1 | $U_0=0$, $U_1=1$, $U_2=0$ |
-| Immune | 0 | 0 | $U_0=0$, $U_1=0$, $U_2=0$ |
-
-: Mapping between response types and sufficient-component causes for one treatment [@hernan2020causal, Fine Point 5.2, p. 70] {#tbl-types-components}
-
-Each combination of component causes gives exactly one response type,
-but a response type can arise from several combinations
-(e.g., "doomed" arises from any combination with $U_0=1$, or with $U_1=1$ and $U_2=1$).
-
-::: {.notes}
-**Exchangeability in terms of component causes** [@hernan2020causal, Fine Point 5.2, p. 70].
-For a dichotomous treatment and outcome, $Y^a \ind A$ means
-$\Pr[Y^{a=1}=1 \mid A=1] = \Pr[Y^{a=1}=1 \mid A=0]$ and
-$\Pr[Y^{a=0}=1 \mid A=1] = \Pr[Y^{a=0}=1 \mid A=0]$.
-
-- Those with $Y^{a=1}=1$ are the doomed and the hurt, i.e., those with $U_0=1$ or $U_1=1$.
-- Those with $Y^{a=0}=1$ are the doomed and the helped, i.e., those with $U_0=1$ or $U_2=1$.
-
-Substituting these sets, exchangeability holds when
-$\Pr[U_0=1 \text{ or } U_1=1 \mid A=1] = \Pr[U_0=1 \text{ or } U_1=1 \mid A=0]$
-and
-$\Pr[U_0=1 \text{ or } U_2=1 \mid A=1] = \Pr[U_0=1 \text{ or } U_2=1 \mid A=0]$.
-
-See Greenland and Brumback (2002), Flanders (2006), and VanderWeele and Hernán (2006);
-VanderWeele and Robins (2008) generalized some results to two or more treatments.
-:::
-:::
-
 ::: {.callout-note title='Fine Point 5.3: "Biologic" Interaction'}
 Sufficient cause interaction is often called **biologic interaction** (Rothman et al. 1980),
 but it need not involve treatments acting on each other.
 :::
 
+::: {#def-compositional-epistasis}
+## Compositional Epistasis
+
+In genetics, **compositional epistasis** between two genetic factors $A$ and $E$ means that
+some individuals have response type 8 in @tbl-response-types-two:
+they develop the outcome when both factors are present, and not otherwise.
+:::
+
 ::: {#exm-alleles}
 ## Two Alleles [@hernan2020causal, Fine Point 5.3, p. 71]
 
-Let $A$ and $E$ indicate a deleterious mutation in each of the two alleles of a gene that produces an essential protein
+Let $A$ and $E$ indicate a harmful mutation in each of the two copies of a gene needed to make a vital protein
 (VanderWeele and Robins 2007a).
 Infants with both mutations ($A=1$, $E=1$) lack the protein and die within a week;
 those with one or no mutation survive.
-There is synergism, since a sufficient cause of death contains $A=1$ and $E=1$,
-yet the alleles arguably do not physically act on each other.
+These infants are of type 8, so there is compositional epistasis.
+There is also synergism, since a sufficient cause of death contains $A=1$ and $E=1$,
+yet the two copies need not act on each other in any physical sense.
+:::
+
+::: {.notes}
+VanderWeele (2010a) reviews tests for compositional epistasis.
 :::
 
 ## 5.6 Counterfactuals or Sufficient-Component Causes? (pp. 71-74)
@@ -621,37 +1123,43 @@ The two frameworks answer different questions:
 | | Sufficient-component causes | Counterfactuals |
 |---|---|---|
 | Starts from | a particular effect | a particular cause or intervention |
-| Asks | "how does it happen?" | "what happens?" |
+| Central question | by what mechanisms the outcome came about | what the outcome would be under an intervention |
 | Describes mechanisms | yes | no |
+
+: Two frameworks for causation {#tbl-two-frameworks}
 
 For estimating average causal effects of hypothetical interventions,
 the subject of the book, the counterfactual framework is the natural one.
 
 ::: {.notes}
-The sufficient-component-cause model asks which events might have caused a given effect;
-the counterfactual model asks what would have happened had a factor been set to a different level than it was
-[@hernan2020causal, p. 71].
+The two models look in opposite directions [@hernan2020causal, p. 71]:
+sufficient-component causes trace an effect back to its possible causes,
+and counterfactuals trace a cause forward to its possible effects.
 In philosophy the sufficient-component-cause framework goes back to Mackie (1965),
 whose **INUS condition** for $Y$ is an **I**nsufficient but **N**ecessary part of a condition
 which is itself **U**nnecessary but exclusively **S**ufficient for $Y$.
-A counterfactual framework of causation was already hinted at by Hume (1748).
+Hume (1748) already anticipated a counterfactual account of causation.
 :::
 
 ---
 
 ### Strengths and Limitations of Sufficient-Component Causes
 
-Useful for teaching, because they illustrate
+::: {#rem-sufficient-causes-strengths-limitations}
+## Useful for Teaching, Limited for Data Analysis
 
-- why the size of a causal effect depends on the distribution of background factors (effect modifiers);
+Sufficient-component causes are useful for teaching, because they illustrate
+
+- why the size of a causal effect depends on the distribution of background factors (effect modifiers), as in @exm-allergy-prevalence;
 - how effect modification, interaction, and synergism relate.
 
-Limited for data analysis, because in its classical form the framework
+They are of limited use for data analysis, because in its classical form the framework
 
 - is deterministic;
 - gives conclusions that depend on the coding of the outcome;
 - is restricted to dichotomous treatments and outcomes;
 - requires large amounts of data to study the fine distinctions it makes.
+:::
 
 ::: {.notes}
 Extensions to stochastic settings and to categorical or ordinal treatments might widen its use:
@@ -664,38 +1172,72 @@ and apparent alternatives such as causal diagrams and decision theory are essent
 ---
 
 ::: {.callout-note title="Fine Point 5.4: Attributable Fractions Do Not Add"}
-Suppose the excess fraction (Fine Point 3.5) is 75% for $A$ and 50% for $E$.
+Recall from Fine Point 3.5 that the excess fraction for a treatment is
+the share of observed cases that would not have occurred had everyone been untreated.
+Suppose the excess fraction is 75% for $A$ and 50% for $E$.
 A joint intervention cannot prevent $75\% + 50\% = 125\%$ of cases:
 no intervention, single or joint, can prevent more than 100%.
+:::
 
-The resolution: an individual like Zeus with $U_5=1$, treated with $A=1$ and $E=1$,
-would not have been a case had **either** treatment been withheld,
-so Zeus is counted in both the 75% and the 50%.
+::: {#exm-zeus-counted-twice}
+## Zeus Is Counted Twice
+
+Suppose Zeus has background factor $U_5=1$ (and no other background factors),
+so by @exm-sufficient-cause-interaction he dies only if he receives both treatments,
+and suppose he received $A=1$ and $E=1$ and died.
+Withholding either treatment alone would have averted his death.
+He therefore belongs both to the cases averted by setting $a = 0$ (the 75% for $A$)
+and to those averted by setting $e = 0$ (the 50% for $E$):
+he is counted in both excess fractions,
+which is why they can sum to more than 100%.
+:::
+
+::: {#exm-phenylketonuria}
+## Phenylketonuria: 100% Genetic and 100% Environmental
+
+Intellectual disability due to phenylketonuria occurs only in people who carry a genetic susceptibility and whose diet includes certain foods.
+Removing those foods from the diet would prevent every case,
+and so would replacing the susceptibility genes.
+So the excess fraction is 100% for the foods and 100% for the genes.
+When $A$ and $E$ can be components of the same sufficient cause,
+asking what fraction of disease is attributable to each separately makes little sense
+[@hernan2020causal, Fine Point 5.4, p. 72].
+:::
 
 ::: {.notes}
-When $A$ and $E$ can be components of the same sufficient cause,
-the fraction of disease attributable to each separately makes little sense
-[@hernan2020causal, Fine Point 5.4, p. 72].
-Phenylketonuria example: mental retardation occurs in genetically susceptible individuals who eat certain foods.
-Removing the foods would prevent all cases, and so would replacing the susceptibility genes,
-so the cases are both "100% environmental" and "100% genetic".
 See Rothman, Greenland, and Lash (2008).
 :::
+
+---
+
+### Monotonicity Rules Out Some Sufficient Causes
+
+::: {#rem-monotonicity-sufficient-causes}
+## Monotonicity Rules Out Some Sufficient Causes (Technical Point 5.3)
+
+Suppose the effects of $A$ and $E$ are monotonic (@def-monotonic-effects),
+and the outcome is generated by sufficient causes as in @prp-detect-synergism.
+Consider an individual for whom a sufficient cause containing $A=0$ is completed under some $(a=0, e)$,
+while no sufficient cause is completed under $(a=1, e)$,
+for example someone whose only background factor is $U_2=1$.
+That individual would have $Y^{a=0,e}=1$ but $Y^{a=1,e}=0$:
+treating them would prevent their outcome, contradicting monotonicity.
+So under monotonicity, whoever completes a sufficient cause containing $A=0$ under $(a=0, e)$
+also develops the outcome under $(a=1, e)$, through some other sufficient cause.
+The same argument applies to $E=0$.
+Monotonicity therefore rules out every sufficient cause containing $A=0$ or $E=0$
+that would leave some individual's outcome preventable by treatment;
+this is the sense in which such causes cannot be present.
 :::
 
-::: {.callout-note title="Technical Point 5.3: Monotonicity Rules Out Some Sufficient Causes"}
+::: {#exm-smoking-inactivity}
+## Smoking and Physical Inactivity [@hernan2020causal, Technical Point 5.3, pp. 73-74]
+
 If smoking ($A=1$) never prevents heart disease
 and physical inactivity ($E=1$) never prevents heart disease,
-then no sufficient cause can contain $A=0$ or $E=0$.
-
-::: {.notes}
-If a sufficient cause containing $A=0$ existed,
-some individuals (e.g., those with $U_2=1$) would develop the outcome when unexposed,
-i.e., treating them ($A=1$) would prevent their outcome, contradicting monotonicity;
-the same argument applies to $E=0$.
-Figure 5.3 of the book crosses out the sufficient causes excluded this way
-[@hernan2020causal, Technical Point 5.3, pp. 73-74].
-:::
+then, in the sense of @rem-monotonicity-sufficient-causes,
+no sufficient cause of heart disease contains "not smoking" ($A=0$) or "physically active" ($E=0$).
+Figure 5.3 of the book crosses out the sufficient causes excluded this way.
 :::
 
 ## Summary
@@ -706,15 +1248,15 @@ Figure 5.3 of the book crosses out the sufficient causes excluded this way
   on the additive scale, $\Pr[Y^{1,1}=1] - \Pr[Y^{0,1}=1] \neq \Pr[Y^{1,0}=1] - \Pr[Y^{0,0}=1]$,
   a definition symmetric in $A$ and $E$;
   a multiplicative version uses risk ratios.
-- **Identification** requires exchangeability, positivity, and consistency for the joint treatment $(A, E)$;
+- **Identification**: exchangeability, positivity, and consistency for the joint treatment $(A, E)$ suffice;
   if $E$ is randomized, interaction coincides with effect modification by $E$.
 - **Effect modification** can occur without interaction (surrogate modifiers).
 - With deterministic, dichotomous counterfactuals there are **16 response types**;
   additive interaction requires individuals of interaction types, but their presence can cancel out.
-- **Sufficient cause interaction** means $A$ and $E$ appear in the same sufficient cause;
-  synergism can sometimes be detected from counterfactual risks alone (Fine Point 5.1).
-- The counterfactual framework answers "what happens?" and is the one used in the rest of the book;
-  sufficient-component causes answer "how does it happen?" and are mainly a teaching tool.
+- **Sufficient cause interaction** means $A$ and $E$ appear in the same sufficient cause that someone in the population can complete (@def-sufficient-cause-interaction);
+  synergism can sometimes be detected from counterfactual risks alone (@prp-detect-synergism).
+- The counterfactual framework describes what would happen under interventions and is the one used in the rest of the book;
+  sufficient-component causes describe mechanisms and are mainly a teaching tool.
 
 ::: {.notes}
 **Looking ahead**: Chapter 6 introduces causal diagrams,
