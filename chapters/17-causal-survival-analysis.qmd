@@ -456,7 +456,7 @@ with individual-specific administrative censoring, $C_{k+1}$ switches from 0 to 
 
 The target is the survival curve we would see if no one were censored before $k_\text{end}$,
 that is, $\Pr[D_k = 0 \mid A = a]$ with $D_k$ observed even after censoring.
-In the notation of Chapter 12 this is $\Pr[D^{\bar{c}=0}_k = 0 \mid A = a]$,
+In the notation of Chapter 12 this is $\Pr[\eventnocens{k} = 0 \mid A = a]$,
 where $\bar{c} = (c_1, c_2, \ldots, c_{k_\text{end}})$ and the superscript $\bar{c} = 0$ denotes no censoring;
 the superscript is dropped when the meaning is clear.
 :::
@@ -495,16 +495,16 @@ the survival would be $1 \times 0.9 \times 1 \times 0.9 = 0.81$.
 
 Fix a treatment level $a$ with $\Pr[A = a] > 0$ and a time $k \in \{1, \ldots, k_\text{end}\}$.
 Suppose the uncensored event indicators start at zero and never revert,
-that is, $D^{\bar{c}=0}_0 = 0$ for everyone
-and $D^{\bar{c}=0}_{m-1} = 1$ implies $D^{\bar{c}=0}_m = 1$ for every $m \geq 1$.
+that is, $\eventnocens{0} = 0$ for everyone
+and $\eventnocens{m-1} = 1$ implies $\eventnocens{m} = 1$ for every $m \geq 1$.
 Suppose also that, for every $m = 1, \ldots, k$:
 
 - **Censoring as if randomly assigned**: given $A$ and survival without censoring through $m - 1$,
   being censored by $m$ is independent of the event at $m$ without censoring,
-  $C_m \ind D^{\bar{c}=0}_m \mid A = a, D^{\bar{c}=0}_{m-1} = 0$;
-- **Positivity**: $\Pr[C_m = 0 \mid A = a, D^{\bar{c}=0}_{m-1} = 0] > 0$
-  and $\Pr[D^{\bar{c}=0}_{m-1} = 0 \mid A = a] > 0$;
-- **Consistency**: for anyone with $C_m = 0$, $D_m = D^{\bar{c}=0}_m$ and $D_{m-1} = D^{\bar{c}=0}_{m-1}$.
+  $C_m \ind \eventnocens{m} \mid A = a, \eventnocens{m-1} = 0$;
+- **Positivity**: $\Pr[C_m = 0 \mid A = a, \eventnocens{m-1} = 0] > 0$
+  and $\Pr[\eventnocens{m-1} = 0 \mid A = a] > 0$;
+- **Consistency**: for anyone with $C_m = 0$, $D_m = \eventnocens{m}$ and $D_{m-1} = \eventnocens{m-1}$.
   This is plausible because $C_m = 0$ implies $C_1 = \cdots = C_m = 0$:
   by @def-time-varying-censoring-indicator, a follow-up that ends at or beyond $m$ also ends at or beyond every earlier month.
   So these people actually experienced the no-censoring regime through $m$,
@@ -512,20 +512,20 @@ Suppose also that, for every $m = 1, \ldots, k$:
 
 Then the survival without censoring (@def-survival-without-censoring) at $k$ is
 
-$$\Pr[D^{\bar{c}=0}_k = 0 \mid A = a] = \prod_{m=1}^k \Pr[D_m = 0 \mid D_{m-1} = 0, C_m = 0, A = a]$$
+$$\Pr[\eventnocens{k} = 0 \mid A = a] = \prod_{m=1}^k \Pr[D_m = 0 \mid D_{m-1} = 0, C_m = 0, A = a]$$
 :::
 
 ::: {.proof}
-Applying @prp-survival-product-of-hazards to the uncensored event indicators $D^{\bar{c}=0}_m$, within the stratum $A = a$, gives
+Applying @prp-survival-product-of-hazards to the uncensored event indicators $\eventnocens{m}$, within the stratum $A = a$, gives
 
-$$\Pr[D^{\bar{c}=0}_k = 0 \mid A = a] = \prod_{m=1}^k \Pr[D^{\bar{c}=0}_m = 0 \mid D^{\bar{c}=0}_{m-1} = 0, A = a]$$
+$$\Pr[\eventnocens{k} = 0 \mid A = a] = \prod_{m=1}^k \Pr[\eventnocens{m} = 0 \mid \eventnocens{m-1} = 0, A = a]$$
 
 Fix one factor $m$.
 By the independence assumption
 (with positivity ensuring the added conditioning event has positive probability),
 adding $C_m = 0$ to the conditioning event leaves the factor unchanged:
-it equals $\Pr[D^{\bar{c}=0}_m = 0 \mid D^{\bar{c}=0}_{m-1} = 0, C_m = 0, A = a]$.
-Among the people with $C_m = 0$, consistency replaces $D^{\bar{c}=0}_m$ by $D_m$ and $D^{\bar{c}=0}_{m-1}$ by $D_{m-1}$,
+it equals $\Pr[\eventnocens{m} = 0 \mid \eventnocens{m-1} = 0, C_m = 0, A = a]$.
+Among the people with $C_m = 0$, consistency replaces $\eventnocens{m}$ by $D_m$ and $\eventnocens{m-1}$ by $D_{m-1}$,
 so the factor equals $\Pr[D_m = 0 \mid D_{m-1} = 0, C_m = 0, A = a]$,
 which involves only observed data.
 Multiplying the $k$ factors gives the result.

@@ -85,8 +85,8 @@ the concepts carry over to time-varying and failure-time outcomes
 ## Treatment history
 
 An overbar denotes history:
-$\bar{A}_k = (A_0, A_1, \ldots, A_k)$ is the treatment history from time 0 through time $k$.
-The whole history through $K$, $\bar{A}_K$, is often written $\bar{A}$ without a subscript.
+$\trthist{k} = (A_0, A_1, \ldots, A_k)$ is the treatment history from time 0 through time $k$.
+The whole history through $K$, $\trthist{K}$, is often written $\bar{A}$ without a subscript.
 Lower-case letters denote realizations: $a_k$ is a value of $A_k$.
 :::
 
@@ -206,7 +206,7 @@ at each time, who is treated depends on each individual's evolving $L_k$.
 ## Dynamic and static strategies
 
 A **dynamic treatment strategy** is a rule in which the treatment $a_k$ at time $k$
-depends on the evolution of an individual's time-varying covariates $\bar{L}_k$.
+depends on the evolution of an individual's time-varying covariates $\covhist{k}$.
 Strategies $\bar{a}$ in which treatment does not depend on covariates
 are **non-dynamic** or **static** treatment strategies.
 :::
@@ -216,12 +216,12 @@ are **non-dynamic** or **static** treatment strategies.
 ::: {.callout-note title="Fine Point 19.1: Deterministic and Random Treatment Strategies"}
 
 - A **deterministic dynamic strategy** is a rule
-  $g = [g_0(\bar{a}_{-1}, l_0), \ldots, g_K(\bar{a}_{K-1}, \bar{l}_K)]$,
-  where $g_k(\bar{a}_{k-1}, \bar{l}_k)$ is the treatment assigned at $k$
-  to an individual with past history $(\bar{a}_{k-1}, \bar{l}_k)$.
-  Example: $g_k(\bar{a}_{k-1}, \bar{l}_k) = 1$ if the CD4 count was low at or before $k$, and 0 otherwise.
-- A **deterministic static strategy** is a rule $g = [g_0(\bar{a}_{-1}), \ldots, g_K(\bar{a}_{K-1})]$
-  that does not depend on $\bar{l}_k$.
+  $g = [g_0(\trtvalhist{-1}, l_0), \ldots, g_K(\trtvalhist{K-1}, \covvalhist{K})]$,
+  where $g_k(\trtvalhist{k-1}, \covvalhist{k})$ is the treatment assigned at $k$
+  to an individual with past history $(\trtvalhist{k-1}, \covvalhist{k})$.
+  Example: $g_k(\trtvalhist{k-1}, \covvalhist{k}) = 1$ if the CD4 count was low at or before $k$, and 0 otherwise.
+- A **deterministic static strategy** is a rule $g = [g_0(\trtvalhist{-1}), \ldots, g_K(\trtvalhist{K-1})]$
+  that does not depend on $\covvalhist{k}$.
 - **Random strategies** assign a probability of treatment rather than a value.
   They can be static
   ("each month, independently, treat with probability 0.3")
@@ -265,8 +265,8 @@ there are as many causal effects as there are pairs of strategies.
 ::: {.callout-note title="Technical Point 19.1: On the Definition of Dynamic Strategies"}
 Every dynamic strategy $g$ that depends on past treatment and covariates
 has a counterpart $g'$ that depends only on past covariates,
-defined recursively by $g'_0(l_0) = g_0(\bar{a}_{-1} = 0, l_0)$ and
-$g'_k(\bar{l}_k) = g_k\paren{g'_{k-1}(\bar{l}_{k-1}), \bar{l}_k}$.
+defined recursively by $g'_0(l_0) = g_0(\trtvalhist{-1} = 0, l_0)$ and
+$g'_k(\covvalhist{k}) = g_k\paren{g'_{k-1}(\covvalhist{k-1}), \covvalhist{k}}$.
 By consistency, an individual has the same treatment, covariate, and outcome history
 whether following $g$ or $g'$ from time zero, so $Y^g = Y^{g'}$.
 In the observed data, an individual has followed $g$ through time $t$
@@ -275,8 +275,8 @@ If treatment under $g$ already does not depend on past treatment, $g$ and $g'$ a
 :::
 
 ::: {.notes}
-In the recursion, $g'_{k-1}(\bar{l}_{k-1})$ stands for the whole treatment history
-$\bar{a}_{k-1}$ that $g'$ would have produced through $k-1$ given $\bar{l}_{k-1}$.
+In the recursion, $g'_{k-1}(\covvalhist{k-1})$ stands for the whole treatment history
+$\trtvalhist{k-1}$ that $g'$ would have produced through $k-1$ given $\covvalhist{k-1}$.
 :::
 
 ## 19.3 Sequentially Randomized Experiments (pp. 257-259)
@@ -291,7 +291,7 @@ which also lowers health status $Y$.
 
 ::: {#tbl-ch19-diagrams-arrows}
 
-| Figure | Arrows from $\bar{A}_{k-1}$ into $A_k$ | Arrows from $\bar{L}_k$ into $A_k$ | Arrows from $\bar{U}_k$ into $A_k$ |
+| Figure | Arrows from $\trthist{k-1}$ into $A_k$ | Arrows from $\covhist{k}$ into $A_k$ | Arrows from $\bar{U}_k$ into $A_k$ |
 |--------|:--:|:--:|:--:|
 | 19.1 | yes (for $k \geq 1$) | no | no |
 | 19.2 | yes (for $k \geq 1$) | yes | no |
@@ -370,7 +370,7 @@ under the Section 19.2 coding, high CD4 is $L_k = 0$ and low CD4 is $L_k = 1$.
 ## Sequentially randomized experiment
 
 An experiment in which treatment is randomly assigned to each individual at each time $k$,
-with assignment probabilities that depend only on the measured history $(\bar{A}_{k-1}, \bar{L}_k)$,
+with assignment probabilities that depend only on the measured history $(\trthist{k-1}, \covhist{k})$,
 is a **sequentially randomized experiment**.
 :::
 
@@ -392,7 +392,7 @@ is a **sequentially randomized experiment**.
 Treatment decisions usually depend on prognostic factors,
 so observational studies are typically represented by Figure 19.2 or 19.3, not 19.1.
 
-- If clinicians' decisions at each month depend on $(\bar{A}_{k-1}, \bar{L}_k)$
+- If clinicians' decisions at each month depend on $(\trthist{k-1}, \covhist{k})$
   but on no unmeasured $\bar{U}_k$, the study is represented by Figure 19.2.
   It then differs from a sequentially randomized experiment (@def-seq-randomized) only in that
   the assignment probabilities are unknown (though estimable from the data).
@@ -419,18 +419,18 @@ and in observational studies where treatment depends on measured $L$
 and, given $L$, on no unmeasured common cause of treatment and outcome.
 
 For a time-varying treatment we need conditional exchangeability **at each time**,
-given the covariate history $\bar{L}_k$.
+given the covariate history $\covhist{k}$.
 
 ---
 
 ::: {#def-seq-exchangeability}
 ## Sequential exchangeability for $Y^g$
 
-$$Y^g \ind A_k \mid \bar{A}_{k-1} = g(\bar{A}_{k-2}, \bar{L}_{k-1}), \bar{L}_k
+$$Y^g \ind A_k \mid \trthist{k-1} = g(\trthist{k-2}, \covhist{k-1}), \covhist{k}
 \quad \text{for all strategies } g \text{ and } k = 0, 1, \ldots, K.$$
 
 That is, at each time $k$, the treated and untreated are exchangeable for $Y^g$
-given the covariate history $\bar{L}_k$ through time $k$
+given the covariate history $\covhist{k}$ through time $k$
 and any observed treatment history compatible with $g$.
 :::
 
@@ -495,10 +495,10 @@ related to but different from the g-formula (e.g., the front door formula of Tec
 
 **Unconditional sequential exchangeability** holds for a static strategy $\bar{a}$ if
 
-$$Y^{\bar{a}} \ind A_k \mid \bar{A}_{k-1} = \bar{a}_{k-1}, \qquad k = 0, 1, \ldots, K.$$
+$$Y^{\bar{a}} \ind A_k \mid \trthist{k-1} = \trtvalhist{k-1}, \qquad k = 0, 1, \ldots, K.$$
 :::
 
-Under Figure 19.1 (no arrows from $\bar{L}_k$ or $\bar{U}_k$ into $A_k$; @tbl-ch19-diagrams-arrows),
+Under Figure 19.1 (no arrows from $\covhist{k}$ or $\bar{U}_k$ into $A_k$; @tbl-ch19-diagrams-arrows),
 unconditional sequential exchangeability holds for every static strategy $\bar{a}$.
 
 ::: {#prp-association-is-causation-sequential}
@@ -507,7 +507,7 @@ unconditional sequential exchangeability holds for every static strategy $\bar{a
 Let $\bar{a}$ be a static strategy.
 Suppose unconditional sequential exchangeability (@def-unconditional-seq-exchangeability) holds for $\bar{a}$,
 positivity holds along $\bar{a}$
-($\Pr[A_k = a_k \mid \bar{A}_{k-1} = \bar{a}_{k-1}] > 0$ for $k = 0, 1, \ldots, K$),
+($\Pr[A_k = a_k \mid \trthist{k-1} = \trtvalhist{k-1}] > 0$ for $k = 0, 1, \ldots, K$),
 and consistency holds ($Y^{\bar{a}} = Y$ whenever $\bar{A} = \bar{a}$).
 Suppose also that $\E{\abs{Y^{\bar{a}}}} < \infty$.
 Then association is causation: $\E{Y^{\bar{a}}} = \E{Y \mid \bar{A} = \bar{a}}$.
@@ -515,31 +515,31 @@ Then association is causation: $\E{Y^{\bar{a}}} = \E{Y \mid \bar{A} = \bar{a}}$.
 
 ::: {.proof}
 The positivity conditions give
-$\Pr[\bar{A}_k = \bar{a}_k] = \prod_{j=0}^{k} \Pr[A_j = a_j \mid \bar{A}_{j-1} = \bar{a}_{j-1}] > 0$
+$\Pr[\trthist{k} = \trtvalhist{k}] = \prod_{j=0}^{k} \Pr[A_j = a_j \mid \trthist{j-1} = \trtvalhist{j-1}] > 0$
 for every $k$,
 so each conditional expectation below is well defined
-(for $k = 0$, conditioning on the empty history $\bar{A}_{-1} = \bar{a}_{-1}$ is no conditioning).
+(for $k = 0$, conditioning on the empty history $\trthist{-1} = \trtvalhist{-1}$ is no conditioning).
 
 One-step identity: for each $k = 0, 1, \ldots, K$,
 
 \begin{align}
-\E{Y^{\bar{a}} \mid \bar{A}_{k-1} = \bar{a}_{k-1}}
-&= \E{Y^{\bar{a}} \mid \bar{A}_{k-1} = \bar{a}_{k-1}, A_k = a_k}
+\E{Y^{\bar{a}} \mid \trthist{k-1} = \trtvalhist{k-1}}
+&= \E{Y^{\bar{a}} \mid \trthist{k-1} = \trtvalhist{k-1}, A_k = a_k}
   && \text{(exchangeability at } k\text{; positivity at } k\text{)} \\
-&= \E{Y^{\bar{a}} \mid \bar{A}_k = \bar{a}_k}
-  && \text{(since } \bar{A}_k = (\bar{A}_{k-1}, A_k)\text{)}
+&= \E{Y^{\bar{a}} \mid \trthist{k} = \trtvalhist{k}}
+  && \text{(since } \trthist{k} = (\trthist{k-1}, A_k)\text{)}
 \end{align}
 
 Applying the one-step identity for $k = 0$, then $k = 1$, and so on through $k = K$:
 
 \begin{align}
 \E{Y^{\bar{a}}}
-&= \E{Y^{\bar{a}} \mid \bar{A}_0 = \bar{a}_0}
+&= \E{Y^{\bar{a}} \mid \trthist{0} = \trtvalhist{0}}
   && \text{(one-step identity, } k = 0\text{)} \\
-&= \E{Y^{\bar{a}} \mid \bar{A}_1 = \bar{a}_1}
+&= \E{Y^{\bar{a}} \mid \trthist{1} = \trtvalhist{1}}
   && \text{(one-step identity, } k = 1\text{)} \\
 &\;\;\vdots \\
-&= \E{Y^{\bar{a}} \mid \bar{A}_K = \bar{a}_K}
+&= \E{Y^{\bar{a}} \mid \trthist{K} = \trtvalhist{K}}
   && \text{(one-step identity, } k = K\text{)} \\
 &= \E{Y \mid \bar{A} = \bar{a}}
   && \text{(consistency: } Y^{\bar{a}} = Y \text{ when } \bar{A} = \bar{a}\text{)}
@@ -577,33 +577,33 @@ $U_1$ is the true (unknown) CD4 count, which $L_1$ measures with error.
 Identification also needs sequential versions of positivity and consistency.
 Both are expected to hold in a sequentially randomized experiment.
 Under all three conditions, $\E{Y^g}$ is identified
-by methods that adjust appropriately for $(\bar{A}_{k-1}, \bar{L}_k)$:
+by methods that adjust appropriately for $(\trthist{k-1}, \covhist{k})$:
 the g-formula (standardization), IP weighting, and g-estimation.
 :::
 
 ::: {.callout-note title="Technical Point 19.2: Positivity and Consistency for Time-Varying Treatments"}
 **Sequential positivity:**
 
-$$\text{if } f_{\bar{A}_{k-1}, \bar{L}_k}(\bar{a}_{k-1}, \bar{l}_k) \neq 0,
-\text{ then } f_{A_k \mid \bar{A}_{k-1}, \bar{L}_k}(a_k \mid \bar{a}_{k-1}, \bar{l}_k) > 0
-\text{ for all } \bar{a}_k, \bar{l}_k.$$
+$$\text{if } f_{\trthist{k-1}, \covhist{k}}(\trtvalhist{k-1}, \covvalhist{k}) \neq 0,
+\text{ then } f_{A_k \mid \trthist{k-1}, \covhist{k}}(a_k \mid \trtvalhist{k-1}, \covvalhist{k}) > 0
+\text{ for all } \trtvalhist{k}, \covvalhist{k}.$$
 
 It holds in a sequentially randomized experiment (@def-seq-randomized) if the randomization probabilities
 are never 0 or 1, whatever the past history.
 For a particular strategy $g$, it need hold only for treatment histories compatible with $g$,
-i.e., $a_k = g(\bar{a}_{k-1}, \bar{l}_k)$ for each $k$.
+i.e., $a_k = g(\trtvalhist{k-1}, \covvalhist{k})$ for each $k$.
 
 **Sequential consistency:**
 
 $$Y^{\bar{a}} = Y^{\bar{a}^*} \text{ if } \bar{a}^* = \bar{a};
 \quad Y^{\bar{a}} = Y \text{ if } \bar{A} = \bar{a};
-\quad \bar{L}_k^{\bar{a}} = \bar{L}_k^{\bar{a}^*} \text{ if } \bar{a}^*_{k-1} = \bar{a}_{k-1};
-\quad \bar{L}_k^{\bar{a}} = \bar{L}_k \text{ if } \bar{A}_{k-1} = \bar{a}_{k-1},$$
+\quad \covhist{k}^{\bar{a}} = \covhist{k}^{\bar{a}^*} \text{ if } \bar{a}^*_{k-1} = \trtvalhist{k-1};
+\quad \covhist{k}^{\bar{a}} = \covhist{k} \text{ if } \trthist{k-1} = \trtvalhist{k-1},$$
 
-where $\bar{L}_k^{\bar{a}}$ is the counterfactual covariate history through $k$ under $\bar{a}$.
+where $\covhist{k}^{\bar{a}}$ is the counterfactual covariate history through $k$ under $\bar{a}$.
 Weaker conditions suffice for identification
 ("if $\bar{A} = \bar{a}$ then $Y^{\bar{a}} = Y$" for static strategies;
-"if $A_k = g_k(\bar{A}_{k-1}, \bar{L}_k)$ at each $k$ then $Y^g = Y$" for dynamic ones),
+"if $A_k = g_k(\trthist{k-1}, \covhist{k})$ at each $k$ then $Y^g = Y$" for dynamic ones),
 but the book always accepts the stronger sequential version.
 If "treat in month $k$" and "do not treat in month $k$" are sufficiently well defined at all $k$,
 so are all static and dynamic strategies built from them.
@@ -619,7 +619,7 @@ so are all static and dynamic strategies built from them.
 The backdoor criterion of Chapter 7 generalizes to time-varying treatments.
 For static strategies, a sufficient condition for identification
 (given sequential positivity and consistency) is that,
-**for every $k$, conditioning on $(\bar{A}_{k-1}, \bar{L}_k)$ blocks every backdoor path between $A_k$ and $Y$
+**for every $k$, conditioning on $(\trthist{k-1}, \covhist{k})$ blocks every backdoor path between $A_k$ and $Y$
 that does not pass through a later treatment**.
 :::
 
@@ -672,12 +672,12 @@ Given a causal DAG and a static strategy $\bar{a} = (a_0, \ldots, a_K)$:
 1. Split each treatment node $A_k$ into two halves.
    The right half is the value $a_k$ set by the intervention;
    the left half is the treatment that would be observed after intervening on all *earlier* treatments,
-   $A_k^{\bar{a}_{k-1}}$ (for $k = 0$, simply $A_0$).
+   $A_k^{\trtvalhist{k-1}}$ (for $k = 0$, simply $A_0$).
 2. Rewire the arrows: arrows into a treatment point into its left half;
    arrows out of a treatment leave from its right half.
 3. Relabel every descendant of a treatment node by its counterfactual,
    with a superscript listing the interventions on the treatments that precede it:
-   a covariate $L_k$ becomes $L_k^{\bar{a}_{k-1}}$, and the outcome $Y$ becomes $Y^{\bar{a}}$.
+   a covariate $L_k$ becomes $L_k^{\trtvalhist{k-1}}$, and the outcome $Y$ becomes $Y^{\bar{a}}$.
 
 :::
 
@@ -747,7 +747,7 @@ then $Y^{a_0, a_1} \ind A_1 \mid A_0 = a_0, L_1$.
 
 **Static sequential exchangeability** holds for a given static strategy $\bar{a}$ if
 
-$$Y^{\bar{a}} \ind A_k \mid \bar{A}_{k-1} = \bar{a}_{k-1}, \bar{L}_k
+$$Y^{\bar{a}} \ind A_k \mid \trthist{k-1} = \trtvalhist{k-1}, \covhist{k}
 \quad \text{for } k = 0, 1, \ldots, K.$$
 :::
 
@@ -790,21 +790,21 @@ $$Y^{\bar{a}} \ind A_k \mid \bar{A}_{k-1} = \bar{a}_{k-1}, \bar{L}_k
 For a sequentially randomized experiment with times $k = 0, 1, \ldots, K$
 (a longer version of Figure 19.7), the SWIG gives
 
-$$\paren{Y^{\bar{a}}, \underline{L}_{k+1}^{\bar{a}}} \ind A_k^{\bar{a}_{k-1}}
-\mid \bar{A}_{k-1}^{\bar{a}_{k-2}}, \bar{L}_k^{\bar{a}_{k-1}},$$
+$$\paren{Y^{\bar{a}}, \underline{L}_{k+1}^{\bar{a}}} \ind A_k^{\trtvalhist{k-1}}
+\mid \trthist{k-1}^{\trtvalhist{k-2}}, \covhist{k}^{\trtvalhist{k-1}},$$
 
 where $\underline{L}_{k+1}^{\bar{a}}$ is the counterfactual covariate history
 from $k + 1$ to the end of follow-up.
-Restricting to $\bar{A}_{k-1}^{\bar{a}_{k-2}} = \bar{a}_{k-1}$ and applying consistency gives
+Restricting to $\trthist{k-1}^{\trtvalhist{k-2}} = \trtvalhist{k-1}$ and applying consistency gives
 
-$$\paren{Y^{\bar{a}}, \underline{L}_{k+1}^{\bar{a}}} \ind A_k \mid \bar{A}_{k-1} = \bar{a}_{k-1}, \bar{L}_k.$$
+$$\paren{Y^{\bar{a}}, \underline{L}_{k+1}^{\bar{a}}} \ind A_k \mid \trthist{k-1} = \trtvalhist{k-1}, \covhist{k}.$$
 
 When this holds for all $\bar{a}$, the book calls it sequential exchangeability;
 these notes call it **joint sequential exchangeability**,
 to keep it distinct from @def-seq-exchangeability, which it implies.
 Although it mentions only static strategies, it is equivalent to
 
-$$\paren{Y^{g}, \underline{L}_{k+1}^{g}} \ind A_k \mid \bar{A}_{k-1} = g(\bar{A}_{k-2}, \bar{L}_{k-1}), \bar{L}_k
+$$\paren{Y^{g}, \underline{L}_{k+1}^{g}} \ind A_k \mid \trthist{k-1} = g(\trthist{k-2}, \covhist{k-1}), \covhist{k}
 \quad \text{for all } g,$$
 
 and so, with positivity and consistency, it identifies the outcome and covariate distributions
@@ -817,9 +817,9 @@ A sequentially randomized trial implies still stronger conditions,
 which cannot be read from SWIGs and are not needed for identification, e.g.
 
 - $\cb{\paren{Y^{\bar{a}}, \underline{L}_{k+1}^{\bar{a}}}; \text{all } \bar{a}}
-  \ind A_k \mid \bar{A}_{k-1}, \bar{L}_k$;
+  \ind A_k \mid \trthist{k-1}, \covhist{k}$;
 - **full sequential exchangeability**:
-  $\paren{Y^{\bar{\mathcal{A}}}, \bar{L}^{\bar{\mathcal{A}}}} \ind A_k \mid \bar{A}_{k-1}, \bar{L}_k$,
+  $\paren{Y^{\bar{\mathcal{A}}}, \bar{L}^{\bar{\mathcal{A}}}} \ind A_k \mid \trthist{k-1}, \covhist{k}$,
   where $\bar{\mathcal{A}}$ is the set of all $2^{K+1}$ static strategies,
   and $Y^{\bar{\mathcal{A}}}$, $\bar{L}^{\bar{\mathcal{A}}}$ the corresponding sets of counterfactuals
   (by analogy with Technical Point 2.1).
@@ -829,7 +829,7 @@ which cannot be read from SWIGs and are not needed for identification, e.g.
 We write $\underline{L}_{k+1}$ (an underbar for "from $k + 1$ onward")
 and $\bar{\mathcal{A}}$ for the set of static strategies;
 the book's typography for these symbols differs slightly.
-In the dynamic version we write the conditioning history as $g(\bar{A}_{k-2}, \bar{L}_{k-1})$,
+In the dynamic version we write the conditioning history as $g(\trthist{k-2}, \covhist{k-1})$,
 matching @def-seq-exchangeability.
 :::
 
@@ -972,7 +972,7 @@ This explanation is ours; the book states only the conclusion.
 ::: {.callout-warning title="Sequential Exchangeability Is Never Guaranteed"}
 No form of sequential exchangeability is guaranteed in an observational study.
 Approximating it requires expert knowledge
-to decide which time-varying variables $\bar{L}_k$ to measure
+to decide which time-varying variables $\covhist{k}$ to measure
 (in HIV: CD4 count, viral load, symptoms).
 Whether the measured covariates suffice can never be known with certainty,
 but causal diagrams such as Figures 19.1-19.4 organize our beliefs.
@@ -1014,18 +1014,18 @@ Now consider the long diagram over all times $k = 0, 1, 2, \ldots$,
 in which each $L_k$ affects later treatments $A_k, A_{k+1}, \ldots$
 and shares unmeasured causes $U_k$ with $Y$.
 To estimate the effects of strategies defined by interventions on $A_0, A_1, A_2, \ldots$,
-we must condition at each $k$ on the covariate history $\bar{L}_k$, together with $\bar{A}_{k-1}$,
+we must condition at each $k$ on the covariate history $\covhist{k}$, together with $\trthist{k-1}$,
 to block the backdoor paths between $A_k$ and $Y$.
 
 ::: {#def-tv-confounders}
 ## Time-varying confounders
 
-Covariates $\bar{L}_k$ that, together with $\bar{A}_{k-1}$,
+Covariates $\covhist{k}$ that, together with $\trthist{k-1}$,
 are needed at each time $k$ to block the backdoor paths between $A_k$ and $Y$
 are **time-varying confounders** for the effect of $\bar{A}$ on $Y$.
 :::
 
-- No unmeasured confounding for $\bar{A}$ requires that $\bar{L}_k$ be measured for everyone.
+- No unmeasured confounding for $\bar{A}$ requires that $\covhist{k}$ be measured for everyone.
 - Time-varying confounders are sometimes called **time-dependent confounders**.
 
 ::: {.callout-warning title="Measuring the Confounders Is Not Enough"}
@@ -1057,7 +1057,7 @@ Assume no selection bias.
 
 A sufficient condition for no time-varying confounding is
 unconditional sequential exchangeability (@def-unconditional-seq-exchangeability),
-$Y^{\bar{a}} \ind A_k \mid \bar{A}_{k-1} = \bar{a}_{k-1}$,
+$Y^{\bar{a}} \ind A_k \mid \trthist{k-1} = \trtvalhist{k-1}$,
 as in Figure 19.1.
 That diagram can in fact be pruned to $A_0$, $A_1$, and $Y$:
 $L_1$ is not a common cause of two nodes, so drop it;
@@ -1086,16 +1086,16 @@ and it is that feedback that makes conventional adjustment fail.
   under two **treatment strategies**;
   it is not uniquely defined until the strategies are specified.
 - Strategies are **static** ($\bar{a}$, not depending on covariates)
-  or **dynamic** ($g$, depending on the evolving $\bar{L}_k$) (@def-dynamic-static),
+  or **dynamic** ($g$, depending on the evolving $\covhist{k}$) (@def-dynamic-static),
   and deterministic or random.
 - In a **sequentially randomized experiment** (@def-seq-randomized), treatment at each $k$ is randomized
-  given $(\bar{A}_{k-1}, \bar{L}_k)$;
+  given $(\trthist{k-1}, \covhist{k})$;
   such randomization implies **sequential exchangeability** (@def-seq-exchangeability).
 - Identification of all strategies is guaranteed by sequential exchangeability, sequential positivity, and consistency.
 - **Static sequential exchangeability** (@def-static-seq-exchangeability) is weaker
   and identifies only static strategies;
   SWIGs show when a diagram (e.g., Figure 19.6) supports static but not dynamic strategies.
-- **Time-varying confounders** are covariates $\bar{L}_k$ needed at each time to block backdoor paths;
+- **Time-varying confounders** are covariates $\covhist{k}$ needed at each time to block backdoor paths;
   Chapter 20 explains why conventional methods may fail to adjust for them
   when there is treatment-confounder feedback.
 
