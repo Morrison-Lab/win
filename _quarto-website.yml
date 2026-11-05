@@ -1,6 +1,11 @@
 project:
   type: website
   output-dir: _site
+  # Writes chapters/dependency-graph.json for chapters/dependency-graph.js (#129).
+  pre-render: python3 tools/build_dependency_graph.py --site win --out chapters/dependency-graph.json
+  resources:
+    - chapters/dependency-graph.js
+    - chapters/dependency-graph.json
   render:
     - "*.qmd"
     - "chapters/*.qmd"
@@ -172,6 +177,8 @@ format:
     theme:
       light: cosmo
       dark: darkly
+    include-after-body:
+      - text: '<script>(function(){var s=document.querySelector("script[src*=site_libs]");var r=s?s.getAttribute("src").split("site_libs/")[0]:"";var e=document.createElement("script");e.src=r+"chapters/dependency-graph.js";document.body.appendChild(e);})();</script>'
     css: styles.css
     toc: true
     toc-location: right
