@@ -82,10 +82,10 @@ $$\sum_{l_1} \E{Y \mid A_0 = a_0, A_1 = a_1, L_1 = l_1} \, f(l_1 \mid a_0).$$
 For $K+1$ time points $k = 0, \ldots, K$ and strategy $\bar{a}$, it is
 
 $$\sum_{\bar{l}} \E{Y \mid \bar{A} = \bar{a}, \bar{L} = \bar{l}}
-\prod_{k=0}^{K} f\paren{l_k \mid \bar{a}_{k-1}, \bar{l}_{k-1}},$$
+\prod_{k=0}^{K} f\paren{l_k \mid \trtvalhist{k-1}, \covvalhist{k-1}},$$
 
 where the sum is over all covariate histories $\bar{l}$.
-Under sequential exchangeability for $Y^{\bar{a}}$ given $(\bar{L}_k, \bar{A}_{k-1})$ at each $k$,
+Under sequential exchangeability for $Y^{\bar{a}}$ given $(\covhist{k}, \trthist{k-1})$ at each $k$,
 positivity, and consistency, the g-formula equals $\E{Y^{\bar{a}}}$.
 :::
 
@@ -208,14 +208,14 @@ when the estimates come from parametric models, the **parametric g-formula**.
 
 **Random strategies**: under sequential exchangeability the g-formula also handles a random strategy $f^{int}$,
 such as "at each $k$, independently treat with probability 0.3"
-(so $f^{int}(1 \mid \bar{a}_{k-1}, \bar{l}_k) = 0.3$).
+(so $f^{int}(1 \mid \trtvalhist{k-1}, \covvalhist{k}) = 0.3$).
 The general expression is
 
 $$\sum_{\bar{a}, \bar{l}} \E{Y \mid \bar{A} = \bar{a}, \bar{L} = \bar{l}}
-\prod_{k=0}^{K} f\paren{l_k \mid \bar{a}_{k-1}, \bar{l}_{k-1}}
-\prod_{k=0}^{K} f^{int}\paren{a_k \mid \bar{a}_{k-1}, \bar{l}_k}.$$
+\prod_{k=0}^{K} f\paren{l_k \mid \trtvalhist{k-1}, \covvalhist{k-1}}
+\prod_{k=0}^{K} f^{int}\paren{a_k \mid \trtvalhist{k-1}, \covvalhist{k}}.$$
 
-Replacing $f^{int}$ by the observed $f(a_k \mid \bar{a}_{k-1}, \bar{l}_k)$ gives the observed mean of $Y$.
+Replacing $f^{int}$ by the observed $f(a_k \mid \trtvalhist{k-1}, \covvalhist{k})$ gives the observed mean of $Y$.
 For a deterministic strategy, $f^{int}$ is 1 for the mandated treatment values and 0 otherwise,
 so the $f^{int}$ factors and the sum over $\bar{a}$ can be dropped.
 :::
@@ -224,7 +224,7 @@ so the $f^{int}$ factors and the sum over $\bar{a}$ can be dropped.
 ::: {.callout-note title="Technical Point 21.1: The g-formula Density"}
 For a static strategy $\bar{a}$,
 the g-formula density of $(Y, \bar{L})$ at $(y, \bar{l})$ is
-$f(y \mid \bar{a}_K, \bar{l}_K) \prod_{k=0}^{K} f(l_k \mid \bar{a}_{k-1}, \bar{l}_{k-1})$,
+$f(y \mid \trtvalhist{K}, \covvalhist{K}) \prod_{k=0}^{K} f(l_k \mid \trtvalhist{k-1}, \covvalhist{k-1})$,
 and integrating out $\bar{l}$ gives the g-formula density of $Y$.
 For a deterministic dynamic strategy $g$, replace each $a_k$
 by the value $a_k^g$ that $g$ assigns given the simulated history.
@@ -253,11 +253,11 @@ given their treatment and covariate history.
 
 With $A_{-1} \equiv 0$ by definition, the **nonstabilized** IP weights are
 
-$$W^{\bar{A}} = \prod_{k=0}^{K} \frac{1}{f\paren{A_k \mid \bar{A}_{k-1}, \bar{L}_k}},$$
+$$W^{\bar{A}} = \prod_{k=0}^{K} \frac{1}{f\paren{A_k \mid \trthist{k-1}, \covhist{k}}},$$
 
 and the **stabilized** IP weights are
 
-$$SW^{\bar{A}} = \prod_{k=0}^{K} \frac{f\paren{A_k \mid \bar{A}_{k-1}}}{f\paren{A_k \mid \bar{A}_{k-1}, \bar{L}_k}}.$$
+$$SW^{\bar{A}} = \prod_{k=0}^{K} \frac{f\paren{A_k \mid \trthist{k-1}}}{f\paren{A_k \mid \trthist{k-1}, \covhist{k}}}.$$
 
 For $K = 1$: $W^{\bar{A}} = \dfrac{1}{f(A_0 \mid L_0)} \times \dfrac{1}{f(A_1 \mid A_0, L_0, L_1)}$.
 :::
@@ -286,12 +286,12 @@ and $\E{Y^{\bar{a}}} - \E{Y^{\bar{a}'}} = \Expfc{ps}{Y \mid \bar{A} = \bar{a}} -
 In a true sequentially randomized trial the treatment probabilities are known by design,
 so nonstabilized-weight estimates are unbiased;
 in observational studies they must be estimated,
-for example by a pooled logistic model for $\Pr[A_k = 1 \mid \bar{A}_{k-1}, \bar{L}_k]$
+for example by a pooled logistic model for $\Pr[A_k = 1 \mid \trthist{k-1}, \covhist{k}]$
 that includes functions of time $k$.
 
 ::: {.callout-warning title="The Denominator Model Must Be Correct"}
 A misspecified denominator model biases the estimate;
-a misspecified numerator model for $f(A_k \mid \bar{A}_{k-1})$ does not.
+a misspecified numerator model for $f(A_k \mid \trthist{k-1})$ does not.
 :::
 :::
 
@@ -411,7 +411,7 @@ $\E{Y^{\bar{a}} \mid V} = \beta_0 + \beta_1 \mathrm{cum}(\bar{a}) + \beta_2 V + 
 Its parameters are estimated by fitting the associational model
 $\E{Y \mid \bar{A}, V} = \theta_0 + \theta_1 \mathrm{cum}(\bar{A}) + \theta_2 V + \theta_3 \mathrm{cum}(\bar{A}) V$
 by weighted least squares with $W^{\bar{A}}$ or, better,
-$SW^{\bar{A}}(V) = \prod_{k=0}^{K} f(A_k \mid \bar{A}_{k-1}, V) / f(A_k \mid \bar{A}_{k-1}, \bar{L}_k)$.
+$SW^{\bar{A}}(V) = \prod_{k=0}^{K} f(A_k \mid \trthist{k-1}, V) / f(A_k \mid \trthist{k-1}, \covhist{k})$.
 :::
 
 ---
@@ -498,17 +498,17 @@ is a doubly robust estimator of $\E{Y^{a=1}} - \E{Y^{a=0}}$.
 
 To estimate $\E{Y^{\bar{a} = \bar{1}}}$ ("always treated"):
 
-1. **Treatment model**: fit a model $\pi_k(\bar{L}_k; \alpha)$ for
-   $\Pr[A_k = 1 \mid \bar{A}_{k-1} = \bar{1}_{k-1}, \bar{L}_k]$, pooled over persons and times,
+1. **Treatment model**: fit a model $\pi_k(\covhist{k}; \alpha)$ for
+   $\Pr[A_k = 1 \mid \trthist{k-1} = \bar{1}_{k-1}, \covhist{k}]$, pooled over persons and times,
    using only individuals treated through $k - 1$.
    For those treated through $m$, compute the time-varying weights
    $\hat{W}^{\bar{1}_m} = \prod_{k=0}^{m} 1/\hat{\pi}_k$.
 2. **Sequential outcome models**: for $m = K, K-1, \ldots, 0$,
-   among individuals treated through $m$, fit a model $b_m(\bar{L}_m; \beta_m)$
+   among individuals treated through $m$, fit a model $b_m(\covhist{m}; \beta_m)$
    that includes $\hat{W}^{\bar{1}_m}$ as a covariate.
    The time-$K$ model has dependent variable $Y$;
    the time-$m$ model, $m < K$, has as dependent variable the predictions
-   $\hat{B}_{m+1} = b_{m+1}(\bar{L}_{m+1}; \hb_{m+1})$ from the time-$(m+1)$ model.
+   $\hat{B}_{m+1} = b_{m+1}(\covhist{m+1}; \hb_{m+1})$ from the time-$(m+1)$ model.
 3. **Average**: estimate $\E{Y^{\bar{a} = \bar{1}}}$ by the sample average of $\hat{B}_0$ over all individuals.
 
 Repeat with $\bar{a} = \bar{0}$ for "never treated";
@@ -519,7 +519,7 @@ the difference estimates the average causal effect.
 
 ::: {.callout-tip title="Choosing the Sequential Outcome Models"}
 For a binary $Y$, the time-$m$ model can be logistic,
-$\expit(\gamma_m X_m + \varsigma_m \hat{W}^{\bar{1}_m})$ with $X_m$ a function of $\bar{L}_m$:
+$\expit(\gamma_m X_m + \varsigma_m \hat{W}^{\bar{1}_m})$ with $X_m$ a function of $\covhist{m}$:
 although $\hat{B}_{m+1}$ is not 0 or 1, it lies in $[0, 1]$.
 For a continuous $Y$, use a linear model [@hernan2020causal, p. 288].
 :::
@@ -626,14 +626,14 @@ to become more common as software matures, especially for failure-time outcomes.
 A **structural nested mean model** (SNMM) for a time-varying treatment
 specifies, for each $k = 0, \ldots, K$,
 
-$$\E{Y^{\bar{a}_{k-1}, a_k, \underline{0}_{k+1}} - Y^{\bar{a}_{k-1}, \underline{0}_k}
-\mid \bar{L}_k^{\bar{a}_{k-1}} = \bar{l}_k, \bar{A}_{k-1} = \bar{a}_{k-1}, A_k = a_k}
-= a_k \, \gamma_k\paren{\bar{a}_{k-1}, \bar{l}_k, \beta},$$
+$$\E{Y^{\trtvalhist{k-1}, a_k, \underline{0}_{k+1}} - Y^{\trtvalhist{k-1}, \underline{0}_k}
+\mid \covhist{k}^{\trtvalhist{k-1}} = \covvalhist{k}, \trthist{k-1} = \trtvalhist{k-1}, A_k = a_k}
+= a_k \, \gamma_k\paren{\trtvalhist{k-1}, \covvalhist{k}, \beta},$$
 
-where $(\bar{a}_{k-1}, a_k, \underline{0}_{k+1})$ follows $\bar{a}_{k-1}$ through $k - 1$, gives $a_k$ at $k$,
+where $(\trtvalhist{k-1}, a_k, \underline{0}_{k+1})$ follows $\trtvalhist{k-1}$ through $k - 1$, gives $a_k$ at $k$,
 and gives no treatment from $k + 1$ to $K$;
-$\gamma_k(\bar{a}_{k-1}, \bar{l}_k, \psi^\dagger)$ is a known function of past treatment, covariate history, and a parameter value $\psi^\dagger$,
-with $\gamma_k(\bar{a}_{k-1}, \bar{l}_k, 0) = 0$;
+$\gamma_k(\trtvalhist{k-1}, \covvalhist{k}, \psi^\dagger)$ is a known function of past treatment, covariate history, and a parameter value $\psi^\dagger$,
+with $\gamma_k(\trtvalhist{k-1}, \covvalhist{k}, 0) = 0$;
 and $\beta$ is the unknown true value of that parameter.
 :::
 
@@ -735,7 +735,7 @@ $$
 ::: {#rem-candidate-counterfactuals-true-psi}
 ## Candidate counterfactuals at the true parameter
 
-When $\psi^\dagger = \psi$, $H_k(\psi^\dagger)$ equals the counterfactual $Y^{\bar{A}_{k-1}, \bar{0}_k}$:
+When $\psi^\dagger = \psi$, $H_k(\psi^\dagger)$ equals the counterfactual $Y^{\trthist{k-1}, \bar{0}_k}$:
 observed treatment through $k - 1$ and no treatment afterwards.
 Sequential exchangeability then says $H_k(\psi)$ is independent of $A_k$ given the past.
 :::
@@ -787,7 +787,7 @@ in agreement with the g-formula and IP weighting
 
 The candidate counterfactuals generalize to
 
-$$H_k(\psi^\dagger) = Y - \sum_{j=k}^{K} A_j \, \gamma_j\paren{\bar{A}_{j-1}, \bar{L}_j, \psi^\dagger}.$$
+$$H_k(\psi^\dagger) = Y - \sum_{j=k}^{K} A_j \, \gamma_j\paren{\trthist{j-1}, \covhist{j}, \psi^\dagger}.$$
 :::
 
 ::: {.notes}
@@ -797,7 +797,7 @@ $$H_k(\psi^\dagger) = Y - \sum_{j=k}^{K} A_j \, \gamma_j\paren{\bar{A}_{j-1}, \b
 
 Suppose the SNMM of @def-snmm-tv is correctly specified and consistency holds.
 Even when local rank preservation is false (as it essentially always is when treatment has an effect),
-$\E{H_k(\beta) \mid \bar{A}_k, \bar{L}_k} = \E{Y^{\bar{A}_{k-1}, \underline{0}_k} \mid \bar{A}_k, \bar{L}_k}$
+$\E{H_k(\beta) \mid \trthist{k}, \covhist{k}} = \E{Y^{\trthist{k-1}, \underline{0}_k} \mid \trthist{k}, \covhist{k}}$
 and $\E{H_0(\beta)} = \E{Y^{\bar{0}}}$.
 Hence, if $\hb$ is consistent for $\beta$,
 $\E{Y^{\bar{0}}}$ is consistently estimated by the sample average of $H_0(\hb)$
@@ -817,8 +817,8 @@ and $\beta_1 + \beta_2 k + \beta_3 a_{k-1} + \beta_4 l_k + \beta_5 l_k a_{k-1}$
 
 ::: {.callout-note title="Technical Point 21.7: Marginal Structural Models and Structural Nested Models"}
 An SNMM is a semiparametric MSM
-if and only if $\gamma_k$ does not depend on $\bar{l}_k$;
-the implied MSM is $\E{Y^{\bar{a}}} = \alpha_0 + \sum_{k=0}^{K} a_k \gamma_k(\bar{a}_{k-1}, \beta)$ with $\alpha_0 = \E{Y^{\bar{0}}}$.
+if and only if $\gamma_k$ does not depend on $\covvalhist{k}$;
+the implied MSM is $\E{Y^{\bar{a}}} = \alpha_0 + \sum_{k=0}^{K} a_k \gamma_k(\trtvalhist{k-1}, \beta)$ with $\alpha_0 = \E{Y^{\bar{0}}}$.
 Such an SNMM additionally assumes no effect modification by past covariates.
 If that assumption holds, g-estimation is more efficient than IP weighting;
 if it fails, g-estimation is biased while IP weighting of the MSM is not:
@@ -830,13 +830,13 @@ a variance-bias trade-off.
 ::: {#alg-g-estimation-one-parameter}
 ## G-estimation of a one-parameter SNMM
 
-Take $\gamma_k(\bar{a}_{k-1}, \bar{l}_k, \psi^\dagger) = \psi^\dagger$ (true value $\beta_1$), so $H_k(\psi^\dagger) = Y - \sum_{j=k}^{K} A_j \psi^\dagger$.
+Take $\gamma_k(\trtvalhist{k-1}, \covvalhist{k}, \psi^\dagger) = \psi^\dagger$ (true value $\beta_1$), so $H_k(\psi^\dagger) = Y - \sum_{j=k}^{K} A_j \psi^\dagger$.
 
 1. For each $\psi^\dagger$ on a grid from $\psi_{low}$ to $\psi_{up}$ (e.g., steps of 0.1),
    compute $H_k(\psi^\dagger)$ for every person and time.
 2. Fit the pooled logistic model
-   $\logit \Pr[A_k = 1 \mid H_k(\psi^\dagger), \bar{L}_k, \bar{A}_{k-1}] = \alpha_0 + \alpha_1 H_k(\psi^\dagger) + \alpha_2 W_k$,
-   where $W_k = w_k(\bar{L}_k, \bar{A}_{k-1})$ and each person contributes $K + 1$ rows.
+   $\logit \Pr[A_k = 1 \mid H_k(\psi^\dagger), \covhist{k}, \trthist{k-1}] = \alpha_0 + \alpha_1 H_k(\psi^\dagger) + \alpha_2 W_k$,
+   where $W_k = w_k(\covhist{k}, \trthist{k-1})$ and each person contributes $K + 1$ rows.
 3. The g-estimate $\hb$ is the $\psi^\dagger$ with $\hat{\alpha}_1$ closest to 0;
    the 95% confidence interval is the set of $\psi^\dagger$ with $P > 0.05$ for $\alpha_1 = 0$.
 
@@ -862,10 +862,10 @@ Let $\hb$ be the solution of the estimating equation of @rem-g-estimating-equati
 (equivalently, the limit of the grid-search estimate of @alg-g-estimation-one-parameter as the grid step goes to 0).
 Then $\hb$ is consistent for the true $\beta_1$ if
 (i) the one-parameter SNMM of @alg-g-estimation-one-parameter,
-$\gamma_k(\bar{a}_{k-1}, \bar{l}_k, \beta) = \beta_1$, is correct,
+$\gamma_k(\trtvalhist{k-1}, \covvalhist{k}, \beta) = \beta_1$, is correct,
 (ii) sequential exchangeability for $Y$ holds,
 (iii) consistency holds, $Y^{\bar{A}} = Y$,
-(iv) the treatment model $\logit \Pr[A_k = 1 \mid \bar{L}_k, \bar{A}_{k-1}] = \alpha_0 + \alpha_2 W_k$ is correct, and
+(iv) the treatment model $\logit \Pr[A_k = 1 \mid \covhist{k}, \trthist{k-1}] = \alpha_0 + \alpha_2 W_k$ is correct, and
 (v) $H_k(\psi^\dagger)$ enters the treatment model linearly (Technical Point 14.2).
 :::
 
@@ -897,25 +897,25 @@ Given $\hb$, how to estimate a counterfactual mean depends on the strategy and t
 
 - $\E{Y^{\bar{0}}}$: the sample average of $H_0(\hb)$.
 - If there is no effect modification by past covariates,
-  $\gamma_k(\bar{a}_{k-1}, \bar{l}_k, \beta) = \gamma_k(\bar{a}_{k-1}, \beta)$, and for a static $\bar{a}$
-  $$\hE{Y^{\bar{a}}} = \hE{Y^{\bar{0}}} + \sum_{k=0}^{K} a_k \gamma_k(\bar{a}_{k-1}, \hb).$$
-- If $\gamma_k$ depends on $\bar{l}_k$, or $g$ is dynamic,
-  simulate $L_k$ from a model for $f(l_k \mid \bar{a}_{k-1}, \bar{l}_{k-1})$ (Technical Point 21.9).
+  $\gamma_k(\trtvalhist{k-1}, \covvalhist{k}, \beta) = \gamma_k(\trtvalhist{k-1}, \beta)$, and for a static $\bar{a}$
+  $$\hE{Y^{\bar{a}}} = \hE{Y^{\bar{0}}} + \sum_{k=0}^{K} a_k \gamma_k(\trtvalhist{k-1}, \hb).$$
+- If $\gamma_k$ depends on $\covvalhist{k}$, or $g$ is dynamic,
+  simulate $L_k$ from a model for $f(l_k \mid \trtvalhist{k-1}, \covvalhist{k-1})$ (Technical Point 21.9).
 
 :::
 
 ::: {.callout-note title="Technical Point 21.9: Estimating a Counterfactual Mean After g-estimation of a Structural Nested Mean Model"}
 Estimate $\E{Y^{\bar{0}}}$ by the average of $H_0(\hb)$;
-fit a model for $f(l_k \mid \bar{a}_{k-1}, \bar{l}_{k-1})$;
+fit a model for $f(l_k \mid \trtvalhist{k-1}, \covvalhist{k-1})$;
 simulate covariate histories under $g$;
 and add to $\hE{Y^{\bar{0}}}$ the average over simulations of
-$\sum_{j=0}^{K} a_{v,j} \gamma_j(\bar{a}_{v,j-1}, \bar{l}_{v,j}, \hb)$.
+$\sum_{j=0}^{K} a_{v,j} \gamma_j(\trtvalhist{v,j-1}, \covvalhist{v,j}, \hb)$.
 The result is consistent for $\E{Y^g}$ if the covariate model and the SNMM are correct
-and either the treatment model or the outcome model $\E{Y^{\bar{A}_{k-1}, \underline{0}_k} \mid \bar{L}_k, \bar{A}_{k-1}}$ is correct.
+and either the treatment model or the outcome model $\E{Y^{\trthist{k-1}, \underline{0}_k} \mid \covhist{k}, \trthist{k-1}}$ is correct.
 Under the null, $\gamma_j(\cdot, \hb)$ converges to 0 whenever $\hb$ is consistent for $\beta = 0$,
 even when the covariate model is wrong.
 So, under the identifiability conditions, this procedure **preserves the null**, unlike the parametric g-formula,
-provided $\Pr[A_k = 1 \mid \bar{L}_k, \bar{A}_{k-1}]$ is known (as in a sequentially randomized experiment)
+provided $\Pr[A_k = 1 \mid \covhist{k}, \trthist{k-1}]$ is known (as in a sequentially randomized experiment)
 or either the treatment model or the outcome model is correct at each $k$
 [@hernan2020causal, p. 297].
 :::
@@ -953,7 +953,7 @@ where $C_m = 0$ if the individual is still uncensored at $m$ and 1 otherwise.
 With time-varying censoring, the g-formula of @def-g-formula-tv for strategy $\bar{a}$ becomes
 
 $$\sum_{\bar{l}} \E{Y \mid \bar{C} = \bar{0}, \bar{A} = \bar{a}, \bar{L} = \bar{l}}
-\prod_{k=0}^{K} f\paren{l_k \mid \bar{c}_k = \bar{0}, \bar{a}_{k-1}, \bar{l}_{k-1}}.$$
+\prod_{k=0}^{K} f\paren{l_k \mid \censvalhist{k} = \bar{0}, \trtvalhist{k-1}, \covvalhist{k-1}}.$$
 :::
 
 ::: {#prp-g-formula-censoring-identifies}
@@ -984,9 +984,9 @@ when $C$ is a collider on a path between $A$ and $Y$, or a descendant of one (Ch
 Fit, for example, $\E{Y \mid \bar{A}, \bar{C} = \bar{0}} = \theta_0 + \theta_1 \mathrm{cum}(\bar{A})$
 in the pseudo-population created by $W^{\bar{A}} \times W^{\bar{C}}$ or $SW^{\bar{A}} \times SW^{\bar{C}}$, where
 
-$$W^{\bar{C}} = \prod_{k=1}^{K+1} \frac{1}{\Pr\sb{C_k = 0 \mid C_{k-1} = 0, \bar{A}_{k-1}, \bar{L}_{k-1}}},
+$$W^{\bar{C}} = \prod_{k=1}^{K+1} \frac{1}{\Pr\sb{C_k = 0 \mid C_{k-1} = 0, \trthist{k-1}, \covhist{k-1}}},
 \qquad
-SW^{\bar{C}} = \prod_{k=1}^{K+1} \frac{\Pr\sb{C_k = 0 \mid C_{k-1} = 0, \bar{A}_{k-1}}}{\Pr\sb{C_k = 0 \mid C_{k-1} = 0, \bar{A}_{k-1}, \bar{L}_{k-1}}}.$$
+SW^{\bar{C}} = \prod_{k=1}^{K+1} \frac{\Pr\sb{C_k = 0 \mid C_{k-1} = 0, \trthist{k-1}}}{\Pr\sb{C_k = 0 \mid C_{k-1} = 0, \trthist{k-1}, \covhist{k-1}}}.$$
 
 Numerator and denominator are estimated with separate logistic models.
 :::
@@ -1002,12 +1002,12 @@ Numerator and denominator are estimated with separate logistic models.
   and censoring is abolished.
 - **Stabilized** weights keep the size **after** censoring
   (the same proportion censored at each $k$),
-  but make censoring occur at random with respect to $\bar{L}_k$:
+  but make censoring occur at random with respect to $\covhist{k}$:
   selection, but no selection bias.
 - With nonstabilized weights the pseudo-population has no arrows from $L_k$ or $A_k$ into later $C_m$ ($m > k$).
   With stabilized weights it has no arrows from $L_k$ into later $C_m$,
   but censoring may still depend on past treatment,
-  because the numerator conditions on $\bar{A}_{k-1}$
+  because the numerator conditions on $\trthist{k-1}$
   (as for $SW^C$ in Chapter 12).
   Either way, censoring no longer depends on the measured covariate history,
   so IP weighting can estimate the joint effect of $(\bar{A}, \bar{C})$
@@ -1041,7 +1041,7 @@ not to the numerator.
 *Fact-check note*: the book states that "regardless of the type of IP weights used",
 the pseudo-population has no arrows from $L_k$ and $A_k$ into future $C_m$ [@hernan2020causal, p. 299].
 For stabilized weights this holds for $L_k$ only:
-their numerator $\Pr[C_k = 0 \mid C_{k-1} = 0, \bar{A}_{k-1}]$ keeps the dependence of censoring on past treatment,
+their numerator $\Pr[C_k = 0 \mid C_{k-1} = 0, \trthist{k-1}]$ keeps the dependence of censoring on past treatment,
 which is harmless because the analysis conditions on $\bar{A}$.
 :::
 :::
