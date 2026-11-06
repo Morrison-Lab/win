@@ -6,14 +6,14 @@
 <script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
 <link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
 <link href="../site_libs/quarto-html/light-border.css" rel="stylesheet">
-<link href="../site_libs/quarto-html/quarto-syntax-highlighting-bf27225e3a48a9273f3daa8f8e829971.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-63b5708e65d6cd79cd7618c58d0c21e7.css" rel="stylesheet" id="quarto-text-highlighting-styles">
 <link href="../site_libs/quarto-contrib/code-language-labels-1.0.2/code-language-labels.css" rel="stylesheet"><meta charset="utf-8">
-  <meta name="generator" content="quarto-1.10.19">
+  <meta name="generator" content="quarto-1.11.9">
 
   <title>What If? - Lecture Notes – Chapter 17: Causal Survival Analysis</title>
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, minimal-ui">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="stylesheet" href="../site_libs/revealjs/dist/reset.css">
   <link rel="stylesheet" href="../site_libs/revealjs/dist/reveal.css">
   <style>
@@ -54,7 +54,7 @@
     div.csl-indent {
       margin-left: 2em;
     }  </style>
-  <link rel="stylesheet" href="../site_libs/revealjs/dist/theme/quarto-0427d8d92a431aa6a6430e53ec02a470.css">
+  <link rel="stylesheet" href="../site_libs/revealjs/dist/theme/quarto-1ddb21c2f84686f497aff9e1fdc170fd.css">
   <link href="../site_libs/revealjs/plugin/quarto-line-highlight/line-highlight.css" rel="stylesheet">
   <link href="../site_libs/revealjs/plugin/reveal-menu/menu.css" rel="stylesheet">
   <link href="../site_libs/revealjs/plugin/reveal-menu/quarto-menu.css" rel="stylesheet">
@@ -251,7 +251,6 @@
 </ul>
 <p>Many survival analyses summarize the effect by the hazard ratio, treated versus untreated. Fine Point 17.2 explains why that summary is problematic, so the book’s analyses focus on survival and risk instead. Hazards still matter, though: estimating them is often the easiest route to survival and risk.</p>
 </div>
-<div title="Fine Point 17.1: Competing Events">
 <div class="callout callout-note callout-titled callout-style-default">
 <div class="callout-body">
 <div class="callout-title">
@@ -268,7 +267,6 @@
 </ul>
 <p>Other options have drawbacks too. A <strong>composite</strong> outcome (stroke or death) removes the competing event but answers a different question, and a non-null estimate could reflect an effect on either component. Restricting attention to the <strong>principal stratum</strong> of people who would survive under either treatment targets a local effect of the kind seen in Chapter 16, which is hard both to interpret and to estimate.</p>
 <p>No statistical technique resolves the problem, because competing events make the causal estimand itself unclear. Young et al.&nbsp;(2019) review the available approaches and their difficulties, and Stensrud et al.&nbsp;(2020, 2021) propose separable effects (see Technical Point 23.3 of the book).</p>
-</div>
 </div>
 </div>
 </div>
@@ -346,7 +344,6 @@
 <p>Multiplying the fitted values of one minus the hazard over time, separately for each treatment group, gives estimates of the survival <span class="math inline">\(\Pr[D_{k+1} = 0 \mid A = a]\)</span>. These curves (the book’s Figure 17.4) are smoothed versions of the Kaplan-Meier curves of Figure 17.1.</p>
 </div>
 <aside class="notes">
-<div title="The Hazards Model Must Be Correct">
 <div class="callout callout-warning callout-titled callout-style-default">
 <div class="callout-body">
 <div class="callout-title">
@@ -361,7 +358,6 @@
 </div>
 </div>
 </div>
-</div>
 <style type="text/css">
         span.MJX_Assistive_MathML {
           position:absolute!important;
@@ -373,7 +369,6 @@
           overflow: hidden!important;
           display:block!important;
       }</style></aside>
-<div title="Fine Point 17.2: The Hazards of Hazard Ratios">
 <div class="callout callout-note callout-titled callout-style-default">
 <div class="callout-body">
 <div class="callout-title">
@@ -390,8 +385,6 @@
 </div>
 </div>
 </div>
-</div>
-<div title="Fine Point 17.3: Models for Survival Analysis">
 <div class="callout callout-note callout-titled callout-style-default">
 <div class="callout-body">
 <div class="callout-title">
@@ -411,8 +404,6 @@
 </div>
 </div>
 </div>
-</div>
-<div title="Technical Point 17.1: Approximating the Hazard Ratio via a Logistic Model">
 <div class="callout callout-note callout-titled callout-style-default">
 <div class="callout-body">
 <div class="callout-title">
@@ -438,7 +429,6 @@
 </div>
 </div>
 </div>
-</div>
 </section></section>
 <section>
 <section id="why-censoring-matters-pp.-232-234" class="title-slide slide level1 center" data-number="3">
@@ -460,13 +450,12 @@
 </div>
 <p>The NHEFS dataset omits this variable because <span class="math inline">\(C_{k+1} = 0\)</span> for everyone at all <span class="math inline">\(k\)</span> before 120 months; with individual-specific administrative censoring, <span class="math inline">\(C_{k+1}\)</span> switches from 0 to 1 at different times for different people.</p>
 <div id="def-survival-without-censoring" class="theorem definition">
-<p><span class="theorem-title"><strong>Definition 9 (Survival without censoring)</strong></span> The target is the survival curve we would see if no one were censored before <span class="math inline">\(k_\text{end}\)</span>, that is, <span class="math inline">\(\Pr[D_k = 0 \mid A = a]\)</span> with <span class="math inline">\(D_k\)</span> observed even after censoring. In the notation of Chapter 12 this is <span class="math inline">\(\Pr[D^{\bar{c}=0}_k = 0 \mid A = a]\)</span>, where <span class="math inline">\(\bar{c} = (c_1, c_2, \ldots, c_{k_\text{end}})\)</span> and the superscript <span class="math inline">\(\bar{c} = 0\)</span> denotes no censoring; the superscript is dropped when the meaning is clear.</p>
+<p><span class="theorem-title"><strong>Definition 9 (Survival without censoring)</strong></span> The target is the survival curve we would see if no one were censored before <span class="math inline">\(k_\text{end}\)</span>, that is, <span class="math inline">\(\Pr[D_k = 0 \mid A = a]\)</span> with <span class="math inline">\(D_k\)</span> observed even after censoring. In the notation of Chapter 12 this is <span class="math inline">\(\Pr[D^{\bar{c}=0}_{k} = 0 \mid A = a]\)</span>, where <span class="math inline">\(\bar{c} = (c_1, c_2, \ldots, c_{k_\text{end}})\)</span> and the superscript <span class="math inline">\(\bar{c} = 0\)</span> denotes no censoring; the superscript is dropped when the meaning is clear.</p>
 </div>
 <p>To keep things simple, suppose entry dates are effectively random, as they would be if no variable showed a secular trend. Censoring times, and so <span class="math inline">\(C\)</span>, are then independent of both treatment and time of death.</p>
 </section>
 <section id="why-naive-estimation-fails" class="slide level2">
 <h2>Why Naive Estimation Fails</h2>
-<div title="Uncensored Survivors Do Not Estimate Survival">
 <div class="callout callout-warning callout-titled callout-style-default">
 <div class="callout-body">
 <div class="callout-title">
@@ -477,7 +466,6 @@
 </div>
 <div class="callout-content">
 <p>The proportion of people with treatment <span class="math inline">\(a\)</span> who are both alive and uncensored through <span class="math inline">\(k\)</span> does <strong>not</strong> estimate <span class="math inline">\(\Pr[D_k = 0 \mid A = a]\)</span>. It estimates the joint probability <span class="math inline">\(\Pr[C_{k+1} = 0, D_{k+1} = 0 \mid A = a]\)</span> instead.</p>
-</div>
 </div>
 </div>
 </div>
@@ -495,26 +483,25 @@
 <section id="correct-estimation-under-as-if-randomly-assigned-censoring" class="slide level2">
 <h2>Correct Estimation Under As-If Randomly Assigned Censoring</h2>
 <div id="prp-survival-random-censoring" class="theorem proposition">
-<p><span class="theorem-title"><strong>Proposition 2 (Survival under as-if random censoring)</strong></span> Fix a treatment level <span class="math inline">\(a\)</span> with <span class="math inline">\(\Pr[A = a] &gt; 0\)</span> and a time <span class="math inline">\(k \in \{1, \ldots, k_\text{end}\}\)</span>. Suppose the uncensored event indicators start at zero and never revert, that is, <span class="math inline">\(D^{\bar{c}=0}_0 = 0\)</span> for everyone and <span class="math inline">\(D^{\bar{c}=0}_{m-1} = 1\)</span> implies <span class="math inline">\(D^{\bar{c}=0}_m = 1\)</span> for every <span class="math inline">\(m \geq 1\)</span>. Suppose also that, for every <span class="math inline">\(m = 1, \ldots, k\)</span>:</p>
+<p><span class="theorem-title"><strong>Proposition 2 (Survival under as-if random censoring)</strong></span> Fix a treatment level <span class="math inline">\(a\)</span> with <span class="math inline">\(\Pr[A = a] &gt; 0\)</span> and a time <span class="math inline">\(k \in \{1, \ldots, k_\text{end}\}\)</span>. Suppose the uncensored event indicators start at zero and never revert, that is, <span class="math inline">\(D^{\bar{c}=0}_{0} = 0\)</span> for everyone and <span class="math inline">\(D^{\bar{c}=0}_{m-1} = 1\)</span> implies <span class="math inline">\(D^{\bar{c}=0}_{m} = 1\)</span> for every <span class="math inline">\(m \geq 1\)</span>. Suppose also that, for every <span class="math inline">\(m = 1, \ldots, k\)</span>:</p>
 <ul>
-<li><strong>Censoring as if randomly assigned</strong>: given <span class="math inline">\(A\)</span> and survival without censoring through <span class="math inline">\(m - 1\)</span>, being censored by <span class="math inline">\(m\)</span> is independent of the event at <span class="math inline">\(m\)</span> without censoring, <span class="math inline">\(C_m \perp\!\!\!\perp D^{\bar{c}=0}_m \mid A = a, D^{\bar{c}=0}_{m-1} = 0\)</span>;</li>
+<li><strong>Censoring as if randomly assigned</strong>: given <span class="math inline">\(A\)</span> and survival without censoring through <span class="math inline">\(m - 1\)</span>, being censored by <span class="math inline">\(m\)</span> is independent of the event at <span class="math inline">\(m\)</span> without censoring, <span class="math inline">\(C_m \perp\!\!\!\perp D^{\bar{c}=0}_{m} \mid A = a, D^{\bar{c}=0}_{m-1} = 0\)</span>;</li>
 <li><strong>Positivity</strong>: <span class="math inline">\(\Pr[C_m = 0 \mid A = a, D^{\bar{c}=0}_{m-1} = 0] &gt; 0\)</span> and <span class="math inline">\(\Pr[D^{\bar{c}=0}_{m-1} = 0 \mid A = a] &gt; 0\)</span>;</li>
-<li><strong>Consistency</strong>: for anyone with <span class="math inline">\(C_m = 0\)</span>, <span class="math inline">\(D_m = D^{\bar{c}=0}_m\)</span> and <span class="math inline">\(D_{m-1} = D^{\bar{c}=0}_{m-1}\)</span>. This is plausible because <span class="math inline">\(C_m = 0\)</span> implies <span class="math inline">\(C_1 = \cdots = C_m = 0\)</span>: by <a href="#/def-time-varying-censoring-indicator" class="quarto-xref">Definition&nbsp;8</a>, a follow-up that ends at or beyond <span class="math inline">\(m\)</span> also ends at or beyond every earlier month. So these people actually experienced the no-censoring regime through <span class="math inline">\(m\)</span>, and their observed <span class="math inline">\(D_{m-1}\)</span> and <span class="math inline">\(D_m\)</span> are the values that regime would produce.</li>
+<li><strong>Consistency</strong>: for anyone with <span class="math inline">\(C_m = 0\)</span>, <span class="math inline">\(D_m = D^{\bar{c}=0}_{m}\)</span> and <span class="math inline">\(D_{m-1} = D^{\bar{c}=0}_{m-1}\)</span>. This is plausible because <span class="math inline">\(C_m = 0\)</span> implies <span class="math inline">\(C_1 = \cdots = C_m = 0\)</span>: by <a href="#/def-time-varying-censoring-indicator" class="quarto-xref">Definition&nbsp;8</a>, a follow-up that ends at or beyond <span class="math inline">\(m\)</span> also ends at or beyond every earlier month. So these people actually experienced the no-censoring regime through <span class="math inline">\(m\)</span>, and their observed <span class="math inline">\(D_{m-1}\)</span> and <span class="math inline">\(D_m\)</span> are the values that regime would produce.</li>
 </ul>
 <p>Then the survival without censoring (<a href="#/def-survival-without-censoring" class="quarto-xref">Definition&nbsp;9</a>) at <span class="math inline">\(k\)</span> is</p>
-<p><span class="math display">\[\Pr[D^{\bar{c}=0}_k = 0 \mid A = a] = \prod_{m=1}^k \Pr[D_m = 0 \mid D_{m-1} = 0, C_m = 0, A = a]\]</span></p>
+<p><span class="math display">\[\Pr[D^{\bar{c}=0}_{k} = 0 \mid A = a] = \prod_{m=1}^k \Pr[D_m = 0 \mid D_{m-1} = 0, C_m = 0, A = a]\]</span></p>
 </div>
 <div class="proof">
-<p><span class="proof-title"><em>Proof</em>. </span>Applying <a href="#/prp-survival-product-of-hazards" class="quarto-xref">Proposition&nbsp;1</a> to the uncensored event indicators <span class="math inline">\(D^{\bar{c}=0}_m\)</span>, within the stratum <span class="math inline">\(A = a\)</span>, gives</p>
-<p><span class="math display">\[\Pr[D^{\bar{c}=0}_k = 0 \mid A = a] = \prod_{m=1}^k \Pr[D^{\bar{c}=0}_m = 0 \mid D^{\bar{c}=0}_{m-1} = 0, A = a]\]</span></p>
-<p>Fix one factor <span class="math inline">\(m\)</span>. By the independence assumption (with positivity ensuring the added conditioning event has positive probability), adding <span class="math inline">\(C_m = 0\)</span> to the conditioning event leaves the factor unchanged: it equals <span class="math inline">\(\Pr[D^{\bar{c}=0}_m = 0 \mid D^{\bar{c}=0}_{m-1} = 0, C_m = 0, A = a]\)</span>. Among the people with <span class="math inline">\(C_m = 0\)</span>, consistency replaces <span class="math inline">\(D^{\bar{c}=0}_m\)</span> by <span class="math inline">\(D_m\)</span> and <span class="math inline">\(D^{\bar{c}=0}_{m-1}\)</span> by <span class="math inline">\(D_{m-1}\)</span>, so the factor equals <span class="math inline">\(\Pr[D_m = 0 \mid D_{m-1} = 0, C_m = 0, A = a]\)</span>, which involves only observed data. Multiplying the <span class="math inline">\(k\)</span> factors gives the result.</p>
+<p><span class="proof-title"><em>Proof</em>. </span>Applying <a href="#/prp-survival-product-of-hazards" class="quarto-xref">Proposition&nbsp;1</a> to the uncensored event indicators <span class="math inline">\(D^{\bar{c}=0}_{m}\)</span>, within the stratum <span class="math inline">\(A = a\)</span>, gives</p>
+<p><span class="math display">\[\Pr[D^{\bar{c}=0}_{k} = 0 \mid A = a] = \prod_{m=1}^k \Pr[D^{\bar{c}=0}_{m} = 0 \mid D^{\bar{c}=0}_{m-1} = 0, A = a]\]</span></p>
+<p>Fix one factor <span class="math inline">\(m\)</span>. By the independence assumption (with positivity ensuring the added conditioning event has positive probability), adding <span class="math inline">\(C_m = 0\)</span> to the conditioning event leaves the factor unchanged: it equals <span class="math inline">\(\Pr[D^{\bar{c}=0}_{m} = 0 \mid D^{\bar{c}=0}_{m-1} = 0, C_m = 0, A = a]\)</span>. Among the people with <span class="math inline">\(C_m = 0\)</span>, consistency replaces <span class="math inline">\(D^{\bar{c}=0}_{m}\)</span> by <span class="math inline">\(D_m\)</span> and <span class="math inline">\(D^{\bar{c}=0}_{m-1}\)</span> by <span class="math inline">\(D_{m-1}\)</span>, so the factor equals <span class="math inline">\(\Pr[D_m = 0 \mid D_{m-1} = 0, C_m = 0, A = a]\)</span>, which involves only observed data. Multiplying the <span class="math inline">\(k\)</span> factors gives the result.</p>
 </div>
 <p>The range <span class="math inline">\(k = 1, \ldots, k_\text{end}\)</span> in <a href="#/prp-survival-random-censoring" class="quarto-xref">Proposition&nbsp;2</a> covers the same times as <span class="math inline">\(D_{k+1}\)</span> for <span class="math inline">\(k = 0, \ldots, k_\text{end} - 1\)</span> elsewhere in this chapter.</p>
 <div id="def-cause-specific-hazard" class="theorem definition">
 <p><span class="theorem-title"><strong>Definition 10 (Cause-specific hazard)</strong></span> The <strong>cause-specific hazard</strong> at <span class="math inline">\(k + 1\)</span> is <span class="math inline">\(\Pr[D_{k+1} = 1 \mid D_k = 0, C_{k+1} = 0, A = a]\)</span>.</p>
 </div>
 <p>Estimation proceeds as before, except that the quantity estimated nonparametrically or with a logistic model is the cause-specific hazard (<a href="#/def-cause-specific-hazard" class="quarto-xref">Definition&nbsp;10</a>).</p>
-<div title="Random Censoring Is Often Hard to Defend">
 <div class="callout callout-warning callout-titled callout-style-default">
 <div class="callout-body">
 <div class="callout-title">
@@ -525,7 +512,6 @@
 </div>
 <div class="callout-content">
 <p>Random censoring is often hard to defend. Under staggered entry, censoring time depends on the calendar date of entry (late entrants are followed for less time), and calendar time may also predict the outcome, so the analysis must adjust for calendar time at baseline. Other baseline prognostic factors may also differ between treatment groups and need adjustment.</p>
-</div>
 </div>
 </div>
 </div>
@@ -577,7 +563,6 @@
           display:block!important;
       }</style></aside>
 <aside class="notes">
-<div title="Two Models Must Be Correct">
 <div class="callout callout-warning callout-titled callout-style-default">
 <div class="callout-body">
 <div class="callout-title">
@@ -588,7 +573,6 @@
 </div>
 <div class="callout-content">
 <p>These IP weighted estimates are valid only if the model for treatment and the marginal hazards model are both correctly specified.</p>
-</div>
 </div>
 </div>
 </div>
@@ -677,7 +661,6 @@
           display:block!important;
       }</style></aside>
 <aside class="notes">
-<div title="Why the Two Sets of Curves Differ">
 <div class="callout callout-tip callout-titled callout-style-default">
 <div class="callout-body">
 <div class="callout-title">
@@ -688,7 +671,6 @@
 </div>
 <div class="callout-content">
 <p>The IP weighted and g-formula curves are close but not identical, because they depend on different modeling assumptions: IP weighting needs correct models for treatment and for the unconditional hazards, while the parametric g-formula needs a correct model for the conditional hazards.</p>
-</div>
 </div>
 </div>
 </div>
@@ -739,7 +721,6 @@
 <li>more generally, a model for the ratio of survival times under different treatments, the <strong>accelerated failure time (AFT) model</strong>.</li>
 </ul>
 </div>
-<div title="Technical Point 17.2: Structural Nested CFT and CST Models">
 <div class="callout callout-note callout-titled callout-style-default">
 <div class="callout-body">
 <div class="callout-title">
@@ -756,7 +737,6 @@
 <p><span class="math display">\[\frac{\Pr[D^a_k = 0 \mid L, A]}{\Pr[D^{a=0}_k = 0 \mid L, A]} = {\operatorname{exp}\mathopen{}\left\{\gamma_k(L, A; \psi)\right\}\mathclose{}}\]</span></p>
 <p>The two differ only in whether risk or survival is modeled multiplicatively, yet <span class="math inline">\(\gamma_k\)</span> has a different meaning in each, because a multiplicative model for risk is not multiplicative for survival unless the effect is null. In continuous time, structural CST models and structural additive hazards models coincide (Tchetgen Tchetgen et al., 2015).</p>
 <p>Structural CFT models need a specific rare-failure assumption at every value of <span class="math inline">\(L\)</span>. When it holds, they have an edge over AFT models: their unbiased estimating equations are differentiable in the parameters and therefore easy to solve (Page 2005; Picciotto et al.&nbsp;2012). With time-varying treatments, they fall within the class of multivariate structural nested mean models (Robins 1994).</p>
-</div>
 </div>
 </div>
 </div>
@@ -798,7 +778,6 @@
 </div>
 <p>The parameters of this AFT model can be estimated by g-estimation, modified to allow for administrative censoring.</p>
 <aside class="notes">
-<div title="Deterministic, Rank-Preserving Models Are Implausible">
 <div class="callout callout-warning callout-titled callout-style-default">
 <div class="callout-body">
 <div class="callout-title">
@@ -809,7 +788,6 @@
 </div>
 <div class="callout-content">
 <p>As a description of reality the structural AFT model is implausible on two counts. It is <strong>deterministic</strong>: it says that each person’s untreated survival time <span class="math inline">\(T^{a=0}\)</span> follows exactly from <span class="math inline">\(T\)</span>, <span class="math inline">\(A\)</span>, and <span class="math inline">\(L\)</span>. It is <strong>rank-preserving</strong>: if <span class="math inline">\(i\)</span> would die before <span class="math inline">\(j\)</span> when both are untreated (<span class="math inline">\(T^{a=0}_i &lt; T^{a=0}_j\)</span>), then <span class="math inline">\(i\)</span> would also die before <span class="math inline">\(j\)</span> when both are treated (<span class="math inline">\(T^{a=1}_i &lt; T^{a=1}_j\)</span>). Rank preservation is not believable, and methods that require it are generally best avoided (Chapter 14). The book uses a rank-preserving model anyway because it makes g-estimation easier to explain, and the procedure is identical with or without rank preservation. Robins (1997b) describes structural nested AFT models that are neither deterministic nor rank-preserving.</p>
-</div>
 </div>
 </div>
 </div>
@@ -836,7 +814,6 @@
 </ol>
 </div>
 <aside class="notes">
-<div title="Use a Directed Search">
 <div class="callout callout-tip callout-titled callout-style-default">
 <div class="callout-body">
 <div class="callout-title">
@@ -847,7 +824,6 @@
 </div>
 <div class="callout-content">
 <p>Statistical software offers directed search methods, such as the Nelder-Mead simplex, that need far less computation than a grid search.</p>
-</div>
 </div>
 </div>
 </div>
@@ -930,7 +906,6 @@ Table&nbsp;1: Survival times (months) under treatment and no treatment for each 
 <p><span class="theorem-title"><strong>Definition 13 (Artificial censoring)</strong></span> To prevent the bias, the analysis must keep only people whose death would have been observed by <span class="math inline">\(K\)</span> under either treatment, those with <span class="math inline">\(T^{a=0}_i \leq K\)</span> and <span class="math inline">\(T^{a=1}_i \leq K\)</span>; in the example, every type 2 person is dropped. So besides the administratively censored (<span class="math inline">\(T_i &gt; K\)</span>), some people with observed deaths (<span class="math inline">\(T_i \leq K\)</span>) are removed because under the other treatment their death would have come after <span class="math inline">\(K\)</span>. Removing such uncensored people is known as <strong>artificial censoring</strong>.</p>
 </div>
 <p>Let <span class="math inline">\(\Delta(\psi)\)</span> indicate inclusion (1) or exclusion (0); g-estimation then uses <span class="math inline">\(\Delta(\psi^\dagger)\)</span> in place of <span class="math inline">\(H(\psi^\dagger)\)</span> (Technical Point 17.3).</p>
-<div title="Technical Point 17.3: Artificial Censoring">
 <div class="callout callout-note callout-titled callout-style-default">
 <div class="callout-body">
 <div class="callout-title">
@@ -948,7 +923,6 @@ Table&nbsp;1: Survival times (months) under treatment and no treatment for each 
 </ul>
 <p>Every administratively censored person (<span class="math inline">\(T &gt; K\)</span>) gets <span class="math inline">\(\Delta(\psi) = 0\)</span>, since their survival time exceeds <span class="math inline">\(K\)</span> under the treatment they actually received, so <span class="math inline">\(H(\psi) \geq K(\psi)\)</span>. Some people with observed deaths (<span class="math inline">\(T \leq K\)</span>) also get <span class="math inline">\(\Delta(\psi) = 0\)</span>; they are the artificially censored, removed to prevent selection bias.</p>
 <p>Because <span class="math inline">\(\Delta(\psi)\)</span> depends only on <span class="math inline">\(H(\psi)\)</span> and <span class="math inline">\(K\)</span>, and every function of <span class="math inline">\(H(\psi)\)</span> at the true <span class="math inline">\(\psi\)</span> is independent of <span class="math inline">\(A\)</span> given <span class="math inline">\(L\)</span> under conditional exchangeability, g-estimation can use <span class="math inline">\(\Delta(\psi)\)</span> in place of <span class="math inline">\(H(\psi)\)</span>, that is, in Technical Point 14.2’s estimating equation. Hernán et al.&nbsp;(2005, Appendix) give practical details.</p>
-</div>
 </div>
 </div>
 </div>
@@ -1014,7 +988,6 @@ Table&nbsp;1: Survival times (months) under treatment and no treatment for each 
 <li>Risk and survival differences/ratios are better-defined causal estimands</li>
 </ul>
 <aside class="notes">
-<div title="Common Mistakes in Survival Analysis">
 <div class="callout callout-warning callout-titled callout-style-default">
 <div class="callout-body">
 <div class="callout-title">
@@ -1030,7 +1003,6 @@ Table&nbsp;1: Survival times (months) under treatment and no treatment for each 
 <li>Ignoring time-varying confounding (addressed in Part III)</li>
 <li>Restricting the analysis to uncensored individuals when estimating AFT models, which introduces selection bias</li>
 </ol>
-</div>
 </div>
 </div>
 </div>
@@ -1492,7 +1464,7 @@ window.addEventListener("load", alignEquationAnchorsWithDefault);
 'autoAnimateDuration': 1,
 'autoAnimateUnmatched': true,
 'jumpToSlide': true,
-'menu': {"side":"left","useTextContentForMissingTitles":true,"markers":false,"loadIcons":false,"custom":[{"title":"Tools","icon":"<i class=\"fas fa-gear\"></i>","content":"<ul class=\"slide-menu-items\">\n<li class=\"slide-tool-item active\" data-item=\"0\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.fullscreen(event)\"><kbd>f</kbd> Fullscreen</a></li>\n<li class=\"slide-tool-item\" data-item=\"1\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.speakerMode(event)\"><kbd>s</kbd> Speaker View</a></li>\n<li class=\"slide-tool-item\" data-item=\"2\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.overview(event)\"><kbd>o</kbd> Slide Overview</a></li>\n<li class=\"slide-tool-item\" data-item=\"3\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.togglePdfExport(event)\"><kbd>e</kbd> PDF Export Mode</a></li>\n<li class=\"slide-tool-item\" data-item=\"4\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.toggleScrollView(event)\"><kbd>r</kbd> Scroll View Mode</a></li>\n<li class=\"slide-tool-item\" data-item=\"5\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.toggleChalkboard(event)\"><kbd>b</kbd> Toggle Chalkboard</a></li>\n<li class=\"slide-tool-item\" data-item=\"6\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.toggleNotesCanvas(event)\"><kbd>c</kbd> Toggle Notes Canvas</a></li>\n<li class=\"slide-tool-item\" data-item=\"7\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.downloadDrawings(event)\"><kbd>d</kbd> Download Drawings</a></li>\n<li class=\"slide-tool-item\" data-item=\"8\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.keyboardHelp(event)\"><kbd>?</kbd> Keyboard Help</a></li>\n</ul>"}],"openButton":true},
+'menu': {"side":"left","useTextContentForMissingTitles":true,"markers":false,"loadIcons":false,"custom":[{"title":"Tools","icon":"\u003ci class=\"fas fa-gear\">\u003c/i>","content":"\u003cul class=\"slide-menu-items\">\n\u003cli class=\"slide-tool-item active\" data-item=\"0\">\u003ca href=\"#\" onclick=\"RevealMenuToolHandlers.fullscreen(event)\">\u003ckbd>f\u003c/kbd> Fullscreen\u003c/a>\u003c/li>\n\u003cli class=\"slide-tool-item\" data-item=\"1\">\u003ca href=\"#\" onclick=\"RevealMenuToolHandlers.speakerMode(event)\">\u003ckbd>s\u003c/kbd> Speaker View\u003c/a>\u003c/li>\n\u003cli class=\"slide-tool-item\" data-item=\"2\">\u003ca href=\"#\" onclick=\"RevealMenuToolHandlers.overview(event)\">\u003ckbd>o\u003c/kbd> Slide Overview\u003c/a>\u003c/li>\n\u003cli class=\"slide-tool-item\" data-item=\"3\">\u003ca href=\"#\" onclick=\"RevealMenuToolHandlers.togglePdfExport(event)\">\u003ckbd>e\u003c/kbd> PDF Export Mode\u003c/a>\u003c/li>\n\u003cli class=\"slide-tool-item\" data-item=\"4\">\u003ca href=\"#\" onclick=\"RevealMenuToolHandlers.toggleScrollView(event)\">\u003ckbd>r\u003c/kbd> Scroll View Mode\u003c/a>\u003c/li>\n\u003cli class=\"slide-tool-item\" data-item=\"5\">\u003ca href=\"#\" onclick=\"RevealMenuToolHandlers.toggleChalkboard(event)\">\u003ckbd>b\u003c/kbd> Toggle Chalkboard\u003c/a>\u003c/li>\n\u003cli class=\"slide-tool-item\" data-item=\"6\">\u003ca href=\"#\" onclick=\"RevealMenuToolHandlers.toggleNotesCanvas(event)\">\u003ckbd>c\u003c/kbd> Toggle Notes Canvas\u003c/a>\u003c/li>\n\u003cli class=\"slide-tool-item\" data-item=\"7\">\u003ca href=\"#\" onclick=\"RevealMenuToolHandlers.downloadDrawings(event)\">\u003ckbd>d\u003c/kbd> Download Drawings\u003c/a>\u003c/li>\n\u003cli class=\"slide-tool-item\" data-item=\"8\">\u003ca href=\"#\" onclick=\"RevealMenuToolHandlers.keyboardHelp(event)\">\u003ckbd>?\u003c/kbd> Keyboard Help\u003c/a>\u003c/li>\n\u003c/ul>"}],"openButton":true,"openButtonLabel":"Slide menu"},
 'chalkboard': {"buttons":true},
 'smaller': true,
  
@@ -1748,7 +1720,8 @@ window.addEventListener("load", alignEquationAnchorsWithDefault);
               return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
           }
           // Inspect non-navigation links and adorn them if external
-         var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+          window.quartoDecorateExternalLinks = function (root) {
+         var links = (root || window.document).querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
           for (var i=0; i<links.length; i++) {
             const link = links[i];
             if (!isInternal(link.href)) {
@@ -1757,8 +1730,69 @@ window.addEventListener("load", alignEquationAnchorsWithDefault);
               if (link.dataset.originalHref !== undefined) {
                 link.href = link.dataset.originalHref;
               }
+              if (!link.classList.contains('no-external-icon')) {
+              }
             }
           }
+          };
+          window.quartoDecorateExternalLinks(window.document);
+        // Esc closes the popup (WCAG 1.4.13) and focus leaving both trigger and
+        // popup closes it (WCAG 2.4.11); tippy handles neither for interactive popups.
+        const hideOnEscAndFocusOut = {
+          name: 'hideOnEscAndFocusOut',
+          defaultValue: true,
+          fn(instance) {
+            const dismiss = () => {
+              // A show scheduled by the trigger delay would otherwise reopen it
+              instance.clearDelayTimeouts();
+              instance.hide();
+            };
+            const onKeyDown = (event) => {
+              if (event.key !== 'Escape') {
+                return;
+              }
+              // Keep Esc from also reaching page handlers (e.g. reveal.js overview),
+              // except an open reveal.js slide menu, which Esc should close too.
+              // The menu handles keys only when its keyboard option is on.
+              const menuHandlesEsc = window.Reveal?.getPlugin?.('menu')?.isOpen() &&
+                window.Reveal.getConfig().menu?.keyboard !== false;
+              if (!menuHandlesEsc) {
+                event.stopPropagation();
+              }
+              if (instance.popper.contains(window.document.activeElement)) {
+                // Disabled while refocusing so the focus trigger does not reopen it
+                instance.disable();
+                instance.reference.focus();
+                instance.enable();
+              }
+              dismiss();
+            };
+            const onFocusOut = (event) => {
+              const target = event.relatedTarget;
+              if (target && !instance.reference.contains(target) &&
+                  !instance.popper.contains(target)) {
+                dismiss();
+              }
+            };
+            // On the trigger too: a click trigger (code-annotations: select) has no
+            // blur handling. Attached for the instance's lifetime so leaving the
+            // trigger also cancels a show still pending on the trigger delay.
+            instance.reference.addEventListener('focusout', onFocusOut);
+            return {
+              onShow() {
+                window.document.addEventListener('keydown', onKeyDown, true);
+                instance.popper.addEventListener('focusout', onFocusOut);
+              },
+              onHide() {
+                window.document.removeEventListener('keydown', onKeyDown, true);
+                instance.popper.removeEventListener('focusout', onFocusOut);
+              },
+              onDestroy() {
+                instance.reference.removeEventListener('focusout', onFocusOut);
+              },
+            };
+          },
+        };
         function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
           const config = {
             allowHTML: true,
@@ -1772,6 +1806,7 @@ window.addEventListener("load", alignEquationAnchorsWithDefault);
             interactiveBorder: 10,
             theme: 'light-border',
             placement: 'bottom-start',
+            plugins: [hideOnEscAndFocusOut],
           };
           if (contentFn) {
             config.content = contentFn;
