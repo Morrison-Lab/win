@@ -2,13 +2,17 @@
 
 Run with `python3 -m unittest discover -s .github/scripts`.
 """
+import contextlib
 import importlib.util
+import io
+import sys
 import tempfile
 import unittest
 from pathlib import Path
 
 SCRIPT = Path(__file__).with_name("check-duplicate-crossref-ids.py")
 spec = importlib.util.spec_from_file_location("check_duplicate_crossref_ids", SCRIPT)
+assert spec is not None and spec.loader is not None, f"cannot load {SCRIPT}"
 module = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(module)
 
@@ -91,6 +95,51 @@ class IdsInTest(unittest.TestCase):
 
     def test_double_backtick_span(self):
         self.assertEqual(found_ids("``a ` {#def-foo}`` {#def-bar}\n"), ["def-bar"])
+
+
+def run_main(files):
+    """Run main() on a temporary book tree; return (exit code, stdout)."""
+    with tempfile.TemporaryDirectory() as tmp:
+        root = Path(tmp)
+        for name, text in files.items():
+            path = root / name
+            path.parent.mkdir(parents=True, exist_ok=True)
+            path.write_text(text, encoding="utf-8")
+        argv, sys.argv = sys.argv, ["check", str(root)]
+        out = io.StringIO()
+        try:
+            with contextlib.redirect_stdout(out):
+                code = module.main()
+        finally:
+            sys.argv = argv
+        return code, out.getvalue()
+
+
+class MainTest(unittest.TestCase):
+    def test_duplicate_across_files_fails_with_annotation(self):
+        code, out = run_main(
+            {
+                "index.qmd": "::: {#def-foo}\n:::\n",
+                "chapters/02-a.qmd": "text\n\n::: {#def-foo}\n:::\n",
+            }
+        )
+        self.assertEqual(code, 1)
+        self.assertIn(
+            "::error file=chapters/02-a.qmd,line=3::Duplicate crossref id #def-foo: "
+            "chapters/02-a.qmd:3, index.qmd:1",
+            out,
+        )
+        self.assertIn("Rename one side", out)
+
+    def test_unique_ids_pass(self):
+        code, out = run_main(
+            {
+                "index.qmd": "::: {#def-foo}\n:::\n",
+                "chapters/02-a.qmd": "::: {#def-bar}\n:::\n",
+            }
+        )
+        self.assertEqual(code, 0)
+        self.assertIn("No duplicate crossref ids in 2 files.", out)
 
 
 if __name__ == "__main__":

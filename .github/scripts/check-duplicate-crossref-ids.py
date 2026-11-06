@@ -17,6 +17,7 @@ Exits 0 when every id is unique and 1 when any id is defined twice.
 import re
 import sys
 from collections import defaultdict
+from functools import lru_cache
 from pathlib import Path
 
 PREFIXES = "def|thm|lem|prp|cor|exm|exr|alg|rem|cnj|prf|sol|fig|tbl|eq|sec|lst"
@@ -26,6 +27,12 @@ CHUNK_ID = re.compile(
 )
 FENCE = re.compile(r"^\s*(`{3,}|~{3,})(.*)$")
 NOT_NEWLINE = re.compile(r"[^\n]")
+
+
+@lru_cache(maxsize=None)
+def closing_run(width):
+    """Compiled pattern for a backtick run of exactly `width` characters."""
+    return re.compile(r"(?<!`)`{%d}(?!`)" % width)
 
 
 def blank(text):
@@ -60,7 +67,7 @@ def clean_block(lines, in_comment):
             while run_end < len(text) and text[run_end] == "`":
                 run_end += 1
             width = run_end - pos
-            close = re.compile(r"(?<!`)`{%d}(?!`)" % width).search(text, run_end)
+            close = closing_run(width).search(text, run_end)
             if close:
                 out.append(blank(text[pos : close.end()]))
                 pos = close.end()
