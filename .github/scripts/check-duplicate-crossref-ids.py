@@ -21,7 +21,10 @@ from functools import lru_cache
 from pathlib import Path
 
 PREFIXES = "def|thm|lem|prp|cor|exm|exr|alg|rem|cnj|prf|sol|fig|tbl|eq|sec|lst"
-ATTR_ID = re.compile(r"\{[^{}]*?#((?:%s)-[A-Za-z0-9_-]+)" % PREFIXES)
+ATTR_BLOCK = re.compile(r"\{[^{}]*")
+QUOTED = re.compile(r"\"[^\"]*\"|'[^']*'")
+ATTR_ID = re.compile(r"(?:(?<=\{)|(?<=\s))#((?:%s)-[A-Za-z0-9_-]+)" % PREFIXES)
+LIST_ITEM = re.compile(r"^ {0,3}(?:[-*+]|\d{1,9}[.)])(?:\s|$)")
 CHUNK_ID = re.compile(
     r"""^\s*#\|\s*label:\s*["']?((?:%s)-[A-Za-z0-9_-]+)["']?\s*(?:\s#.*)?$""" % PREFIXES
 )
@@ -33,6 +36,18 @@ NOT_NEWLINE = re.compile(r"[^\n]")
 def closing_run(width):
     """Compiled pattern for a backtick run of exactly `width` characters."""
     return re.compile(r"(?<!`)`{%d}(?!`)" % width)
+
+
+def attribute_ids(text):
+    """Yield the crossref ids defined in the attribute blocks of one line.
+
+    An id counts only when it follows the opening brace or whitespace, and
+    text inside quoted attribute values is ignored, so
+    `{fig-alt="see #fig-x"}` defines nothing.
+    """
+    for block in ATTR_BLOCK.finditer(text):
+        for found in ATTR_ID.finditer(QUOTED.sub('""', block.group())):
+            yield found.group(1)
 
 
 def blank(text):
@@ -96,14 +111,36 @@ def ids_in(path):
             return []
         cleaned, in_comment = clean_block([line for _, line in block], in_comment)
         found = [
-            (match.group(1), number)
+            (crossref_id, number)
             for (number, _), text in zip(block, cleaned)
-            for match in ATTR_ID.finditer(text)
+            for crossref_id in attribute_ids(text)
         ]
         block.clear()
         return found
 
+    after_blank = True  # the previous line was blank, or this is the first
+    in_list = False  # the current top-level block is a list item
+    in_indented_code = False
     for number, line in enumerate(path.read_text(encoding="utf-8").splitlines(), 1):
+        if not fence:
+            expanded = line.expandtabs(4)
+            indent = len(expanded) - len(expanded.lstrip(" "))
+            if not line.strip():
+                yield from flush()
+                after_blank = True
+                continue
+            if in_indented_code and indent >= 4:
+                continue
+            in_indented_code = False
+            if after_blank and indent >= 4 and not in_list and not in_comment:
+                in_indented_code = True  # an indented code block is not markup
+                after_blank = False
+                continue
+            if LIST_ITEM.match(expanded):
+                in_list = True
+            elif indent == 0:
+                in_list = False
+            after_blank = False
         match = FENCE.match(line)
         if match and not fence and match.group(1)[0] == "`" and "`" in match.group(2):
             match = None  # a backtick fence's info string has no backticks: inline code
@@ -129,13 +166,10 @@ def ids_in(path):
                     len(match.group(1)),
                     re.match(r"\{[A-Za-z]", info.lstrip()) is not None,
                 )
-                for found in ATTR_ID.finditer(info):
-                    yield found.group(1), number
+                for crossref_id in attribute_ids(info):
+                    yield crossref_id, number
                 continue
-        if line.strip():
-            block.append((number, line))
-        else:
-            yield from flush()
+        block.append((number, line))
     yield from flush()
 
 

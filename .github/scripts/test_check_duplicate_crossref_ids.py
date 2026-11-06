@@ -60,6 +60,25 @@ class IdsInTest(unittest.TestCase):
         text = f"{FENCE3}{{#def-example}}{FENCE3}\n\n::: {{#def-real}}\n"
         self.assertEqual(found_ids(text), ["def-real"])
 
+    def test_id_inside_quoted_attribute_value_is_not_a_definition(self):
+        text = '![A plot](a.png){fig-alt="see #fig-x" #fig-real}\n'
+        self.assertEqual(found_ids(text), ["fig-real"])
+
+    def test_id_must_follow_brace_or_space(self):
+        self.assertEqual(found_ids("{foo#def-x}\n"), [])
+
+    def test_indented_code_block_is_not_markup(self):
+        text = "Example:\n\n    ::: {#def-foo}\n    :::\n\n::: {#def-real}\n"
+        self.assertEqual(found_ids(text), ["def-real"])
+
+    def test_indented_list_continuation_is_still_read(self):
+        text = "- item\n\n    ::: {#def-foo}\n    :::\n"
+        self.assertEqual(found_ids(text), ["def-foo"])
+
+    def test_indented_line_in_a_paragraph_is_not_code(self):
+        text = "A paragraph\n    {#def-foo} continued\n"
+        self.assertEqual(found_ids(text), ["def-foo"])
+
     def test_chunk_label_with_trailing_text_is_not_an_id(self):
         text = f"{FENCE3}{{r}}\n#| label: fig-a extra\n{FENCE3}\n"
         self.assertEqual(found_ids(text), [])
