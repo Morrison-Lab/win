@@ -37,6 +37,17 @@ class IdsInTest(unittest.TestCase):
         )
         self.assertEqual(found_ids(text), ["fig-a", "tbl-b"])
 
+    def test_chunk_label_with_trailing_yaml_comment(self):
+        text = (
+            f"{FENCE3}{{r}}\n#| label: fig-a # the first plot\n{FENCE3}\n"
+            f"{FENCE3}{{r}}\n#| label: \"tbl-b\"   # quoted\n{FENCE3}\n"
+        )
+        self.assertEqual(found_ids(text), ["fig-a", "tbl-b"])
+
+    def test_chunk_label_with_trailing_text_is_not_an_id(self):
+        text = f"{FENCE3}{{r}}\n#| label: fig-a extra\n{FENCE3}\n"
+        self.assertEqual(found_ids(text), [])
+
     def test_opening_fence_attributes(self):
         text = f"{FENCE3}{{#lst-ex .python lst-cap=\"Example\"}}\nx = 1\n{FENCE3}\n"
         self.assertEqual(found_ids(text), ["lst-ex"])

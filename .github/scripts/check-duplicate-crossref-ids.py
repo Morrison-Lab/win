@@ -22,7 +22,7 @@ from pathlib import Path
 PREFIXES = "def|thm|lem|prp|cor|exm|exr|alg|rem|cnj|prf|sol|fig|tbl|eq|sec|lst"
 ATTR_ID = re.compile(r"\{[^{}]*?#((?:%s)-[A-Za-z0-9_-]+)" % PREFIXES)
 CHUNK_ID = re.compile(
-    r"""^#\|\s*label:\s*["']?((?:%s)-[A-Za-z0-9_-]+)["']?\s*$""" % PREFIXES
+    r"""^#\|\s*label:\s*["']?((?:%s)-[A-Za-z0-9_-]+)["']?\s*(?:\s#.*)?$""" % PREFIXES
 )
 FENCE = re.compile(r"^\s*(`{3,}|~{3,})(.*)$")
 NOT_NEWLINE = re.compile(r"[^\n]")
