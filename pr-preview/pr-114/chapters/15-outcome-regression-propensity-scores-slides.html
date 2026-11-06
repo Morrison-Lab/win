@@ -6,14 +6,14 @@
 <script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
 <link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
 <link href="../site_libs/quarto-html/light-border.css" rel="stylesheet">
-<link href="../site_libs/quarto-html/quarto-syntax-highlighting-bf27225e3a48a9273f3daa8f8e829971.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-63b5708e65d6cd79cd7618c58d0c21e7.css" rel="stylesheet" id="quarto-text-highlighting-styles">
 <link href="../site_libs/quarto-contrib/code-language-labels-1.0.2/code-language-labels.css" rel="stylesheet"><meta charset="utf-8">
-  <meta name="generator" content="quarto-1.10.19">
+  <meta name="generator" content="quarto-1.11.9">
 
   <title>What If? - Lecture Notes – Chapter 15: Outcome Regression and Propensity Scores</title>
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, minimal-ui">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="stylesheet" href="../site_libs/revealjs/dist/reset.css">
   <link rel="stylesheet" href="../site_libs/revealjs/dist/reveal.css">
   <style>
@@ -54,7 +54,7 @@
     div.csl-indent {
       margin-left: 2em;
     }  </style>
-  <link rel="stylesheet" href="../site_libs/revealjs/dist/theme/quarto-0427d8d92a431aa6a6430e53ec02a470.css">
+  <link rel="stylesheet" href="../site_libs/revealjs/dist/theme/quarto-1ddb21c2f84686f497aff9e1fdc170fd.css">
   <link href="../site_libs/revealjs/plugin/quarto-line-highlight/line-highlight.css" rel="stylesheet">
   <link href="../site_libs/revealjs/plugin/reveal-menu/menu.css" rel="stylesheet">
   <link href="../site_libs/revealjs/plugin/reveal-menu/quarto-menu.css" rel="stylesheet">
@@ -190,7 +190,7 @@
 <div id="def-structural-model-with-l" class="theorem definition">
 <p><span class="theorem-title"><strong>Definition 1 (Structural Model with Parameters for <span class="math inline">\(L\)</span>)</strong></span> The <strong>structural model with parameters for <span class="math inline">\(L\)</span></strong> states that, for each <span class="math inline">\(a \in \{0, 1\}\)</span>,</p>
 <p><span class="math display">\[
-\operatorname{E}\mathopen{}\left[Y^{a,c=0} \mid L\right]\mathclose{} = \beta_0 + \beta_1 a + a {\beta_2}^{\top} L + {\beta_3}^{\top} L,
+{\mathbb{E}\mathopen{}\left[Y^{a,c=0} \mid L\right]\mathclose{}} = \beta_0 + \beta_1 a + a {\beta_2}^{\top} L + {\beta_3}^{\top} L,
 \]</span></p>
 <p>where <span class="math inline">\(\beta_0\)</span> and <span class="math inline">\(\beta_1\)</span> are scalar parameters and <span class="math inline">\(\beta_2\)</span> and <span class="math inline">\(\beta_3\)</span> are vector parameters.</p>
 </div>
@@ -218,7 +218,7 @@
 <p><span class="proof-title"><em>Proof</em>. </span>Evaluate the model at <span class="math inline">\(a = 1\)</span> and <span class="math inline">\(a = 0\)</span> and subtract:</p>
 <p><span class="math display">\[
 \begin{aligned}
-&amp;\operatorname{E}\mathopen{}\left[Y^{a=1,c=0} \mid L = l\right]\mathclose{} - \operatorname{E}\mathopen{}\left[Y^{a=0,c=0} \mid L = l\right]\mathclose{} \\
+&amp;{\mathbb{E}\mathopen{}\left[Y^{a=1,c=0} \mid L = l\right]\mathclose{}} - {\mathbb{E}\mathopen{}\left[Y^{a=0,c=0} \mid L = l\right]\mathclose{}} \\
 &amp;\quad = (\beta_0 + \beta_1 \cdot 1 + 1 \cdot {\beta_2}^{\top} l + {\beta_3}^{\top} l) - (\beta_0 + \beta_1 \cdot 0 + 0 \cdot {\beta_2}^{\top} l + {\beta_3}^{\top} l) \\
 &amp;\quad = (\beta_0 + \beta_1 + {\beta_2}^{\top} l + {\beta_3}^{\top} l) - (\beta_0 + {\beta_3}^{\top} l) \\
 &amp;\quad = \beta_1 + {\beta_2}^{\top} l.
@@ -230,16 +230,16 @@
 <section id="estimating-the-structural-model-by-outcome-regression" class="slide level2 scrollable">
 <h2>Estimating the Structural Model by Outcome Regression</h2>
 <div id="prp-outcome-regression-identification" class="theorem proposition">
-<p><span class="theorem-title"><strong>Proposition 2 (Outcome Regression Identifies the Structural Model)</strong></span> Suppose that <span class="math inline">\(L\)</span> is discrete (it takes finitely or countably many values), and that, for each <span class="math inline">\(a \in \{0, 1\}\)</span>, <span class="math inline">\(\operatorname{E}\mathopen{}\left[\mathopen{}\left|Y^{a,c=0}\right|\mathclose{}\right]\mathclose{} &lt; \infty\)</span>. Suppose also that <span class="math inline">\(L\)</span> suffices to adjust for confounding and selection bias, that is, conditional exchangeability <span class="math inline">\(Y^{a,c=0} \perp\!\!\!\perp(A, C) \mid L\)</span> holds for <span class="math inline">\(a \in \{0, 1\}\)</span>; that positivity <span class="math inline">\(\Pr[A = a, C = 0 \mid L = l] &gt; 0\)</span> holds for <span class="math inline">\(a \in \{0, 1\}\)</span> and every value <span class="math inline">\(l\)</span> with <span class="math inline">\(\Pr[L = l] &gt; 0\)</span>; and that consistency (well-defined interventions) holds: <span class="math inline">\(Y = Y^{a,c=0}\)</span> whenever <span class="math inline">\(A = a\)</span> and <span class="math inline">\(C = 0\)</span>.</p>
+<p><span class="theorem-title"><strong>Proposition 2 (Outcome Regression Identifies the Structural Model)</strong></span> Suppose that <span class="math inline">\(L\)</span> is discrete (it takes finitely or countably many values), and that, for each <span class="math inline">\(a \in \{0, 1\}\)</span>, <span class="math inline">\({\mathbb{E}\mathopen{}\left[\mathopen{}\left|Y^{a,c=0}\right|\mathclose{}\right]\mathclose{}} &lt; \infty\)</span>. Suppose also that <span class="math inline">\(L\)</span> suffices to adjust for confounding and selection bias, that is, conditional exchangeability <span class="math inline">\(Y^{a,c=0} \perp\!\!\!\perp(A, C) \mid L\)</span> holds for <span class="math inline">\(a \in \{0, 1\}\)</span>; that positivity <span class="math inline">\(\Pr[A = a, C = 0 \mid L = l] &gt; 0\)</span> holds for <span class="math inline">\(a \in \{0, 1\}\)</span> and every value <span class="math inline">\(l\)</span> with <span class="math inline">\(\Pr[L = l] &gt; 0\)</span>; and that consistency (well-defined interventions) holds: <span class="math inline">\(Y = Y^{a,c=0}\)</span> whenever <span class="math inline">\(A = a\)</span> and <span class="math inline">\(C = 0\)</span>.</p>
 <ol type="1">
 <li><p>The conditional counterfactual mean is identified:</p>
 <p><span class="math display">\[
-\operatorname{E}\mathopen{}\left[Y^{a,c=0} \mid L = l\right]\mathclose{} = \operatorname{E}\mathopen{}\left[Y \mid A = a, C = 0, L = l\right]\mathclose{},
+{\mathbb{E}\mathopen{}\left[Y^{a,c=0} \mid L = l\right]\mathclose{}} = {\mathbb{E}\mathopen{}\left[Y \mid A = a, C = 0, L = l\right]\mathclose{}},
 \]</span></p>
 <p>for <span class="math inline">\(a \in \{0, 1\}\)</span> and every value <span class="math inline">\(l\)</span> with <span class="math inline">\(\Pr[L = l] &gt; 0\)</span>.</p></li>
-<li><p>Suppose further that the structural model of <a href="#/def-structural-model-with-l" class="quarto-xref">Definition&nbsp;1</a> holds. Let <span class="math inline">\(X \stackrel{\text{def}}{=}{(1, A, A {L}^{\top}, {L}^{\top})}^{\top}\)</span> be the regressor vector, and stack the structural parameters as <span class="math inline">\(\beta \stackrel{\text{def}}{=}{(\beta_0, \beta_1, {\beta_2}^{\top}, {\beta_3}^{\top})}^{\top}\)</span>, and suppose that <span class="math inline">\(\operatorname{E}\mathopen{}\left[Y^2 \mid C = 0\right]\mathclose{} &lt; \infty\)</span>, that <span class="math inline">\(\operatorname{E}\mathopen{}\left[\mathopen{}\left\lVert X\right\rVert^2\mathclose{} \mid C = 0\right]\mathclose{} &lt; \infty\)</span>, and that the second-moment matrix <span class="math inline">\(\operatorname{E}\mathopen{}\left[X {X}^{\top} \mid C = 0\right]\mathclose{}\)</span> is invertible. Then the outcome regression model</p>
+<li><p>Suppose further that the structural model of <a href="#/def-structural-model-with-l" class="quarto-xref">Definition&nbsp;1</a> holds. Let <span class="math inline">\(X \stackrel{\text{def}}{=}{(1, A, A {L}^{\top}, {L}^{\top})}^{\top}\)</span> be the regressor vector, and stack the structural parameters as <span class="math inline">\(\beta \stackrel{\text{def}}{=}{(\beta_0, \beta_1, {\beta_2}^{\top}, {\beta_3}^{\top})}^{\top}\)</span>, and suppose that <span class="math inline">\({\mathbb{E}\mathopen{}\left[Y^2 \mid C = 0\right]\mathclose{}} &lt; \infty\)</span>, that <span class="math inline">\({\mathbb{E}\mathopen{}\left[{\mathopen{}\left\lVert X\right\rVert\mathclose{}}^2 \mid C = 0\right]\mathclose{}} &lt; \infty\)</span>, and that the second-moment matrix <span class="math inline">\({\mathbb{E}\mathopen{}\left[X {X}^{\top} \mid C = 0\right]\mathclose{}}\)</span> is invertible. Then the outcome regression model</p>
 <p><span class="math display">\[
-\operatorname{E}\mathopen{}\left[Y \mid A, C = 0, L\right]\mathclose{} = \alpha_0 + \alpha_1 A + A {\alpha_2}^{\top} L + {\alpha_3}^{\top} L
+{\mathbb{E}\mathopen{}\left[Y \mid A, C = 0, L\right]\mathclose{}} = \alpha_0 + \alpha_1 A + A {\alpha_2}^{\top} L + {\alpha_3}^{\top} L
 \]</span></p>
 <p>with stacked coefficients <span class="math inline">\(\alpha \stackrel{\text{def}}{=}{(\alpha_0, \alpha_1, {\alpha_2}^{\top}, {\alpha_3}^{\top})}^{\top}\)</span> is correctly specified, and its population least-squares coefficients satisfy <span class="math inline">\(\alpha = \beta\)</span>.</p></li>
 </ol>
@@ -248,27 +248,26 @@
 <p><span class="proof-title"><em>Proof</em>. </span>Part 1:</p>
 <p><span class="math display">\[
 \begin{aligned}
-\operatorname{E}\mathopen{}\left[Y^{a,c=0} \mid L = l\right]\mathclose{}
-&amp;= \operatorname{E}\mathopen{}\left[Y^{a,c=0} \mid A = a, C = 0, L = l\right]\mathclose{} &amp;&amp; \text{(conditional exchangeability; positivity makes the conditioning event non-null)} \\
-&amp;= \operatorname{E}\mathopen{}\left[Y \mid A = a, C = 0, L = l\right]\mathclose{} &amp;&amp; \text{(consistency)}.
+{\mathbb{E}\mathopen{}\left[Y^{a,c=0} \mid L = l\right]\mathclose{}}
+&amp;= {\mathbb{E}\mathopen{}\left[Y^{a,c=0} \mid A = a, C = 0, L = l\right]\mathclose{}} &amp;&amp; \text{(conditional exchangeability; positivity makes the conditioning event non-null)} \\
+&amp;= {\mathbb{E}\mathopen{}\left[Y \mid A = a, C = 0, L = l\right]\mathclose{}} &amp;&amp; \text{(consistency)}.
 \end{aligned}
 \]</span></p>
-<p>Part 2: by part 1 and the structural model, <span class="math inline">\(\operatorname{E}\mathopen{}\left[Y \mid A = a, C = 0, L = l\right]\mathclose{} = \beta_0 + \beta_1 a + a {\beta_2}^{\top} l + {\beta_3}^{\top} l\)</span> for every <span class="math inline">\((a, l)\)</span> with positive probability among the uncensored, so the linear model with <span class="math inline">\(\alpha = \beta\)</span> equals the conditional mean and is correctly specified; in vector form, <span class="math inline">\(\operatorname{E}\mathopen{}\left[Y \mid A, L, C = 0\right]\mathclose{} = {X}^{\top} \beta\)</span>. The moment conditions make every expectation in the normal equations finite. The population least-squares coefficients <span class="math inline">\(\alpha\)</span> are the solutions of the normal equations <span class="math inline">\(\operatorname{E}\mathopen{}\left[X (Y - {X}^{\top} \alpha) \mid C = 0\right]\mathclose{} = 0\)</span>. The vector <span class="math inline">\(\beta\)</span> solves them:</p>
+<p>Part 2: by part 1 and the structural model, <span class="math inline">\({\mathbb{E}\mathopen{}\left[Y \mid A = a, C = 0, L = l\right]\mathclose{}} = \beta_0 + \beta_1 a + a {\beta_2}^{\top} l + {\beta_3}^{\top} l\)</span> for every <span class="math inline">\((a, l)\)</span> with positive probability among the uncensored, so the linear model with <span class="math inline">\(\alpha = \beta\)</span> equals the conditional mean and is correctly specified; in vector form, <span class="math inline">\({\mathbb{E}\mathopen{}\left[Y \mid A, L, C = 0\right]\mathclose{}} = {X}^{\top} \beta\)</span>. The moment conditions make every expectation in the normal equations finite. The population least-squares coefficients <span class="math inline">\(\alpha\)</span> are the solutions of the normal equations <span class="math inline">\({\mathbb{E}\mathopen{}\left[X (Y - {X}^{\top} \alpha) \mid C = 0\right]\mathclose{}} = 0\)</span>. The vector <span class="math inline">\(\beta\)</span> solves them:</p>
 <p><span class="math display">\[
 \begin{aligned}
-\operatorname{E}\mathopen{}\left[X (Y - {X}^{\top} \beta) \mid C = 0\right]\mathclose{}
-&amp;= \operatorname{E}\mathopen{}\left[\operatorname{E}\mathopen{}\left[X (Y - {X}^{\top} \beta) \mid A, L, C = 0\right]\mathclose{} \mid C = 0\right]\mathclose{} &amp;&amp; \text{(iterated expectations)} \\
-&amp;= \operatorname{E}\mathopen{}\left[X (\operatorname{E}\mathopen{}\left[Y \mid A, L, C = 0\right]\mathclose{} - {X}^{\top} \beta) \mid C = 0\right]\mathclose{} &amp;&amp; \text{(} X \text{ is a function of } (A, L)\text{)} \\
-&amp;= \operatorname{E}\mathopen{}\left[X ({X}^{\top} \beta - {X}^{\top} \beta) \mid C = 0\right]\mathclose{} &amp;&amp; \text{(correct specification)} \\
+{\mathbb{E}\mathopen{}\left[X (Y - {X}^{\top} \beta) \mid C = 0\right]\mathclose{}}
+&amp;= {\mathbb{E}\mathopen{}\left[{\mathbb{E}\mathopen{}\left[X (Y - {X}^{\top} \beta) \mid A, L, C = 0\right]\mathclose{}} \mid C = 0\right]\mathclose{}} &amp;&amp; \text{(iterated expectations)} \\
+&amp;= {\mathbb{E}\mathopen{}\left[X ({\mathbb{E}\mathopen{}\left[Y \mid A, L, C = 0\right]\mathclose{}} - {X}^{\top} \beta) \mid C = 0\right]\mathclose{}} &amp;&amp; \text{(} X \text{ is a function of } (A, L)\text{)} \\
+&amp;= {\mathbb{E}\mathopen{}\left[X ({X}^{\top} \beta - {X}^{\top} \beta) \mid C = 0\right]\mathclose{}} &amp;&amp; \text{(correct specification)} \\
 &amp;= 0.
 \end{aligned}
 \]</span></p>
-<p>Because <span class="math inline">\(\operatorname{E}\mathopen{}\left[X {X}^{\top} \mid C = 0\right]\mathclose{}\)</span> is invertible, the normal equations have a unique solution, so <span class="math inline">\(\alpha = \beta\)</span>.</p>
+<p>Because <span class="math inline">\({\mathbb{E}\mathopen{}\left[X {X}^{\top} \mid C = 0\right]\mathclose{}}\)</span> is invertible, the normal equations have a unique solution, so <span class="math inline">\(\alpha = \beta\)</span>.</p>
 </div>
 <p>So the structural parameters can be estimated by ordinary least squares, fitting the outcome regression model of <a href="#/prp-outcome-regression-identification" class="quarto-xref">Proposition&nbsp;2</a>.</p>
 <aside class="notes">
 <p>Like stratification (Chapter 3), outcome regression adjusts for confounding by estimating the effect <strong>within strata of <span class="math inline">\(L\)</span></strong>. In Section 13.2, the outcome regression was an intermediate step toward a standardized (marginal) mean; here the regression is the end of the procedure: we compare conditional means instead of standardizing them <span class="citation" data-cites="hernan2020causal">(<a href="#/references" role="doc-biblioref" onclick="">Hernán and Robins 2020, 200</a>)</span>.</p>
-<div title="Discrete Outcomes">
 <div class="callout callout-tip callout-titled callout-style-default">
 <div class="callout-body">
 <div class="callout-title">
@@ -279,7 +278,6 @@
 </div>
 <div class="callout-content">
 <p>The same approach works for discrete outcomes, e.g., a logistic model for <span class="math inline">\(\Pr[Y = 1 \mid A = a, C = 0, L]\)</span> when <span class="math inline">\(Y\)</span> is dichotomous.</p>
-</div>
 </div>
 </div>
 </div>
@@ -300,7 +298,7 @@
 <div id="exm-nhefs-outcome-regression" class="theorem example">
 <p><span class="theorem-title"><strong>Example 1 (Smoking Cessation and Weight Gain (NHEFS))</strong></span> Using the outcome model of Section 13.2, which has a single product term (between <span class="math inline">\(A\)</span> and smoking intensity), the book reports <span class="math inline">\(\hat \beta_1 = 2.6\)</span> and <span class="math inline">\(\hat \beta_2 = 0.05\)</span> <span class="citation" data-cites="hernan2020causal">(<a href="#/references" role="doc-biblioref" onclick="">Hernán and Robins 2020, 200</a>)</span>.</p>
 <ul>
-<li>Estimated effect <span class="math inline">\(\mathop{\hat{\operatorname{E}}}\nolimits\mathopen{}\left[Y \mid A = 1, C = 0, L\right]\mathclose{} - \mathop{\hat{\operatorname{E}}}\nolimits\mathopen{}\left[Y \mid A = 0, C = 0, L\right]\mathclose{}\)</span>: 2.8 kg (95% CI: 1.5, 4.1) for those smoking 5 cigarettes/day; 4.4 kg (95% CI: 2.8, 6.1) for those smoking 40 cigarettes/day.</li>
+<li>Estimated effect <span class="math inline">\({\mathop{\hat{\mathbb{E}}}\nolimits\mathopen{}\left[Y \mid A = 1, C = 0, L\right]\mathclose{}} - {\mathop{\hat{\mathbb{E}}}\nolimits\mathopen{}\left[Y \mid A = 0, C = 0, L\right]\mathclose{}}\)</span>: 2.8 kg (95% CI: 1.5, 4.1) for those smoking 5 cigarettes/day; 4.4 kg (95% CI: 2.8, 6.1) for those smoking 40 cigarettes/day.</li>
 <li>Model with <strong>no</strong> product terms (assumes no effect modification by any variable in <span class="math inline">\(L\)</span>): <span class="math inline">\(\hat \beta_1 = 3.5\)</span> kg (95% CI: 2.6, 4.3), which then estimates both the conditional and the marginal effect.</li>
 </ul>
 </div>
@@ -325,7 +323,6 @@
 <div id="def-nuisance-parameter" class="theorem definition">
 <p><span class="theorem-title"><strong>Definition 2 (Nuisance Parameter)</strong></span> A <strong>nuisance parameter</strong> is a parameter that a model must contain but that is not itself the target of inference.</p>
 </div>
-<div title="Fine Point 15.1: Nuisance Parameters">
 <div class="callout callout-note callout-titled callout-style-default">
 <div class="callout-body">
 <div class="callout-title">
@@ -337,8 +334,8 @@
 <div class="callout-content">
 <p>Two methods for the same effect rely on different nuisance parameters (<a href="#/def-nuisance-parameter" class="quarto-xref">Definition&nbsp;2</a>):</p>
 <ul>
-<li><strong>Outcome regression</strong> for <span class="math inline">\(\beta_1, \beta_2\)</span>: consistent (in general) only if <span class="math inline">\(\beta_0 + {\beta_3}^{\top} L\)</span> correctly models how <span class="math inline">\(\operatorname{E}\mathopen{}\left[Y^{a=0,c=0} \mid L\right]\mathclose{}\)</span> depends on <span class="math inline">\(L\)</span>. The nuisance parameters are <span class="math inline">\(\beta_0\)</span> and <span class="math inline">\(\beta_3\)</span>.</li>
-<li><strong>G-estimation</strong> of the structural nested model <span class="math inline">\(\operatorname{E}\mathopen{}\left[Y^{a,c=0} - Y^{a=0,c=0} \mid L\right]\mathclose{} = \beta_1 a + a {\beta_2}^{\top} L\)</span>: consistent (in general) only if the treatment model for <span class="math inline">\(\Pr[A = 1 \mid L]\)</span> is correct. The nuisance parameters are those of the treatment model, e.g., <span class="math inline">\(\gamma_0, \gamma_1\)</span> in <span class="math inline">\(\operatorname{logit}\Pr[A = 1 \mid L] = \gamma_0 + {\gamma_1}^{\top} L\)</span>.</li>
+<li><strong>Outcome regression</strong> for <span class="math inline">\(\beta_1, \beta_2\)</span>: consistent (in general) only if <span class="math inline">\(\beta_0 + {\beta_3}^{\top} L\)</span> correctly models how <span class="math inline">\({\mathbb{E}\mathopen{}\left[Y^{a=0,c=0} \mid L\right]\mathclose{}}\)</span> depends on <span class="math inline">\(L\)</span>. The nuisance parameters are <span class="math inline">\(\beta_0\)</span> and <span class="math inline">\(\beta_3\)</span>.</li>
+<li><strong>G-estimation</strong> of the structural nested model <span class="math inline">\({\mathbb{E}\mathopen{}\left[Y^{a,c=0} - Y^{a=0,c=0} \mid L\right]\mathclose{}} = \beta_1 a + a {\beta_2}^{\top} L\)</span>: consistent (in general) only if the treatment model for <span class="math inline">\(\Pr[A = 1 \mid L]\)</span> is correct. The nuisance parameters are those of the treatment model, e.g., <span class="math inline">\(\gamma_0, \gamma_1\)</span> in <span class="math inline">\(\operatorname{logit}\Pr[A = 1 \mid L] = \gamma_0 + {\gamma_1}^{\top} L\)</span>.</li>
 </ul>
 <aside class="notes">
 <p>Example: if <span class="math inline">\(L\)</span> should enter as <span class="math inline">\(\beta_3 L + \beta_4 L^2\)</span> but is modeled as <span class="math inline">\(\beta_3 L\)</span> only, outcome regression is biased; g-estimation is unaffected by that error but is biased if the <span class="math inline">\(L\)</span>-<span class="math inline">\(A\)</span> relation is misspecified. For a time-fixed treatment, choosing between the two amounts to deciding which nuisance model we can specify more accurately. When possible, a better option is a doubly robust method (Fine Point 13.2) <span class="citation" data-cites="hernan2020causal">(<a href="#/references" role="doc-biblioref" onclick="">Hernán and Robins 2020, 200</a>)</span>.</p>
@@ -353,7 +350,6 @@
           overflow: hidden!important;
           display:block!important;
       }</style></aside>
-</div>
 </div>
 </div>
 </div>
@@ -445,8 +441,8 @@ A \perp\!\!\!\perp L \mid \pi(L).
 <p><span class="math display">\[
 \begin{aligned}
 \Pr[A = 1 \mid \pi(L)]
-&amp;= \operatorname{E}\mathopen{}\left[\Pr[A = 1 \mid L] \mid \pi(L)\right]\mathclose{} \\
-&amp;= \operatorname{E}\mathopen{}\left[\pi(L) \mid \pi(L)\right]\mathclose{} \\
+&amp;= {\mathbb{E}\mathopen{}\left[\Pr[A = 1 \mid L] \mid \pi(L)\right]\mathclose{}} \\
+&amp;= {\mathbb{E}\mathopen{}\left[\pi(L) \mid \pi(L)\right]\mathclose{}} \\
 &amp;= \pi(L).
 \end{aligned}
 \]</span></p>
@@ -455,7 +451,6 @@ A \perp\!\!\!\perp L \mid \pi(L).
 <p>In words: individuals with the same <span class="math inline">\(\pi(L)\)</span> may differ in <span class="math inline">\(L\)</span> (e.g., smoking intensity and exercise), but among all individuals with a given value of <span class="math inline">\(\pi(L)\)</span> in the super-population, the distribution of <span class="math inline">\(L\)</span> is the same in the treated and the untreated. A function <span class="math inline">\(b(L)\)</span> is a balancing score exactly when <span class="math inline">\(\pi(L)\)</span> can be written as a function of <span class="math inline">\(b(L)\)</span> <span class="citation" data-cites="rosenbaum1983central">(<a href="#/references" role="doc-biblioref" onclick="">Rosenbaum and Rubin 1983</a>, Theorem 2)</span>, so the propensity score is the coarsest balancing score.</p>
 <aside class="notes">
 <p>If the distribution of <span class="math inline">\(\pi(L)\)</span> were the same in the treated and the untreated, there would be no association between <span class="math inline">\(L\)</span> and <span class="math inline">\(A\)</span>: then <span class="math inline">\(A \perp\!\!\!\perp\pi(L)\)</span>, and combining this with <span class="math inline">\(A \perp\!\!\!\perp L \mid \pi(L)\)</span> from <a href="#/prp-ps-balancing" class="quarto-xref">Proposition&nbsp;3</a> gives <span class="math inline">\(A \perp\!\!\!\perp L\)</span>.</p>
-<div title="Limits of Propensity Score Balance">
 <div class="callout callout-warning callout-titled callout-style-default">
 <div class="callout-body">
 <div class="callout-title">
@@ -470,7 +465,6 @@ A \perp\!\!\!\perp L \mid \pi(L).
 <li>The propensity score balances only the <strong>measured</strong> covariates <span class="math inline">\(L\)</span>; unlike randomization, it does nothing about unmeasured confounders.</li>
 <li>In a finite study population the <strong>true</strong> propensity score balances <span class="math inline">\(L\)</span> only approximately, because of sampling variability. An estimated propensity score from a correct model generally gives better balance; in a randomized experiment, adjusting for the estimated <span class="math inline">\(\pi(L)\)</span> corrects both systematic and chance imbalances, whereas the true <span class="math inline">\(\pi(L)\)</span> ignores the chance imbalances.</li>
 </ul>
-</div>
 </div>
 </div>
 </div>
@@ -513,9 +507,9 @@ A \perp\!\!\!\perp L \mid \pi(L).
 <p><span class="proof-title"><em>Proof</em> (Proof of part 1). </span><span class="math display">\[
 \begin{aligned}
 \Pr[A = 1 \mid Y^a, \pi(L)]
-&amp;= \operatorname{E}\mathopen{}\left[\Pr[A = 1 \mid Y^a, L] \mid Y^a, \pi(L)\right]\mathclose{} &amp;&amp; \text{(iterated expectations; } \pi(L) \text{ is a function of } L\text{)} \\
-&amp;= \operatorname{E}\mathopen{}\left[\Pr[A = 1 \mid L] \mid Y^a, \pi(L)\right]\mathclose{} &amp;&amp; (Y^a \perp\!\!\!\perp A \mid L) \\
-&amp;= \operatorname{E}\mathopen{}\left[\pi(L) \mid Y^a, \pi(L)\right]\mathclose{} &amp;&amp; \text{(definition of } \pi(L)\text{)} \\
+&amp;= {\mathbb{E}\mathopen{}\left[\Pr[A = 1 \mid Y^a, L] \mid Y^a, \pi(L)\right]\mathclose{}} &amp;&amp; \text{(iterated expectations; } \pi(L) \text{ is a function of } L\text{)} \\
+&amp;= {\mathbb{E}\mathopen{}\left[\Pr[A = 1 \mid L] \mid Y^a, \pi(L)\right]\mathclose{}} &amp;&amp; (Y^a \perp\!\!\!\perp A \mid L) \\
+&amp;= {\mathbb{E}\mathopen{}\left[\pi(L) \mid Y^a, \pi(L)\right]\mathclose{}} &amp;&amp; \text{(definition of } \pi(L)\text{)} \\
 &amp;= \pi(L),
 \end{aligned}
 \]</span></p>
@@ -557,25 +551,24 @@ A \perp\!\!\!\perp L \mid \pi(L).
 <section class="slide level2">
 
 <div id="prp-ps-stratum-effect" class="theorem proposition">
-<p><span class="theorem-title"><strong>Proposition 4 (Effects Within Levels of the Propensity Score)</strong></span> Let <span class="math inline">\(A\)</span> be dichotomous and <span class="math inline">\(\pi(L)\)</span> its propensity score. Suppose that <span class="math inline">\(L\)</span> is discrete (so <span class="math inline">\(\pi(L)\)</span> is discrete too), and that, for each <span class="math inline">\(a \in \{0, 1\}\)</span>, <span class="math inline">\(\operatorname{E}\mathopen{}\left[\mathopen{}\left|Y^{a,c=0}\right|\mathclose{}\right]\mathclose{} &lt; \infty\)</span>. Suppose also conditional exchangeability given the propensity score, <span class="math inline">\(Y^{a,c=0} \perp\!\!\!\perp(A, C) \mid \pi(L)\)</span> for <span class="math inline">\(a \in \{0, 1\}\)</span>; positivity, <span class="math inline">\(\Pr[A = a, C = 0 \mid \pi(L) = s] &gt; 0\)</span> for <span class="math inline">\(a \in \{0, 1\}\)</span> and every <span class="math inline">\(s\)</span> with <span class="math inline">\(\Pr[\pi(L) = s] &gt; 0\)</span>; and consistency, <span class="math inline">\(Y = Y^{a,c=0}\)</span> whenever <span class="math inline">\(A = a\)</span> and <span class="math inline">\(C = 0\)</span>. Then, for each value <span class="math inline">\(s\)</span> of the propensity score with <span class="math inline">\(\Pr[\pi(L) = s] &gt; 0\)</span>,</p>
+<p><span class="theorem-title"><strong>Proposition 4 (Effects Within Levels of the Propensity Score)</strong></span> Let <span class="math inline">\(A\)</span> be dichotomous and <span class="math inline">\(\pi(L)\)</span> its propensity score. Suppose that <span class="math inline">\(L\)</span> is discrete (so <span class="math inline">\(\pi(L)\)</span> is discrete too), and that, for each <span class="math inline">\(a \in \{0, 1\}\)</span>, <span class="math inline">\({\mathbb{E}\mathopen{}\left[\mathopen{}\left|Y^{a,c=0}\right|\mathclose{}\right]\mathclose{}} &lt; \infty\)</span>. Suppose also conditional exchangeability given the propensity score, <span class="math inline">\(Y^{a,c=0} \perp\!\!\!\perp(A, C) \mid \pi(L)\)</span> for <span class="math inline">\(a \in \{0, 1\}\)</span>; positivity, <span class="math inline">\(\Pr[A = a, C = 0 \mid \pi(L) = s] &gt; 0\)</span> for <span class="math inline">\(a \in \{0, 1\}\)</span> and every <span class="math inline">\(s\)</span> with <span class="math inline">\(\Pr[\pi(L) = s] &gt; 0\)</span>; and consistency, <span class="math inline">\(Y = Y^{a,c=0}\)</span> whenever <span class="math inline">\(A = a\)</span> and <span class="math inline">\(C = 0\)</span>. Then, for each value <span class="math inline">\(s\)</span> of the propensity score with <span class="math inline">\(\Pr[\pi(L) = s] &gt; 0\)</span>,</p>
 <p><span class="math display">\[
-\operatorname{E}\mathopen{}\left[Y^{a=1,c=0} \mid \pi(L) = s\right]\mathclose{} - \operatorname{E}\mathopen{}\left[Y^{a=0,c=0} \mid \pi(L) = s\right]\mathclose{}
-= \operatorname{E}\mathopen{}\left[Y \mid A = 1, C = 0, \pi(L) = s\right]\mathclose{} - \operatorname{E}\mathopen{}\left[Y \mid A = 0, C = 0, \pi(L) = s\right]\mathclose{}.
+{\mathbb{E}\mathopen{}\left[Y^{a=1,c=0} \mid \pi(L) = s\right]\mathclose{}} - {\mathbb{E}\mathopen{}\left[Y^{a=0,c=0} \mid \pi(L) = s\right]\mathclose{}}
+= {\mathbb{E}\mathopen{}\left[Y \mid A = 1, C = 0, \pi(L) = s\right]\mathclose{}} - {\mathbb{E}\mathopen{}\left[Y \mid A = 0, C = 0, \pi(L) = s\right]\mathclose{}}.
 \]</span></p>
 </div>
 <div class="proof">
 <p><span class="proof-title"><em>Proof</em>. </span>For each <span class="math inline">\(a \in \{0, 1\}\)</span>,</p>
 <p><span class="math display">\[
 \begin{aligned}
-\operatorname{E}\mathopen{}\left[Y^{a,c=0} \mid \pi(L) = s\right]\mathclose{}
-&amp;= \operatorname{E}\mathopen{}\left[Y^{a,c=0} \mid A = a, C = 0, \pi(L) = s\right]\mathclose{} &amp;&amp; \text{(exchangeability given } \pi(L)\text{; positivity)} \\
-&amp;= \operatorname{E}\mathopen{}\left[Y \mid A = a, C = 0, \pi(L) = s\right]\mathclose{} &amp;&amp; \text{(consistency)}.
+{\mathbb{E}\mathopen{}\left[Y^{a,c=0} \mid \pi(L) = s\right]\mathclose{}}
+&amp;= {\mathbb{E}\mathopen{}\left[Y^{a,c=0} \mid A = a, C = 0, \pi(L) = s\right]\mathclose{}} &amp;&amp; \text{(exchangeability given } \pi(L)\text{; positivity)} \\
+&amp;= {\mathbb{E}\mathopen{}\left[Y \mid A = a, C = 0, \pi(L) = s\right]\mathclose{}} &amp;&amp; \text{(consistency)}.
 \end{aligned}
 \]</span></p>
 <p>Subtracting the <span class="math inline">\(a = 0\)</span> line from the <span class="math inline">\(a = 1\)</span> line gives the result.</p>
 </div>
 <p>For treatment alone, without censoring, <a href="#/thm-ps-exchangeability" class="quarto-xref">Theorem&nbsp;1</a> shows that exchangeability and positivity given <span class="math inline">\(L\)</span> carry over to <span class="math inline">\(\pi(L)\)</span>. When no one is censored, the joint <span class="math inline">\((A, C)\)</span> conditions of <a href="#/prp-ps-stratum-effect" class="quarto-xref">Proposition&nbsp;4</a> reduce to these treatment-only conditions, so they hold whenever exchangeability and positivity given <span class="math inline">\(L\)</span> hold (with <span class="math inline">\(L\)</span> discrete, as in <a href="#/prp-ps-stratum-effect" class="quarto-xref">Proposition&nbsp;4</a>). With censoring, <span class="math inline">\(\pi(L)\)</span> alone need not suffice; one would instead condition on a score <span class="math inline">\(b(L)\)</span> with <span class="math inline">\((A, C) \perp\!\!\!\perp L \mid b(L)\)</span>, for example the vector of joint probabilities <span class="math inline">\(\Pr[A = a, C = c \mid L]\)</span> over all <span class="math inline">\((a, c)\)</span>.</p>
-<div title="Few Individuals Share a Propensity Score Value">
 <div class="callout callout-warning callout-titled callout-style-default">
 <div class="callout-body">
 <div class="callout-title">
@@ -586,7 +579,6 @@ A \perp\!\!\!\perp L \mid \pi(L).
 </div>
 <div class="callout-content">
 <p>In practice <span class="math inline">\(\pi(L)\)</span> is generally continuous, so almost no two individuals share a value <span class="math inline">\(s\)</span> (e.g., only one NHEFS individual had an estimated <span class="math inline">\(\pi(L)\)</span> of 0.6563).</p>
-</div>
 </div>
 </div>
 </div>
@@ -617,7 +609,6 @@ A \perp\!\!\!\perp L \mid \pi(L).
 </section>
 <section id="a-problem-with-categorized-propensity-scores" class="slide level2">
 <h2>A Problem with Categorized Propensity Scores</h2>
-<div title="Residual Imbalance Within Propensity Strata">
 <div class="callout callout-warning callout-titled callout-style-default">
 <div class="callout-body">
 <div class="callout-title">
@@ -631,8 +622,6 @@ A \perp\!\!\!\perp L \mid \pi(L).
 </div>
 </div>
 </div>
-</div>
-<div title="Use the Propensity Score as a Continuous Covariate">
 <div class="callout callout-tip callout-titled callout-style-default">
 <div class="callout-body">
 <div class="callout-title">
@@ -642,8 +631,7 @@ A \perp\!\!\!\perp L \mid \pi(L).
 <p><strong>Use the Propensity Score as a Continuous Covariate</strong></p>
 </div>
 <div class="callout-content">
-<p>Remedy: use the estimated <span class="math inline">\(\pi(L)\)</span> as a <strong>continuous</strong> covariate in the outcome model <span class="math inline">\(\operatorname{E}\mathopen{}\left[Y \mid A, C = 0, \pi(L)\right]\mathclose{}\)</span>.</p>
-</div>
+<p>Remedy: use the estimated <span class="math inline">\(\pi(L)\)</span> as a <strong>continuous</strong> covariate in the outcome model <span class="math inline">\({\mathbb{E}\mathopen{}\left[Y \mid A, C = 0, \pi(L)\right]\mathclose{}}\)</span>.</p>
 </div>
 </div>
 </div>
@@ -652,7 +640,6 @@ A \perp\!\!\!\perp L \mid \pi(L).
 </div>
 <aside class="notes">
 <p>IP weighting and g-estimation never had this problem, because they used the numerical value of the estimated probability rather than a categorized version <span class="citation" data-cites="hernan2020causal">(<a href="#/references" role="doc-biblioref" onclick="">Hernán and Robins 2020, 203</a>)</span>.</p>
-<div title="The IP Weight Denominator Is a Function of the Propensity Score">
 <div class="callout callout-warning callout-titled callout-style-default">
 <div class="callout-body">
 <div class="callout-title">
@@ -663,7 +650,6 @@ A \perp\!\!\!\perp L \mid \pi(L).
 </div>
 <div class="callout-content">
 <p>For a dichotomous treatment the IP weight denominator is not <span class="math inline">\(\pi(L)\)</span> itself but a function of it: <span class="math inline">\(\pi(L)\)</span> for the treated (<span class="math inline">\(A = 1\)</span>) and <span class="math inline">\(1 - \pi(L)\)</span> for the untreated (<span class="math inline">\(A = 0\)</span>).</p>
-</div>
 </div>
 </div>
 </div>
@@ -684,15 +670,15 @@ A \perp\!\!\!\perp L \mid \pi(L).
 <h2>Standardizing over the Propensity Score</h2>
 <p>The outcome model on <span class="math inline">\(\pi(L)\)</span> estimates effects <strong>within</strong> levels <span class="math inline">\(s\)</span> of <span class="math inline">\(\pi(L)\)</span>.</p>
 <div id="alg-ps-standardization" class="theorem algorithm">
-<p><span class="theorem-title"><strong>Algorithm 2 (Standardization over the Propensity Score)</strong></span> For the population average causal effect <span class="math inline">\(\operatorname{E}\mathopen{}\left[Y^{a=1,c=0}\right]\mathclose{} - \operatorname{E}\mathopen{}\left[Y^{a=0,c=0}\right]\mathclose{}\)</span>, standardize the fitted conditional means over the distribution of an estimated adjustment score <span class="math inline">\(b(L)\)</span>: the Chapter 13 procedure with <span class="math inline">\(b(L)\)</span> in place of <span class="math inline">\(L\)</span>. When no one is censored, <span class="math inline">\(b(L) = \pi(L)\)</span>, which suffices for adjustment when exchangeability and positivity hold given <span class="math inline">\(L\)</span> (<a href="#/thm-ps-exchangeability" class="quarto-xref">Theorem&nbsp;1</a>). With censoring, <span class="math inline">\(b(L)\)</span> is a joint score with <span class="math inline">\((A, C) \perp\!\!\!\perp L \mid b(L)\)</span>, as discussed after <a href="#/prp-ps-stratum-effect" class="quarto-xref">Proposition&nbsp;4</a>, such as the vector of joint probabilities <span class="math inline">\(\Pr[A = a, C = c \mid L]\)</span> over all <span class="math inline">\((a, c)\)</span>. This joint score suffices when, for each <span class="math inline">\(a \in \{0, 1\}\)</span>, <span class="math inline">\(Y^{a,c=0} \perp\!\!\!\perp(A, C) \mid L\)</span> and <span class="math inline">\(\Pr[A = a, C = 0 \mid L] &gt; 0\)</span>: because <span class="math inline">\((A, C) \perp\!\!\!\perp L \mid b(L)\)</span>, these conditions carry over from <span class="math inline">\(L\)</span> to <span class="math inline">\(b(L)\)</span>, by the argument <a href="#/thm-ps-exchangeability" class="quarto-xref">Theorem&nbsp;1</a> gives for <span class="math inline">\(A\)</span> alone. In either case, consistency must hold, and the treatment, censoring (if any), and outcome models must be correctly specified.</p>
+<p><span class="theorem-title"><strong>Algorithm 2 (Standardization over the Propensity Score)</strong></span> For the population average causal effect <span class="math inline">\({\mathbb{E}\mathopen{}\left[Y^{a=1,c=0}\right]\mathclose{}} - {\mathbb{E}\mathopen{}\left[Y^{a=0,c=0}\right]\mathclose{}}\)</span>, standardize the fitted conditional means over the distribution of an estimated adjustment score <span class="math inline">\(b(L)\)</span>: the Chapter 13 procedure with <span class="math inline">\(b(L)\)</span> in place of <span class="math inline">\(L\)</span>. When no one is censored, <span class="math inline">\(b(L) = \pi(L)\)</span>, which suffices for adjustment when exchangeability and positivity hold given <span class="math inline">\(L\)</span> (<a href="#/thm-ps-exchangeability" class="quarto-xref">Theorem&nbsp;1</a>). With censoring, <span class="math inline">\(b(L)\)</span> is a joint score with <span class="math inline">\((A, C) \perp\!\!\!\perp L \mid b(L)\)</span>, as discussed after <a href="#/prp-ps-stratum-effect" class="quarto-xref">Proposition&nbsp;4</a>, such as the vector of joint probabilities <span class="math inline">\(\Pr[A = a, C = c \mid L]\)</span> over all <span class="math inline">\((a, c)\)</span>. This joint score suffices when, for each <span class="math inline">\(a \in \{0, 1\}\)</span>, <span class="math inline">\(Y^{a,c=0} \perp\!\!\!\perp(A, C) \mid L\)</span> and <span class="math inline">\(\Pr[A = a, C = 0 \mid L] &gt; 0\)</span>: because <span class="math inline">\((A, C) \perp\!\!\!\perp L \mid b(L)\)</span>, these conditions carry over from <span class="math inline">\(L\)</span> to <span class="math inline">\(b(L)\)</span>, by the argument <a href="#/thm-ps-exchangeability" class="quarto-xref">Theorem&nbsp;1</a> gives for <span class="math inline">\(A\)</span> alone. In either case, consistency must hold, and the treatment, censoring (if any), and outcome models must be correctly specified.</p>
 <ol type="1">
 <li><p>Estimate the score <span class="math inline">\(\hat b(L_i)\)</span> for each individual <span class="math inline">\(i = 1, \ldots, n\)</span>, censored or not. Without censoring, <span class="math inline">\(\hat b(L_i) = \hat\pi(L_i)\)</span>. With censoring, combine a treatment model and a censoring model, <span class="math inline">\(\hat{\Pr}[A = a, C = c \mid L] = \hat{\Pr}[A = a \mid L] \, \hat{\Pr}[C = c \mid L, A = a]\)</span> for each <span class="math inline">\((a, c)\)</span>.</p></li>
-<li><p>Fit an outcome model for <span class="math inline">\(\operatorname{E}\mathopen{}\left[Y \mid A, C = 0, b(L)\right]\mathclose{}\)</span> once, among the uncensored, with <span class="math inline">\(\hat b(L)\)</span> as the covariate(s); write <span class="math inline">\(\hat m(a, s)\)</span> for its fitted value at <span class="math inline">\(A = a\)</span> and score value <span class="math inline">\(s\)</span>.</p></li>
+<li><p>Fit an outcome model for <span class="math inline">\({\mathbb{E}\mathopen{}\left[Y \mid A, C = 0, b(L)\right]\mathclose{}}\)</span> once, among the uncensored, with <span class="math inline">\(\hat b(L)\)</span> as the covariate(s); write <span class="math inline">\(\hat m(a, s)\)</span> for its fitted value at <span class="math inline">\(A = a\)</span> and score value <span class="math inline">\(s\)</span>.</p></li>
 <li><p>For each <span class="math inline">\(a \in \{0, 1\}\)</span>, predict each individual’s outcome at <span class="math inline">\(A = a\)</span> and their own <span class="math inline">\(\hat b(L_i)\)</span>, and average the predictions over all <span class="math inline">\(n\)</span> individuals:</p>
 <p><span class="math display">\[
-\mathop{\hat{\operatorname{E}}}\nolimits\mathopen{}\left[Y^{a,c=0}\right]\mathclose{} = \frac{1}{n} \sum_{i=1}^n\hat m(a, \hat b(L_i)).
+{\mathop{\hat{\mathbb{E}}}\nolimits\mathopen{}\left[Y^{a,c=0}\right]\mathclose{}} = \frac{1}{n} \sum_{i=1}^n\hat m(a, \hat b(L_i)).
 \]</span></p></li>
-<li><p>Estimate the average causal effect by the difference <span class="math inline">\(\mathop{\hat{\operatorname{E}}}\nolimits\mathopen{}\left[Y^{a=1,c=0}\right]\mathclose{} - \mathop{\hat{\operatorname{E}}}\nolimits\mathopen{}\left[Y^{a=0,c=0}\right]\mathclose{}\)</span>.</p></li>
+<li><p>Estimate the average causal effect by the difference <span class="math inline">\({\mathop{\hat{\mathbb{E}}}\nolimits\mathopen{}\left[Y^{a=1,c=0}\right]\mathclose{}} - {\mathop{\hat{\mathbb{E}}}\nolimits\mathopen{}\left[Y^{a=0,c=0}\right]\mathclose{}}\)</span>.</p></li>
 </ol>
 </div>
 <div id="exm-ps-standardization" class="theorem example">
@@ -734,7 +720,6 @@ A \perp\!\!\!\perp L \mid \pi(L).
 </section>
 <section class="slide level2">
 
-<div title="Fine Point 15.2: Effect Modification and the Propensity Score">
 <div class="callout callout-note callout-titled callout-style-default">
 <div class="callout-body">
 <div class="callout-title">
@@ -752,12 +737,10 @@ A \perp\!\!\!\perp L \mid \pi(L).
 </div>
 </div>
 </div>
-</div>
 </section>
 <section id="defining-closeness" class="slide level2">
 <h2>Defining Closeness</h2>
 <p>Exact matches on a continuous <span class="math inline">\(\pi(L)\)</span> are rare, so we match on a <strong>close</strong> value, e.g., untreated individuals within <span class="math inline">\(\pm 0.05\)</span> of the treated individual’s estimated <span class="math inline">\(\pi(L)\)</span> (e.g., a treated individual with estimated <span class="math inline">\(\pi(L) = 0.6563\)</span> could be matched to an untreated individual with 0.6579).</p>
-<div title="Choosing How Close a Match Must Be">
 <div class="callout callout-tip callout-titled callout-style-default">
 <div class="callout-body">
 <div class="callout-title">
@@ -775,7 +758,6 @@ A \perp\!\!\!\perp L \mid \pi(L).
 </div>
 </div>
 </div>
-</div>
 </section>
 <section id="matching-and-positivity" class="slide level2">
 <h2>Matching and Positivity</h2>
@@ -787,7 +769,6 @@ A \perp\!\!\!\perp L \mid \pi(L).
 <li>Most matched analyses would drop them.</li>
 </ul>
 </div>
-<div title="Matching Ignores the Type of Nonpositivity">
 <div class="callout callout-warning callout-titled callout-style-default">
 <div class="callout-body">
 <div class="callout-title">
@@ -798,7 +779,6 @@ A \perp\!\!\!\perp L \mid \pi(L).
 </div>
 <div class="callout-content">
 <p>Matching does not distinguish random from structural nonpositivity.</p>
-</div>
 </div>
 </div>
 </div>
@@ -825,7 +805,6 @@ A \perp\!\!\!\perp L \mid \pi(L).
 <li>In practice, treated individuals without a close match are excluded too, so the estimate refers to a subset defined by the values of the estimated <span class="math inline">\(\pi(L)\)</span> that found matches.</li>
 </ul>
 </div>
-<div title="Propensity-Defined Populations Are Hard to Describe">
 <div class="callout callout-warning callout-titled callout-style-default">
 <div class="callout-body">
 <div class="callout-title">
@@ -836,7 +815,6 @@ A \perp\!\!\!\perp L \mid \pi(L).
 </div>
 <div class="callout-content">
 <p>Restricting to, say, estimated <span class="math inline">\(\pi(L) &lt; 0.67\)</span> yields a population that is hard to describe: “individuals do not come with a propensity score tattooed on their forehead” <span class="citation" data-cites="hernan2020causal">(<a href="#/references" role="doc-biblioref" onclick="">Hernán and Robins 2020, 205</a>)</span>, so transportability to other populations is hard to judge.</p>
-</div>
 </div>
 </div>
 </div>
@@ -852,7 +830,6 @@ A \perp\!\!\!\perp L \mid \pi(L).
 <p>which is a far more natural target population than “estimated <span class="math inline">\(\pi(L) &lt; 0.67\)</span>” <span class="citation" data-cites="hernan2020causal">(<a href="#/references" role="doc-biblioref" onclick="">Hernán and Robins 2020, 205</a>)</span>.</p>
 </div>
 <aside class="notes">
-<div title="Restricting to the Overlap Region">
 <div class="callout callout-warning callout-titled callout-style-default">
 <div class="callout-body">
 <div class="callout-title">
@@ -863,7 +840,6 @@ A \perp\!\!\!\perp L \mid \pi(L).
 </div>
 <div class="callout-content">
 <p>Using propensity scores to <strong>find</strong> the region of overlap can be useful, but restricting the study population to that region is a “lazy” way to secure positivity: the automatic positivity of matching must be weighed against the difficulty of assessing transportability <span class="citation" data-cites="hernan2020causal">(<a href="#/references" role="doc-biblioref" onclick="">Hernán and Robins 2020, 205</a>)</span>. Even if everyone’s propensity score were visible, the population could remain ill-characterized, because the same propensity score value can mean different things in different settings.</p>
-</div>
 </div>
 </div>
 </div>
@@ -966,7 +942,6 @@ A \perp\!\!\!\perp L \mid \pi(L).
 </section>
 <section id="variable-selection-prediction-tools-misapplied" class="slide level2">
 <h2>Variable Selection: Prediction Tools Misapplied</h2>
-<div title="Prediction Tools Can Harm Causal Models">
 <div class="callout callout-warning callout-titled callout-style-default">
 <div class="callout-body">
 <div class="callout-title">
@@ -984,8 +959,6 @@ A \perp\!\!\!\perp L \mid \pi(L).
 </div>
 </div>
 </div>
-</div>
-<div title="A Propensity Model Need Not Predict Treatment Well">
 <div class="callout callout-tip callout-titled callout-style-default">
 <div class="callout-body">
 <div class="callout-title">
@@ -996,7 +969,6 @@ A \perp\!\!\!\perp L \mid \pi(L).
 </div>
 <div class="callout-content">
 <p>It is tempting to judge a propensity model by how accurately it predicts <span class="math inline">\(A\)</span>. It need not; it only needs to include the <span class="math inline">\(L\)</span> that guarantee exchangeability.</p>
-</div>
 </div>
 </div>
 </div>
@@ -1040,7 +1012,6 @@ A \perp\!\!\!\perp L \mid \pi(L).
 </section>
 <section id="self-inflicted-bias-and-model-specification" class="slide level2">
 <h2>Self-Inflicted Bias and Model Specification</h2>
-<div title="Good Predictors Can Be Bad Adjustment Variables">
 <div class="callout callout-warning callout-titled callout-style-default">
 <div class="callout-body">
 <div class="callout-title">
@@ -1055,7 +1026,6 @@ A \perp\!\!\!\perp L \mid \pi(L).
 <li>Including <strong>instruments</strong> (Chapter 16) can amplify bias from unmeasured confounders.</li>
 <li>Chapter 18 returns to these issues.</li>
 </ul>
-</div>
 </div>
 </div>
 </div>
@@ -1092,7 +1062,7 @@ Table&nbsp;1: Methods of this chapter and Chapter 14, the models they fit, and w
 <tbody>
 <tr class="odd">
 <td><strong>Outcome regression</strong> (faux MSM)</td>
-<td><span class="math inline">\(\operatorname{E}\mathopen{}\left[Y \mid A, C = 0, L\right]\mathclose{}\)</span></td>
+<td><span class="math inline">\({\mathbb{E}\mathopen{}\left[Y \mid A, C = 0, L\right]\mathclose{}}\)</span></td>
 <td>Correct outcome model (nuisance parameters <span class="math inline">\(\beta_0, \beta_3\)</span>; <a href="#/def-nuisance-parameter" class="quarto-xref">Definition&nbsp;2</a>)</td>
 </tr>
 <tr class="even">
@@ -1102,7 +1072,7 @@ Table&nbsp;1: Methods of this chapter and Chapter 14, the models they fit, and w
 </tr>
 <tr class="odd">
 <td><strong>Propensity stratification / outcome regression on <span class="math inline">\(\pi(L)\)</span></strong></td>
-<td><span class="math inline">\(\pi(L)\)</span> and <span class="math inline">\(\operatorname{E}\mathopen{}\left[Y \mid A, C = 0, \pi(L)\right]\mathclose{}\)</span>; with censoring, the joint score <span class="math inline">\(b(L)\)</span> in place of <span class="math inline">\(\pi(L)\)</span></td>
+<td><span class="math inline">\(\pi(L)\)</span> and <span class="math inline">\({\mathbb{E}\mathopen{}\left[Y \mid A, C = 0, \pi(L)\right]\mathclose{}}\)</span>; with censoring, the joint score <span class="math inline">\(b(L)\)</span> in place of <span class="math inline">\(\pi(L)\)</span></td>
 <td>Correct propensity model and correct score-<span class="math inline">\(Y\)</span> relation; with censoring, also a correct censoring model</td>
 </tr>
 <tr class="even">
@@ -1578,7 +1548,7 @@ Rosenbaum, Paul R, and Donald B Rubin. 1983. <span>“The Central Role of the Pr
 'autoAnimateDuration': 1,
 'autoAnimateUnmatched': true,
 'jumpToSlide': true,
-'menu': {"side":"left","useTextContentForMissingTitles":true,"markers":false,"loadIcons":false,"custom":[{"title":"Tools","icon":"<i class=\"fas fa-gear\"></i>","content":"<ul class=\"slide-menu-items\">\n<li class=\"slide-tool-item active\" data-item=\"0\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.fullscreen(event)\"><kbd>f</kbd> Fullscreen</a></li>\n<li class=\"slide-tool-item\" data-item=\"1\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.speakerMode(event)\"><kbd>s</kbd> Speaker View</a></li>\n<li class=\"slide-tool-item\" data-item=\"2\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.overview(event)\"><kbd>o</kbd> Slide Overview</a></li>\n<li class=\"slide-tool-item\" data-item=\"3\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.togglePdfExport(event)\"><kbd>e</kbd> PDF Export Mode</a></li>\n<li class=\"slide-tool-item\" data-item=\"4\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.toggleScrollView(event)\"><kbd>r</kbd> Scroll View Mode</a></li>\n<li class=\"slide-tool-item\" data-item=\"5\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.toggleChalkboard(event)\"><kbd>b</kbd> Toggle Chalkboard</a></li>\n<li class=\"slide-tool-item\" data-item=\"6\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.toggleNotesCanvas(event)\"><kbd>c</kbd> Toggle Notes Canvas</a></li>\n<li class=\"slide-tool-item\" data-item=\"7\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.downloadDrawings(event)\"><kbd>d</kbd> Download Drawings</a></li>\n<li class=\"slide-tool-item\" data-item=\"8\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.keyboardHelp(event)\"><kbd>?</kbd> Keyboard Help</a></li>\n</ul>"}],"openButton":true},
+'menu': {"side":"left","useTextContentForMissingTitles":true,"markers":false,"loadIcons":false,"custom":[{"title":"Tools","icon":"\u003ci class=\"fas fa-gear\">\u003c/i>","content":"\u003cul class=\"slide-menu-items\">\n\u003cli class=\"slide-tool-item active\" data-item=\"0\">\u003ca href=\"#\" onclick=\"RevealMenuToolHandlers.fullscreen(event)\">\u003ckbd>f\u003c/kbd> Fullscreen\u003c/a>\u003c/li>\n\u003cli class=\"slide-tool-item\" data-item=\"1\">\u003ca href=\"#\" onclick=\"RevealMenuToolHandlers.speakerMode(event)\">\u003ckbd>s\u003c/kbd> Speaker View\u003c/a>\u003c/li>\n\u003cli class=\"slide-tool-item\" data-item=\"2\">\u003ca href=\"#\" onclick=\"RevealMenuToolHandlers.overview(event)\">\u003ckbd>o\u003c/kbd> Slide Overview\u003c/a>\u003c/li>\n\u003cli class=\"slide-tool-item\" data-item=\"3\">\u003ca href=\"#\" onclick=\"RevealMenuToolHandlers.togglePdfExport(event)\">\u003ckbd>e\u003c/kbd> PDF Export Mode\u003c/a>\u003c/li>\n\u003cli class=\"slide-tool-item\" data-item=\"4\">\u003ca href=\"#\" onclick=\"RevealMenuToolHandlers.toggleScrollView(event)\">\u003ckbd>r\u003c/kbd> Scroll View Mode\u003c/a>\u003c/li>\n\u003cli class=\"slide-tool-item\" data-item=\"5\">\u003ca href=\"#\" onclick=\"RevealMenuToolHandlers.toggleChalkboard(event)\">\u003ckbd>b\u003c/kbd> Toggle Chalkboard\u003c/a>\u003c/li>\n\u003cli class=\"slide-tool-item\" data-item=\"6\">\u003ca href=\"#\" onclick=\"RevealMenuToolHandlers.toggleNotesCanvas(event)\">\u003ckbd>c\u003c/kbd> Toggle Notes Canvas\u003c/a>\u003c/li>\n\u003cli class=\"slide-tool-item\" data-item=\"7\">\u003ca href=\"#\" onclick=\"RevealMenuToolHandlers.downloadDrawings(event)\">\u003ckbd>d\u003c/kbd> Download Drawings\u003c/a>\u003c/li>\n\u003cli class=\"slide-tool-item\" data-item=\"8\">\u003ca href=\"#\" onclick=\"RevealMenuToolHandlers.keyboardHelp(event)\">\u003ckbd>?\u003c/kbd> Keyboard Help\u003c/a>\u003c/li>\n\u003c/ul>"}],"openButton":true,"openButtonLabel":"Slide menu"},
 'chalkboard': {"buttons":true},
 'smaller': true,
  
@@ -1834,7 +1804,8 @@ Rosenbaum, Paul R, and Donald B Rubin. 1983. <span>“The Central Role of the Pr
               return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
           }
           // Inspect non-navigation links and adorn them if external
-         var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+          window.quartoDecorateExternalLinks = function (root) {
+         var links = (root || window.document).querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
           for (var i=0; i<links.length; i++) {
             const link = links[i];
             if (!isInternal(link.href)) {
@@ -1843,8 +1814,69 @@ Rosenbaum, Paul R, and Donald B Rubin. 1983. <span>“The Central Role of the Pr
               if (link.dataset.originalHref !== undefined) {
                 link.href = link.dataset.originalHref;
               }
+              if (!link.classList.contains('no-external-icon')) {
+              }
             }
           }
+          };
+          window.quartoDecorateExternalLinks(window.document);
+        // Esc closes the popup (WCAG 1.4.13) and focus leaving both trigger and
+        // popup closes it (WCAG 2.4.11); tippy handles neither for interactive popups.
+        const hideOnEscAndFocusOut = {
+          name: 'hideOnEscAndFocusOut',
+          defaultValue: true,
+          fn(instance) {
+            const dismiss = () => {
+              // A show scheduled by the trigger delay would otherwise reopen it
+              instance.clearDelayTimeouts();
+              instance.hide();
+            };
+            const onKeyDown = (event) => {
+              if (event.key !== 'Escape') {
+                return;
+              }
+              // Keep Esc from also reaching page handlers (e.g. reveal.js overview),
+              // except an open reveal.js slide menu, which Esc should close too.
+              // The menu handles keys only when its keyboard option is on.
+              const menuHandlesEsc = window.Reveal?.getPlugin?.('menu')?.isOpen() &&
+                window.Reveal.getConfig().menu?.keyboard !== false;
+              if (!menuHandlesEsc) {
+                event.stopPropagation();
+              }
+              if (instance.popper.contains(window.document.activeElement)) {
+                // Disabled while refocusing so the focus trigger does not reopen it
+                instance.disable();
+                instance.reference.focus();
+                instance.enable();
+              }
+              dismiss();
+            };
+            const onFocusOut = (event) => {
+              const target = event.relatedTarget;
+              if (target && !instance.reference.contains(target) &&
+                  !instance.popper.contains(target)) {
+                dismiss();
+              }
+            };
+            // On the trigger too: a click trigger (code-annotations: select) has no
+            // blur handling. Attached for the instance's lifetime so leaving the
+            // trigger also cancels a show still pending on the trigger delay.
+            instance.reference.addEventListener('focusout', onFocusOut);
+            return {
+              onShow() {
+                window.document.addEventListener('keydown', onKeyDown, true);
+                instance.popper.addEventListener('focusout', onFocusOut);
+              },
+              onHide() {
+                window.document.removeEventListener('keydown', onKeyDown, true);
+                instance.popper.removeEventListener('focusout', onFocusOut);
+              },
+              onDestroy() {
+                instance.reference.removeEventListener('focusout', onFocusOut);
+              },
+            };
+          },
+        };
         function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
           const config = {
             allowHTML: true,
@@ -1858,6 +1890,7 @@ Rosenbaum, Paul R, and Donald B Rubin. 1983. <span>“The Central Role of the Pr
             interactiveBorder: 10,
             theme: 'light-border',
             placement: 'bottom-start',
+            plugins: [hideOnEscAndFocusOut],
           };
           if (contentFn) {
             config.content = contentFn;
