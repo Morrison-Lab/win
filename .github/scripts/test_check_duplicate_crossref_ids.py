@@ -44,6 +44,18 @@ class IdsInTest(unittest.TestCase):
         )
         self.assertEqual(found_ids(text), ["fig-a", "tbl-b"])
 
+    def test_indented_chunk_label_in_list_item(self):
+        text = f"- item\n\n  {FENCE3}{{r}}\n  #| label: fig-a\n  {FENCE3}\n"
+        self.assertEqual(found_ids(text), ["fig-a"])
+
+    def test_triple_backtick_inline_span_is_not_a_fence(self):
+        text = f"See {FENCE3}{{#def-example}}{FENCE3} here.\n\n::: {{#def-real}}\n"
+        self.assertEqual(found_ids(text), ["def-real"])
+
+    def test_line_starting_with_inline_triple_backticks_is_not_a_fence(self):
+        text = f"{FENCE3}{{#def-example}}{FENCE3}\n\n::: {{#def-real}}\n"
+        self.assertEqual(found_ids(text), ["def-real"])
+
     def test_chunk_label_with_trailing_text_is_not_an_id(self):
         text = f"{FENCE3}{{r}}\n#| label: fig-a extra\n{FENCE3}\n"
         self.assertEqual(found_ids(text), [])

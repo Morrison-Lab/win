@@ -22,7 +22,7 @@ from pathlib import Path
 PREFIXES = "def|thm|lem|prp|cor|exm|exr|alg|rem|cnj|prf|sol|fig|tbl|eq|sec|lst"
 ATTR_ID = re.compile(r"\{[^{}]*?#((?:%s)-[A-Za-z0-9_-]+)" % PREFIXES)
 CHUNK_ID = re.compile(
-    r"""^#\|\s*label:\s*["']?((?:%s)-[A-Za-z0-9_-]+)["']?\s*(?:\s#.*)?$""" % PREFIXES
+    r"""^\s*#\|\s*label:\s*["']?((?:%s)-[A-Za-z0-9_-]+)["']?\s*(?:\s#.*)?$""" % PREFIXES
 )
 FENCE = re.compile(r"^\s*(`{3,}|~{3,})(.*)$")
 NOT_NEWLINE = re.compile(r"[^\n]")
@@ -98,6 +98,8 @@ def ids_in(path):
 
     for number, line in enumerate(path.read_text(encoding="utf-8").splitlines(), 1):
         match = FENCE.match(line)
+        if match and not fence and match.group(1)[0] == "`" and "`" in match.group(2):
+            match = None  # a backtick fence's info string has no backticks: inline code
         if fence:
             if (
                 match
