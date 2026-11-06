@@ -9,4 +9,5 @@ Decisions and facts about this repository that are not visible in the code.
 - The names proposed in #76 (`\bA`, `\bL`, `\ba`, `\bl`) were not used.
   `\ba` is already `\begin{aligned}` in the macros, and the lab names macros for concepts, not for letter and decoration.
 - Still raw LaTeX: bare `\bar{a}` and `\bar{c}` (a whole history, about 139 uses) and `\bar{U}_k`.
-  #76 stays open for them; design a subscript-less form of `\hist` in `Morrison-Lab/macros` first, then sweep.
+  #76 stays open for them.
+  Design a subscript-less form of `\hist` in `Morrison-Lab/macros` first, then sweep.
