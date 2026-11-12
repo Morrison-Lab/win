@@ -43,7 +43,8 @@ This Quarto website project is configured to render each chapter in multiple for
 
 The project uses Quarto's multi-format rendering capability with profile-based configuration:
 - Default profile: website (generates HTML, RevealJS, PDF, and DOCX in `_site/`)
-- RevealJS profile: standalone slides rendering (generates slides in `_slides/`)
+- RevealJS profile: standalone, self-contained slides rendering (generates slides in `_slides/`);
+  the chalkboard is not available here because Quarto cannot combine it with `embed-resources: true` (the website profile keeps the chalkboard).
 - Handout profile: standalone PDF rendering (generates PDFs in `_handouts/`)
 
 ### Files
