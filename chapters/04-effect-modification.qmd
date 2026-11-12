@@ -518,8 +518,19 @@ The explanation (leaving aside random variability) is **qualitative effect modif
 
 The lesson: always specify the population, or subset, to which an effect measure corresponds.
 
+::: {.callout-note title="Technical Point 4.3: Relation between marginal and conditional causal risk ratios"}
+Knowing the stratum-specific causal risk ratios is not enough to tell
+whether the marginal causal risk ratio lies above or below 1.
+The marginal ratio averages the stratum-specific ratios,
+with weights that depend on how large each stratum is
+and on how common the outcome would be in it without treatment.
+Solving for the weights turns the question into an inequality about those two ingredients
+[@hernan2020causal, p. 58].
+@prp-marginal-rr-condition below works this out for Table 4.3.
+:::
+
 ::: {#prp-marginal-rr-condition}
-## When is the marginal risk ratio below 1? (Technical Point 4.3)
+## When is the marginal risk ratio below 1?
 
 Let $\RR_l \eqdef \Pr[Z^{a=1} = 1 \mid L = l] / \Pr[Z^{a=0} = 1 \mid L = l]$, $p_l \eqdef \Pr[Z^{a=0} = 1 \mid L = l]$, and $\pi_l \eqdef \Pr[L = l]$.
 With $\RR_0 = 2$ and $\RR_1 = 0.5$, the marginal risk ratio is below 1 if and only if
@@ -539,14 +550,15 @@ $$
 \end{aligned}
 $$
 
-Substituting $\RR_0 = 2$, $\RR_1 = 0.5$, and $w(1) = 1 - w(0)$:
+Substituting $\RR_0 = 2$, $\RR_1 = 0.5$, and $w(1) = 1 - w(0)$,
+and using $\Pr[Z^{a=0} = 1] = p_0 \pi_0 + p_1 \pi_1$:
 
 $$
 \begin{aligned}
 2\, w(0) + 0.5\,(1 - w(0)) < 1
 &\iff 1.5\, w(0) < 0.5 \\
 &\iff w(0) < 1/3 \\
-&\iff 3 p_0 \pi_0 < p_0 \pi_0 + p_1 \pi_1 && \text{(definition of } w(0)\text{; } \Pr[Z^{a=0} = 1] = p_0 \pi_0 + p_1 \pi_1\text{)} \\
+&\iff 3 p_0 \pi_0 < p_0 \pi_0 + p_1 \pi_1 && \text{(definition of } w(0)\text{)} \\
 &\iff 2 p_0 \pi_0 < p_1 \pi_1 \\
 &\iff \frac{p_1}{p_0} > \frac{2 \pi_0}{\pi_1}.
 \end{aligned}

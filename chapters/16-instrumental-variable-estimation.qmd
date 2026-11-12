@@ -301,10 +301,19 @@ Versions 3 and 4 are special cases: they say "$e(U)$ is constant" and "$t(U)$ is
 
 ---
 
-::: {.proof}
-## Proof (Technical Point 16.5)
+::: {.callout-note title="Technical Point 16.5: Proof of the General Homogeneity Condition"}
+The proof of @thm-general-homogeneity rewrites the denominator and the numerator of the usual IV estimand
+as averages over the unmeasured confounders $U$:
+the denominator becomes $\E{t(U)}$ and the numerator $\E{e(U)\, t(U)}$.
+Zero covariance then lets the numerator factor as $\E{e(U)}\, \E{t(U)}$,
+and $\E{e(U)}$ is the average causal effect
+[@hernan2020causal, p. 217].
+The proof below fills in each step.
+:::
 
+::: {.proof}
 In Figure 16.1, $Y^a \ind (A, Z) \mid U$ for each $a$ and $U \ind Z$.
+Sums over $u$ become integrals when $U$ is continuous.
 
 **Step 1: the denominator is $\E{t(U)}$.**
 Because $U \ind Z$, $f(u \mid z) = f(u)$, so
@@ -324,12 +333,16 @@ For each $z$ and $u$,
 $$
 \begin{aligned}
 \E{A (Y^{a=1} - Y^{a=0}) \mid Z = z, U = u}
-&= \Pr(A = 1 \mid Z = z, U = u)\, \E{Y^{a=1} - Y^{a=0} \mid A = 1, Z = z, U = u} \\
-&= \Pr(A = 1 \mid Z = z, U = u)\, \E{Y^{a=1} - Y^{a=0} \mid U = u} && (Y^a \ind (A, Z) \mid U) \\
+&= \Pr(A = 1 \mid Z = z, U = u) \\
+&\qquad \times \E{Y^{a=1} - Y^{a=0} \mid A = 1, Z = z, U = u} \\
+&= \Pr(A = 1 \mid Z = z, U = u)\, \E{Y^{a=1} - Y^{a=0} \mid U = u} \\
 &= \Pr(A = 1 \mid Z = z, U = u)\, e(u), \\
-\E{Y^{a=0} \mid Z = z, U = u} &= \E{Y^{a=0} \mid U = u}. && (Y^{a=0} \ind Z \mid U)
+\E{Y^{a=0} \mid Z = z, U = u} &= \E{Y^{a=0} \mid U = u}.
 \end{aligned}
 $$
+
+The second equality uses $Y^a \ind (A, Z) \mid U$,
+and the last line uses $Y^{a=0} \ind Z \mid U$.
 
 Averaging over $U$ (with $f(u \mid z) = f(u)$):
 
@@ -514,9 +527,21 @@ Greenland calls compliers "cooperative" and defiers "non-cooperative" to avoid c
 
 ---
 
-::: {.proof}
-## Proof (Technical Point 16.7)
+::: {.callout-note title="Technical Point 16.7: Monotonicity and the Effect in the Compliers"}
+Imbens and Angrist (1994) showed that, for a dichotomous causal instrument $Z$
+and no defiers (monotonicity, condition (iv)),
+the usual IV estimand is the average causal effect in the compliers (@thm-late);
+a closely related argument for binary outcomes is due to Baker and Lindeman (1994)
+[@hernan2020causal, p. 224].
+The proof below assumes a causal instrument (Figure 16.1).
 
+For a surrogate instrument $Z$, Hernán and Robins (2006b) showed that the usual IV estimator still identifies the effect in the compliers (defined by $U_Z$),
+but only if $Z$ is independent of $A$ and $Y$ given $U_Z$ and $U_Z$ is binary, and that independence is rarely plausible unless $U_Z$ is continuous [@hernan2020causal, p. 224].
+So when an observational study has at best a surrogate for $U_Z$,
+interpreting the IV estimand as a complier effect is often doubtful.
+:::
+
+::: {.proof}
 Write the intention-to-treat effect as a weighted average over the strata (AT: always-takers, NT: never-takers, C: compliers, D: defiers):
 
 $$
@@ -547,12 +572,6 @@ $$
 $$
 :::
 
-::: {.notes}
-The result is due to Imbens and Angrist (1994);
-Baker and Lindeman (1994) had a related proof for a binary outcome [@hernan2020causal, p. 224].
-For a surrogate instrument $Z$, Hernán and Robins (2006b) showed that the usual IV estimator still identifies the effect in the compliers (defined by $U_Z$),
-but only if $Z$ is independent of $A$ and $Y$ given $U_Z$ and $U_Z$ is binary, and that independence is rarely plausible unless $U_Z$ is continuous [@hernan2020causal, p. 224].
-:::
 
 ---
 

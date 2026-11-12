@@ -348,13 +348,23 @@ Two caveats from the book [@hernan2020causal, pp. 201-202]:
 :::
 :::
 
-::: {.notes}
+---
+
+::: {.callout-note title="Technical Point 15.1: Balancing Scores and Prognostic Scores"}
+The propensity score is the simplest **balancing score** (@def-balancing-score):
+once we fix its value, the treated and the untreated have the same distribution of $L$.
 Rosenbaum and Rubin proved that exchangeability and positivity given $L$ imply exchangeability and positivity given any balancing score
 [@rosenbaum1983central, Theorem 3; @hernan2020causal, p. 202].
+So if adjusting for $L$ suffices, adjusting for $b(L)$, and in particular for $\pi(L)$, suffices too.
+
 Graphically, $\pi(L)$ sits between $L$ and $A$, with a deterministic arrow $L \to \pi(L)$ (book Figure 15.2);
 conditioning on $\pi(L)$ blocks the backdoor paths from $A$ to $Y$ through $L$ ($A \leftarrow \pi(L) \leftarrow L \to Y$), so adjusting for it suffices.
 
-Methods based on prognostic scores need stronger assumptions and do not extend readily to time-varying treatments;
+A **prognostic score** $s(L)$ is the outcome-side counterpart:
+given $s(L)$, $L$ carries no further information about $Y^{a=0}$,
+just as, given $b(L)$, it carries none about $A$ (@def-balancing-score).
+Adjustment methods exist for both kinds of score,
+but those based on prognostic scores need stronger assumptions and do not extend readily to time-varying treatments;
 see Hansen (2008) and Abadie et al. (2013), as cited in @hernan2020causal [p. 202].
 :::
 
